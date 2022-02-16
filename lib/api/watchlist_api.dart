@@ -193,4 +193,40 @@ class WatchlistAPI {
       throw Exception("err=No bearer token");
     }
   }
+
+  Future<bool> updateDetail(int id, DateTime date, double shares, double price) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.put(
+        Uri.parse(Globals.apiURL + 'api/watchlists-details/' + id.toString()),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'watchlist_detail_share': shares,
+          'watchlist_detail_price': price,
+          'watchlist_detail_date': date.toUtc().toIso8601String()
+        }),
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // no need to return the result from the API, as it will only return the
+        // last ID that we updated. So, just return true if all is good
+        return true;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception("err=" + response.body);
+    }
+    else {
+      throw Exception("err=No bearer token");
+    }
+  }
 }

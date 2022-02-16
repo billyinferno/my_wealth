@@ -226,10 +226,19 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
   Future<void> _deleteWatchlist(int watchlistId) async {
     // show loader
     showLoaderDialog(context);
-    await _watchlistAPI.delete(watchlistId).then((resp) {
+    await _watchlistAPI.delete(watchlistId).then((resp) async {
       if(resp) {
-        // means that we sucessfully delete the watchlist
-        // TODO: refresh the watchlist on the shared preferences and provide
+        // filter out the watchlist that we already delete
+        List<WatchlistListModel> _newWatchlist = [];
+        for (WatchlistListModel _watch in _watchlist!) {
+          if(_watch.watchlistId != watchlistId) {
+            _newWatchlist.add(_watch);
+          }
+        }
+
+        // update shared preferences and the provider
+        await WatchlistSharedPreferences.setWatchlist(_newWatchlist);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_newWatchlist);
       }
     }).onError((error, stackTrace) {
       // when error return the error to the caller

@@ -103,7 +103,7 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
             children: <Widget>[
               const SizedBox(width: 10,),
               TransparentButton(
-                text: "Save",
+                text: "Update",
                 icon: Ionicons.save,
                 callback: (() async {
                   showLoaderDialog(context);

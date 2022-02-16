@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
 import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/widgets/watchlist_detail_summary_box.dart';
@@ -28,6 +32,8 @@ class WatchlistListPage extends StatefulWidget {
 class _WatchlistListPageState extends State<WatchlistListPage> {
   final ScrollController _scrollController = ScrollController();
   final DateFormat _df = DateFormat('dd/MM/yyyy');
+  final WatchlistAPI _watchlistApi = WatchlistAPI();
+  final GlobalKey _scaffold = GlobalKey();
 
   late WatchlistListModel _watchlist;
   late UserLoginInfoModel? _userInfo;
@@ -54,6 +60,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffold,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(
@@ -186,10 +193,22 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Are you sure to delete " + _watchlist.watchlistCompanyName.toTitleCase() + "?",
                           confirmLabel: "Delete",
                           cancelLabel: "Cancel"
-                        ).show(context).then((resp) {
+                        ).show(context).then((resp) async {
                           if(resp!) {
-                            //TODO: to delete the watchlist
-                            debugPrint("Delete this watchlist");
+                            // show the loader
+                            showLoaderDialog(context);
+                            await _deleteWatchlist().then((resp) {
+                              if(resp) {
+                                debugPrint("🗑️ Delete watchlist " + _watchlist.watchlistCompanyName.toTitleCase());
+                                // navigate to the previous page
+                                Navigator.pop(context); 
+                              }
+                            }).onError((error, stackTrace) {
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                            }).whenComplete(() {
+                              // remove the loader
+                              Navigator.pop(context);
+                            });
                           }
                         },);
                       })
@@ -251,13 +270,14 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
+                    WatchlistDetailEditArgs _args = WatchlistDetailEditArgs(index: index, watchlist: _watchlist);
+
                     return Slidable(
                       endActionPane: ActionPane(
                         motion: const ScrollMotion(),
                         children: <Widget>[
                           SlidableAction(
                             onPressed: ((context) {
-                              WatchlistDetailEditArgs _args = WatchlistDetailEditArgs(index: index, watchlist: _watchlist);
                               Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: _args);
                             }),
                             icon: Ionicons.pencil,
@@ -266,7 +286,6 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                           ),
                           SlidableAction(
                             onPressed: ((context) async {
-                              //TODO: add confirmation dialog if user want to delete or not?
                               await ShowMyDialog(
                                 title: "Delete Detail",
                                 text: "Are you sure to delete this detail?\n"
@@ -275,9 +294,18 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                                   "Price: " + formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
                                 confirmLabel: "Delete",
                                 cancelLabel: "Cancel"
-                              ).show(context).then((resp) {
+                              ).show(context).then((resp) async {
                                 if(resp!) {
-                                  debugPrint("Delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
+                                  await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
+                                    if(resp) {
+                                      debugPrint("🧹 Delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
+                                    }
+                                    else {
+                                      debugPrint("🧹 Unable to delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
+                                    }
+                                  }).onError((error, stackTrace) {
+                                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                  });
                                 }
                               });
                             }),
@@ -289,8 +317,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                       ),
                       child: InkWell(
                         onDoubleTap: (() {
-                          //TODO: go to edit page
-                          debugPrint("Edit " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
+                          Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: _args);
                         }),
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
@@ -350,6 +377,88 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
         }),
       ),
     );
+  }
+
+  Future<bool> _deleteDetail(int watchlistDetailID) async {
+    bool _ret = false;
+
+    showLoaderDialog(context);
+    await _watchlistApi.deleteDetail(watchlistDetailID).then((resp) async {
+      if(resp) {
+        // first create the new watchlist for this
+        List<WatchlistListModel> _newWatchlist = [];
+        List<WatchlistDetailListModel> _newWatchlistDetail = [];
+
+        // loop thru the current detail
+        for (WatchlistDetailListModel _detail in _watchlist.watchlistDetail) {
+          // check if the ID is the same? If not then add this to the new list
+          if(_detail.watchlistDetailId != watchlistDetailID) {
+            _newWatchlistDetail.add(_detail);
+          }
+        }
+
+        // create a new Watchlist Model for this data
+        WatchlistListModel _newWatchlistModel = WatchlistListModel(
+          watchlistId: _watchlist.watchlistId,
+          watchlistCompanyId: _watchlist.watchlistCompanyId,
+          watchlistCompanyName: _watchlist.watchlistCompanyName,
+          watchlistDetail: _newWatchlistDetail,
+          watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
+          watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice
+        );
+
+        List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist();
+        
+        // loop thru the current watchlist
+        for (WatchlistListModel _watch in _currWatchlist) {
+          if(_watchlist.watchlistId == _watch.watchlistId) {
+            // change this to the updated one
+            _newWatchlist.add(_newWatchlistModel);
+          }
+          else {
+            _newWatchlist.add(_watch);
+          }
+        }
+
+        // once we finished generate the updated watchlist, update the shared preferences
+        // and the provider
+        await WatchlistSharedPreferences.setWatchlist(_newWatchlist);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_newWatchlist);
+      }
+
+      _ret = resp;
+    // await Future.delayed(Duration(milliseconds: 10)).then((_) {
+    //   _ret = true;
+    }).onError((error, stackTrace) {
+      throw Exception(error.toString());
+    }).whenComplete(() {
+      // remove the loader
+      Navigator.pop(context);
+    });
+
+    return _ret;
+  }
+
+  Future<bool> _deleteWatchlist() async {
+    bool _ret = false;
+    await _watchlistApi.delete(_watchlist.watchlistId).then((resp) async {
+      if(resp) {
+        // delete the current watchlist
+        List<WatchlistListModel> _newWatchlist = [];
+        List<WatchlistListModel> _currentWatchlist = WatchlistSharedPreferences.getWatchlist();
+        for (WatchlistListModel _watch in _currentWatchlist) {
+          if(_watch.watchlistId != _watchlist.watchlistId) {
+            _newWatchlist.add(_watch);
+          }
+        }
+
+        // update shared preferences and provdier
+        await WatchlistSharedPreferences.setWatchlist(_newWatchlist);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_newWatchlist);
+      }
+      _ret = resp;
+    });
+    return _ret;
   }
 
   void _compute() {

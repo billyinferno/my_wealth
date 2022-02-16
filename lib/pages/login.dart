@@ -383,7 +383,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _getAdditionalInfo() async {
-    // TODO: add all the additional information that we need to fetch here such as watchlist information, etc.
     await Future.wait([
       _faveAPI.getFavourites().then((_resp) async {
         await FavouritesSharedPreferences.setFavouritesList(_resp);

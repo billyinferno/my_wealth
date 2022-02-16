@@ -90,8 +90,34 @@ class WatchlistAPI {
   }
 
   Future<bool> delete(int watchlistId) async {
-    //TODO: delete the watchlist and watchlist detail
-    return true;
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.delete(
+        Uri.parse(Globals.apiURL + 'api/watchlists/' + watchlistId.toString()),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // as long as we got 200 it means that we already able to delete the watchlist
+        // so just return true.
+        return true;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception("err=" + response.body);
+    }
+    else {
+      throw Exception("err=No bearer token");
+    }
   }
 
   Future<List<WatchlistDetailListModel>> addDetail(int id, DateTime date, double shares, double price) async {
@@ -126,6 +152,38 @@ class WatchlistAPI {
           _watchlistDetail.add(_detail);
         }
         return _watchlistDetail;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception("err=" + response.body);
+    }
+    else {
+      throw Exception("err=No bearer token");
+    }
+  }
+
+  Future<bool> deleteDetail(int id) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.delete(
+        Uri.parse(Globals.apiURL + 'api/watchlists-details/' + id.toString()),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // no need to parse the result, as this only will response the ID that being deleted
+        // and we already knew the ID that we need to delete form the caller since it will
+        // need to passed it as parameter to here
+        return true;
       }
 
       // status code is not 200, means we got error

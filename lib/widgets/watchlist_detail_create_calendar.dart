@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/animation/animation_expand.dart';
 
 class WatchlistDetailCreateCalendar extends StatefulWidget {
   final Function(DateTime) onDateChange;
@@ -71,11 +72,10 @@ class _WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCal
             ),
           ),
         ),
-        Visibility(
-          visible: _isDateVisible,
-          child: AnimatedContainer(
+        AnimationExpand(
+          expand: _isDateVisible,
+          child: Container(
             height: 200,
-            duration: const Duration(seconds: 1),
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
               border: Border(
@@ -88,11 +88,10 @@ class _WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCal
             ),
             child: CupertinoTheme(
               data: const CupertinoThemeData(
+                brightness: Brightness.dark,
                 textTheme: CupertinoTextThemeData(
                   textStyle: TextStyle(
                     fontFamily: '--apple-system',
-                    color: Colors.white,
-                    fontSize: 18,
                   )
                 )
               ),

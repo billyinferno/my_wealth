@@ -153,7 +153,7 @@ class _FavouriteCompanyListPageState extends State<FavouriteCompanyListPage> {
                     else {
                       if (_searchText.isNotEmpty) {
                         // search from the list
-                        debugPrint("Search " + _searchText);
+                        debugPrint("🔎 Search " + _searchText);
                         setSearch(_searchText);
                       }
                     }
@@ -459,7 +459,7 @@ class _FavouriteCompanyListPageState extends State<FavouriteCompanyListPage> {
       // clear filter if already set
       _filterText = "";
       _filterSearchText = "";
-      setFilter(false);
+      _isFilter = false;
     });
   }
 

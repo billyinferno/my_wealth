@@ -1,0 +1,62 @@
+import 'dart:convert';
+import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/storage/local_box.dart';
+
+class UserSharedPreferences {
+  static const _userMeKey = "user_me";
+
+  static Future<void> setUserJWT(String bearerToken) async {
+    // ensure that encrypted box is not null, by right as we always initialize this
+    // on the startup of app, this wouldn't be null when it reach this point.
+    if (LocalBox.encryptedBox == null) {
+      LocalBox.init();
+    }
+
+    // now put the bearerToken to the encrypted box
+    LocalBox.putSecuredString('jwt', bearerToken);
+  }
+
+  static String getUserJWT() {
+    String? _bearerToken;
+
+    if (LocalBox.encryptedBox != null) {
+      _bearerToken = LocalBox.getSecuredString('jwt');
+      // if not null then return blank string
+      return (_bearerToken ?? '');
+    }
+    else {
+      return '';
+    }
+  }
+
+  static Future<void> setUserInfo(UserLoginInfoModel userInfo) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    String _userInfo = jsonEncode(userInfo.toJson());
+    LocalBox.putString(_userMeKey, _userInfo);
+  }
+  
+  static UserLoginInfoModel? getUserInfo() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the user information string from the local storage
+    String _userInfo = (LocalBox.getString(_userMeKey) ?? '');
+
+    // check if the user information is available or not?
+    if (_userInfo.isNotEmpty) {
+      // parse the user information string to json
+      UserLoginInfoModel _userInfoModel = UserLoginInfoModel.fromJson(jsonDecode(_userInfo));
+      return _userInfoModel;
+    }
+    else {
+      return null;
+    }
+  }
+}

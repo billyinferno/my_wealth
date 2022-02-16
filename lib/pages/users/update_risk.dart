@@ -1,0 +1,152 @@
+import 'package:flutter/material.dart';
+import 'package:my_wealth/api/user_api.dart';
+import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/provider/user_provider.dart';
+import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:provider/provider.dart';
+
+class UpdateRiskPage extends StatefulWidget {
+  const UpdateRiskPage({ Key? key }) : super(key: key);
+
+  @override
+  _UpdateRiskPageState createState() => _UpdateRiskPageState();
+}
+
+class _UpdateRiskPageState extends State<UpdateRiskPage> {
+  late UserLoginInfoModel? _userInfo;
+  late double _riskValue;
+  final UserAPI _userApi = UserAPI();
+
+  @override
+  void initState() {
+    super.initState();
+    _userInfo = UserSharedPreferences.getUserInfo();
+    _riskValue = _userInfo!.risk.toDouble();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Update Risk",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text("Current risk factor is "),
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.green,
+                        width: 2.0,
+                        style: BorderStyle.solid,
+                      )
+                    )
+                  ),
+                  child: Text(
+                    _userInfo!.risk.toString() + "%",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            const Text("Change risk factor to:"),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Slider(
+                    value: _riskValue,
+                    onChanged: ((value) {
+                      setState(() {
+                        _riskValue = value.toInt().toDouble();
+                      });
+                    }),
+                    min: 5,
+                    max: 100,
+                    divisions: 95,
+                    label: _riskValue.toInt().toString(),
+                    activeColor: accentColor,
+                    inactiveColor: accentDark,
+                  ),
+                ),
+                SizedBox(
+                  width: 45,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(_riskValue.toString() + "%")
+                  )
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            MaterialButton(
+              child: const Text("Save"),
+              minWidth: double.infinity,
+              color: secondaryColor,
+              textColor: textPrimary,
+              onPressed: (() async {
+                // check if the current value and slide value for risk factor
+                // is the same or not?
+                if (_userInfo!.risk == _riskValue.toInt()) {
+                  // skip, and just go back
+                  Navigator.pop(context);
+                }
+                else {
+                  debugPrint("💾 Save the updated risk factor");
+                  showLoaderDialog(context);
+                  await _userApi.updateRisk(_riskValue.toInt()).then((resp) async {
+                    // remove the loader dialog
+                    Navigator.pop(context);
+
+                    // we will get updated user info here, so stored the updated
+                    // user info with new risk factor to the local storea
+                    await UserSharedPreferences.setUserInfo(resp);
+
+                    // update the provider to notify the user page
+                    Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+
+                    // once finished, then pop out from this page
+                    Navigator.pop(context);
+                  }).onError((error, stackTrace) {
+                    // remove the loader dialog
+                    Navigator.pop(context);
+
+                    // showed the snack bar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      createSnackBar(
+                        message: "Unable to update risk factor",
+                      )
+                    );
+                  });
+                }
+              })
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

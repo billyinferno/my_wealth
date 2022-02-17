@@ -289,6 +289,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
+                        flex: 2,
                         child: Container(
                           decoration: const BoxDecoration(
                             border: Border(
@@ -309,6 +310,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
+                        flex: 1,
                         child: Container(
                           decoration: const BoxDecoration(
                             border: Border(
@@ -330,6 +332,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
+                        flex: 1,
                         child: Container(
                           decoration: const BoxDecoration(
                             border: Border(
@@ -349,6 +352,28 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                           ),
                         ),
                       ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              )
+                            )
+                          ),
+                          child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Icon(
+                              Ionicons.pulse_outline,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -360,6 +385,14 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               children: List<Widget>.generate(_indexPrice.length, (index) {
+                double? dayDiff;
+                Color dayDiffColor = Colors.transparent;
+                if((index + 1) < _indexPrice.length) {
+                  double? currDayPrice = _indexPrice[index].indexPriceValue;
+                  double? prevDayPrice = _indexPrice[index+1].indexPriceValue;
+                  dayDiff = (currDayPrice - prevDayPrice);
+                  dayDiffColor = riskColor(currDayPrice, prevDayPrice, _userInfo!.risk);
+                }
                 return Container(
                   color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
                   child: Row(
@@ -376,6 +409,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Expanded(
+                                flex: 2,
                                 child: Text(
                                   _df.format(_indexPrice[index].indexPriceDate.toLocal()),
                                   style: const TextStyle(
@@ -385,6 +419,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                               const SizedBox(width: 10,),
                               Expanded(
+                                flex: 1,
                                 child: Text(
                                   formatCurrency(_indexPrice[index].indexPriceValue),
                                   style: const TextStyle(
@@ -395,6 +430,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                               const SizedBox(width: 10,),
                               Expanded(
+                                flex: 1,
                                 child: Align(
                                   alignment: Alignment.centerRight,
                                   child: Container(
@@ -409,6 +445,31 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                     ),
                                     child: Text(
                                       formatCurrency(_index.indexNetAssetValue - _indexPrice[index].indexPriceValue),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          width: 2.0,
+                                          color: dayDiffColor,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      (dayDiff == null ? "-" : formatCurrency(dayDiff)),
                                       style: const TextStyle(
                                         fontSize: 12,
                                       ),

@@ -6,7 +6,9 @@ class CompanyDetailPriceList extends StatelessWidget {
   final String price;
   final String diff;
   final Color riskColor;
-  const CompanyDetailPriceList({ Key? key, required this.date, required this.price, required this.diff, required this.riskColor }) : super(key: key);
+  final String dayDiff;
+  final Color dayDiffColor;
+  const CompanyDetailPriceList({ Key? key, required this.date, required this.price, required this.diff, required this.riskColor, required this.dayDiff, required this.dayDiffColor }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class CompanyDetailPriceList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
+                    flex: 3,
                     child: Text(
                       date,
                       style: const TextStyle(
@@ -47,7 +49,7 @@ class CompanyDetailPriceList extends StatelessWidget {
                   ),
                   const SizedBox(width: 10,),
                   Expanded(
-                    flex: 1,
+                    flex: 2,
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border(
@@ -60,6 +62,28 @@ class CompanyDetailPriceList extends StatelessWidget {
                       ),
                       child: Text(
                         diff,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 12,
+                        ),
+                      )
+                    )
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: dayDiffColor,
+                            width: 2.0,
+                            style: BorderStyle.solid,
+                          )
+                        )
+                      ),
+                      child: Text(
+                        dayDiff,
                         textAlign: TextAlign.right,
                         style: const TextStyle(
                           fontSize: 12,

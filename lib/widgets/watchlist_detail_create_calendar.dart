@@ -92,7 +92,10 @@ class _WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCal
                 textTheme: CupertinoTextThemeData(
                   textStyle: TextStyle(
                     fontFamily: '--apple-system',
-                  )
+                  ),
+                  dateTimePickerTextStyle: TextStyle(
+                    fontFamily: '--apple-system',
+                  ),
                 )
               ),
               child: CupertinoDatePicker(

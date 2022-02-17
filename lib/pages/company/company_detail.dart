@@ -327,7 +327,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Expanded(
-                          flex: 1,
+                          flex: 3,
                           child: Container(
                             decoration: const BoxDecoration(
                               border: Border(
@@ -371,7 +371,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                         ),
                         const SizedBox(width: 10,),
                         Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Container(
                             decoration: const BoxDecoration(
                               border: Border(
@@ -391,6 +391,28 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                             ),
                           )
                         ),
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                )
+                              )
+                            ),
+                            child: const Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Ionicons.pulse_outline,
+                                size: 16,
+                              ),
+                            ),
+                          )
+                        ),
                       ],
                     ),
                   ),
@@ -402,11 +424,21 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
+                  double? dayDiff;
+                  Color dayDiffColor = Colors.transparent;
+                  if((index+1) < _companyDetail.companyPrices.length) {
+                    double currPrice = _companyDetail.companyPrices[index].priceValue;
+                    double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+                    dayDiff = currPrice - prevPrice;
+                    dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+                  }
                   return CompanyDetailPriceList(
                     date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
                     price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
                     diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-                    riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk)
+                    riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                    dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                    dayDiffColor: dayDiffColor,
                   );
                 }),
               ),

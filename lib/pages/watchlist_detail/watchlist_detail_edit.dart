@@ -194,7 +194,9 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                 watchlistCompanyName: _watchlist.watchlistCompanyName,
                 watchlistDetail: _newWatchlistDetailList,
                 watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
-                watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice
+                watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
+                watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
+                watchlistFavouriteId: _watchlist.watchlistFavouriteId,
               );
               _newWatchlist.add(_updateWatchlist); 
             }

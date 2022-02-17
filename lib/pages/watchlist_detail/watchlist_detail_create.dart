@@ -147,6 +147,8 @@ class _WatchlistDetailCreatePageState extends State<WatchlistDetailCreatePage> {
               watchlistDetail: watchlistDetail,
               watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
               watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
+              watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
+              watchlistFavouriteId: _watchlist.watchlistFavouriteId,
             );
             _newWatchList.add(_updateWatchList);
           }

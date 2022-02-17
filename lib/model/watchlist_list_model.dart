@@ -14,8 +14,10 @@ class WatchlistListModel {
         required this.watchlistId,
         required this.watchlistCompanyId,
         required this.watchlistCompanyName,
-        this.watchlistCompanyNetAssetValue,
-        this.watchlistCompanyPrevPrice,
+        required this.watchlistCompanyNetAssetValue,
+        required this.watchlistCompanyPrevPrice,
+        required this.watchlistCompanyLastUpdate,
+        required this.watchlistFavouriteId,
         required this.watchlistDetail,
     });
 
@@ -24,6 +26,8 @@ class WatchlistListModel {
     final String watchlistCompanyName;
     final double? watchlistCompanyNetAssetValue;
     final double? watchlistCompanyPrevPrice;
+    final DateTime? watchlistCompanyLastUpdate;
+    final int watchlistFavouriteId;
     final List<WatchlistDetailListModel> watchlistDetail;
 
     factory WatchlistListModel.fromJson(Map<String, dynamic> json) => WatchlistListModel(
@@ -32,6 +36,8 @@ class WatchlistListModel {
         watchlistCompanyName: json["watchlist_company_name"].toString().toTitleCase(),
         watchlistCompanyNetAssetValue: (json["watchlist_company_net_asset_value"] == null ? 0 : json["watchlist_company_net_asset_value"].toDouble()),
         watchlistCompanyPrevPrice: (json["watchlist_company_prev_price"] == null ? 0 : json["watchlist_company_prev_price"].toDouble()),
+        watchlistCompanyLastUpdate: (json["watchlist_company_last_update"] == null ? null : DateTime.parse(json["watchlist_company_last_update"])),
+        watchlistFavouriteId: json["watchlist_favourite_id"],
         watchlistDetail: List<WatchlistDetailListModel>.from(json["watchlist_detail"].map((x) => WatchlistDetailListModel.fromJson(x))),
     );
 
@@ -41,6 +47,8 @@ class WatchlistListModel {
         "watchlist_company_name": watchlistCompanyName,
         "watchlist_company_net_asset_value": watchlistCompanyNetAssetValue!,
         "watchlist_company_prev_price": watchlistCompanyPrevPrice!,
+        "watchlist_company_last_update": (watchlistCompanyLastUpdate == null ? null : watchlistCompanyLastUpdate!.toIso8601String()),
+        "watchlist_favourite_id": watchlistFavouriteId,
         "watchlist_detail": List<dynamic>.from(watchlistDetail.map((x) => x.toJson())),
     };
 }

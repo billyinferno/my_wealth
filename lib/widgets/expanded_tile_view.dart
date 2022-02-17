@@ -20,6 +20,7 @@ class ExpandedTileView extends StatefulWidget {
 
 class _ExpandedTileViewState extends State<ExpandedTileView> {
   final DateFormat dt = DateFormat("dd/MM/yyyy");
+  final DateFormat dtSmall = DateFormat('dd/MM');
   bool _isShowedLots = false;
   double _totalShare = 0;
   double _totalGain = 0;
@@ -44,6 +45,7 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
         share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
         gain: _totalGain,
+        lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!)),
         riskColor: riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk),
       ),
       initiallyExpanded: _isShowedLots,

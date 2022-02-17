@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 
@@ -8,9 +10,10 @@ class ExpandedTileTitle extends StatelessWidget {
   final double share;
   final double price;
   final double gain;
+  final String lastUpdate;
   final Color? riskColor;
 
-  const ExpandedTileTitle({ Key? key, required this.name, required this.lot, required this.share, required this.price, required this.gain, this.riskColor }) : super(key: key);
+  const ExpandedTileTitle({ Key? key, required this.name, required this.lot, required this.share, required this.price, required this.gain, required this.lastUpdate, this.riskColor }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +73,28 @@ class ExpandedTileTitle extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
+                      Expanded(
+                        flex: 2,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            const Icon(
+                              Ionicons.time_outline,
+                              size: 15,
+                              color: primaryLight,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              lastUpdate,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
                       Expanded(
                         flex: 2,
                         child: Text(

@@ -123,6 +123,21 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                const Icon(
+                                  Ionicons.time_outline,
+                                  color: primaryLight,
+                                ),
+                                const SizedBox(width: 10,),
+                                Text(
+                                  (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!))
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
@@ -404,7 +419,9 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
           watchlistCompanyName: _watchlist.watchlistCompanyName,
           watchlistDetail: _newWatchlistDetail,
           watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
-          watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice
+          watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
+          watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
+          watchlistFavouriteId: _watchlist.watchlistFavouriteId,
         );
 
         List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist();

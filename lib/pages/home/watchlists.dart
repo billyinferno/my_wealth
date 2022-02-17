@@ -7,6 +7,7 @@ import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -114,6 +115,13 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
                   controller: _scrollController,
                   itemCount: _watchlist!.length,
                   itemBuilder: ((context, index) {
+                    CompanyDetailArgs _args = CompanyDetailArgs(
+                      companyId: _watchlist![index].watchlistCompanyId,
+                      companyName: _watchlist![index].watchlistCompanyName,
+                      companyFavourite: (_watchlist![index].watchlistFavouriteId > 0 ? true : false),
+                      favouritesId: _watchlist![index].watchlistFavouriteId,
+                    );
+                    
                     return Slidable(
                       endActionPane: ActionPane(
                         motion: const ScrollMotion(),
@@ -139,6 +147,14 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
                             icon: Ionicons.ellipsis_horizontal,
                             backgroundColor: primaryColor,
                             foregroundColor: (_watchlist![index].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
+                          ),
+                          SlidableAction(
+                            onPressed: ((BuildContext context) {
+                              Navigator.pushNamed(context, '/company/detail', arguments: _args);
+                            }),
+                            icon: Ionicons.open_outline,
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.green,
                           ),
                           SlidableAction(
                             onPressed: ((BuildContext context) async {

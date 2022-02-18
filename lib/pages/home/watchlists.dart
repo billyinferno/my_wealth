@@ -125,6 +125,7 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
                     return Slidable(
                       endActionPane: ActionPane(
                         motion: const ScrollMotion(),
+                        extentRatio: 0.7,
                         children: <Widget>[
                           SlidableAction(
                             onPressed: ((BuildContext context) {

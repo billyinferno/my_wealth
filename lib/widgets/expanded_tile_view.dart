@@ -45,7 +45,7 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
         share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
         gain: _totalGain,
-        lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!)),
+        lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
         riskColor: riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk),
       ),
       initiallyExpanded: _isShowedLots,

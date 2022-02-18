@@ -15,7 +15,12 @@ class ShowMyDialog {
       barrierDismissible: false,
       builder: ((BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text(title ?? "Confirmation"),
+          title: Text(
+            title ?? "Confirmation",
+            style: const TextStyle(
+              fontFamily: '--apple-system',
+            ),
+          ),
           content: Container(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: Text(

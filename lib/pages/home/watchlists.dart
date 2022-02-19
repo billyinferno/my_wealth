@@ -44,6 +44,7 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
     _userInfo = UserSharedPreferences.getUserInfo();
     _watchlist = WatchlistSharedPreferences.getWatchlist();
     _isSummaryVisible = _userInfo!.visibility;
+    _isShowedLots = _userInfo!.showLots;
   }
 
   @override
@@ -197,6 +198,7 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
                           key: Key("expansionTitle" + index.toString()),
                           userInfo: _userInfo!,
                           showedLot: _isShowedLots,
+                          isVisible: _isSummaryVisible,
                           watchlist: _watchlist![index],
                         ),
                       ),

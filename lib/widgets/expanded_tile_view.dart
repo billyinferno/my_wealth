@@ -10,9 +10,10 @@ import 'package:my_wealth/widgets/expanded_tile_title.dart';
 
 class ExpandedTileView extends StatefulWidget {
   final bool? showedLot;
+  final bool isVisible;
   final UserLoginInfoModel userInfo;
   final WatchlistListModel watchlist;
-  const ExpandedTileView({ Key? key, this.showedLot, required this.userInfo, required this.watchlist }) : super(key: key);
+  const ExpandedTileView({ Key? key, this.showedLot, required this.isVisible, required this.userInfo, required this.watchlist }) : super(key: key);
 
   @override
   _ExpandedTileViewState createState() => _ExpandedTileViewState();
@@ -44,9 +45,9 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
         lot: widget.watchlist.watchlistDetail.length,
         share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
-        gain: _totalGain,
+        gain: (widget.isVisible ? _totalGain : null),
         lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
-        riskColor: riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk),
+        riskColor: (widget.isVisible ? riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk) : Colors.white),
       ),
       initiallyExpanded: _isShowedLots,
       collapsedTextColor: textPrimary,

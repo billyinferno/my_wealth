@@ -23,6 +23,7 @@ class _UserPageState extends State<UserPage> {
   final UserAPI _userApi = UserAPI();
   late UserLoginInfoModel? _userInfo;
   bool _isVisible = false;
+  bool _showLots = false;
   
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _UserPageState extends State<UserPage> {
 
     _userInfo = UserSharedPreferences.getUserInfo();
     _isVisible = _userInfo!.visibility;
+    _showLots = _userInfo!.showLots;
   }
 
   @override
@@ -186,7 +188,73 @@ class _UserPageState extends State<UserPage> {
                         _isVisible = !_isVisible;
                         await _updateVisibilitySummary(_isVisible).then((resp) {
                           debugPrint("🔃 Update Visibility to " + _isVisible.toString());
-                          setIsSummaryVisible(_isVisible);
+                          setSummaryVisible(_isVisible);
+                        }).onError((error, stackTrace) {
+                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                        });
+                      }),
+                    ),
+                  ],
+                )
+              ),
+              Container(
+                height: 60,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  )
+                ),
+                width: double.infinity,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const <Widget>[
+                              Icon(
+                                Ionicons.list_outline,
+                                color: secondaryColor,
+                                size: 20,
+                              ),
+                              SizedBox(width: 10,),
+                              Text(
+                                "Show Lots",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            "Affects after restart",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: primaryLight,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CupertinoSwitch(
+                      value: _showLots,
+                      onChanged: ((value) async {
+                        _showLots = !_showLots;
+                        await _updateShowLots(_showLots).then((resp) {
+                          debugPrint("🔃 Update Show Lots to " + _showLots.toString());
+                          setShowLots(_showLots);
                         }).onError((error, stackTrace) {
                           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                         });
@@ -253,7 +321,7 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  void setIsSummaryVisible(visibilility) {
+  void setSummaryVisible(visibilility) {
     setState(() {
       _isVisible = visibilility;
     });
@@ -264,6 +332,39 @@ class _UserPageState extends State<UserPage> {
 
     showLoaderDialog(context);
     await _userApi.updateVisibilitySummary(visibility).then((resp) async {
+      // set the return value as true
+      _ret = true;
+
+      // update the user info and the user provider so it will affect all the listener
+      await UserSharedPreferences.setUserInfo(resp);
+
+      // update the provider to notify the user page
+      Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+
+      // remove the loader
+      Navigator.pop(context);
+    }).onError((error, stackTrace) {
+      // remove the loader
+      Navigator.pop(context);
+
+      // throw the exception
+      throw Exception(error.toString());
+    });
+
+    return _ret;
+  }
+
+  void setShowLots(showLots) {
+    setState(() {
+      _showLots = showLots;
+    });
+  }
+
+  Future<bool> _updateShowLots(bool showLots) async {
+    bool _ret = false;
+
+    showLoaderDialog(context);
+    await _userApi.updateShowLots(showLots).then((resp) async {
       // set the return value as true
       _ret = true;
 

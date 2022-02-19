@@ -8,7 +8,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final int lot;
   final double share;
   final double price;
-  final double gain;
+  final double? gain;
   final String lastUpdate;
   final Color? riskColor;
 
@@ -58,7 +58,7 @@ class ExpandedTileTitle extends StatelessWidget {
                           )
                         ),
                         child: Text(
-                          formatCurrency(gain),
+                          formatCurrencyWithNull(gain),
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

@@ -131,4 +131,36 @@ class UserAPI {
       throw Exception("err=No bearer token");
     }
   }
+
+  Future<UserLoginInfoModel> updateShowLots(bool showLots) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _bearerToken = UserSharedPreferences.getUserJWT();
+    }
+    
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.patch(
+        Uri.parse(Globals.apiURL + 'api/visibility/lots'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'show_lots': showLots}),
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response and put on user login model
+        UserLoginInfoModel _userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return _userInfo;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception("err=" + response.body);
+    }
+    else {
+      throw Exception("err=No bearer token");
+    }
+  }
 }

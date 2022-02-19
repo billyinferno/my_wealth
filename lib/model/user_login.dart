@@ -25,8 +25,9 @@ class UserLoginInfoModel {
   final bool blocked;
   final int risk;
   final bool visibility;
+  final bool showLots;
 
-  UserLoginInfoModel({required this.id, required this.username, required this.email, required this.confirmed, required this.blocked, required this.risk, required this.visibility});
+  UserLoginInfoModel({required this.id, required this.username, required this.email, required this.confirmed, required this.blocked, required this.risk, required this.visibility, required this.showLots});
 
   factory UserLoginInfoModel.fromJson(Map<String, dynamic> json) {
     return UserLoginInfoModel(
@@ -36,7 +37,8 @@ class UserLoginInfoModel {
       confirmed: json['confirmed'],
       blocked: json['blocked'],
       risk: json['risk'],
-      visibility: (json['visibility'] ?? false)
+      visibility: (json['visibility'] ?? false),
+      showLots: (json['show_lots'] ?? false)
     );
   }
 
@@ -48,7 +50,8 @@ class UserLoginInfoModel {
       'confirmed': confirmed,
       'blocked': blocked,
       'risk': risk,
-      'visibility': visibility
+      'visibility': visibility,
+      'show_lots': showLots
     };
   }
 }

@@ -1,10 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/storage/local_box.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
@@ -16,13 +20,16 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  final UserAPI _userApi = UserAPI();
   late UserLoginInfoModel? _userInfo;
+  bool _isVisible = false;
   
   @override
   void initState() {
     super.initState();
 
     _userInfo = UserSharedPreferences.getUserInfo();
+    _isVisible = _userInfo!.visibility;
   }
 
   @override
@@ -122,6 +129,72 @@ class _UserPageState extends State<UserPage> {
                   )
                 ),
               ),
+              Container(
+                height: 60,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  )
+                ),
+                width: double.infinity,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const <Widget>[
+                              Icon(
+                                Ionicons.eye_outline,
+                                color: secondaryColor,
+                                size: 20,
+                              ),
+                              SizedBox(width: 10,),
+                              Text(
+                                "Visibility",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            "Affects after restart",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: primaryLight,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CupertinoSwitch(
+                      value: _isVisible,
+                      onChanged: ((value) async {
+                        _isVisible = !_isVisible;
+                        await _updateVisibilitySummary(_isVisible).then((resp) {
+                          debugPrint("🔃 Update Visibility to " + _isVisible.toString());
+                          setIsSummaryVisible(_isVisible);
+                        }).onError((error, stackTrace) {
+                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                        });
+                      }),
+                    ),
+                  ],
+                )
+              ),
               InkWell(
                 onTap: (() {
                   Future<bool?> result = ShowMyDialog(
@@ -178,5 +251,38 @@ class _UserPageState extends State<UserPage> {
         );
       }),
     );
+  }
+
+  void setIsSummaryVisible(visibilility) {
+    setState(() {
+      _isVisible = visibilility;
+    });
+  }
+
+  Future<bool> _updateVisibilitySummary(bool visibility) async {
+    bool _ret = false;
+
+    showLoaderDialog(context);
+    await _userApi.updateVisibilitySummary(visibility).then((resp) async {
+      // set the return value as true
+      _ret = true;
+
+      // update the user info and the user provider so it will affect all the listener
+      await UserSharedPreferences.setUserInfo(resp);
+
+      // update the provider to notify the user page
+      Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+
+      // remove the loader
+      Navigator.pop(context);
+    }).onError((error, stackTrace) {
+      // remove the loader
+      Navigator.pop(context);
+
+      // throw the exception
+      throw Exception(error.toString());
+    });
+
+    return _ret;
   }
 }

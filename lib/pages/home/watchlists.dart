@@ -33,6 +33,7 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
   late UserLoginInfoModel? _userInfo;
   late List<WatchlistListModel>? _watchlist;
   bool _isShowedLots = false;
+  bool _isSummaryVisible = false;
   double _totalDayGain = 0;
   double _totalValue = 0;
   double _totalCost = 0;
@@ -42,6 +43,7 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
     super.initState();
     _userInfo = UserSharedPreferences.getUserInfo();
     _watchlist = WatchlistSharedPreferences.getWatchlist();
+    _isSummaryVisible = _userInfo!.visibility;
   }
 
   @override
@@ -66,7 +68,13 @@ class _WatchlistsPageState extends State<WatchlistsPage> {
               dayGain: _totalDayGain,
               value: _totalValue,
               cost: _totalCost,
-              riskFactor: _userInfo!.risk
+              riskFactor: _userInfo!.risk,
+              visibility: _isSummaryVisible,
+              onVisibilityPress: (() {
+                setState(() {
+                  _isSummaryVisible = !_isSummaryVisible;
+                });
+              }),
             ),
             const SizedBox(height: 10,),
             Row(

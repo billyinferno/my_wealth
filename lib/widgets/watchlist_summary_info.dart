@@ -4,8 +4,8 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 
 class WatchlistSummaryInfo extends StatelessWidget {
   final String text;
-  final double amount;
-  const WatchlistSummaryInfo({ Key? key, required this.text, required this.amount }) : super(key: key);
+  final double? amount;
+  const WatchlistSummaryInfo({ Key? key, required this.text, this.amount }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class WatchlistSummaryInfo extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10,),
-            Text(formatCurrency(amount)),
+            Text(formatCurrencyWithNull(amount)),
           ],
         ),
       ),

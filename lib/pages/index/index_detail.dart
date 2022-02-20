@@ -36,7 +36,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   bool _isLoading = true;
   bool _isTable = true;
   List<IndexPriceModel> _indexPrice = [];
-  List<GraphData> _graphData = [];
+  Map<DateTime, GraphData> _graphData = {};
 
   @override
   void initState() {
@@ -334,15 +334,14 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
 
       // once got the data now sort it
       _tempData.sort((a, b) {
-        String _a = _df.format(a.date);
-        String _b = _df.format(b.date);
-        return _a.compareTo(_b);
+        return a.date.compareTo(b.date);
       });
 
-      _graphData = _tempData;
-      // _graphData.forEach((_data) {
-      //   debugPrint(_data.date.toString());
-      // });
+      for (GraphData _data in _tempData) {
+        _graphData[_data.date] = _data;
+        // debugPrint(_data.date.toString());
+      }
+      // debugPrint("--- END OF SORTED DATA ---");
     }).whenComplete(() {
       // when finished then set the isLoading into false to loead the body
       _setIsLoading(false);

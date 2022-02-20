@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -13,7 +15,7 @@ class GraphData {
 
 class HeatGraph extends StatelessWidget {
   final Widget? title;
-  final List<GraphData> data;
+  final Map<DateTime, GraphData> data;
   final UserLoginInfoModel userInfo;
   const HeatGraph({ Key? key, this.title, required this.data, required this.userInfo }) : super(key: key);
 
@@ -72,7 +74,33 @@ class HeatGraph extends StatelessWidget {
     );
   }
 
+  List<GraphData> _expandData() {
+    // we need to expand data incase that there are gap on date, because the heat graph
+    // expect to get all the date without skipping. So what we can do is to expand the
+    // date given to exactly 91 days (65/5) * 7.
+
+    List<GraphData> _dataExpand = [];
+
+    // first get the 1st keys
+    DateTime _firstDate = data.keys.first;
+
+    for(int day=0; day<91; day++) {
+      DateTime _keys = _firstDate.add(Duration(days: day));
+      // check if exists?
+      if(data.containsKey(_keys)) {
+        _dataExpand.add(GraphData(date: _keys, price: data[_keys]!.price));
+      }
+      else {
+        _dataExpand.add(GraphData(date: _keys, price: -1));
+      }
+    }
+
+    return _dataExpand;
+  }
+
   List<Widget> _generateRows() {
+    final List<String> _monthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
     List<Widget> _return = [];
     int i = 0;
     int _totalData = 0;
@@ -80,36 +108,47 @@ class HeatGraph extends StatelessWidget {
     // history data
     double _prevPrice = -1;
     Color _boxColor;
+
+    // before we do, let's expand the data first
+    List<GraphData> _dataExpand = _expandData();
     
     // totalData will be number of here + 5, as we will ended on the next loop of 5
     // before we perform check on total data again.
-    while(_totalData < 70) {
+    while(_totalData < 65) {
       // do we still have data?
-      if(i<data.length) {
+      if(i<_dataExpand.length) {
         // we will only do if the date of weekday is below 5
-        if (data[i].date.weekday <= 5) {
+        if (_dataExpand[i].date.weekday <= 5) {
           // do this as this is weekday
           List<Widget> _boxes = _generateBoxes(primaryDark);
 
           // get the label that we will put on this graph based on the
           // 1st day that we will process
-          int _weekNumber = weekNumber(data[i].date);
-          int _year = data[i].date.year;
+          int _weekNumber = weekNumber(_dataExpand[i].date);
+          int _month = _dataExpand[i].date.month;
 
           // now loop from this weekday until friday, in case this is friday
           // then it will be only loop once
-          for (var day=data[i].date.weekday; day <= 5 && i < data.length; day++, i++, _totalData++) {
-            // change the box data with the current data
-            // generate the color
-            if(_prevPrice > 0) {
-              _boxColor = riskColor(data[i].price, _prevPrice, userInfo.risk);
+          for (var day=_dataExpand[i].date.weekday; day <= 5 && i < _dataExpand.length; day++, i++, _totalData++) {
+            // debugPrint(_dataExpand[i].date.toString());
+            if(_dataExpand[i].price > 0) {
+              // change the box data with the current data
+              // generate the color
+              if(_prevPrice > 0) {
+                _boxColor = riskColor(_dataExpand[i].price, _prevPrice, userInfo.risk);
+              }
+              else {
+                _boxColor = Colors.white;
+              }
+              _prevPrice = _dataExpand[i].price;
             }
             else {
-              _boxColor = Colors.white;
+              _boxColor = primaryDark;
             }
+            
             _boxes[day-1] = _generateBox(_boxColor);
-            _prevPrice = data[i].price;
           }
+          // debugPrint("--- END OF WEEK ---");
           
           // last box will be put with text
           _boxes.add(Container(
@@ -118,7 +157,7 @@ class HeatGraph extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Text(
-                "Week " + _weekNumber.toString() + " of " + _year.toString(),
+                "Week " + _weekNumber.toString() + " (" + _monthName[_month-1] + ")",
                 style: const TextStyle(
                   fontSize: 10,
                 ),

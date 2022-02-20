@@ -30,109 +30,114 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text(
-            "Change Password",
-            style: TextStyle(
-              color: secondaryColor,
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Center(
+            child: Text(
+              "Change Password",
+              style: TextStyle(
+                color: secondaryColor,
+              ),
+            )
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Ionicons.arrow_back
             ),
-          )
+            onPressed: (() {
+              Navigator.pop(context);
+            }),
+          ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
-          ),
-          onPressed: (() {
-            Navigator.pop(context);
-          }),
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          PasswordTextFields(
-            controller: _currentPasswordController,
-            title: "Current Password",
-            masked: true,
-          ),
-          PasswordTextFields(
-            controller: _newPasswordController,
-            title: "New Password",
-            masked: true,
-          ),
-          PasswordTextFields(
-            controller: _confirmPasswordController,
-            title: "Confirm Password",
-            masked: true,
-          ),
-          const SizedBox(height: 10,),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(width: 10,),
-              TransparentButton(
-                text: "Change",
-                icon: Ionicons.lock_open,
-                callback: (() async {
-                  if(_validateForm()) {
-                    await _changePassword().then((resp) {
-                      if(resp) {
-                        debugPrint("🔓 Change Password");
-                        // update password success, show the message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          createSnackBar(
-                            message: "Password Change Successfully",
-                            icon: const Icon(
-                              Ionicons.checkmark,
-                              color: Colors.green,
-                            ),
-                            duration: 3,
-                          )
-                        );
-
-                        // clear the text fields
-                        _currentPasswordController.clear();
-                        _newPasswordController.clear();
-                        _confirmPasswordController.clear();
-                      }
-                      else {
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            PasswordTextFields(
+              controller: _currentPasswordController,
+              title: "Current Password",
+              masked: true,
+            ),
+            PasswordTextFields(
+              controller: _newPasswordController,
+              title: "New Password",
+              masked: true,
+            ),
+            PasswordTextFields(
+              controller: _confirmPasswordController,
+              title: "Confirm Password",
+              masked: true,
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Change",
+                  icon: Ionicons.lock_open,
+                  callback: (() async {
+                    if(_validateForm()) {
+                      await _changePassword().then((resp) {
+                        if(resp) {
+                          debugPrint("🔓 Change Password");
+                          // update password success, show the message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            createSnackBar(
+                              message: "Password Change Successfully",
+                              icon: const Icon(
+                                Ionicons.checkmark,
+                                color: Colors.green,
+                              ),
+                              duration: 3,
+                            )
+                          );
+    
+                          // clear the text fields
+                          _currentPasswordController.clear();
+                          _newPasswordController.clear();
+                          _confirmPasswordController.clear();
+                        }
+                        else {
+                          // update password failed
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            createSnackBar(
+                              message: "Unable to Change Password",
+                              duration: 3,
+                            )
+                          );
+                        }
+                      }).onError((error, stackTrace) {
                         // update password failed
                         ScaffoldMessenger.of(context).showSnackBar(
                           createSnackBar(
-                            message: "Unable to Change Password",
+                            message: "Error when Change Password",
                             duration: 3,
                           )
                         );
-                      }
-                    }).onError((error, stackTrace) {
-                      // update password failed
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        createSnackBar(
-                          message: "Error when Change Password",
-                          duration: 3,
-                        )
-                      );
-                    });
-                  }
-                })
-              ),
-              const SizedBox(width: 10,),
-              TransparentButton(
-                text: "Cancel",
-                icon: Ionicons.close,
-                callback: (() {
-                  // return back to the previous screen
-                  Navigator.pop(context);
-                })
-              ),
-              const SizedBox(width: 10,),
-            ],
-          )
-        ],
+                      });
+                    }
+                  })
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Cancel",
+                  icon: Ionicons.close,
+                  callback: (() {
+                    // return back to the previous screen
+                    Navigator.pop(context);
+                  })
+                ),
+                const SizedBox(width: 10,),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

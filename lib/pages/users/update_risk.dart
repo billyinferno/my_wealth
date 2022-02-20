@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/provider/user_provider.dart';
@@ -42,6 +43,14 @@ class _UpdateRiskPageState extends State<UpdateRiskPage> {
                 color: secondaryColor,
               ),
             )
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Ionicons.arrow_back
+            ),
+            onPressed: (() {
+              Navigator.pop(context);
+            }),
           ),
         ),
         body: Container(

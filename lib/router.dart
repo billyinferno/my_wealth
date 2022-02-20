@@ -4,6 +4,7 @@ import 'package:my_wealth/pages/favourites/favourite_company_list.dart';
 import 'package:my_wealth/pages/home.dart';
 import 'package:my_wealth/pages/index/index_detail.dart';
 import 'package:my_wealth/pages/login.dart';
+import 'package:my_wealth/pages/users/change_password.dart';
 import 'package:my_wealth/pages/users/update_risk.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';
@@ -88,6 +89,10 @@ class _RouterPageState extends State<RouterPage> {
       case '/user/risk':
       {
         return createAnimationRoute(const UpdateRiskPage());
+      }
+      case '/user/password':
+      {
+        return createAnimationRoute(const ChangePasswordPage());
       }
       case '/index/detail':
       {

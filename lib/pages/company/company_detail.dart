@@ -88,362 +88,367 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
         _companyRisk = _companyDetail.companyYearlyRisk!.toInt();
       }
 
-      return Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Company Detail",
-              style: TextStyle(
-                color: secondaryColor,
+      return WillPopScope(
+        onWillPop: (() async {
+          return false;
+        }),
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Center(
+              child: Text(
+                "Company Detail",
+                style: TextStyle(
+                  color: secondaryColor,
+                ),
               ),
             ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              Navigator.pop(context);
-            }),
-          ),
-          actions: <Widget>[
-            Icon(
-              (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
-              color: accentColor,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: (() async {
+                Navigator.pop(context);
+              }),
             ),
-            const SizedBox(width: 20,),
-          ],
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-              child: Row(
+            actions: <Widget>[
+              Icon(
+                (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+                color: accentColor,
+              ),
+              const SizedBox(width: 20,),
+            ],
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        color: primaryColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              _companyData.companyName,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              formatCurrency(_companyDetail.companyNetAssetValue!),
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                  color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                ),
+                                const SizedBox(width: 10,),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                        width: 2.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    )
+                                  ),
+                                  child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
+                                ),
+                                Expanded(child: Container(),),
+                                const Icon(
+                                  Ionicons.time_outline,
+                                  color: primaryLight,
+                                ),
+                                const SizedBox(width: 10,),
+                                // ignore: unnecessary_null_comparison
+                                Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
+                              ],
+                            ),
+                            const SizedBox(height: 20,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Weekly",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100) + "%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Monthly",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100) + "%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Quarterly",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100) + "%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Semi Annual",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100) + "%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "YTD",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatDecimalWithNull(_companyDetail.companyYtdReturn, 100) + "%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Yearly",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100) + "%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Rating",
+                                  headerAlign: TextAlign.right,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: generateRatingIcon(_companyRating),
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Risk",
+                                  headerAlign: TextAlign.right,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: generateRiskIcon(_companyRisk),
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Type",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    (Globals.companyTypeEnum[_companyDetail.companyType] ?? "Unknown"),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Total Asset",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrency(_companyDetail.companyAssetUnderManagement!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Total Unit",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrency(_companyDetail.companyTotalUnit!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                const Expanded(child: SizedBox()),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(width: 10,),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.all(10),
                       color: primaryColor,
-                      child: Column(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            _companyData.companyName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            formatCurrency(_companyDetail.companyNetAssetValue!),
-                            style: const TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Icon(
-                                ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0 ? Ionicons.caret_up : Ionicons.caret_down),
-                                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                              ),
-                              const SizedBox(width: 10,),
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                                      width: 2.0,
-                                      style: BorderStyle.solid,
-                                    ),
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
                                   )
+                                )
+                              ),
+                              child: const Text(
+                                "Date",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
+                                textAlign: TextAlign.center,
                               ),
-                              Expanded(child: Container(),),
-                              const Icon(
-                                Ionicons.time_outline,
-                                color: primaryLight,
-                              ),
-                              const SizedBox(width: 10,),
-                              // ignore: unnecessary_null_comparison
-                              Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
-                            ],
+                            ),
                           ),
-                          const SizedBox(height: 20,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Weekly",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100) + "%",
-                                  textAlign: TextAlign.right,
-                                ),
+                          const SizedBox(width: 10,),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
                               ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Monthly",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100) + "%",
-                                  textAlign: TextAlign.right,
+                              child: const Text(
+                                "Price",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                textAlign: TextAlign.right,
                               ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Quarterly",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100) + "%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
+                            )
                           ),
-                          const SizedBox(height: 10,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Semi Annual",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100) + "%",
-                                  textAlign: TextAlign.right,
+                          const SizedBox(width: 10,),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.swap_vertical,
+                                  size: 16,
                                 ),
                               ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "YTD",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatDecimalWithNull(_companyDetail.companyYtdReturn, 100) + "%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Yearly",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100) + "%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
+                            )
                           ),
-                          const SizedBox(height: 10,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Rating",
-                                headerAlign: TextAlign.right,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: generateRatingIcon(_companyRating),
+                          const SizedBox(width: 10,),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.pulse_outline,
+                                  size: 16,
                                 ),
                               ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Risk",
-                                headerAlign: TextAlign.right,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: generateRiskIcon(_companyRisk),
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Type",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  (Globals.companyTypeEnum[_companyDetail.companyType] ?? "Unknown"),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
+                            )
                           ),
-                          const SizedBox(height: 10,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Total Asset",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatCurrency(_companyDetail.companyAssetUnderManagement!),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Total Unit",
-                                headerAlign: TextAlign.right,
-                                child: Text(
-                                  formatCurrency(_companyDetail.companyTotalUnit!),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              const Expanded(child: SizedBox()),
-                            ],
-                          )
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 10,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(width: 10,),
-                Expanded(
-                  child: Container(
-                    color: primaryColor,
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 3,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Text(
-                              "Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Text(
-                              "Price",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                          )
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                Ionicons.swap_vertical,
-                                size: 16,
-                              ),
-                            ),
-                          )
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                Ionicons.pulse_outline,
-                                size: 16,
-                              ),
-                            ),
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
+              Expanded(
+                child: ListView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
+                    double? dayDiff;
+                    Color dayDiffColor = Colors.transparent;
+                    if((index+1) < _companyDetail.companyPrices.length) {
+                      double currPrice = _companyDetail.companyPrices[index].priceValue;
+                      double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+                      dayDiff = currPrice - prevPrice;
+                      dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+                    }
+                    return CompanyDetailPriceList(
+                      date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
+                      price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
+                      diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
+                      riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                      dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                      dayDiffColor: dayDiffColor,
+                    );
+                  }),
                 ),
-              ],
-            ),
-            Expanded(
-              child: ListView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-                  double? dayDiff;
-                  Color dayDiffColor = Colors.transparent;
-                  if((index+1) < _companyDetail.companyPrices.length) {
-                    double currPrice = _companyDetail.companyPrices[index].priceValue;
-                    double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-                    dayDiff = currPrice - prevPrice;
-                    dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-                  }
-                  return CompanyDetailPriceList(
-                    date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-                    price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-                    diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-                    riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-                    dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-                    dayDiffColor: dayDiffColor,
-                  );
-                }),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }

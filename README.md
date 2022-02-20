@@ -4,7 +4,7 @@ Bloomberg is behind paywall so I create my own investment tracker.
 
 ## So what you need?
 
-Definitely a backend that server your purpose, as most backend need to use API key to get the data, so I will leave the backend to your imagination.
+Definitely a backend that serve your purpose, as most backend need to use API key to get the data, so I will leave the backend to your imagination.
 
 ## Web Again?
 

@@ -59,95 +59,100 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Ionicons.arrow_back
+            ),
+            onPressed: (() async {
+              await _checkForm().then((value) {
+                if(value) {
+                  Navigator.pop(context);
+                }
+              });
+            }),
           ),
-          onPressed: (() async {
-            await _checkForm().then((value) {
-              if(value) {
-                Navigator.pop(context);
-              }
-            });
-          }),
-        ),
-        title: Center(
-          child: Text(
-            _watchlist.watchlistCompanyName.toTitleCase(),
-            style: const TextStyle(
-              fontSize: 18,
-              color: secondaryColor
+          title: Center(
+            child: Text(
+              _watchlist.watchlistCompanyName.toTitleCase(),
+              style: const TextStyle(
+                fontSize: 18,
+                color: secondaryColor
+              ),
             ),
           ),
         ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          WatchlistDetailCreateCalendar(
-            onDateChange: ((newDate) {
-              _selectedDate = newDate;
-            })
-          ),
-          WatchlistDetailCreateTextFields(
-            controller: _sharesController,
-            title: "Shares",
-            decimal: 6,
-          ),
-          WatchlistDetailCreateTextFields(
-            controller: _priceController,
-            title: "Price",
-            decimal: 6,
-          ),
-          const SizedBox(height: 10,),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(width: 10,),
-              TransparentButton(
-                text: "Update",
-                icon: Ionicons.save,
-                callback: (() async {
-                  showLoaderDialog(context);
-                  await _updateDetail().then((resp) {
-                    if(resp) {                      
-                      debugPrint("💾 Update the watchlist detail ID " +
-                        _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId.toString() +
-                        " for " + _watchlist.watchlistId.toString());
-                      // return back to the previous page
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            WatchlistDetailCreateCalendar(
+              onDateChange: ((newDate) {
+                _selectedDate = newDate;
+              })
+            ),
+            WatchlistDetailCreateTextFields(
+              controller: _sharesController,
+              title: "Shares",
+              decimal: 6,
+            ),
+            WatchlistDetailCreateTextFields(
+              controller: _priceController,
+              title: "Price",
+              decimal: 6,
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Update",
+                  icon: Ionicons.save,
+                  callback: (() async {
+                    showLoaderDialog(context);
+                    await _updateDetail().then((resp) {
+                      if(resp) {                      
+                        debugPrint("💾 Update the watchlist detail ID " +
+                          _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId.toString() +
+                          " for " + _watchlist.watchlistId.toString());
+                        // return back to the previous page
+                        Navigator.pop(context);
+                      }
+                    }).onError((error, stackTrace) {
+                      // remove the loader dialog
                       Navigator.pop(context);
-                    }
-                  }).onError((error, stackTrace) {
-                    // remove the loader dialog
-                    Navigator.pop(context);
-                    // show error on snack bar
-                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                  }).whenComplete(() {
-                    // remove the loader dialog
-                    Navigator.pop(context);
-                  });
-                })
-              ),
-              const SizedBox(width: 10,),
-              TransparentButton(
-                text: "Cancel",
-                icon: Ionicons.close,
-                callback: (() async {
-                  await _checkForm().then((value) {
-                    if(value) {
+                      // show error on snack bar
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                    }).whenComplete(() {
+                      // remove the loader dialog
                       Navigator.pop(context);
-                    }
-                  });
-                })
-              ),
-              const SizedBox(width: 10,),
-            ],
-          )
-        ],
+                    });
+                  })
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Cancel",
+                  icon: Ionicons.close,
+                  callback: (() async {
+                    await _checkForm().then((value) {
+                      if(value) {
+                        Navigator.pop(context);
+                      }
+                    });
+                  })
+                ),
+                const SizedBox(width: 10,),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

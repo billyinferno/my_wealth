@@ -376,7 +376,6 @@ class _LoginPageState extends State<LoginPage> {
     }).onError((error, stackTrace) {
       // login failed
       debugPrint("🔐 Login failed");
-      debugPrint(error.toString());
     });
 
     return _ret;

@@ -76,280 +76,285 @@ class _FavouriteCompanyListPageState extends State<FavouriteCompanyListPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Add/Edit Favourites",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              // fetch the user favorites when we return back to the favorites screen
-              // and notify the provider to we can update the favorites screen based
-              // on the new favorites being add/remove from this page
-              showLoaderDialog(context);
-              await getUserFavourites().then((_) {
-                // remove the loader
-                Navigator.pop(context);
-              }).onError((error, stackTrace) {
-                // in case error showed it on debug
-                debugPrint(error.toString());
-                // remove the loader
-                Navigator.pop(context);
-              }).whenComplete(() {
-                // return back to the previous page
-                Navigator.pop(context);
-              });
-            }),
-          ),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 10,),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: CupertinoTextField(
-                controller: _textController,
-                cursorColor: secondaryColor,
-                maxLines: 1,
-                maxLength: 100,
-                style: const TextStyle(
-                  color: textPrimary,
-                  fontFamily: '--apple-system'
-                ),
-                decoration: BoxDecoration(
-                  color: primaryLight,
-                  borderRadius: BorderRadius.circular(10),
+      child: WillPopScope(
+        onWillPop: (() async {
+          return false;
+        }),
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Center(
+              child: Text(
+                "Add/Edit Favourites",
+                style: TextStyle(
+                  color: secondaryColor,
                 ),
               ),
             ),
-            const SizedBox(height: 10,),
-            Row(
-              children: [
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  icon: Ionicons.search,
-                  text: (_isSearch ? "Clear" : "Search"),
-                  callback: (() {
-                    // ensure that we have the text we want to search
-                    String _searchText = _textController.text.trim();
-                    
-                    // check whether search already activated or not?
-                    if (_isSearch) {
-                      // clear the search
-                      setState(() {
-                        _textController.text = "";
-                        _filterList = _faveList;
-                        _isSearch = false;
-                      });
-                    }
-                    else {
-                      if (_searchText.isNotEmpty) {
-                        // search from the list
-                        debugPrint("🔎 Search " + _searchText);
-                        setSearch(_searchText);
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: (() async {
+                // fetch the user favorites when we return back to the favorites screen
+                // and notify the provider to we can update the favorites screen based
+                // on the new favorites being add/remove from this page
+                showLoaderDialog(context);
+                await getUserFavourites().then((_) {
+                  // remove the loader
+                  Navigator.pop(context);
+                }).onError((error, stackTrace) {
+                  // in case error showed it on debug
+                  debugPrint(error.toString());
+                  // remove the loader
+                  Navigator.pop(context);
+                }).whenComplete(() {
+                  // return back to the previous page
+                  Navigator.pop(context);
+                });
+              }),
+            ),
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 10,),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: CupertinoTextField(
+                  controller: _textController,
+                  cursorColor: secondaryColor,
+                  maxLines: 1,
+                  maxLength: 100,
+                  style: const TextStyle(
+                    color: textPrimary,
+                    fontFamily: '--apple-system'
+                  ),
+                  decoration: BoxDecoration(
+                    color: primaryLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Row(
+                children: [
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    icon: Ionicons.search,
+                    text: (_isSearch ? "Clear" : "Search"),
+                    callback: (() {
+                      // ensure that we have the text we want to search
+                      String _searchText = _textController.text.trim();
+                      
+                      // check whether search already activated or not?
+                      if (_isSearch) {
+                        // clear the search
+                        setState(() {
+                          _textController.text = "";
+                          _filterList = _faveList;
+                          _isSearch = false;
+                        });
                       }
-                    }
-                  }),
-                  active: _isSearch,
-                ),
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  icon: Ionicons.funnel,
-                  text: (_isFilter ? _filterText : "Filter"),
-                  callback: (() {
-                    showCupertinoModalPopup<void>(
-                      context: context,
-                      builder: (BuildContext context) => CupertinoActionSheet(
-                        title: const Text(
-                          "Filter List",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
+                      else {
+                        if (_searchText.isNotEmpty) {
+                          // search from the list
+                          debugPrint("🔎 Search " + _searchText);
+                          setSearch(_searchText);
+                        }
+                      }
+                    }),
+                    active: _isSearch,
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    icon: Ionicons.funnel,
+                    text: (_isFilter ? _filterText : "Filter"),
+                    callback: (() {
+                      showCupertinoModalPopup<void>(
+                        context: context,
+                        builder: (BuildContext context) => CupertinoActionSheet(
+                          title: const Text(
+                            "Filter List",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                            ),
                           ),
+                          actions: <CupertinoActionSheetAction>[
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                // clear search if available
+                                _textController.text = "";
+                                _filterList = _faveList;
+                                _isSearch = false;
+      
+                                _filterType = 0;
+                                _filterSearchText = "campuran";
+                                _filterText = Globals.companyTypeEnum[_filterSearchText]!;
+                                setFilter(true);
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "Campuran",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system'
+                                ),
+                              )
+                            ),
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                // clear search if available
+                                _textController.text = "";
+                                _filterList = _faveList;
+                                _isSearch = false;
+                                
+                                _filterType = 0;
+                                _filterSearchText = "saham";
+                                _filterText = Globals.companyTypeEnum[_filterSearchText]!;
+                                setFilter(true);
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "Saham",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system'
+                                ),
+                              )
+                            ),
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                // clear search if available
+                                _textController.text = "";
+                                _filterList = _faveList;
+                                _isSearch = false;
+                                
+                                _filterType = 0;
+                                _filterSearchText = "pasaruang";
+                                _filterText = Globals.companyTypeEnum[_filterSearchText]!;
+                                setFilter(true);
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "Pasar Uang",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system'
+                                ),
+                              )
+                            ),
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                // clear search if available
+                                _textController.text = "";
+                                _filterList = _faveList;
+                                _isSearch = false;
+                                
+                                _filterType = 1;
+                                _filterSearchNum = _stepperControllerRating.value!;
+                                _currentRatingNum = _filterSearchNum;
+                                _filterText = "Rating (" + _stepperControllerRating.value.toString() + ")";
+                                setFilter(true);
+                                Navigator.pop(context);
+                              }),
+                              child: StepperSelector(
+                                controller: _stepperControllerRating,
+                                title: "Rating",
+                                titleSize: 20,
+                                icon: Ionicons.star,
+                                iconColor: accentColor,
+                                defaultValue: _currentRatingNum,
+                              ),
+                            ),
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                // clear search if available
+                                _textController.text = "";
+                                _filterList = _faveList;
+                                _isSearch = false;
+                                
+                                _filterType = 2;
+                                _filterSearchNum = _stepperControllerRisk.value!;
+                                _currentRiskNum = _filterSearchNum;
+                                _filterText = "Risk (" + _stepperControllerRisk.value.toString() + ")";
+                                setFilter(true);
+                                Navigator.pop(context);
+                              }),
+                              child: StepperSelector(
+                                controller: _stepperControllerRisk,
+                                title: "Risk",
+                                titleSize: 20,
+                                icon: Ionicons.alert,
+                                iconColor: secondaryColor,
+                                defaultValue: _currentRiskNum,
+                              ),
+                            ),
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                _filterText = "";
+                                _filterSearchText = "";
+                                setFilter(false);
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "Clear Filter",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system',
+                                  color: secondaryColor
+                                ),
+                              )
+                            ),
+                          ],
                         ),
-                        actions: <CupertinoActionSheetAction>[
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // clear search if available
-                              _textController.text = "";
-                              _filterList = _faveList;
-                              _isSearch = false;
-
-                              _filterType = 0;
-                              _filterSearchText = "campuran";
-                              _filterText = Globals.companyTypeEnum[_filterSearchText]!;
-                              setFilter(true);
-                              Navigator.pop(context);
-                            }),
-                            child: const Text(
-                              "Campuran",
-                              style: TextStyle(
-                                fontFamily: '--apple-system'
-                              ),
-                            )
-                          ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // clear search if available
-                              _textController.text = "";
-                              _filterList = _faveList;
-                              _isSearch = false;
-                              
-                              _filterType = 0;
-                              _filterSearchText = "saham";
-                              _filterText = Globals.companyTypeEnum[_filterSearchText]!;
-                              setFilter(true);
-                              Navigator.pop(context);
-                            }),
-                            child: const Text(
-                              "Saham",
-                              style: TextStyle(
-                                fontFamily: '--apple-system'
-                              ),
-                            )
-                          ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // clear search if available
-                              _textController.text = "";
-                              _filterList = _faveList;
-                              _isSearch = false;
-                              
-                              _filterType = 0;
-                              _filterSearchText = "pasaruang";
-                              _filterText = Globals.companyTypeEnum[_filterSearchText]!;
-                              setFilter(true);
-                              Navigator.pop(context);
-                            }),
-                            child: const Text(
-                              "Pasar Uang",
-                              style: TextStyle(
-                                fontFamily: '--apple-system'
-                              ),
-                            )
-                          ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // clear search if available
-                              _textController.text = "";
-                              _filterList = _faveList;
-                              _isSearch = false;
-                              
-                              _filterType = 1;
-                              _filterSearchNum = _stepperControllerRating.value!;
-                              _currentRatingNum = _filterSearchNum;
-                              _filterText = "Rating (" + _stepperControllerRating.value.toString() + ")";
-                              setFilter(true);
-                              Navigator.pop(context);
-                            }),
-                            child: StepperSelector(
-                              controller: _stepperControllerRating,
-                              title: "Rating",
-                              titleSize: 20,
-                              icon: Ionicons.star,
-                              iconColor: accentColor,
-                              defaultValue: _currentRatingNum,
-                            ),
-                          ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // clear search if available
-                              _textController.text = "";
-                              _filterList = _faveList;
-                              _isSearch = false;
-                              
-                              _filterType = 2;
-                              _filterSearchNum = _stepperControllerRisk.value!;
-                              _currentRiskNum = _filterSearchNum;
-                              _filterText = "Risk (" + _stepperControllerRisk.value.toString() + ")";
-                              setFilter(true);
-                              Navigator.pop(context);
-                            }),
-                            child: StepperSelector(
-                              controller: _stepperControllerRisk,
-                              title: "Risk",
-                              titleSize: 20,
-                              icon: Ionicons.alert,
-                              iconColor: secondaryColor,
-                              defaultValue: _currentRiskNum,
-                            ),
-                          ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              _filterText = "";
-                              _filterSearchText = "";
-                              setFilter(false);
-                              Navigator.pop(context);
-                            }),
-                            child: const Text(
-                              "Clear Filter",
-                              style: TextStyle(
-                                fontFamily: '--apple-system',
-                                color: secondaryColor
-                              ),
-                            )
-                          ),
-                        ],
+                      );
+                    }),
+                    active: _isFilter,
+                  ),
+                  const SizedBox(width: 10,),
+                ],
+              ),
+              const SizedBox(height: 10,),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Text(
+                  "Showed " + _filterList.length.toString() + " company(s)",
+                  style: const TextStyle(
+                    color: primaryLight,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: _filterList.length,
+                  itemBuilder: ((context, index) {
+                    return InkWell(
+                      onTap: (() {
+                        CompanyDetailArgs _args = CompanyDetailArgs(
+                          companyId: _filterList[index].favouritesCompanyId,
+                          companyName: _filterList[index].favouritesCompanyName,
+                          companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                          favouritesId: (_filterList[index].favouritesId ?? -1),
+                        );
+      
+                        Navigator.pushNamed(context, '/company/detail', arguments: _args);
+                      }),
+                      child: FavouriteCompanyList(
+                        companyId: _filterList[index].favouritesCompanyId,
+                        name: _filterList[index].favouritesCompanyName,
+                        type: Globals.companyTypeEnum[_filterList[index].favouritesCompanyType]!,
+                        date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
+                        value: _filterList[index].favouritesNetAssetValue,
+                        isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        onPress: (() async {
+                          await setFavourite(index);
+                        }),
                       ),
                     );
                   }),
-                  active: _isFilter,
-                ),
-                const SizedBox(width: 10,),
-              ],
-            ),
-            const SizedBox(height: 10,),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Text(
-                "Showed " + _filterList.length.toString() + " company(s)",
-                style: const TextStyle(
-                  color: primaryLight,
-                  fontSize: 12,
                 ),
               ),
-            ),
-            const SizedBox(height: 10,),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: _filterList.length,
-                itemBuilder: ((context, index) {
-                  return InkWell(
-                    onTap: (() {
-                      CompanyDetailArgs _args = CompanyDetailArgs(
-                        companyId: _filterList[index].favouritesCompanyId,
-                        companyName: _filterList[index].favouritesCompanyName,
-                        companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                        favouritesId: (_filterList[index].favouritesId ?? -1),
-                      );
-
-                      Navigator.pushNamed(context, '/company/detail', arguments: _args);
-                    }),
-                    child: FavouriteCompanyList(
-                      companyId: _filterList[index].favouritesCompanyId,
-                      name: _filterList[index].favouritesCompanyName,
-                      type: Globals.companyTypeEnum[_filterList[index].favouritesCompanyType]!,
-                      date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
-                      value: _filterList[index].favouritesNetAssetValue,
-                      isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                      onPress: (() async {
-                        await setFavourite(index);
-                      }),
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

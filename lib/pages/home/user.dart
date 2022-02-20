@@ -56,8 +56,7 @@ class _UserPageState extends State<UserPage> {
               const SizedBox(height: 25,),
               InkWell(
                 onTap: (() {
-                  //TODO: navigate to new screen to change password
-                  debugPrint("Change Password");
+                  Navigator.pushNamed(context, '/user/password');
                 }),
                 child: Container(
                   width: double.infinity,

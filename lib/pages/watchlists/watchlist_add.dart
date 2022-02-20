@@ -53,60 +53,65 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: ((() {
-            // return back to the previous page
-            Navigator.pop(context);
-          })),
-          icon: const Icon(
-            Ionicons.arrow_back,
-          )
-        ),
-        title: const Center(
-          child: Text(
-            "Add Watchlist",
-            style: TextStyle(
-              color: secondaryColor,
-            ),
-          )
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: CupertinoSearchTextField(
-              controller: _textController,
-              backgroundColor: primaryDark,
-              style: const TextStyle(
-                color: textPrimary,
-                fontFamily: '--apple-system',
-              ),
-              onSubmitted: ((searchText) async {
-                if(searchText.isNotEmpty) {
-                  debugPrint("🔎 Searching for " + searchText);
-
-                  // show loader dialog
-                  showLoaderDialog(context);
-                  await _searchCompany(searchText).then((resp) {
-                    _setSearchResult(resp);
-                  }).onError((error, stackTrace) {
-                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                  }).whenComplete(() {
-                    // remove the loader dialog
-                    Navigator.pop(context);
-                  });
-                }
-              }),
-            ),
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: ((() {
+              // return back to the previous page
+              Navigator.pop(context);
+            })),
+            icon: const Icon(
+              Ionicons.arrow_back,
+            )
           ),
-          const SizedBox(height: 10,),
-          _generateResult(),
-        ],
+          title: const Center(
+            child: Text(
+              "Add Watchlist",
+              style: TextStyle(
+                color: secondaryColor,
+              ),
+            )
+          ),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: CupertinoSearchTextField(
+                controller: _textController,
+                backgroundColor: primaryDark,
+                style: const TextStyle(
+                  color: textPrimary,
+                  fontFamily: '--apple-system',
+                ),
+                onSubmitted: ((searchText) async {
+                  if(searchText.isNotEmpty) {
+                    debugPrint("🔎 Searching for " + searchText);
+    
+                    // show loader dialog
+                    showLoaderDialog(context);
+                    await _searchCompany(searchText).then((resp) {
+                      _setSearchResult(resp);
+                    }).onError((error, stackTrace) {
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                    }).whenComplete(() {
+                      // remove the loader dialog
+                      Navigator.pop(context);
+                    });
+                  }
+                }),
+              ),
+            ),
+            const SizedBox(height: 10,),
+            _generateResult(),
+          ],
+        ),
       ),
     );
   }

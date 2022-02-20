@@ -59,284 +59,61 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffold,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
-          ),
-          onPressed: (() {
-            Navigator.pop(context);
-          }),
-        ),
-        title: Center(
-          child: Text(
-            _watchlist.watchlistCompanyName.toTitleCase(),
-            style: const TextStyle(
-              color: secondaryColor,
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        key: _scaffold,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Ionicons.arrow_back
             ),
-            overflow: TextOverflow.ellipsis,
+            onPressed: (() {
+              Navigator.pop(context);
+            }),
+          ),
+          title: Center(
+            child: Text(
+              _watchlist.watchlistCompanyName.toTitleCase(),
+              style: const TextStyle(
+                color: secondaryColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
-      ),
-      body: Consumer<WatchlistProvider>(
-        builder: ((context, watchlistProvider, child) {
-          // get the actual data of this watchlist from provider.
-          // so when we refresh the provider, the watchlist will be updated also.
-          for(WatchlistListModel _watch in watchlistProvider.watchlist!) {
-            if(_watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-              _watchlist = _watch;
-              break;
+        body: Consumer<WatchlistProvider>(
+          builder: ((context, watchlistProvider, child) {
+            // get the actual data of this watchlist from provider.
+            // so when we refresh the provider, the watchlist will be updated also.
+            for(WatchlistListModel _watch in watchlistProvider.watchlist!) {
+              if(_watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                _watchlist = _watch;
+                break;
+              }
             }
-          }
-
-          // compute all the necessary info for summary
-          _compute();
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                color: _riskColor,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(
-                          color: primaryDark,
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            )
-                          )
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                const Icon(
-                                  Ionicons.time_outline,
-                                  color: primaryLight,
-                                ),
-                                const SizedBox(width: 10,),
-                                Text(
-                                  (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!))
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                WatchlistDetailSummaryBox(
-                                  title: "PRICE",
-                                  text: formatCurrency(_watchlist.watchlistCompanyNetAssetValue!)
-                                ),
-                                const SizedBox(width: 10,),
-                                WatchlistDetailSummaryBox(
-                                  title: "COST",
-                                  text: formatCurrency(_totalCost)
-                                ),
-                                const SizedBox(width: 10,),
-                                WatchlistDetailSummaryBox(
-                                  title: "VALUE",
-                                  text: formatCurrency(_totalValue)
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                WatchlistDetailSummaryBox(
-                                  title: "LOTS",
-                                  text: _watchlist.watchlistDetail.length.toString() + " lots"
-                                ),
-                                const SizedBox(width: 10,),
-                                WatchlistDetailSummaryBox(
-                                  title: "SHARES",
-                                  text: formatDecimal(_totalShares, 2)
-                                ),
-                                const SizedBox(width: 10,),
-                                WatchlistDetailSummaryBox(
-                                  title: "GAIN",
-                                  text: formatCurrency(_totalGain)
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    TransparentButton(
-                      text: "Add Detail",
-                      icon: Ionicons.add,
-                      callback: (() {
-                        Navigator.pushNamed(context, '/watchlist/detail/create', arguments: _watchlist);
-                      })
-                    ),
-                    const SizedBox(width: 10,),
-                    TransparentButton(
-                      text: "Delete Watchlist",
-                      icon: Ionicons.trash,
-                      callback: (() async {
-                        await ShowMyDialog(
-                          title: "Delete Watchlist",
-                          text: "Are you sure to delete " + _watchlist.watchlistCompanyName.toTitleCase() + "?",
-                          confirmLabel: "Delete",
-                          cancelLabel: "Cancel"
-                        ).show(context).then((resp) async {
-                          if(resp!) {
-                            // show the loader
-                            showLoaderDialog(context);
-                            await _deleteWatchlist().then((resp) {
-                              if(resp) {
-                                debugPrint("🗑️ Delete watchlist " + _watchlist.watchlistCompanyName.toTitleCase());
-                                // navigate to the previous page
-                                Navigator.pop(context); 
-                              }
-                            }).onError((error, stackTrace) {
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                            }).whenComplete(() {
-                              // remove the loader
-                              Navigator.pop(context);
-                            });
-                          }
-                        },);
-                      })
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: primaryDark,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    )
-                  )
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const <Widget>[
-                    Expanded(
-                      child: Text(
-                        "Date",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ),
-                    SizedBox(width: 10,),
-                    Expanded(
-                      child: Text(
-                        "Shares",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
-                      )
-                    ),
-                    SizedBox(width: 10,),
-                    Expanded(
-                      child: Text(
-                        "Price",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
-                      )
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
-                    WatchlistDetailEditArgs _args = WatchlistDetailEditArgs(index: index, watchlist: _watchlist);
-
-                    return Slidable(
-                      endActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        children: <Widget>[
-                          SlidableAction(
-                            onPressed: ((context) {
-                              Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: _args);
-                            }),
-                            icon: Ionicons.pencil,
-                            backgroundColor: primaryColor,
-                            foregroundColor: accentColor,
-                          ),
-                          SlidableAction(
-                            onPressed: ((context) async {
-                              await ShowMyDialog(
-                                title: "Delete Detail",
-                                text: "Are you sure to delete this detail?\n"
-                                  "Date: " + _df.format(_watchlist.watchlistDetail[index].watchlistDetailDate) + "\n" +
-                                  "Shares: " + formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare) + "\n" +
-                                  "Price: " + formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
-                                confirmLabel: "Delete",
-                                cancelLabel: "Cancel"
-                              ).show(context).then((resp) async {
-                                if(resp!) {
-                                  await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
-                                    if(resp) {
-                                      debugPrint("🧹 Delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
-                                    }
-                                    else {
-                                      debugPrint("🧹 Unable to delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
-                                    }
-                                  }).onError((error, stackTrace) {
-                                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                                  });
-                                }
-                              });
-                            }),
-                            icon: Ionicons.trash,
-                            backgroundColor: primaryColor,
-                            foregroundColor: secondaryColor,
-                          ),
-                        ],
-                      ),
-                      child: InkWell(
-                        onDoubleTap: (() {
-                          Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: _args);
-                        }),
+    
+            // compute all the necessary info for summary
+            _compute();
+    
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  color: _riskColor,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(width: 10,),
+                      Expanded(
                         child: Container(
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                          padding: const EdgeInsets.all(10),
                           decoration: const BoxDecoration(
+                            color: primaryDark,
                             border: Border(
                               bottom: BorderSide(
                                 color: primaryLight,
@@ -345,51 +122,279 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                               )
                             )
                           ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Expanded(
-                                child: Text(
-                                  _df.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Icon(
+                                    Ionicons.time_outline,
+                                    color: primaryLight,
                                   ),
-                                )
+                                  const SizedBox(width: 10,),
+                                  Text(
+                                    (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!))
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 10,),
-                              Expanded(
-                                child: Text(
-                                  formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailShare),
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                              const SizedBox(height: 10,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  WatchlistDetailSummaryBox(
+                                    title: "PRICE",
+                                    text: formatCurrency(_watchlist.watchlistCompanyNetAssetValue!)
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.right,
-                                )
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "COST",
+                                    text: formatCurrency(_totalCost)
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "VALUE",
+                                    text: formatCurrency(_totalValue)
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 10,),
-                              Expanded(
-                                child: Text(
-                                  formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                              const SizedBox(height: 10,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  WatchlistDetailSummaryBox(
+                                    title: "LOTS",
+                                    text: _watchlist.watchlistDetail.length.toString() + " lots"
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.right,
-                                )
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "SHARES",
+                                    text: formatDecimal(_totalShares, 2)
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "GAIN",
+                                    text: formatCurrency(_totalGain)
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    );
-                  }),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        }),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      TransparentButton(
+                        text: "Add Detail",
+                        icon: Ionicons.add,
+                        callback: (() {
+                          Navigator.pushNamed(context, '/watchlist/detail/create', arguments: _watchlist);
+                        })
+                      ),
+                      const SizedBox(width: 10,),
+                      TransparentButton(
+                        text: "Delete Watchlist",
+                        icon: Ionicons.trash,
+                        callback: (() async {
+                          await ShowMyDialog(
+                            title: "Delete Watchlist",
+                            text: "Are you sure to delete " + _watchlist.watchlistCompanyName.toTitleCase() + "?",
+                            confirmLabel: "Delete",
+                            cancelLabel: "Cancel"
+                          ).show(context).then((resp) async {
+                            if(resp!) {
+                              // show the loader
+                              showLoaderDialog(context);
+                              await _deleteWatchlist().then((resp) {
+                                if(resp) {
+                                  debugPrint("🗑️ Delete watchlist " + _watchlist.watchlistCompanyName.toTitleCase());
+                                  // navigate to the previous page
+                                  Navigator.pop(context); 
+                                }
+                              }).onError((error, stackTrace) {
+                                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                              }).whenComplete(() {
+                                // remove the loader
+                                Navigator.pop(context);
+                              });
+                            }
+                          },);
+                        })
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration(
+                    color: primaryDark,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      )
+                    )
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const <Widget>[
+                      Expanded(
+                        child: Text(
+                          "Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: Text(
+                          "Shares",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                        )
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: Text(
+                          "Price",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
+                      WatchlistDetailEditArgs _args = WatchlistDetailEditArgs(index: index, watchlist: _watchlist);
+    
+                      return Slidable(
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: <Widget>[
+                            SlidableAction(
+                              onPressed: ((context) {
+                                Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: _args);
+                              }),
+                              icon: Ionicons.pencil,
+                              backgroundColor: primaryColor,
+                              foregroundColor: accentColor,
+                            ),
+                            SlidableAction(
+                              onPressed: ((context) async {
+                                await ShowMyDialog(
+                                  title: "Delete Detail",
+                                  text: "Are you sure to delete this detail?\n"
+                                    "Date: " + _df.format(_watchlist.watchlistDetail[index].watchlistDetailDate) + "\n" +
+                                    "Shares: " + formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare) + "\n" +
+                                    "Price: " + formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
+                                  confirmLabel: "Delete",
+                                  cancelLabel: "Cancel"
+                                ).show(context).then((resp) async {
+                                  if(resp!) {
+                                    await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
+                                      if(resp) {
+                                        debugPrint("🧹 Delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
+                                      }
+                                      else {
+                                        debugPrint("🧹 Unable to delete " + _watchlist.watchlistDetail[index].watchlistDetailId.toString());
+                                      }
+                                    }).onError((error, stackTrace) {
+                                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                    });
+                                  }
+                                });
+                              }),
+                              icon: Ionicons.trash,
+                              backgroundColor: primaryColor,
+                              foregroundColor: secondaryColor,
+                            ),
+                          ],
+                        ),
+                        child: InkWell(
+                          onDoubleTap: (() {
+                            Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: _args);
+                          }),
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                )
+                              )
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(
+                                    _df.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  )
+                                ),
+                                const SizedBox(width: 10,),
+                                Expanded(
+                                  child: Text(
+                                    formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailShare),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.right,
+                                  )
+                                ),
+                                const SizedBox(width: 10,),
+                                Expanded(
+                                  child: Text(
+                                    formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.right,
+                                  )
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }

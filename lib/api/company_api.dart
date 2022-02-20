@@ -5,6 +5,7 @@ import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/company_search_model.dart';
+import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 
@@ -45,10 +46,10 @@ class CompanyAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -81,10 +82,10 @@ class CompanyAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 }

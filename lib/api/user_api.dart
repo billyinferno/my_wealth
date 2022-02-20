@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 
@@ -34,7 +35,7 @@ class UserAPI {
     }
 
     // status code is not 200, means we got error
-    throw Exception("err=" + response.body);
+    throw Exception(parseError(response.body).error.message);
   }
 
   Future<UserLoginInfoModel> me() async {
@@ -61,10 +62,10 @@ class UserAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -93,10 +94,10 @@ class UserAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -125,10 +126,10 @@ class UserAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -157,10 +158,10 @@ class UserAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -192,10 +193,10 @@ class UserAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 }

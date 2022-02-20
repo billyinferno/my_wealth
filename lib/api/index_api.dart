@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/index_model.dart';
 import 'package:my_wealth/model/index_price_model.dart';
+import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 
@@ -48,10 +49,10 @@ class IndexAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -84,10 +85,10 @@ class IndexAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 }

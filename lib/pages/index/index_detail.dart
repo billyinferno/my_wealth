@@ -12,6 +12,8 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
+import 'package:my_wealth/widgets/heat_graph.dart';
+import 'package:my_wealth/widgets/transparent_button.dart';
 
 class IndexDetailPage extends StatefulWidget {
   final Object? index;
@@ -32,7 +34,9 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   double _priceDiff = 0;
   Color _riskColor = Colors.green;
   bool _isLoading = true;
+  bool _isTable = true;
   List<IndexPriceModel> _indexPrice = [];
+  List<GraphData> _graphData = [];
 
   @override
   void initState() {
@@ -284,214 +288,32 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(width: 10,),
-                Expanded(
-                  child: Container(
-                    color: primaryColor,
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Text(
-                              "Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Text(
-                              "Price",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                Ionicons.swap_vertical,
-                                size: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: const Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                Ionicons.pulse_outline,
-                                size: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                TransparentButton(
+                  text: "Table",
+                  icon: Ionicons.list_outline,
+                  callback: (() {
+                    setState(() {
+                      _isTable = true;
+                    });
+                  }),
+                  active: (_isTable),
                 ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Calendar",
+                  icon: Ionicons.calendar_clear_outline,
+                  callback: (() {
+                    setState(() {
+                      _isTable = false;
+                    });
+                  }),
+                  active: (!_isTable),
+                ),
+                const SizedBox(width: 10,),
               ],
             ),
-            Expanded(
-              child: ListView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: List<Widget>.generate(_indexPrice.length, (index) {
-                  double? dayDiff;
-                  Color dayDiffColor = Colors.transparent;
-                  if((index + 1) < _indexPrice.length) {
-                    double? currDayPrice = _indexPrice[index].indexPriceValue;
-                    double? prevDayPrice = _indexPrice[index+1].indexPriceValue;
-                    dayDiff = (currDayPrice - prevDayPrice);
-                    dayDiffColor = riskColor(currDayPrice, prevDayPrice, _userInfo!.risk);
-                  }
-                  return Container(
-                    color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          child: Container(
-                            color: primaryColor,
-                            padding: const EdgeInsets.all(10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    _df.format(_indexPrice[index].indexPriceDate.toLocal()),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                    ),
-                                  )
-                                ),
-                                const SizedBox(width: 10,),
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    formatCurrency(_indexPrice[index].indexPriceValue),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                    ),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            width: 2.0,
-                                            color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
-                                            style: BorderStyle.solid,
-                                          )
-                                        )
-                                      ),
-                                      child: Text(
-                                        formatCurrency(_index.indexNetAssetValue - _indexPrice[index].indexPriceValue),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            width: 2.0,
-                                            color: dayDiffColor,
-                                            style: BorderStyle.solid,
-                                          )
-                                        )
-                                      ),
-                                      child: Text(
-                                        (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ),
+            const SizedBox(height: 10,),
+            ..._detail(),
           ],
         ),
       ),
@@ -501,6 +323,26 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   Future<void> _getIndexPriceDetail() async {
     _indexApi.getIndexPrice(_index.indexId).then((resp) {
       _indexPrice = resp;
+
+      // loop on the resp and put it on the graph
+      List<GraphData> _tempData = [];
+      for (IndexPriceModel _price in resp) {
+        _tempData.add(GraphData(date: _price.indexPriceDate.toLocal(), price: _price.indexPriceValue));
+      }
+      // add the current price which only in index
+      _tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));
+
+      // once got the data now sort it
+      _tempData.sort((a, b) {
+        String _a = _df.format(a.date);
+        String _b = _df.format(b.date);
+        return _a.compareTo(_b);
+      });
+
+      _graphData = _tempData;
+      // _graphData.forEach((_data) {
+      //   debugPrint(_data.date.toString());
+      // });
     }).whenComplete(() {
       // when finished then set the isLoading into false to loead the body
       _setIsLoading(false);
@@ -511,5 +353,256 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
     setState(() {
       _isLoading = isLoading;
     });
+  }
+
+  List<Widget> _detail() {
+    if(_isTable) {
+      return _showTable();
+    }
+    else {
+      return _showCalendar();
+    }
+  }
+
+  List<Widget> _showCalendar() {
+    List<Widget> _calendar = [];
+
+    _calendar.add(Container(
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: primaryLight,
+          width: 1.0,
+          style: BorderStyle.solid,
+        ),
+      ),
+      child: HeatGraph(
+        data: _graphData,
+        userInfo: _userInfo!
+      ),
+    ));
+
+    return _calendar;
+  }
+
+  List<Widget> _showTable() {
+    List<Widget> _table = [];
+
+    _table.add(Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(width: 10,),
+        Expanded(
+          child: Container(
+            color: primaryColor,
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Text(
+                      "Date",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Text(
+                      "Price",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Ionicons.swap_vertical,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Ionicons.pulse_outline,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ));
+
+    _table.add(Expanded(
+      child: ListView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: List<Widget>.generate(_indexPrice.length, (index) {
+          double? dayDiff;
+          Color dayDiffColor = Colors.transparent;
+          if((index + 1) < _indexPrice.length) {
+            double? currDayPrice = _indexPrice[index].indexPriceValue;
+            double? prevDayPrice = _indexPrice[index+1].indexPriceValue;
+            dayDiff = (currDayPrice - prevDayPrice);
+            dayDiffColor = riskColor(currDayPrice, prevDayPrice, _userInfo!.risk);
+          }
+          return Container(
+            color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: Container(
+                    color: primaryColor,
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            _df.format(_indexPrice[index].indexPriceDate.toLocal()),
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          )
+                        ),
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            formatCurrency(_indexPrice[index].indexPriceValue),
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          flex: 1,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    width: 2.0,
+                                    color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: Text(
+                                formatCurrency(_index.indexNetAssetValue - _indexPrice[index].indexPriceValue),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          flex: 1,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    width: 2.0,
+                                    color: dayDiffColor,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: Text(
+                                (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    ));
+    
+    return _table;
   }
 }

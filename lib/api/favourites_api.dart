@@ -5,6 +5,7 @@ import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/favourites_list_model.dart';
 import 'package:my_wealth/model/favourites_model.dart';
+import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 
@@ -49,10 +50,10 @@ class FavouritesAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -86,10 +87,10 @@ class FavouritesAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -119,10 +120,10 @@ class FavouritesAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 
@@ -149,10 +150,10 @@ class FavouritesAPI {
       }
 
       // status code is not 200, means we got error
-      throw Exception("err=" + response.body);
+      throw Exception(parseError(response.body).error.message);
     }
     else {
-      throw Exception("err=No bearer token");
+      throw Exception("No bearer token");
     }
   }
 }

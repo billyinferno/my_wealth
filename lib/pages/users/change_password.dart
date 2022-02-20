@@ -75,13 +75,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             children: <Widget>[
               const SizedBox(width: 10,),
               TransparentButton(
-                text: "Change Password",
+                text: "Change",
                 icon: Ionicons.lock_open,
                 callback: (() async {
-                  debugPrint("Change password");
                   if(_validateForm()) {
                     await _changePassword().then((resp) {
                       if(resp) {
+                        debugPrint("🔓 Change Password");
                         // update password success, show the message
                         ScaffoldMessenger.of(context).showSnackBar(
                           createSnackBar(

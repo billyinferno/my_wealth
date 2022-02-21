@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
+import 'package:my_wealth/model/price_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
@@ -13,6 +14,8 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_detail_price_list.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
+import 'package:my_wealth/widgets/heat_graph.dart';
+import 'package:my_wealth/widgets/transparent_button.dart';
 
 class CompanyDetailPage extends StatefulWidget {
   final Object? companyData;
@@ -31,6 +34,8 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   
   bool _isLoading = true;
+  bool _isTable = true;
+  Map<DateTime, GraphData> _graphData = {};
 
   @override
   void initState() {
@@ -51,6 +56,31 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
       // perform the get company detail information here
       await _companyApi.getCompanyDetail(_companyData.companyId).then((resp) {
         _companyDetail = resp;
+
+        // map the price date on company
+        List<GraphData> _tempData = [];
+        int _totalData = 0;
+
+        // only get the 1st 64 data, since we will want to get the latest data
+        for (PriceModel _price in _companyDetail.companyPrices) {
+          _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
+          _totalData += 1;
+          if(_totalData >= 64) {
+            break;
+          }
+        }
+        // add the current price which only in company
+        _tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+
+        // sort the temporary data
+        _tempData.sort((a, b) {
+          return a.date.compareTo(b.date);
+        });
+
+        // once sorted, then we can put it on map
+        for (GraphData _data in _tempData) {
+          _graphData[_data.date] = _data;
+        }
       }).whenComplete(() {
         // once finished then remove the loader dialog
         Navigator.pop(context);
@@ -322,131 +352,32 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      color: primaryColor,
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: const Text(
-                                "Date",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: const Text(
-                                "Price",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            )
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: const Align(
-                                alignment: Alignment.centerRight,
-                                child: Icon(
-                                  Ionicons.swap_vertical,
-                                  size: 16,
-                                ),
-                              ),
-                            )
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: const Align(
-                                alignment: Alignment.centerRight,
-                                child: Icon(
-                                  Ionicons.pulse_outline,
-                                  size: 16,
-                                ),
-                              ),
-                            )
-                          ),
-                        ],
-                      ),
-                    ),
+                  TransparentButton(
+                    text: "Table",
+                    icon: Ionicons.list_outline,
+                    callback: (() {
+                      setState(() {
+                        _isTable = true;
+                      });
+                    }),
+                    active: _isTable,
                   ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Calendar",
+                    icon: Ionicons.calendar_clear_outline,
+                    callback: (() {
+                      setState(() {
+                        _isTable = false;
+                      });
+                    }),
+                    active: !_isTable,
+                  ),
+                  const SizedBox(width: 10,),
                 ],
               ),
-              Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-                    double? dayDiff;
-                    Color dayDiffColor = Colors.transparent;
-                    if((index+1) < _companyDetail.companyPrices.length) {
-                      double currPrice = _companyDetail.companyPrices[index].priceValue;
-                      double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-                      dayDiff = currPrice - prevPrice;
-                      dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-                    }
-                    return CompanyDetailPriceList(
-                      date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-                      price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-                      diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-                      riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-                      dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-                      dayDiffColor: dayDiffColor,
-                    );
-                  }),
-                ),
-              ),
+              const SizedBox(height: 10,),
+              ..._detail(),
             ],
           ),
         ),
@@ -502,5 +433,173 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
     }
 
     return _ret;
+  }
+
+  List<Widget> _detail() {
+    if(_isTable) {
+      return _showTable();
+    }
+    else {
+      return _showCalendar();
+    }
+  }
+
+  List<Widget> _showTable() {
+    List<Widget> _table = [];
+
+    _table.add(Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(width: 10,),
+        Expanded(
+          child: Container(
+            color: primaryColor,
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Text(
+                      "Date",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Text(
+                      "Price",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  )
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Ionicons.swap_vertical,
+                        size: 16,
+                      ),
+                    ),
+                  )
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Ionicons.pulse_outline,
+                        size: 16,
+                      ),
+                    ),
+                  )
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ));
+
+    _table.add(Expanded(
+      child: ListView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
+          double? dayDiff;
+          Color dayDiffColor = Colors.transparent;
+          if((index+1) < _companyDetail.companyPrices.length) {
+            double currPrice = _companyDetail.companyPrices[index].priceValue;
+            double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+            dayDiff = currPrice - prevPrice;
+            dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+          }
+          return CompanyDetailPriceList(
+            date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
+            price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
+            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
+            riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+            dayDiffColor: dayDiffColor,
+          );
+        }),
+      ),
+    ));
+
+    return _table;
+  }
+
+  List<Widget> _showCalendar() {
+    List<Widget> _calendar = [];
+
+    _calendar.add(Container(
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: primaryLight,
+          width: 1.0,
+          style: BorderStyle.solid,
+        ),
+      ),
+      child: HeatGraph(
+        data: _graphData,
+        userInfo: _userInfo!
+      ),
+    ));
+
+    return _calendar;
   }
 }

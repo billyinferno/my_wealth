@@ -326,8 +326,15 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
 
       // loop on the resp and put it on the graph
       List<GraphData> _tempData = [];
+      int _totalData = 0;
       for (IndexPriceModel _price in resp) {
         _tempData.add(GraphData(date: _price.indexPriceDate.toLocal(), price: _price.indexPriceValue));
+        
+        // add total data, and if already 64 break the list
+        _totalData += 1;
+        if(_totalData >= 64) {
+          break;
+        }
       }
       // add the current price which only in index
       _tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));

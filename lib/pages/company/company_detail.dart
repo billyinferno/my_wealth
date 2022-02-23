@@ -35,7 +35,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   
   bool _isLoading = true;
   bool _isTable = true;
-  Map<DateTime, GraphData> _graphData = {};
+  Map<DateTime, GraphData>? _graphData;
 
   @override
   void initState() {
@@ -49,6 +49,9 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
     }
 
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // initialize graph data
+    _graphData = {};
 
     Future.microtask(() async {
       // show the loader dialog
@@ -90,7 +93,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
 
         // once sorted, then we can put it on map
         for (GraphData _data in _tempData) {
-          _graphData[_data.date] = _data;
+          _graphData![_data.date] = _data;
         }
       }).whenComplete(() {
         // once finished then remove the loader dialog
@@ -606,7 +609,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
         ),
       ),
       child: HeatGraph(
-        data: _graphData,
+        data: _graphData!,
         userInfo: _userInfo!
       ),
     ));

@@ -37,7 +37,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   bool _isLoading = true;
   bool _isTable = true;
   List<IndexPriceModel> _indexPrice = [];
-  Map<DateTime, GraphData> _graphData = {};
+  Map<DateTime, GraphData>? _graphData;
 
   @override
   void initState() {
@@ -50,6 +50,10 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
     _indexPrice = [];
 
     _isLoading = true;
+
+    // initialize graph data
+    _graphData = {};
+
     Future.microtask(() async {
       // show loader
       showLoaderDialog(context);
@@ -361,7 +365,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
 
       // once sorted, then we can put it on map
       for (GraphData _data in _tempData) {
-        _graphData[_data.date] = _data;
+        _graphData![_data.date] = _data;
         // debugPrint(_data.date.toString());
       }
       // debugPrint("--- END OF SORTED DATA ---");
@@ -399,7 +403,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
         ),
       ),
       child: HeatGraph(
-        data: _graphData,
+        data: _graphData!,
         userInfo: _userInfo!
       ),
     ));

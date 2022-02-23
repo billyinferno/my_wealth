@@ -1,9 +1,7 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 
 class GraphData {
@@ -99,7 +97,7 @@ class HeatGraph extends StatelessWidget {
   }
 
   List<Widget> _generateRows() {
-    final List<String> _monthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    final DateFormat _df = DateFormat("dd/MMM");
 
     List<Widget> _return = [];
     int i = 0;
@@ -124,8 +122,9 @@ class HeatGraph extends StatelessWidget {
 
           // get the label that we will put on this graph based on the
           // 1st day that we will process
-          int _weekNumber = weekNumber(_dataExpand[i].date);
-          int _month = _dataExpand[i].date.month;
+          // int _weekNumber = weekNumber(_dataExpand[i].date);
+          DateTime _startDate = _dataExpand[i].date;
+          DateTime? _endDate;
 
           // now loop from this weekday until friday, in case this is friday
           // then it will be only loop once
@@ -147,6 +146,7 @@ class HeatGraph extends StatelessWidget {
             }
             
             _boxes[day-1] = _generateBox(_boxColor);
+            _endDate = _dataExpand[i].date;
           }
           // debugPrint("--- END OF WEEK ---");
           
@@ -157,7 +157,8 @@ class HeatGraph extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Text(
-                "Week " + _weekNumber.toString() + " (" + _monthName[_month-1] + ")",
+                // "Week " + _weekNumber.toString() + " (" + _monthName[_month-1] + ")",
+                _df.format(_startDate) + " - " + _df.format(_endDate!),
                 style: const TextStyle(
                   fontSize: 10,
                 ),

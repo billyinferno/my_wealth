@@ -61,14 +61,25 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
         List<GraphData> _tempData = [];
         int _totalData = 0;
 
+        // move the last update to friday
+        int _addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
+        DateTime _endDate = _companyDetail.companyLastUpdate!.add(Duration(days: _addDay));
+
+        // then go 14 weeks before so we knew the start date
+        DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+
         // only get the 1st 64 data, since we will want to get the latest data
         for (PriceModel _price in _companyDetail.companyPrices) {
-          _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
-          _totalData += 1;
+          // ensure that all the data we will put is more than or equal with startdate
+          if(_price.priceDate.compareTo(_startDate) >= 0) {
+            _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
+            _totalData += 1;
+          }
           if(_totalData >= 64) {
             break;
           }
         }
+
         // add the current price which only in company
         _tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
 

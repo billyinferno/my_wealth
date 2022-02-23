@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
+// import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
 
 class IndexDetailPage extends StatefulWidget {
@@ -327,15 +328,29 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       // loop on the resp and put it on the graph
       List<GraphData> _tempData = [];
       int _totalData = 0;
+      
+      // move the last update to friday
+      int _addDay = 5 - _index.indexLastUpdate.toLocal().weekday;
+      DateTime _endDate = _index.indexLastUpdate.add(Duration(days: _addDay));
+
+      // then go 14 weeks before so we knew the start date
+      DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+
       for (IndexPriceModel _price in resp) {
-        _tempData.add(GraphData(date: _price.indexPriceDate.toLocal(), price: _price.indexPriceValue));
-        
-        // add total data, and if already 64 break the list
-        _totalData += 1;
+        // ensure that this date is at least bigger than start date
+        if(_price.indexPriceDate.compareTo(_startDate) >= 0) {
+          _tempData.add(GraphData(date: _price.indexPriceDate.toLocal(), price: _price.indexPriceValue));
+
+          // add total data, and if already 64 break the list
+          _totalData += 1;
+        }
+
+        // check total data now
         if(_totalData >= 64) {
           break;
         }
       }
+
       // add the current price which only in index
       _tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));
 
@@ -344,6 +359,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
         return a.date.compareTo(b.date);
       });
 
+      // once sorted, then we can put it on map
       for (GraphData _data in _tempData) {
         _graphData[_data.date] = _data;
         // debugPrint(_data.date.toString());
@@ -387,6 +403,8 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
         userInfo: _userInfo!
       ),
     ));
+
+    // _calendar.add(LineChart(data: _graphData));
 
     return _calendar;
   }

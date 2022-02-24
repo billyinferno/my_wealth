@@ -13,7 +13,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
-// import 'package:my_wealth/widgets/line_chart.dart';
+import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
 
 class IndexDetailPage extends StatefulWidget {
@@ -35,7 +35,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   double _priceDiff = 0;
   Color _riskColor = Colors.green;
   bool _isLoading = true;
-  bool _isTable = true;
+  int _bodyPage = 0;
   List<IndexPriceModel> _indexPrice = [];
   Map<DateTime, GraphData>? _graphData;
 
@@ -298,21 +298,32 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                   icon: Ionicons.list_outline,
                   callback: (() {
                     setState(() {
-                      _isTable = true;
+                      _bodyPage = 0;
                     });
                   }),
-                  active: (_isTable),
+                  active: (_bodyPage == 0),
                 ),
                 const SizedBox(width: 10,),
                 TransparentButton(
-                  text: "Calendar",
+                  text: "Map",
                   icon: Ionicons.calendar_clear_outline,
                   callback: (() {
                     setState(() {
-                      _isTable = false;
+                      _bodyPage = 1;
                     });
                   }),
-                  active: (!_isTable),
+                  active: (_bodyPage == 1),
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Graph",
+                  icon: Ionicons.stats_chart,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 2;
+                    });
+                  }),
+                  active: (_bodyPage == 2),
                 ),
                 const SizedBox(width: 10,),
               ],
@@ -382,12 +393,24 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   }
 
   List<Widget> _detail() {
-    if(_isTable) {
-      return _showTable();
+    switch(_bodyPage) {
+      case 0:
+        return _showTable();
+      case 1:
+        return _showCalendar();
+      case 2:
+        return _showGraph();
+      default:
+        return _showTable();
     }
-    else {
-      return _showCalendar();
-    }
+  }
+
+  List<Widget> _showGraph() {
+    List<Widget> _graph = [];
+
+    _graph.add(LineChart(data: _graphData!));
+
+    return _graph;
   }
 
   List<Widget> _showCalendar() {
@@ -407,8 +430,6 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
         userInfo: _userInfo!
       ),
     ));
-
-    // _calendar.add(LineChart(data: _graphData));
 
     return _calendar;
   }

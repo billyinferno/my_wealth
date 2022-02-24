@@ -317,7 +317,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Graph",
-                  icon: Ionicons.stats_chart,
+                  icon: Ionicons.stats_chart_outline,
                   callback: (() {
                     setState(() {
                       _bodyPage = 2;
@@ -408,7 +408,10 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   List<Widget> _showGraph() {
     List<Widget> _graph = [];
 
-    _graph.add(LineChart(data: _graphData!));
+    _graph.add(LineChart(
+      data: _graphData!,
+      height: 250,
+    ));
 
     return _graph;
   }

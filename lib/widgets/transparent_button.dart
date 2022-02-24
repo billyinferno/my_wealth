@@ -18,7 +18,7 @@ class TransparentButton extends StatelessWidget {
           callback();
         }),
         child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

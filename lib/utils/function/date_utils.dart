@@ -18,3 +18,8 @@ int weekNumber(DateTime date) {
   }
   return woy;
 }
+
+String formatDate({required DateTime date, required String format}) {
+  final DateFormat _df = DateFormat(format);
+  return _df.format(date);
+}

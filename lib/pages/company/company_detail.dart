@@ -15,6 +15,7 @@ import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_detail_price_list.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
+import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
 
 class CompanyDetailPage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   
   bool _isLoading = true;
-  bool _isTable = true;
+  int _bodyPage = 0;
   Map<DateTime, GraphData>? _graphData;
 
   @override
@@ -371,21 +372,32 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                     icon: Ionicons.list_outline,
                     callback: (() {
                       setState(() {
-                        _isTable = true;
+                        _bodyPage = 0;
                       });
                     }),
-                    active: _isTable,
+                    active: (_bodyPage == 0),
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
-                    text: "Calendar",
+                    text: "Map",
                     icon: Ionicons.calendar_clear_outline,
                     callback: (() {
                       setState(() {
-                        _isTable = false;
+                        _bodyPage = 1;
                       });
                     }),
-                    active: !_isTable,
+                    active: (_bodyPage == 1),
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Graph",
+                    icon: Ionicons.stats_chart_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 2;
+                      });
+                    }),
+                    active: (_bodyPage == 2),
                   ),
                   const SizedBox(width: 10,),
                 ],
@@ -450,11 +462,15 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   }
 
   List<Widget> _detail() {
-    if(_isTable) {
-      return _showTable();
-    }
-    else {
-      return _showCalendar();
+    switch(_bodyPage) {
+      case 0:
+        return _showTable();
+      case 1:
+        return _showCalendar();
+      case 2:
+        return _showGraph();
+      default:
+        return _showTable();
     }
   }
 
@@ -615,5 +631,16 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
     ));
 
     return _calendar;
+  }
+
+  List<Widget> _showGraph() {
+    List<Widget> _graph = [];
+
+    _graph.add(LineChart(
+      data: _graphData!,
+      height: 250,
+    ));
+
+    return _graph;
   }
 }

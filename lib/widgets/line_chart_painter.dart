@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 
 class LineChartPainter extends CustomPainter {
-  final Map<DateTime, GraphData> data;
+  final List<GraphData> data;
   const LineChartPainter({required this.data});
 
   @override
@@ -31,11 +32,11 @@ class LineChartPainter extends CustomPainter {
     // loop on the data
     double _max = double.minPositive;
 
-    data.forEach((key, value) {
+    for (GraphData value in data) {
       if(_max < value.price) {
         _max = value.price;
       }
-    });
+    }
 
     return _max;
   }
@@ -44,11 +45,11 @@ class LineChartPainter extends CustomPainter {
     // loop on the data
     double _min = double.maxFinite;
 
-    data.forEach((key, value) {
+    for (GraphData value in data) {
       if(_min > value.price) {
         _min = value.price;
       }
-    });
+    }
 
     return _min;
   }
@@ -71,8 +72,12 @@ class LineChartPainter extends CustomPainter {
     double _min = _minData();
 
     // create the rect that we will use as a guide for the graph
-    Rect _graphRect = Rect.fromLTWH(70, 10, (size.width - 80), (size.height - 80));
+    Rect _graphRect = Rect.fromLTWH(70, 10, (size.width - 80), (size.height - 60));
     Paint _graphRectBorder = Paint()
+      ..color = primaryDark
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+    Paint _graphRectBorderWhite = Paint()
       ..color = primaryLight
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
@@ -80,12 +85,20 @@ class LineChartPainter extends CustomPainter {
     // draw the guides
     // draw vertical lines
     double _xLeft = _graphRect.left;
-    double _guideW = _graphRect.size.width / 13.0;
-    for(int i = 0; i < 13; i++) {
+    double _guideW = _graphRect.size.width / data.length;
+    for(int i = 0; i < data.length; i++) {
       Offset _p1 = Offset(_xLeft, _graphRect.bottom);
       Offset _p2 = Offset(_xLeft, _graphRect.top);
-      canvas.drawLine(_p1, _p2, _graphRectBorder);
       _xLeft += _guideW;
+
+      if(i > 0 && (i%10 == 0)) {
+        debugPrint(data[i].price.toString());
+        canvas.drawLine(_p1, _p2, _graphRectBorderWhite);
+        _drawText(canvas, Offset(_xLeft, _graphRect.bottom), 60, formatDate(date: data[i].date, format: "dd-MMM"), 0, 10);
+      }
+      else {
+        canvas.drawLine(_p1, _p2, _graphRectBorder);
+      }
     }
 
     // draw horizontal line
@@ -96,7 +109,7 @@ class LineChartPainter extends CustomPainter {
       canvas.drawLine(_p1, _p2, _graphRectBorder);
 
       double _currVal = _min + (((_max - _min) / 4.0) * i.toDouble());
-      _drawText(canvas, Offset(_graphRect.left, _graphRect.bottom - (_yD * i) - 5), 60, formatDecimal(_currVal, 2));
+      _drawText(canvas, Offset(_graphRect.left, _graphRect.bottom - (_yD * i) - 5), 60, formatDecimal(_currVal, 2), 10, 0);
     }
 
     // once guidelines finished, we can draw the actual graph
@@ -110,7 +123,7 @@ class LineChartPainter extends CustomPainter {
     double _prevPrice = double.minPositive;
 
     // loop thru data
-    data.forEach((key, value) {
+    for (GraphData value in data) {
       _y = 10 + _graphRect.height - ((value.price - _min) * _ratio);
 
       // check whether this is the first data?
@@ -122,7 +135,7 @@ class LineChartPainter extends CustomPainter {
       }
       else {
         // check whether price go up or go down?
-        if(value.price >= _prevPrice) {
+        if(value.price > _prevPrice) {
           _pUp.lineTo(_x, _y);
           _pDown.moveTo(_x, _y);
         }
@@ -132,13 +145,10 @@ class LineChartPainter extends CustomPainter {
         }
       }
 
-      // draw the text here
-      // TODO: draw the text
-
       // next column
       _prevPrice = value.price;
       _x += _gap;
-    });
+    }
 
     // end of chart
 
@@ -157,8 +167,7 @@ class LineChartPainter extends CustomPainter {
     canvas.drawPath(_pDown, dpDown);
   }
 
-  //TODO: add padding top, and left
-  void _drawText(Canvas canvas, Offset position, double width, String text) {
+  void _drawText(Canvas canvas, Offset position, double width, String text, double left, double top) {
     final TextSpan _textSpan = TextSpan(
       text: text,
       style: const TextStyle(
@@ -173,6 +182,6 @@ class LineChartPainter extends CustomPainter {
       textAlign: TextAlign.right,
     );
     _textPainter.layout(minWidth: 0, maxWidth: width);
-    _textPainter.paint(canvas, Offset(position.dx - (_textPainter.width + 10), position.dy));
+    _textPainter.paint(canvas, Offset(position.dx - (_textPainter.width + left), (position.dy + top)));
   }
 }

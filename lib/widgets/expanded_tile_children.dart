@@ -32,7 +32,6 @@ class ExpandedTileChildren extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    flex: 2,
                     child: Text(
                       date,
                       style: const TextStyle(
@@ -42,9 +41,8 @@ class ExpandedTileChildren extends StatelessWidget {
                   ),
                   const SizedBox(width: 10,),
                   Expanded(
-                    flex: 3,
                     child: Text(
-                      formatCurrency(shares),
+                      formatDecimal(shares, 2),
                       style: const TextStyle(
                         fontSize: 12,
                       ),
@@ -53,7 +51,6 @@ class ExpandedTileChildren extends StatelessWidget {
                   ),
                   const SizedBox(width: 10,),
                   Expanded(
-                    flex: 2,
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
@@ -62,6 +59,30 @@ class ExpandedTileChildren extends StatelessWidget {
                           fontSize: 12,
                         ),
                         overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: _riskColor,
+                              width: 2.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: Text(
+                          formatCurrency((currentPrice - price) * shares),
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                   ),

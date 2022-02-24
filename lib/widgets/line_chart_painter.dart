@@ -10,9 +10,6 @@ class LineChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // check what is the size now
-    debugPrint(size.height.toString() + " / " + size.width.toString());
-
     // calculate the center
     Offset _center = Offset(size.width / 2, size.height / 2);
 
@@ -92,7 +89,6 @@ class LineChartPainter extends CustomPainter {
       _xLeft += _guideW;
 
       if(i > 0 && (i%10 == 0)) {
-        debugPrint(data[i].price.toString());
         canvas.drawLine(_p1, _p2, _graphRectBorderWhite);
         _drawText(canvas, Offset(_xLeft, _graphRect.bottom), 60, formatDate(date: data[i].date, format: "dd-MMM"), 0, 10);
       }

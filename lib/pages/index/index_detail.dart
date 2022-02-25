@@ -28,6 +28,8 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   final IndexAPI _indexApi = IndexAPI();
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _calendarScrollController = ScrollController();
+  final ScrollController _graphScrollController = ScrollController();
 
   late IndexModel _index;
   late UserLoginInfoModel? _userInfo;
@@ -79,6 +81,8 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
+    _graphScrollController.dispose();
+    _calendarScrollController.dispose();
   }
 
   @override
@@ -475,9 +479,13 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   List<Widget> _showGraph() {
     List<Widget> _graph = [];
 
-    _graph.add(LineChart(
-      data: _graphData!,
-      height: 250,
+    _graph.add(SingleChildScrollView(
+      controller: _graphScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: LineChart(
+        data: _graphData!,
+        height: 250,
+      ),
     ));
 
     return _graph;
@@ -486,18 +494,22 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   List<Widget> _showCalendar() {
     List<Widget> _calendar = [];
 
-    _calendar.add(Container(
-      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: primaryLight,
-          width: 1.0,
-          style: BorderStyle.solid,
+    _calendar.add(SingleChildScrollView(
+      controller: _calendarScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          ),
         ),
-      ),
-      child: HeatGraph(
-        data: _graphData!,
-        userInfo: _userInfo!
+        child: HeatGraph(
+          data: _graphData!,
+          userInfo: _userInfo!
+        ),
       ),
     ));
 

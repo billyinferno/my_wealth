@@ -37,10 +37,18 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   bool _isLoading = true;
   int _bodyPage = 0;
   Map<DateTime, GraphData>? _graphData;
+  int _numPrice = 0;
+  double? _minPrice;
+  double? _maxPrice;
+  double? _avgPrice;
 
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
+    _bodyPage = 0;
+    _numPrice = 0;
+
     _companyData = widget.companyData as CompanyDetailArgs;
     if (widget.companyData == null) {
       _companyData = CompanyDetailArgs(companyId: -1, companyName: "Unknown Company", companyFavourite: false, favouritesId: -1);
@@ -64,6 +72,10 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
         // map the price date on company
         List<GraphData> _tempData = [];
         int _totalData = 0;
+        double _totalPrice = 0;
+        int _totalPriceData = 0;
+        _minPrice = double.maxFinite;
+        _maxPrice = double.minPositive;
 
         // move the last update to friday
         int _addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
@@ -79,6 +91,22 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
             _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
             _totalData += 1;
           }
+
+          // count for minimum, maximum, and average
+          if(_totalPriceData < 29) {
+            if(_minPrice! > _price.priceValue) {
+              _minPrice = _price.priceValue;
+            }
+
+            if(_maxPrice! < _price.priceValue) {
+              _maxPrice = _price.priceValue;
+            }
+
+            _totalPrice += _price.priceValue;
+            _totalPriceData++;
+          }
+
+          // if total data already more than 64 break  the data, as heat map only will display 65 data
           if(_totalData >= 64) {
             break;
           }
@@ -86,6 +114,21 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
 
         // add the current price which only in company
         _tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+
+        // check current price for minimum, maximum, and average
+        if(_minPrice! > _companyDetail.companyNetAssetValue!) {
+          _minPrice = _companyDetail.companyNetAssetValue!;
+        }
+
+        if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
+          _maxPrice = _companyDetail.companyNetAssetValue!;
+        }
+
+        _totalPrice += _companyDetail.companyNetAssetValue!;
+        _totalPriceData++;
+        // compute average
+        _avgPrice = _totalPrice / _totalPriceData;
+        _numPrice = _totalPriceData;
 
         // sort the temporary data
         _tempData.sort((a, b) {
@@ -323,6 +366,39 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                                   headerAlign: TextAlign.right,
                                   child: Text(
                                     (Globals.companyTypeEnum[_companyDetail.companyType] ?? "Unknown"),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Min (" + _numPrice.toString() + ")",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrencyWithNull(_minPrice!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Max (" + _numPrice.toString() + ")",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrencyWithNull(_maxPrice!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Avg (" + _numPrice.toString() + ")",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrencyWithNull(_avgPrice!),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),

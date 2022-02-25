@@ -38,6 +38,10 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   int _bodyPage = 0;
   List<IndexPriceModel> _indexPrice = [];
   Map<DateTime, GraphData>? _graphData;
+  int _numPrice = 0;
+  double? _minPrice;
+  double? _maxPrice;
+  double? _avgPrice;
 
   @override
   void initState() {
@@ -48,6 +52,8 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
     _priceDiff = _index.indexNetAssetValue - _index.indexPrevPrice;
     _riskColor = riskColor(_index.indexNetAssetValue, _index.indexPrevPrice, _userInfo!.risk);
     _indexPrice = [];
+    _bodyPage = 0;
+    _numPrice = 0;
 
     _isLoading = true;
 
@@ -280,6 +286,39 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 10,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              CompanyInfoBox(
+                                header: "Min (" + _numPrice.toString() + ")",
+                                headerAlign: TextAlign.right,
+                                child: Text(
+                                  formatCurrencyWithNull(_minPrice),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Max (" + _numPrice.toString() + ")",
+                                headerAlign: TextAlign.right,
+                                child: Text(
+                                  formatCurrencyWithNull(_maxPrice),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Avg (" + _numPrice.toString() + ")",
+                                headerAlign: TextAlign.right,
+                                child: Text(
+                                  formatCurrencyWithNull(_avgPrice),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -351,6 +390,10 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       // then go 14 weeks before so we knew the start date
       DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
+      // initialize the minimum, maximum, and total price
+      double _totalPrice = 0;
+      _minPrice = double.maxFinite;
+      _maxPrice = double.minPositive;
       for (IndexPriceModel _price in resp) {
         // ensure that this date is at least bigger than start date
         if(_price.indexPriceDate.compareTo(_startDate) >= 0) {
@@ -358,6 +401,17 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
 
           // add total data, and if already 64 break the list
           _totalData += 1;
+        }
+
+        if(_numPrice < 29) {
+          if(_minPrice! > _price.indexPriceValue) {
+            _minPrice = _price.indexPriceValue;
+          }
+          if(_maxPrice! < _price.indexPriceValue) {
+            _maxPrice = _price.indexPriceValue;
+          }
+          _totalPrice += _price.indexPriceValue;
+          _numPrice++;
         }
 
         // check total data now
@@ -368,6 +422,19 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
 
       // add the current price which only in index
       _tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));
+
+      // check the current price to min, max, and total
+      if(_minPrice! > _index.indexNetAssetValue) {
+        _minPrice = _index.indexNetAssetValue;
+      }
+      if(_maxPrice! < _index.indexNetAssetValue) {
+        _maxPrice = _index.indexNetAssetValue;
+      }
+      _totalPrice += _index.indexNetAssetValue;
+      _numPrice++;
+
+      // get average price
+      _avgPrice = _totalPrice / _numPrice;
 
       // once got the data now sort it
       _tempData.sort((a, b) {

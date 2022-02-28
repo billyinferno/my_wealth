@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
 
 class GraphData {
   final DateTime date;
@@ -13,9 +14,11 @@ class GraphData {
 
 class HeatGraph extends StatelessWidget {
   final Widget? title;
+  final double currentPrice;
   final Map<DateTime, GraphData> data;
+  final bool? enableDailyComparison;
   final UserLoginInfoModel userInfo;
-  const HeatGraph({ Key? key, this.title, required this.data, required this.userInfo }) : super(key: key);
+  const HeatGraph({ Key? key, this.title, required this.currentPrice, required this.data, required this.userInfo, this.enableDailyComparison }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +101,7 @@ class HeatGraph extends StatelessWidget {
 
   List<Widget> _generateRows() {
     final DateFormat _df = DateFormat("dd/MMM");
+    final bool _enableDailyComparison = (enableDailyComparison ?? false);
 
     List<Widget> _return = [];
     int i = 0;
@@ -106,6 +110,7 @@ class HeatGraph extends StatelessWidget {
     // history data
     double _prevPrice = -1;
     Color _boxColor;
+    Color _decorationColor;
 
     // before we do, let's expand the data first
     List<GraphData> _dataExpand = _expandData();
@@ -145,7 +150,25 @@ class HeatGraph extends StatelessWidget {
               _boxColor = primaryDark;
             }
             
-            _boxes[day-1] = _generateBox(_boxColor);
+            // check for the foreground color
+            if(_enableDailyComparison) {
+              if(currentPrice == _dataExpand[i].price) {
+                _decorationColor = Colors.transparent;
+              }
+              else {
+                if(currentPrice > 0 && _dataExpand[i].price > 0) {
+                  _decorationColor = riskColor(currentPrice, _dataExpand[i].price, userInfo.risk) ;
+                }
+                else {
+                  _decorationColor = Colors.transparent;
+                }
+              }
+            }
+            else {
+              _decorationColor = Colors.transparent;
+            }
+
+            _boxes[day-1] = _generateBox(_boxColor, _decorationColor);
             _endDate = _dataExpand[i].date;
           }
           // debugPrint("--- END OF WEEK ---");
@@ -184,18 +207,22 @@ class HeatGraph extends StatelessWidget {
     return _return;
   }
 
-  Widget _generateBox(Color boxColor) {
+  Widget _generateBox(Color boxColor, Color decorationColor) {
     return Container(
       width: 10,
       height: 10,
       margin: const EdgeInsets.all(5),
       color: boxColor,
+      foregroundDecoration: RotatedCornerDecoration(
+        color: decorationColor,
+        geometry: const BadgeGeometry(width: 10, height: 10, cornerRadius: 0),
+      ),
     );
   }
 
   List<Widget> _generateBoxes(Color boxColor) {
     return List<Widget>.generate(5, (index) {
-      return _generateBox(boxColor);
+      return _generateBox(boxColor, Colors.transparent);
     });
   }
 

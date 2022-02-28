@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
@@ -37,6 +38,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   double _priceDiff = 0;
   Color _riskColor = Colors.green;
   bool _isLoading = true;
+  bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
   List<IndexPriceModel> _indexPrice = [];
   Map<DateTime, GraphData>? _graphData;
@@ -58,6 +60,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
     _numPrice = 0;
 
     _isLoading = true;
+    _showCurrentPriceComparison = false;
 
     // initialize graph data
     _graphData = {};
@@ -494,21 +497,49 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   List<Widget> _showCalendar() {
     List<Widget> _calendar = [];
 
-    _calendar.add(SingleChildScrollView(
-      controller: _calendarScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: primaryLight,
-            width: 1.0,
-            style: BorderStyle.solid,
+    _calendar.add(Expanded(
+      child: SingleChildScrollView(
+        controller: _calendarScrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            ),
           ),
-        ),
-        child: HeatGraph(
-          data: _graphData!,
-          userInfo: _userInfo!
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 5,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text("Current Price Comparison"),
+                  const SizedBox(width: 10,),
+                  CupertinoSwitch(
+                    value: _showCurrentPriceComparison,
+                    onChanged: ((val) {
+                      setState(() {
+                        _showCurrentPriceComparison = val;
+                      });
+                    })
+                  )
+                ],
+              ),
+              const SizedBox(height: 5,),
+              HeatGraph(
+                data: _graphData!,
+                userInfo: _userInfo!,
+                currentPrice: _index.indexNetAssetValue,
+                enableDailyComparison: _showCurrentPriceComparison,
+              ),
+            ],
+          ),
         ),
       ),
     ));

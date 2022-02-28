@@ -316,7 +316,20 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-            )
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Text(
+                  "version - " + Globals.appVersion,
+                  style: const TextStyle(
+                    color: primaryLight,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

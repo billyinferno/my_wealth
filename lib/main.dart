@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_wealth/router.dart';
@@ -11,6 +12,7 @@ void main() {
 
   // initialize flutter application
   Future.wait([
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]), // set prefered orientation
     dotenv.load(fileName: "env/.dev.env"), // load the environment files
     Hive.initFlutter(), // initialize Hive
     LocalBox.init(), // initialize box (normal and secure)

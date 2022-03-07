@@ -136,7 +136,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                                   ),
                                   const SizedBox(width: 10,),
                                   Text(
-                                    (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!))
+                                    (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!.toLocal()))
                                   ),
                                 ],
                               ),

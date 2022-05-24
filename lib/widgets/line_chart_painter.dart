@@ -105,7 +105,7 @@ class LineChartPainter extends CustomPainter {
       canvas.drawLine(_p1, _p2, _graphRectBorder);
 
       double _currVal = _min + (((_max - _min) / 4.0) * i.toDouble());
-      _drawText(canvas, Offset(_graphRect.left, _graphRect.bottom - (_yD * i) - 5), 60, formatDecimal(_currVal, 2), 10, 0);
+      _drawText(canvas, Offset(_graphRect.left, _graphRect.bottom - (_yD * i) - 5), 60, formatCurrency(_currVal), 10, 0);
     }
 
     // once guidelines finished, we can draw the actual graph

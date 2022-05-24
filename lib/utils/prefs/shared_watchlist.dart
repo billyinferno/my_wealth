@@ -5,7 +5,7 @@ import 'package:my_wealth/storage/local_box.dart';
 class WatchlistSharedPreferences {
   static const _watchlistKey = "watchlists_list";
 
-  static Future<void> setWatchlist(List<WatchlistListModel> watchlistData) async {
+  static Future<void> setWatchlist(String type, List<WatchlistListModel> watchlistData) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -16,17 +16,17 @@ class WatchlistSharedPreferences {
     for (WatchlistListModel _watchlist in watchlistData) {
       _watchlistList.add(jsonEncode(_watchlist.toJson()));
     }
-    LocalBox.putStringList(_watchlistKey, _watchlistList);
+    LocalBox.putStringList(_watchlistKey + "_" + type, _watchlistList);
   }
 
-  static List<WatchlistListModel> getWatchlist() {
+  static List<WatchlistListModel> getWatchlist(String type) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
     }
 
     // get the data from local box
-    List<String> _watchlistList = (LocalBox.getStringList(_watchlistKey) ?? []);
+    List<String> _watchlistList = (LocalBox.getStringList(_watchlistKey + "_" + type) ?? []);
 
     // check if the list is empty or not?
     if (_watchlistList.isNotEmpty) {

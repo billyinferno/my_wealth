@@ -9,6 +9,7 @@ import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/watchlist_add_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
@@ -19,7 +20,8 @@ import 'package:my_wealth/widgets/watchlist_list.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistAddPage extends StatefulWidget {
-  const WatchlistAddPage({ Key? key }) : super(key: key);
+  final Object? watchlistArgs;
+  const WatchlistAddPage({ Key? key, required this.watchlistArgs }) : super(key: key);
 
   @override
   _WatchlistAddPageState createState() => _WatchlistAddPageState();
@@ -31,6 +33,7 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
+  late WatchlistAddArgs _args;
   late List<CompanySearchModel>? _companySearchResult;
   late List<WatchlistListModel>? _watchlists;
   late UserLoginInfoModel? _userInfo;
@@ -39,10 +42,13 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
   void initState() {
     super.initState();
 
+    // convert the arguments being passed down to knew what we want to add
+    _args = widget.watchlistArgs as WatchlistAddArgs;
+
     // set the search result as empty
     _companySearchResult = [];
     _userInfo = UserSharedPreferences.getUserInfo();
-    _watchlists = WatchlistSharedPreferences.getWatchlist();
+    _watchlists = WatchlistSharedPreferences.getWatchlist(_args.type);
   }
 
   @override
@@ -68,10 +74,10 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
               Ionicons.arrow_back,
             )
           ),
-          title: const Center(
+          title: Center(
             child: Text(
-              "Add Watchlist",
-              style: TextStyle(
+              _getTitle(),
+              style: const TextStyle(
                 color: secondaryColor,
               ),
             )
@@ -116,6 +122,19 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
     );
   }
 
+  String _getTitle() {
+    if (_args.type == "reksadana") {
+      return "Add Mutual Fund Watchlist";
+    }
+    else if (_args.type == "saham") {
+      return "Add Stock Watchlist";
+    }
+    else if (_args.type == "crypto") {
+      return "Add Crypto Watchlist";
+    }
+    return "";
+  }
+
   Widget _generateResult() {
     if(_companySearchResult!.isEmpty) {
       return const Expanded(
@@ -158,10 +177,10 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
                     _watchlists!.add(resp!);
 
                     // update the shared preferences
-                    await WatchlistSharedPreferences.setWatchlist(_watchlists!);
+                    await WatchlistSharedPreferences.setWatchlist(_args.type, _watchlists!);
 
                     // notify the listener for the watchlist
-                    Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_watchlists!);
+                    Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_args.type, _watchlists!);
                   }).onError((error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       createSnackBar(message: error.toString())
@@ -178,7 +197,7 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
 
   Future<List<CompanySearchModel>> _searchCompany(String companyName) async {
     List<CompanySearchModel> _ret = [];
-    await _companyAPI.getCompanyByName(companyName).then((resp) {
+    await _companyAPI.getCompanyByName(companyName, _args.type).then((resp) {
       _ret = resp;
     }).onError((error, stackTrace) {
       throw Exception("Error when search company");
@@ -196,7 +215,7 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
   Future<WatchlistListModel?> _addCompanyToWatchlist(int index) async {
     WatchlistListModel? _watchlist;
 
-    await _watchlistAPI.add(_companySearchResult![index].companyId).then((resp) async {
+    await _watchlistAPI.add(_args.type, _companySearchResult![index].companyId).then((resp) async {
       _watchlist = resp;
 
       CompanySearchModel _ret = CompanySearchModel(

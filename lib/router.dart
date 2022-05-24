@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/pages/company/company_detail.dart';
-import 'package:my_wealth/pages/favourites/favourite_company_list.dart';
+import 'package:my_wealth/pages/company/company_detail_crypto.dart';
+import 'package:my_wealth/pages/company/company_detail_reksadana.dart';
+import 'package:my_wealth/pages/company/company_detail_saham.dart';
+import 'package:my_wealth/pages/favourites/favourite_company_list_crypto.dart';
+import 'package:my_wealth/pages/favourites/favourite_company_list_reksadana.dart';
+import 'package:my_wealth/pages/favourites/favourite_company_list_saham.dart';
 import 'package:my_wealth/pages/home.dart';
 import 'package:my_wealth/pages/index/index_detail.dart';
 import 'package:my_wealth/pages/login.dart';
@@ -8,6 +12,7 @@ import 'package:my_wealth/pages/users/change_password.dart';
 import 'package:my_wealth/pages/users/update_risk.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';
+import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_sell.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_add.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_list.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
@@ -98,25 +103,45 @@ class _RouterPageState extends State<RouterPage> {
       {
         return createAnimationRoute(IndexDetailPage(index: settings.arguments,));
       }
-      case '/favourites/list':
+      case '/favourites/list/reksadana':
       {
-        return createAnimationRoute(const FavouriteCompanyListPage());
+        return createAnimationRoute(const FavouriteCompanyListReksadanaPage());
       }
-      case '/company/detail':
+      case '/favourites/list/saham':
       {
-        return createAnimationRoute(CompanyDetailPage(companyData: settings.arguments,));
+        return createAnimationRoute(const FavouriteCompanyListSahamPage());
+      }
+      case '/favourites/list/crypto':
+      {
+        return createAnimationRoute(const FavouriteCompanyListCryptoPage());
+      }
+      case '/company/detail/reksadana':
+      {
+        return createAnimationRoute(CompanyDetailReksadanaPage(companyData: settings.arguments,));
+      }
+      case '/company/detail/saham':
+      {
+        return createAnimationRoute(CompanyDetailSahamPage(companyData: settings.arguments,));
+      }
+      case '/company/detail/crypto':
+      {
+        return createAnimationRoute(CompanyDetailCryptoPage(companyData: settings.arguments,));
       }
       case '/watchlist/add':
       {
-        return createAnimationRoute(const WatchlistAddPage());
+        return createAnimationRoute(WatchlistAddPage(watchlistArgs: settings.arguments,));
       }
       case '/watchlist/list':
       {
-        return createAnimationRoute(WatchlistListPage(watchlist: settings.arguments,));
+        return createAnimationRoute(WatchlistListPage(watchlistArgs: settings.arguments,));
       }
-      case '/watchlist/detail/create':
+      case '/watchlist/detail/buy':
       {
-        return createAnimationRoute(WatchlistDetailCreatePage(watchlist: settings.arguments,));
+        return createAnimationRoute(WatchlistDetailBuyPage(watchlistArgs: settings.arguments,));
+      }
+      case '/watchlist/detail/sell':
+      {
+        return createAnimationRoute(WatchlistDetailSellPage(watchlistArgs: settings.arguments,));
       }
       case '/watchlist/detail/edit':
       {

@@ -10,7 +10,6 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_detail_price_list.dart';
@@ -19,31 +18,33 @@ import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
 
-class CompanyDetailPage extends StatefulWidget {
+class CompanyDetailCryptoPage extends StatefulWidget {
   final Object? companyData;
-  const CompanyDetailPage({ Key? key, required this.companyData }) : super(key: key);
+  const CompanyDetailCryptoPage({Key? key, required this.companyData}) : super(key: key);
 
   @override
-  _CompanyDetailPageState createState() => _CompanyDetailPageState();
+  State<CompanyDetailCryptoPage> createState() => _CompanyDetailCryptoPageState();
 }
 
-class _CompanyDetailPageState extends State<CompanyDetailPage> {
-  late CompanyDetailArgs _companyData;
-  late CompanyDetailModel _companyDetail;
-  late UserLoginInfoModel? _userInfo;
-  
+class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   final ScrollController _scrollController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
 
+  late CompanyDetailArgs _companyData;
+  late CompanyDetailModel _companyDetail;
+  late UserLoginInfoModel? _userInfo;
+  
   final CompanyAPI _companyApi = CompanyAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
-  
+
   bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
-  int _bodyPage = 0;
   Map<DateTime, GraphData>? _graphData;
+  
   int _numPrice = 0;
+  int _bodyPage = -1;
+
   double? _minPrice;
   double? _maxPrice;
   double? _avgPrice;
@@ -51,20 +52,14 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   @override
   void initState() {
     super.initState();
+
+    // set that this is still loading
     _isLoading = true;
-    _showCurrentPriceComparison = false;
 
-    _bodyPage = 0;
-    _numPrice = 0;
-
+    // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
-    if (widget.companyData == null) {
-      _companyData = CompanyDetailArgs(companyId: -1, companyName: "Unknown Company", companyFavourite: false, favouritesId: -1);
-    }
-    else {
-      _companyData = widget.companyData as CompanyDetailArgs;
-    }
 
+    // get user information
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize graph data
@@ -74,83 +69,16 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
       // show the loader dialog
       showLoaderDialog(context);
       // perform the get company detail information here
-      await _companyApi.getCompanyDetail(_companyData.companyId).then((resp) {
+      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+        // copy the response to company detail data
         _companyDetail = resp;
-
-        // map the price date on company
-        List<GraphData> _tempData = [];
-        int _totalData = 0;
-        double _totalPrice = 0;
-        int _totalPriceData = 0;
-        _minPrice = double.maxFinite;
-        _maxPrice = double.minPositive;
-
-        // move the last update to friday
-        int _addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
-        DateTime _endDate = _companyDetail.companyLastUpdate!.add(Duration(days: _addDay));
-
-        // then go 14 weeks before so we knew the start date
-        DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
-        // only get the 1st 64 data, since we will want to get the latest data
-        for (PriceModel _price in _companyDetail.companyPrices) {
-          // ensure that all the data we will put is more than or equal with startdate
-          if(_price.priceDate.compareTo(_startDate) >= 0) {
-            _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
-            _totalData += 1;
-          }
-
-          // count for minimum, maximum, and average
-          if(_totalPriceData < 29) {
-            if(_minPrice! > _price.priceValue) {
-              _minPrice = _price.priceValue;
-            }
-
-            if(_maxPrice! < _price.priceValue) {
-              _maxPrice = _price.priceValue;
-            }
-
-            _totalPrice += _price.priceValue;
-            _totalPriceData++;
-          }
-
-          // if total data already more than 64 break  the data, as heat map only will display 65 data
-          if(_totalData >= 64) {
-            break;
-          }
-        }
-
-        // add the current price which only in company
-        _tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
-
-        // check current price for minimum, maximum, and average
-        if(_minPrice! > _companyDetail.companyNetAssetValue!) {
-          _minPrice = _companyDetail.companyNetAssetValue!;
-        }
-
-        if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
-          _maxPrice = _companyDetail.companyNetAssetValue!;
-        }
-
-        _totalPrice += _companyDetail.companyNetAssetValue!;
-        _totalPriceData++;
-        // compute average
-        _avgPrice = _totalPrice / _totalPriceData;
-        _numPrice = _totalPriceData;
-
-        // sort the temporary data
-        _tempData.sort((a, b) {
-          return a.date.compareTo(b.date);
-        });
-
-        // once sorted, then we can put it on map
-        for (GraphData _data in _tempData) {
-          _graphData![_data.date] = _data;
-        }
+        
+        // generate map data
+        _generateGraphData(resp);        
       }).whenComplete(() {
         // once finished then remove the loader dialog
         Navigator.pop(context);
-        setIsLoading(false);
+        _setIsLoading(false);
       });
     });
   }
@@ -159,10 +87,10 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-    _graphScrollController.dispose();
     _calendarScrollController.dispose();
+    _graphScrollController.dispose();
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return _generatePage();
@@ -170,28 +98,10 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
 
   Widget _generatePage() {
     if (_isLoading) {
-      return Container(
-        color: primaryColor,
-      );
+      return Container(color: primaryColor,);
     }
     else {
-      int _companyRating;
-      int _companyRisk;
-
-      if(_companyDetail.companyYearlyRating == null) {
-        _companyRating = 0;
-      }
-      else {
-        _companyRating = _companyDetail.companyYearlyRating!.toInt();
-      }
-
-      if(_companyDetail.companyYearlyRisk == null) {
-        _companyRisk = 0;
-      }
-      else {
-        _companyRisk = _companyDetail.companyYearlyRisk!.toInt();
-      }
-
+      // generate the actual page
       return WillPopScope(
         onWillPop: (() async {
           return false;
@@ -240,19 +150,33 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              _companyData.companyName,
+                              (_companyDetail.companySymbol == null ? "" : "(" + _companyDetail.companySymbol!.toUpperCase() + ") ") + _companyData.companyName,
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              formatCurrency(_companyDetail.companyNetAssetValue!),
-                              style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  formatCurrency(_companyDetail.companyNetAssetValue!),
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                Text(
+                                  "USD " + formatCurrency(_companyDetail.companyCurrentPriceUsd!),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -292,28 +216,28 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 CompanyInfoBox(
-                                  header: "Weekly",
+                                  header: "Market Cap",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100) + "%",
+                                    formatCurrencyWithNull((_companyDetail.companyMarketCap == null ? null : _companyDetail.companyMarketCap!.toDouble())),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Monthly",
+                                  header: "Fully Dilluted",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100) + "%",
+                                    formatCurrencyWithNull(_companyDetail.companyFullyDilutedValuation),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Quarterly",
+                                  header: "Total Volume",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100) + "%",
+                                    formatCurrencyWithNull(_companyDetail.companyTotalUnit),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -325,28 +249,28 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 CompanyInfoBox(
-                                  header: "Semi Annual",
+                                  header: "Circulating",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100) + "%",
+                                    formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "YTD",
+                                  header: "Total Supply",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyYtdReturn, 100) + "%",
+                                    formatCurrencyWithNull(_companyDetail.companyTotalSupply),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Yearly",
+                                  header: "Max Supply",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100) + "%",
+                                    formatCurrencyWithNull(_companyDetail.companyMaxSupply),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -358,30 +282,28 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 CompanyInfoBox(
-                                  header: "Rating",
-                                  headerAlign: TextAlign.right,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: generateRatingIcon(_companyRating),
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Risk",
-                                  headerAlign: TextAlign.right,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: generateRiskIcon(_companyRisk),
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Type",
+                                  header: "High 24H",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    (Globals.companyTypeEnum[_companyDetail.companyType] ?? "Unknown"),
+                                    "USD " + formatCurrencyWithNull(_companyDetail.companyHigh24H),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Low 24H",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    "USD " + formatCurrencyWithNull(_companyDetail.companyLow24H),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Change 24H",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    "USD " + formatCurrencyWithNull(_companyDetail.companyPriceChange24H),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -393,59 +315,34 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 CompanyInfoBox(
-                                  header: "Min (" + _numPrice.toString() + ")",
+                                  header: "Cap Chg 24H",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatCurrencyWithNull(_minPrice!),
+                                    formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Max (" + _numPrice.toString() + ")",
+                                  header: "ATH",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatCurrencyWithNull(_maxPrice!),
+                                    "USD " + formatCurrencyWithNull(_companyDetail.companyAllTimeHigh),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Avg (" + _numPrice.toString() + ")",
+                                  header: "ATL",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatCurrencyWithNull(_avgPrice!),
+                                    "USD " + formatCurrencyWithNull(_companyDetail.companyAllTimeLow),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Total Asset",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrency(_companyDetail.companyAssetUnderManagement!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Total Unit",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrency(_companyDetail.companyTotalUnit!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                const Expanded(child: SizedBox()),
-                              ],
-                            )
                           ],
                         ),
                       ),
@@ -501,56 +398,6 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
         ),
       );
     }
-  }
-
-  void setIsLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
-    });
-  }
-
-  List<Widget> generateRiskIcon(int companyRisk) {
-    List<Widget> _ret = [];
-    if (companyRisk > 0) {
-      _ret = List<Widget>.generate(companyRisk, (index) {
-        return const Icon(
-          Ionicons.alert,
-          color: secondaryLight,
-          size: 15,
-        );
-      });
-    }
-    else {
-      _ret.add(const Icon(
-        Ionicons.help,
-        color: Colors.blue,
-        size: 15,
-      ));
-    }
-
-    return _ret;
-  }
-
-  List<Widget> generateRatingIcon(int companyRating) {
-    List<Widget> _ret = [];
-    if (companyRating > 0) {
-      _ret = List<Widget>.generate(companyRating, (index) {
-        return const Icon(
-          Ionicons.star,
-          color: accentLight,
-          size: 15,
-        );
-      });
-    }
-    else {
-      _ret.add(const Icon(
-        Ionicons.help,
-        color: Colors.blue,
-        size: 15,
-      ));
-    }
-
-    return _ret;
   }
 
   List<Widget> _detail() {
@@ -692,9 +539,9 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
           return CompanyDetailPriceList(
             date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
             price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
+            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue, true),
             riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff, true)),
             dayDiffColor: dayDiffColor,
           );
         }),
@@ -770,5 +617,86 @@ class _CompanyDetailPageState extends State<CompanyDetailPage> {
     ));
 
     return _graph;
+  }
+
+  void _setIsLoading(bool val) {
+    setState(() {
+      _isLoading = val;
+    });
+  }
+
+  void _generateGraphData(CompanyDetailModel data) {
+    // map the price date on company
+    List<GraphData> _tempData = [];
+    int _totalData = 0;
+    double _totalPrice = 0;
+    int _totalPriceData = 0;
+
+    _minPrice = double.maxFinite;
+    _maxPrice = double.minPositive;
+
+    // move the last update to friday
+    int _addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
+    DateTime _endDate = data.companyLastUpdate!.add(Duration(days: _addDay));
+
+    // then go 14 weeks before so we knew the start date
+    DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+
+    // only get the 1st 64 data, since we will want to get the latest data
+    for (PriceModel _price in data.companyPrices) {
+      // ensure that all the data we will put is more than or equal with startdate
+      if(_price.priceDate.compareTo(_startDate) >= 0) {
+        _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
+        _totalData += 1;
+      }
+
+      // count for minimum, maximum, and average
+      if(_totalPriceData < 29) {
+        if(_minPrice! > _price.priceValue) {
+          _minPrice = _price.priceValue;
+        }
+
+        if(_maxPrice! < _price.priceValue) {
+          _maxPrice = _price.priceValue;
+        }
+
+        _totalPrice += _price.priceValue;
+        _totalPriceData++;
+      }
+
+      // if total data already more than 64 break  the data, as heat map only will display 65 data
+      if(_totalData >= 64) {
+        break;
+      }
+    }
+
+    // add the current price which only in company
+    _tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
+
+    // check current price for minimum, maximum, and average
+    if(_minPrice! > data.companyNetAssetValue!) {
+      _minPrice = data.companyNetAssetValue!;
+    }
+
+    if(_maxPrice! < data.companyNetAssetValue!) {
+      _maxPrice = data.companyNetAssetValue!;
+    }
+
+    _totalPrice += data.companyNetAssetValue!;
+    _totalPriceData++;
+    
+    // compute average
+    _avgPrice = _totalPrice / _totalPriceData;
+    _numPrice = _totalPriceData;
+
+    // sort the temporary data
+    _tempData.sort((a, b) {
+      return a.date.compareTo(b.date);
+    });
+
+    // once sorted, then we can put it on map
+    for (GraphData _data in _tempData) {
+      _graphData![_data.date] = _data;
+    }
   }
 }

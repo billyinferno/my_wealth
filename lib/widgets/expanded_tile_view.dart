@@ -42,7 +42,7 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
       collapsedIconColor: primaryLight,
       title: ExpandedTileTitle(
         name: widget.watchlist.watchlistCompanyName,
-        lot: widget.watchlist.watchlistDetail.length,
+        lot: _totalLot(),
         share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
         gain: (widget.isVisible ? _totalGain : null),
@@ -62,6 +62,19 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
         );
       }),
     );
+  }
+
+  int _totalLot() {
+    // loop thru widget.watchlist.watchlistDetail and ensure that we will only count
+    // all the shares that > 0
+    int _total = 0;
+    for (WatchlistDetailListModel _data in widget.watchlist.watchlistDetail) {
+      if(_data.watchlistDetailShare > 0) {
+        _total++;
+      }
+    }
+    // return the correct total lot
+    return _total;
   }
 
   void _computeDetail() {

@@ -21,7 +21,7 @@ class FavouritesAPI {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
-  Future<List<FavouritesModel>> getFavourites() async {
+  Future<List<FavouritesModel>> getFavourites(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -30,7 +30,7 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/favourites'),
+        Uri.parse(Globals.apiURL + 'api/favourites/' + type),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ class FavouritesAPI {
     }
   }
 
-  Future<List<FavouritesListModel>> listFavouritesCompanies() async {
+  Future<List<FavouritesListModel>> listFavouritesCompanies(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -66,7 +66,7 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/favourites/list'),
+        Uri.parse(Globals.apiURL + 'api/favourites/list/' + type),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ class FavouritesAPI {
     }
   }
 
-  Future<FavouritesListModel> add(int companyId) async {
+  Future<FavouritesListModel> add(int companyId, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -103,7 +103,7 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.post(
-        Uri.parse(Globals.apiURL + 'api/favourites'),
+        Uri.parse(Globals.apiURL + 'api/favourites/' + type),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',

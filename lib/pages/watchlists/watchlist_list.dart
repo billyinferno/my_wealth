@@ -9,6 +9,7 @@ import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
+import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -17,13 +18,12 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
-import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/widgets/watchlist_detail_summary_box.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistListPage extends StatefulWidget {
-  final Object? watchlist;
-  const WatchlistListPage({ Key? key, required this.watchlist }) : super(key: key);
+  final Object? watchlistArgs;
+  const WatchlistListPage({ Key? key, required this.watchlistArgs }) : super(key: key);
 
   @override
   _WatchlistListPageState createState() => _WatchlistListPageState();
@@ -35,19 +35,28 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
   final WatchlistAPI _watchlistApi = WatchlistAPI();
   final GlobalKey _scaffold = GlobalKey();
 
+  late WatchlistListArgs _watchlistArgs;
+  late String _type;
   late WatchlistListModel _watchlist;
   late UserLoginInfoModel? _userInfo;
 
+  int _totalBuy = 0;
+  int _totalSell = 0;
+  double _priceDiff = 0;
   double _totalCost = 0;
   double _totalGain = 0;
+  double _totalSellAmount = 0;
   double _totalValue = 0;
-  double _totalShares = 0;
+  double _totalSharesBuy = 0;
+  double _totalSharesSell = 0;
   Color _riskColor = Colors.green;
 
   @override
   void initState() {
     super.initState();
-    _watchlist = widget.watchlist as WatchlistListModel;
+    _watchlistArgs = widget.watchlistArgs as WatchlistListArgs;
+    _type = _watchlistArgs.type;
+    _watchlist = _watchlistArgs.watchList;
     _userInfo = UserSharedPreferences.getUserInfo();
   }
 
@@ -74,13 +83,12 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
               Navigator.pop(context);
             }),
           ),
-          title: Center(
+          title: const Center(
             child: Text(
-              _watchlist.watchlistCompanyName.toTitleCase(),
-              style: const TextStyle(
+              "Watchlist List",
+              style: TextStyle(
                 color: secondaryColor,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -88,10 +96,28 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
           builder: ((context, watchlistProvider, child) {
             // get the actual data of this watchlist from provider.
             // so when we refresh the provider, the watchlist will be updated also.
-            for(WatchlistListModel _watch in watchlistProvider.watchlist!) {
-              if(_watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                _watchlist = _watch;
-                break;
+            if (_type == "reksadana") {
+              for(WatchlistListModel _watch in watchlistProvider.watchlistReksadana!) {
+                if(_watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                  _watchlist = _watch;
+                  break;
+                }
+              }
+            }
+            else if (_type == "saham") {
+              for(WatchlistListModel _watch in watchlistProvider.watchlistSaham!) {
+                if(_watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                  _watchlist = _watch;
+                  break;
+                }
+              }
+            }
+            else if (_type == "crypto") {
+              for(WatchlistListModel _watch in watchlistProvider.watchlistCrypto!) {
+                if(_watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                  _watchlist = _watch;
+                  break;
+                }
               }
             }
     
@@ -126,18 +152,73 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
+                              Text(
+                                _watchlist.watchlistCompanyName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 10,),
                               Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  const Icon(
-                                    Ionicons.time_outline,
-                                    color: primaryLight,
+                                  Expanded(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          formatCurrency(_watchlist.watchlistCompanyNetAssetValue!),
+                                          style: const TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        Icon(
+                                          (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                          color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        Container(
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
+                                                width: 2.0,
+                                                style: BorderStyle.solid,
+                                              ),
+                                            )
+                                          ),
+                                          child: Text(
+                                            formatCurrency(_priceDiff),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(width: 10,),
-                                  Text(
-                                    (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!.toLocal()))
-                                  ),
+                                  const SizedBox(height: 10,),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      const Icon(
+                                        Ionicons.time_outline,
+                                        color: primaryLight,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 10,),
+                                      Text(
+                                        (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!.toLocal()))
+                                      ),
+                                    ],
+                                  )
                                 ],
                               ),
                               const SizedBox(height: 10,),
@@ -146,8 +227,8 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   WatchlistDetailSummaryBox(
-                                    title: "PRICE",
-                                    text: formatCurrency(_watchlist.watchlistCompanyNetAssetValue!)
+                                    title: "AVG PRICE",
+                                    text: formatCurrency(_totalCost / _totalSharesBuy)
                                   ),
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
@@ -167,18 +248,39 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   WatchlistDetailSummaryBox(
-                                    title: "LOTS",
-                                    text: _watchlist.watchlistDetail.length.toString() + " lots"
+                                    title: "BUY LOTS",
+                                    text: _totalBuy.toString() + " lots"
                                   ),
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
                                     title: "SHARES",
-                                    text: formatDecimal(_totalShares, 2)
+                                    text: formatDecimal(_totalSharesBuy, 2)
                                   ),
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
                                     title: "GAIN",
                                     text: formatCurrency(_totalGain)
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  WatchlistDetailSummaryBox(
+                                    title: "SELL LOTS",
+                                    text: _totalSell.toString() + " lots"
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "SHARES",
+                                    text: formatDecimal(_totalSharesSell, 2)
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "SELL AMOUNT",
+                                    text: formatCurrency(_totalSellAmount)
                                   ),
                                 ],
                               ),
@@ -196,20 +298,30 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       TransparentButton(
-                        text: "Add Detail",
+                        text: "Buy",
                         icon: Ionicons.add,
                         callback: (() {
-                          Navigator.pushNamed(context, '/watchlist/detail/create', arguments: _watchlist);
+                          WatchlistListArgs _args = WatchlistListArgs(type: _type, watchList: _watchlist);
+                          Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: _args);
                         })
                       ),
                       const SizedBox(width: 10,),
                       TransparentButton(
-                        text: "Delete Watchlist",
+                        text: "Sell",
+                        icon: Ionicons.remove,
+                        callback: (() {
+                          WatchlistListArgs _args = WatchlistListArgs(type: _type, watchList: _watchlist);
+                          Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: _args);
+                        })
+                      ),
+                      const SizedBox(width: 10,),
+                      TransparentButton(
+                        text: "Delete",
                         icon: Ionicons.trash,
                         callback: (() async {
                           await ShowMyDialog(
                             title: "Delete Watchlist",
-                            text: "Are you sure to delete " + _watchlist.watchlistCompanyName.toTitleCase() + "?",
+                            text: "Are you sure to delete " + _watchlist.watchlistCompanyName + "?",
                             confirmLabel: "Delete",
                             cancelLabel: "Cancel"
                           ).show(context).then((resp) async {
@@ -218,7 +330,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                               showLoaderDialog(context);
                               await _deleteWatchlist().then((resp) {
                                 if(resp) {
-                                  debugPrint("🗑️ Delete watchlist " + _watchlist.watchlistCompanyName.toTitleCase());
+                                  debugPrint("🗑️ Delete watchlist " + _watchlist.watchlistCompanyName);
                                   // navigate to the previous page
                                   Navigator.pop(context); 
                                 }
@@ -289,7 +401,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
                     controller: _scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
-                      WatchlistDetailEditArgs _args = WatchlistDetailEditArgs(index: index, watchlist: _watchlist);
+                      WatchlistDetailEditArgs _args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
     
                       return Slidable(
                         endActionPane: ActionPane(
@@ -429,7 +541,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
           watchlistFavouriteId: _watchlist.watchlistFavouriteId,
         );
 
-        List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist();
+        List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
         
         // loop thru the current watchlist
         for (WatchlistListModel _watch in _currWatchlist) {
@@ -444,8 +556,8 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
 
         // once we finished generate the updated watchlist, update the shared preferences
         // and the provider
-        await WatchlistSharedPreferences.setWatchlist(_newWatchlist);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_newWatchlist);
+        await WatchlistSharedPreferences.setWatchlist(_type, _newWatchlist);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, _newWatchlist);
       }
 
       _ret = resp;
@@ -467,7 +579,7 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
       if(resp) {
         // delete the current watchlist
         List<WatchlistListModel> _newWatchlist = [];
-        List<WatchlistListModel> _currentWatchlist = WatchlistSharedPreferences.getWatchlist();
+        List<WatchlistListModel> _currentWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
         for (WatchlistListModel _watch in _currentWatchlist) {
           if(_watch.watchlistId != _watchlist.watchlistId) {
             _newWatchlist.add(_watch);
@@ -475,8 +587,8 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
         }
 
         // update shared preferences and provdier
-        await WatchlistSharedPreferences.setWatchlist(_newWatchlist);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_newWatchlist);
+        await WatchlistSharedPreferences.setWatchlist(_type, _newWatchlist);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, _newWatchlist);
       }
       _ret = resp;
     });
@@ -487,15 +599,31 @@ class _WatchlistListPageState extends State<WatchlistListPage> {
     // compute all necessary data for the summary, such as cost, gain
     _totalCost = 0;
     _totalGain = 0;
-    _totalShares = 0;
+    _totalSharesBuy = 0;
+    _totalSharesSell = 0;
+    _totalBuy = 0;
+    _totalSell = 0;
+    _totalSellAmount = 0;
+
+    // compute the price diff
+    _priceDiff = (_watchlist.watchlistCompanyNetAssetValue! - _watchlist.watchlistCompanyPrevPrice!) ;
 
     // loop thru all the detail to compute
     for(WatchlistDetailListModel _detail in _watchlist.watchlistDetail) {
-      _totalCost += _detail.watchlistDetailPrice * _detail.watchlistDetailShare;
+      if (_detail.watchlistDetailShare > 0) {
+        _totalBuy++;
+        _totalSharesBuy += _detail.watchlistDetailShare;
+        _totalCost += _detail.watchlistDetailPrice * _detail.watchlistDetailShare;
+      }
+      else {
+        _totalSell++;
+        _totalSharesSell += (_detail.watchlistDetailShare * -1);
+        _totalSellAmount += _detail.watchlistDetailPrice * (_detail.watchlistDetailShare * -1);
+      }
+
       _totalGain += ((_watchlist.watchlistCompanyNetAssetValue! - _detail.watchlistDetailPrice) * _detail.watchlistDetailShare);
-      _totalShares += _detail.watchlistDetailShare;
     }
-    _totalValue = _totalShares * _watchlist.watchlistCompanyNetAssetValue!;
+    _totalValue = _totalSharesBuy * _watchlist.watchlistCompanyNetAssetValue!;
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
   }
 }

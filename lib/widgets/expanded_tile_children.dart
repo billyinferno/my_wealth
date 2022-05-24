@@ -17,7 +17,7 @@ class ExpandedTileChildren extends StatelessWidget {
     final _riskColor  = riskColor((shares * currentPrice), (shares * price), risk);
     
     return Container(
-      color: _riskColor,
+      color: (shares > 0 ? _riskColor : Colors.blue),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -42,7 +42,7 @@ class ExpandedTileChildren extends StatelessWidget {
                   const SizedBox(width: 10,),
                   Expanded(
                     child: Text(
-                      formatDecimal(shares, 2),
+                      formatDecimal((shares > 0 ? shares : (shares * -1)), 2),
                       style: const TextStyle(
                         fontSize: 12,
                       ),
@@ -70,14 +70,14 @@ class ExpandedTileChildren extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: _riskColor,
+                              color: (shares > 0 ? _riskColor : Colors.blue),
                               width: 2.0,
                               style: BorderStyle.solid,
                             )
                           )
                         ),
                         child: Text(
-                          formatCurrency((currentPrice - price) * shares),
+                          (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(price * (shares * -1))),
                           style: const TextStyle(
                             fontSize: 12,
                           ),

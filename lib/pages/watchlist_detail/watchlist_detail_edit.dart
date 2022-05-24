@@ -8,7 +8,6 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
-import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
@@ -31,6 +30,8 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
   final WatchlistAPI _watchlistApi = WatchlistAPI();
   
   late WatchlistDetailEditArgs _watchlistArgs;
+  late String _type;
+  late String _txn;
   late WatchlistListModel _watchlist;
   late int _watchlistDetailIndex;
 
@@ -44,13 +45,27 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     super.initState();
 
     _watchlistArgs = widget.watchlistArgs as WatchlistDetailEditArgs;
+    _type = _watchlistArgs.type;
     _watchlist = _watchlistArgs.watchlist;
     _watchlistDetailIndex = _watchlistArgs.index;
+
+    // check what is the current transaction being performed?
+    // if this is a buy, then the shares should be positive, and vice versa
+    if (_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailShare > 0) {
+      _txn = "b";
+    }
+    else {
+      _txn = "s";
+    }
     
     _selectedDate = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailDate;
 
     _prevDate = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailDate;
     _prevShares = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailShare;
+    // check if previous shares is less than zero, if so then we will make it positive
+    if (_prevShares < 0) {
+      _prevShares *= -1;
+    }
     _prevPrice = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailPrice;
 
     _sharesController.text = formatDecimal(_prevShares);
@@ -79,7 +94,7 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
           ),
           title: Center(
             child: Text(
-              _watchlist.watchlistCompanyName.toTitleCase(),
+              _watchlist.watchlistCompanyName,
               style: const TextStyle(
                 fontSize: 18,
                 color: secondaryColor
@@ -113,7 +128,7 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
               children: <Widget>[
                 const SizedBox(width: 10,),
                 TransparentButton(
-                  text: "Update",
+                  text: "Update " + (_txn == "b" ? "Buy" : "Sell"),
                   icon: Ionicons.save,
                   callback: (() async {
                     showLoaderDialog(context);
@@ -163,6 +178,14 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     double _price = (double.tryParse(_priceController.text) ?? 0);
 
     if(_shares > 0 && _price > 0) {
+      // once we reach here, we need to check whether the transaction is "b"(uy) or "s"(ell), so we can send the correct
+      // share amount to the API
+      if (_txn == "s") {
+        // return back update of sales to minus again
+        _shares *= -1;
+      }
+
+      // call the update detail API
       await _watchlistApi.updateDetail(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId, _selectedDate, _shares, _price).then((resp) async {
         // check if the response is success
         if(resp) {
@@ -189,7 +212,7 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
 
           // loop thru current watchlist
           List<WatchlistListModel> _newWatchlist = [];
-          List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist();
+          List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
           for (WatchlistListModel _watch in _currWatchlist) {
             // check if this is the same ID or not, if same then we need to recreate the new watchlist
             if(_watch.watchlistId == _watchlist.watchlistId) {
@@ -211,8 +234,8 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
           }
 
           // got the new list, not time to update the shared preferences and the provider
-          await WatchlistSharedPreferences.setWatchlist(_newWatchlist);
-          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_newWatchlist);
+          await WatchlistSharedPreferences.setWatchlist(_type, _newWatchlist);
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, _newWatchlist);
         }
 
         _ret = resp;

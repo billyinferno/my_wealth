@@ -43,7 +43,12 @@ CupertinoThemeData cupertinoThemeData = const CupertinoThemeData(
   primaryContrastingColor: primaryDark,
   textTheme: CupertinoTextThemeData(
     textStyle: TextStyle(
-      fontFamily: '--apple-system'
-    )
+      fontFamily: '--apple-system',
+      color: textPrimary,
+    ),
+    actionTextStyle: TextStyle(
+      fontFamily: '--apple-system',
+      color: textPrimary,
+    ),
   )
 );

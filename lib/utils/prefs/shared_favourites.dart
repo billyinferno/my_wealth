@@ -5,7 +5,7 @@ import 'package:my_wealth/storage/local_box.dart';
 class FavouritesSharedPreferences {
   static const _favouriteKey = "favourites_list";
 
-  static Future<void> setFavouritesList(List<FavouritesModel> favouriteList) async {
+  static Future<void> setFavouritesList(String type, List<FavouritesModel> favouriteList) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -16,17 +16,17 @@ class FavouritesSharedPreferences {
     for (FavouritesModel _fave in favouriteList) {
       _favouriteList.add(jsonEncode(_fave.toJson()));
     }
-    LocalBox.putStringList(_favouriteKey, _favouriteList);
+    LocalBox.putStringList(_favouriteKey + "_" + type, _favouriteList);
   }
 
-  static List<FavouritesModel> getFavouritesList() {
+  static List<FavouritesModel> getFavouritesList(String type) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
     }
 
     // get the data from local box
-    List<String> _favouriteList = (LocalBox.getStringList(_favouriteKey) ?? []);
+    List<String> _favouriteList = (LocalBox.getStringList(_favouriteKey + "_" + type) ?? []);
 
     // check if the list is empty or not?
     if (_favouriteList.isNotEmpty) {

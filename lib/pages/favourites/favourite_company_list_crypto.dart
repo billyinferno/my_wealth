@@ -1,0 +1,281 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/favourites_api.dart';
+import 'package:my_wealth/model/favourites_list_model.dart';
+import 'package:my_wealth/provider/favourites_provider.dart';
+import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/utils/prefs/shared_favourites.dart';
+import 'package:my_wealth/widgets/favourite_company_list.dart';
+import 'package:provider/provider.dart';
+
+class FavouriteCompanyListCryptoPage extends StatefulWidget {
+  const FavouriteCompanyListCryptoPage({Key? key}) : super(key: key);
+
+  @override
+  State<FavouriteCompanyListCryptoPage> createState() => _FavouriteCompanyListCryptoPageState();
+}
+
+class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCryptoPage> {
+  final FavouritesAPI _faveAPI = FavouritesAPI();
+  final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final DateFormat _dt = DateFormat("dd/MM/yyyy");
+
+  List<FavouritesListModel> _faveList = [];
+  List<FavouritesListModel> _filterList = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      // once widget all load, showed the loader dialog since we will
+      // perform API call to get the favorite company list
+      showLoaderDialog(context);
+
+      // get the company for favourite list
+      await getFavouriteCompanyList().then((_) {
+        // pop out the loader once API call finished
+        Navigator.pop(context);
+      }).onError((error, stackTrace) {
+        debugPrint(error.toString());
+        // pop out the loader once API call finished
+        Navigator.pop(context);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // dispose all the controller
+    _textController.dispose();
+    _scrollController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: WillPopScope(
+        onWillPop: (() async {
+          return false;
+        }),
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Center(
+              child: Text(
+                "Add Favourites Crypto",
+                style: TextStyle(
+                  color: secondaryColor,
+                ),
+              ),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: (() async {
+                // fetch the user favorites when we return back to the favorites screen
+                // and notify the provider to we can update the favorites screen based
+                // on the new favorites being add/remove from this page
+                showLoaderDialog(context);
+                await getUserFavourites().then((_) {
+                  // remove the loader
+                  Navigator.pop(context);
+                }).onError((error, stackTrace) {
+                  // in case error showed it on debug
+                  debugPrint(error.toString());
+                  // remove the loader
+                  Navigator.pop(context);
+                }).whenComplete(() {
+                  // return back to the previous page
+                  Navigator.pop(context);
+                });
+              }),
+            ),
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 10,),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: CupertinoSearchTextField(
+                  controller: _textController,
+                  onChanged: ((value) {
+                    // for crypto we can search when it matched "2", as the code usually will be at least "3"
+                    if (value.length >= 2) {
+                      setState(() {
+                        searchList(value);
+                      });
+                    }
+                    else {
+                      // if less than 3, then we will return the value of filter list
+                      // with all the fave list.
+                      setFilterList(_faveList);
+                    }
+                  }),
+                  suffixIcon: const Icon(
+                    Ionicons.trash_bin_outline,
+                    color: secondaryColor,
+                  ),
+                  suffixMode: OverlayVisibilityMode.editing,
+                  style: const TextStyle(
+                    color: textPrimary,
+                    fontFamily: '--apple-system'
+                  ),
+                  decoration: BoxDecoration(
+                    color: primaryLight,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Text(
+                  "Showed " + _filterList.length.toString() + " company(s)",
+                  style: const TextStyle(
+                    color: primaryLight,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: _filterList.length,
+                  itemBuilder: ((context, index) {
+                    return InkWell(
+                      onTap: (() {
+                        debugPrint("Open Company " + _filterList[index].favouritesCompanyName);
+                        CompanyDetailArgs _args = CompanyDetailArgs(
+                          companyId: _filterList[index].favouritesCompanyId,
+                          companyName: _filterList[index].favouritesCompanyName,
+                          companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                          favouritesId: (_filterList[index].favouritesId ?? -1),
+                          type: "crypto",
+                        );
+      
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: _args);
+                      }),
+                      child: FavouriteCompanyList(
+                        companyId: _filterList[index].favouritesCompanyId,
+                        name: "(" + _filterList[index].favouritesSymbol + ") " + _filterList[index].favouritesCompanyName,
+                        type: _filterList[index].favouritesCompanyType,
+                        date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
+                        value: _filterList[index].favouritesNetAssetValue,
+                        isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        onPress: (() async {
+                          await setFavourite(index);
+                        }),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ); 
+  }
+
+  void searchList(String find) {
+    // clear the filter list first
+    _filterList.clear();
+    // then loop thru _faveList and check if the company name and symbol contain the text we want to find
+    for (var i = 0; i < _faveList.length; i++) {
+      if (_faveList[i].favouritesCompanyName.toLowerCase().contains(find.toLowerCase()) || _faveList[i].favouritesSymbol.toLowerCase().contains(find.toLowerCase())) {
+        // add this filter list
+        _filterList.add(_faveList[i]);
+      }
+    }
+  }
+
+  void updateFaveList(int index, FavouritesListModel resp) {
+    setState(() {
+      _filterList[index] = resp;
+      for (var i = 0; i < _faveList.length; i++) {
+        if (_faveList[i].favouritesCompanyId == _filterList[index].favouritesCompanyId) {
+          // update this fave list
+          _faveList[i] = resp;
+          return;
+        }
+      }
+    });
+  }
+
+  Future<void> setFavourite(int index) async {
+    // check if this is already favourite or not?
+    int _faveUserId = _filterList[index].favouritesUserId ?? -1;
+    int _faveId = _filterList[index].favouritesId ?? -1;
+    if (_faveUserId > 0 && _faveId > 0) {
+      // already favourite, delete the favourite
+      await _faveAPI.delete(_faveId).then((_) {
+        debugPrint("🧹 Delete Favourite ID " + _faveId.toString() + " for Crypto company "+ _filterList[index].favouritesCompanyName);
+        
+        // remove the favouriteId and favouriteUserId to determine that this is not yet
+        // favourited by user
+        FavouritesListModel _resp = FavouritesListModel(
+          favouritesCompanyId: _filterList[index].favouritesCompanyId,
+          favouritesCompanyName: _filterList[index].favouritesCompanyName,
+          favouritesSymbol: _filterList[index].favouritesSymbol,
+          favouritesCompanyType: _filterList[index].favouritesCompanyType,
+          favouritesNetAssetValue: _filterList[index].favouritesNetAssetValue,
+          favouritesLastUpdate: _filterList[index].favouritesLastUpdate
+        );
+
+        // update the list and re-render the page
+        updateFaveList(index, _resp);
+      }).onError((error, stackTrace) {
+        debugPrint(error.toString());
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
+      });
+    }
+    else {
+      await _faveAPI.add(_filterList[index].favouritesCompanyId, "crypto").then((resp) {
+        debugPrint("➕ Add Crypto company ID: " + _filterList[index].favouritesCompanyId.toString() +  " for company " + _filterList[index].favouritesCompanyName);
+        // update the list with the updated response and re-render the page
+        updateFaveList(index, resp);
+      }).onError((error, stackTrace) {
+        debugPrint(error.toString());
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));
+      });
+    }
+  }
+
+  void setFavouriteList(List<FavouritesListModel> list) {
+    setState(() {
+      _faveList = List<FavouritesListModel>.from(list);
+    });
+  }
+
+  void setFilterList(List<FavouritesListModel> list) {
+    setState(() {
+      _filterList = List<FavouritesListModel>.from(list);
+    });
+  }
+
+  Future<void> getFavouriteCompanyList() async {
+    await _faveAPI.listFavouritesCompanies("crypto").then((resp) {
+      setFavouriteList(resp);
+      setFilterList(resp);
+    });
+  }
+
+  Future<void> getUserFavourites() async {
+    await _faveAPI.getFavourites("crypto").then((resp) async {
+      // update the shared preferences, and the provider
+      await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
+      // notify the provider
+      Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
+    });
+  }
+}

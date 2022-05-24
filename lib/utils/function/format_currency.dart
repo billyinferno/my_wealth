@@ -1,7 +1,8 @@
 import 'package:intl/intl.dart';
 
-String formatCurrency(double amount) {
+String formatCurrency(double amount, [bool? checkThousand]) {
   final _ccy = NumberFormat("#,##0.00", "en_US");
+  bool _checkThousand = checkThousand ?? false;
 
   String _prefix = "";
   String _posfix = "";
@@ -13,14 +14,22 @@ String formatCurrency(double amount) {
     _prefix = "-";
   }
 
-  // check if this is more than billion?
-  if(_amount >= 1000000000) {
+  // check if this is more than trillion?
+  if(_amount >= 1000000000000) {
+    _posfix = "T";
+    _amount = _amount / 1000000000000;
+  }
+  else if(_amount >= 1000000000) {
     _posfix = "B";
     _amount = _amount / 1000000000;
   }
   else if(_amount >= 1000000) {
     _posfix = "M";
     _amount = _amount / 1000000;
+  }
+  else if(_amount >= 1000 && _checkThousand) {
+    _posfix = "K";
+    _amount = _amount / 1000;
   }
 
   // format the amount
@@ -54,4 +63,11 @@ String formatDecimalWithNull(double? value, [double? times, int? decimal]) {
     return "-";
   }
   return _dec.format(value * _times);
+}
+
+String formatIntWithNull(int? value) {
+  if (value == null) {
+    return "-";
+  }
+  return formatCurrency(value.toDouble());
 }

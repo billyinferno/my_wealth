@@ -5,8 +5,6 @@ import 'package:my_wealth/widgets/stepper_selector_controller.dart';
 
 class StepperSelector extends StatefulWidget {
   final StepperSelectorController controller;
-  final String title;
-  final double? titleSize;
   final IconData icon;
   final Color iconColor;
   final double? iconSize;
@@ -14,123 +12,107 @@ class StepperSelector extends StatefulWidget {
   final int? minValue;
   final int? maxValue;
   final double? width; 
-  const StepperSelector({ Key? key, required this.controller, required this.title, this.titleSize, required this.icon, required this.iconColor, this.iconSize, this.defaultValue, this.minValue, this.maxValue, this.width }) : super(key: key);
+  final String? clearText;
+  final Function(int) onChanged;
+  const StepperSelector({ Key? key, required this.controller, required this.icon, required this.iconColor, this.iconSize, this.defaultValue, this.minValue, this.maxValue, this.width, this.clearText, required this.onChanged }) : super(key: key);
 
   @override
   _StepperSelectorState createState() => _StepperSelectorState();
 }
 
 class _StepperSelectorState extends State<StepperSelector> {
-  late double _titleSize = 18;
-  late double _iconSize = 15;
-  late double _width = 110;
+  late double _iconSize = 20;
+  late double _width = 100;
   late int _currentValue = 0;
-  late int _minValue = 1;
+  late int _minValue = 0;
   late int _maxValue = 5;
+  late String _clearText = "All";
 
   @override
   void initState() {
     super.initState();
-    _minValue = (widget.minValue ?? 1);
+    _minValue = (widget.minValue ?? 0);
     _maxValue = (widget.maxValue ?? 5);
     _currentValue = (widget.defaultValue ?? _minValue);
-    _titleSize = (widget.titleSize ?? 18);
-    _iconSize = (widget.iconSize ?? 15);
-    _width = (widget.width ?? (_iconSize * _maxValue) + 25);
+    _iconSize = (widget.iconSize ?? 20);
+    _width = (widget.width ?? (_iconSize * _maxValue));
+    _clearText = (widget.clearText ?? "All");
     widget.controller.changeValue(_currentValue);
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(
-          widget.title,
-          style: TextStyle(
-            fontSize: _titleSize,
-            fontFamily: '--apple-system',
-          ),
-        ),
-        const SizedBox(width: 10,),
-        GestureDetector(
-          onTap: (() {
-            if(_currentValue < _maxValue) {
-              setState(() {                
-                _currentValue = _currentValue + 1;
-                widget.controller.changeValue(_currentValue);
-              });
-            }
-          }),
-          child: Container(
-            width: 27,
-            height: 27,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.blue,
-                width: 1.0,
-                style: BorderStyle.solid,
-              ),
-              color: primaryColor,
-            ),
-            child: Icon(
-              Ionicons.add,
-              size: _iconSize,
-              color: Colors.blue,
-            ),
-          ),
-        ),
-        Container(
-          width: _width,
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: primaryColor,
-              width: 1.0,
-              style: BorderStyle.solid,
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List<Widget>.generate(_currentValue, (index) {
-              return Icon(
-                widget.icon,
-                color: widget.iconColor,
-                size: _iconSize,
-              );
-            }),
-          ),
-        ),
         GestureDetector(
           onTap: (() {
             if(_currentValue > _minValue) {
               setState(() {                
                 _currentValue = _currentValue - 1;
                 widget.controller.changeValue(_currentValue);
+                widget.onChanged(_currentValue);
               });
             }
           }),
-          child: Container(
-            width: 27,
-            height: 27,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.blue,
-                width: 1.0,
-                style: BorderStyle.solid,
-              ),
-              color: primaryColor,
-            ),
+          child: const SizedBox(
+            width: 25,
+            height: 25,
             child: Icon(
-              Ionicons.remove,
-              size: _iconSize,
-              color: Colors.blue,
+              Ionicons.remove_circle_outline,
+              color: accentColor,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 20,
+          width: _width,
+          child: (_currentValue == 0 ? _generateClear() : _generateStars()),
+        ),
+        GestureDetector(
+          onTap: () {
+            if(_currentValue < _maxValue) {
+              setState(() {                
+                _currentValue = _currentValue + 1;
+                widget.controller.changeValue(_currentValue);
+                widget.onChanged(_currentValue);
+              });
+            }
+          },
+          child: const SizedBox(
+            width: 25,
+            height: 25,
+            child: Icon(
+              Ionicons.add_circle_outline,
+              color: accentColor,
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _generateClear() {
+    return Center(child: Text(_clearText),);
+  }
+
+  Widget _generateStars() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: _maxValue,
+      itemBuilder: ((context, index) {
+        return SizedBox(
+          width: 20,
+          child: Center(
+            child: Icon(
+              widget.icon,
+              size: 20,
+              color: ((index + 1) <= _currentValue ? widget.iconColor : textPrimary),
+            ),
+          ),
+        );
+      }),
     );
   }
 }

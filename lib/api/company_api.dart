@@ -21,7 +21,7 @@ class CompanyAPI {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
-  Future<CompanyDetailModel> getCompanyDetail(int companyId) async {
+  Future<CompanyDetailModel> getCompanyDetail(int companyId, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -30,7 +30,7 @@ class CompanyAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/companies/detail/' + companyId.toString()),
+        Uri.parse(Globals.apiURL + 'api/companies/' + type + '/detail/' + companyId.toString()),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ class CompanyAPI {
     }
   }
 
-  Future<List<CompanySearchModel>> getCompanyByName(String companyName) async {
+  Future<List<CompanySearchModel>> getCompanyByName(String companyName, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -62,7 +62,7 @@ class CompanyAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/companies/name/' + companyName.toLowerCase()),
+        Uri.parse(Globals.apiURL + 'api/companies/' + type + '/name/' + companyName.toLowerCase()),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',

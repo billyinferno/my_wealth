@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
@@ -14,16 +15,15 @@ import 'package:my_wealth/widgets/watchlist_detail_create_calendar.dart';
 import 'package:my_wealth/widgets/watchlist_detail_create_textfields.dart';
 import 'package:provider/provider.dart';
 
-class WatchlistDetailBuyPage
- extends StatefulWidget {
+class WatchlistDetailSellPage extends StatefulWidget {
   final Object? watchlistArgs;
-  const WatchlistDetailBuyPage({ Key? key, required this.watchlistArgs }) : super(key: key);
+  const WatchlistDetailSellPage({Key? key, required this.watchlistArgs}) : super(key: key);
 
   @override
-  _WatchlistDetailBuyPageState createState() => _WatchlistDetailBuyPageState();
+  State<WatchlistDetailSellPage> createState() => _WatchlistDetailSellPageState();
 }
 
-class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
+class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
   final TextEditingController _sharesController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
@@ -98,12 +98,12 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
               children: <Widget>[
                 const SizedBox(width: 10,),
                 TransparentButton(
-                  text: "Buy",
-                  icon: Ionicons.bag_add,
+                  text: "Sell",
+                  icon: Ionicons.bag_remove,
                   callback: (() async {
                     showLoaderDialog(context);
                     await _addDetail().then((_) {
-                      debugPrint("💾 Saved the watchlist detail for " + _watchlist.watchlistId.toString());
+                      debugPrint("💾 Sell the watchlist detail for " + _watchlist.watchlistId.toString());
                       // remove the loader dialog
                       Navigator.pop(context);
                       // return back to the previous page
@@ -138,10 +138,14 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
   }
 
   Future<void> _addDetail() async {
-    double _shares = (double.tryParse(_sharesController.text) ?? 0);
+    // since it sell we need to make it a negative
+    double _shares = (double.tryParse(_sharesController.text) ?? 0) * -1;
     double _price = (double.tryParse(_priceController.text) ?? 0);
 
-    if(_shares > 0 && _price > 0) {
+    // since sell shares should be lesser than 0, but the price should be still positive
+    // as this will be used to calculate the total value we have later on on the summary
+    // watchlist page.
+    if(_shares < 0 && _price > 0) {
       await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, _shares, _price).then((watchlistDetail) async {
         // change the watchlist detail for this one
         List<WatchlistListModel> _currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
@@ -172,7 +176,7 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
       });
     }
     else {
-      throw Exception("Shares or Price cannot be zero");
+      throw Exception("Invalid quantity or amount for share or price");
     }
   }
 

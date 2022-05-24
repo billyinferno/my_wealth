@@ -3,7 +3,6 @@
 //     final companySearchModel = companySearchModelFromJson(jsonString);
 
 import 'dart:convert';
-import 'package:my_wealth/utils/extensions/string.dart';
 
 CompanySearchModel companySearchModelFromJson(String str) => CompanySearchModel.fromJson(json.decode(str));
 
@@ -28,7 +27,7 @@ class CompanySearchModel {
 
     factory CompanySearchModel.fromJson(Map<String, dynamic> json) => CompanySearchModel(
         companyId: json["company_id"],
-        companyName: json["company_name"].toString().toTitleCase(),
+        companyName: json["company_name"].toString(),
         companyNetAssetValue: (json["company_net_asset_value"] == null ? 0 : json["company_net_asset_value"].toDouble()),
         companyPrevPrice: (json["company_prev_price"] == null ? 0 : json["company_prev_price"].toDouble()),
         companyLastUpdate: DateTime.parse(json["company_last_update"]),

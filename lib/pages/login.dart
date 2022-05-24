@@ -396,15 +396,35 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _getAdditionalInfo() async {
     await Future.wait([
-      _faveAPI.getFavourites().then((_resp) async {
-        await FavouritesSharedPreferences.setFavouritesList(_resp);
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList(_resp);
-        debugPrint("4️⃣ Get user favourites");
+      _faveAPI.getFavourites("reksadana").then((_resp) async {
+        await FavouritesSharedPreferences.setFavouritesList("reksadana", _resp);
+        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", _resp);
+        debugPrint("4️⃣ Get user favourites reksadana");
       }),
-      _watchlistApi.getWatchlist().then((_resp) async {
-        await WatchlistSharedPreferences.setWatchlist(_resp);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_resp);
-        debugPrint("5️⃣ Get user watchlist");
+      _faveAPI.getFavourites("saham").then((_resp) async {
+        await FavouritesSharedPreferences.setFavouritesList("saham", _resp);
+        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", _resp);
+        debugPrint("4️⃣ Get user favourites saham");
+      }),
+      _faveAPI.getFavourites("crypto").then((_resp) async {
+        await FavouritesSharedPreferences.setFavouritesList("crypto", _resp);
+        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", _resp);
+        debugPrint("4️⃣ Get user favourites crypto");
+      }),
+      _watchlistApi.getWatchlist("reksadana").then((_resp) async {
+        await WatchlistSharedPreferences.setWatchlist("reksadana", _resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", _resp);
+        debugPrint("5️⃣ Get user watchlist reksadana");
+      }),
+      _watchlistApi.getWatchlist("saham").then((_resp) async {
+        await WatchlistSharedPreferences.setWatchlist("saham", _resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", _resp);
+        debugPrint("5️⃣ Get user watchlist saham");
+      }),
+      _watchlistApi.getWatchlist("crypto").then((_resp) async {
+        await WatchlistSharedPreferences.setWatchlist("crypto", _resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", _resp);
+        debugPrint("5️⃣ Get user watchlist crypto");
       }),
       _indexApi.getIndex().then((_resp) async {
         await IndexSharedPreferences.setIndexList(_resp);

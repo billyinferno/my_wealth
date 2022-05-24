@@ -2,7 +2,6 @@
 //
 //     final watchlistListModel = watchlistListModelFromJson(jsonString);
 import 'dart:convert';
-import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 
 WatchlistListModel watchlistListModelFromJson(String str) => WatchlistListModel.fromJson(json.decode(str));
@@ -33,7 +32,7 @@ class WatchlistListModel {
     factory WatchlistListModel.fromJson(Map<String, dynamic> json) => WatchlistListModel(
         watchlistId: json["watchlist_id"],
         watchlistCompanyId: json["watchlist_company_id"],
-        watchlistCompanyName: json["watchlist_company_name"].toString().toTitleCase(),
+        watchlistCompanyName: json["watchlist_company_name"].toString(),
         watchlistCompanyNetAssetValue: (json["watchlist_company_net_asset_value"] == null ? 0 : json["watchlist_company_net_asset_value"].toDouble()),
         watchlistCompanyPrevPrice: (json["watchlist_company_prev_price"] == null ? 0 : json["watchlist_company_prev_price"].toDouble()),
         watchlistCompanyLastUpdate: (json["watchlist_company_last_update"] == null ? null : DateTime.parse(json["watchlist_company_last_update"])),

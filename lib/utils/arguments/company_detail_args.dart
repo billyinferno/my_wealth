@@ -3,6 +3,7 @@ class CompanyDetailArgs {
   final int companyId;
   final String companyName;
   final bool companyFavourite;
+  final String type;
 
-  CompanyDetailArgs({required this.companyId, required this.companyName, required this.companyFavourite, required this.favouritesId});
+  CompanyDetailArgs({required this.companyId, required this.companyName, required this.companyFavourite, required this.favouritesId, required this.type});
 }

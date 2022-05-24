@@ -54,6 +54,7 @@ class FavouriteCompanyList extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 12,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         )
                       ),
                       Expanded(

@@ -31,6 +31,35 @@ class CompanyDetailModel {
         this.companyTotalUnit,
         this.companyYearlyRating,
         this.companyYearlyRisk,
+        this.companyFrequency,
+        this.companyThreeYear,
+        this.companyFiveYear,
+        this.companyTenYear,
+        this.companyPer,
+        this.companyPbr,
+        this.companyPerAnnualized,
+        this.companyPsrAnnualized,
+        this.companyPcfrAnnualized,
+        this.companySymbol,
+        this.companyCurrentPriceUsd,
+        this.companyMarketCap,
+        this.companyMarketCapRank,
+        this.companyFullyDilutedValuation,
+        this.companyHigh24H,
+        this.companyLow24H,
+        this.companyPriceChange24H,
+        this.companyPriceChangePercentage24H,
+        this.companyMarketCapChange24H,
+        this.companyMarketCapChangePercentage24H,
+        this.companyCirculatingSupply,
+        this.companyTotalSupply,
+        this.companyMaxSupply,
+        this.companyAllTimeHigh,
+        this.companyAllTimeHighChangePercentage,
+        this.companyAllTimeHighDate,
+        this.companyAllTimeLow,
+        this.companyAllTimeLowChangePercentage,
+        this.companyAllTimeLowDate,
         required this.companyPrices,
     });
 
@@ -52,6 +81,35 @@ class CompanyDetailModel {
     final double? companyTotalUnit;
     final double? companyYearlyRating;
     final double? companyYearlyRisk;
+    final int? companyFrequency;
+    final double? companyThreeYear;
+    final double? companyFiveYear;
+    final double? companyTenYear;
+    final double? companyPer;
+    final double? companyPbr;
+    final double? companyPerAnnualized;
+    final double? companyPsrAnnualized;
+    final double? companyPcfrAnnualized;
+    final String? companySymbol;
+    final double? companyCurrentPriceUsd;
+    final int? companyMarketCap;
+    final int? companyMarketCapRank;
+    final double? companyFullyDilutedValuation;
+    final double? companyHigh24H;
+    final double? companyLow24H;
+    final double? companyPriceChange24H;
+    final double? companyPriceChangePercentage24H;
+    final double? companyMarketCapChange24H;
+    final double? companyMarketCapChangePercentage24H;
+    final double? companyCirculatingSupply;
+    final double? companyTotalSupply;
+    final double? companyMaxSupply;
+    final double? companyAllTimeHigh;
+    final double? companyAllTimeHighChangePercentage;
+    final DateTime? companyAllTimeHighDate;
+    final double? companyAllTimeLow;
+    final double? companyAllTimeLowChangePercentage;
+    final DateTime? companyAllTimeLowDate;
     final List<PriceModel> companyPrices;
 
     factory CompanyDetailModel.fromJson(Map<String, dynamic> json) {
@@ -74,6 +132,35 @@ class CompanyDetailModel {
         companyTotalUnit: (json["company_total_unit"] == null ? 0 : json["company_total_unit"].toDouble()),
         companyYearlyRating: (json["company_yearly_rating"] == null ? null : json["company_yearly_rating"].toDouble()),
         companyYearlyRisk: (json["company_yearly_risk"] == null ? null : json["company_yearly_risk"].toDouble()),
+        companyFrequency: json["company_frequency"],
+        companyThreeYear: (json["company_three_year"] == null ? null : json["company_three_year"].toDouble()),
+        companyFiveYear: (json["company_five_year"] == null ? null : json["company_five_year"].toDouble()),
+        companyTenYear: (json["company_ten_year"] == null ? null : json["company_ten_year"].toDouble()),
+        companyPer: (json["company_per"] == null ? null : json["company_per"].toDouble()),
+        companyPbr: (json["company_pbr"] == null ? null : json["company_pbr"].toDouble()),
+        companyPerAnnualized: (json["company_per_annualized"] == null ? null : json["company_per_annualized"].toDouble()),
+        companyPsrAnnualized: (json["company_psr_annualized"] == null ? null : json["company_psr_annualized"].toDouble()),
+        companyPcfrAnnualized: (json["company_pcfr_annualized"] == null ? null : json["company_pcfr_annualized"].toDouble()),
+        companySymbol: json["company_symbol"],
+        companyCurrentPriceUsd: (json["company_current_price_usd"] == null ? null : json["company_current_price_usd"].toDouble()),
+        companyMarketCap: json["company_market_cap"],
+        companyMarketCapRank: json["company_market_cap_rank"],
+        companyFullyDilutedValuation: (json["company_fully_diluted_valuation"] == null ? null : json["company_fully_diluted_valuation"].toDouble()),
+        companyHigh24H: (json["company_high_24_h"] == null ? null : json["company_high_24_h"].toDouble()),
+        companyLow24H: (json["company_low_24_h"] == null ? null : json["company_low_24_h"].toDouble()),
+        companyPriceChange24H: (json["company_price_change_24_h"] == null ? null : json["company_price_change_24_h"].toDouble()),
+        companyPriceChangePercentage24H: (json["company_price_change_percentage_24_h"] == null ? null : json["company_price_change_percentage_24_h"].toDouble()),
+        companyMarketCapChange24H: (json["company_market_cap_change_24_h"] == null ? null : json["company_market_cap_change_24_h"].toDouble()),
+        companyMarketCapChangePercentage24H: (json["company_market_cap_change_percentage_24_h"] == null ? null : json["company_market_cap_change_percentage_24_h"].toDouble()),
+        companyCirculatingSupply: (json["company_circulating_supply"] == null ? null : json["company_circulating_supply"].toDouble()),
+        companyTotalSupply: (json["company_total_supply"] == null ? null : json["company_total_supply"].toDouble()),
+        companyMaxSupply: (json["company_max_supply"] == null ? null : json["company_max_supply"].toDouble()),
+        companyAllTimeHigh: (json["company_all_time_high"] == null ? null : json["company_all_time_high"].toDouble()),
+        companyAllTimeHighChangePercentage: (json["company_all_time_high_change_percentage"] == null ? null : json["company_all_time_high_change_percentage"].toDouble()),
+        companyAllTimeHighDate: (json["company_all_time_high_date"] == null ? null : DateTime.parse(json["company_all_time_high_date"])),
+        companyAllTimeLow: (json["company_all_time_low"] == null ? null : json["company_all_time_low"].toDouble()),
+        companyAllTimeLowChangePercentage: (json["company_all_time_low_change_percentage"] == null ? null : json["company_all_time_low_change_percentage"].toDouble()),
+        companyAllTimeLowDate: (json["company_all_time_low_date"] == null ? null : DateTime.parse(json["company_all_time_low_date"])),
         companyPrices: List<PriceModel>.from(json["company_prices"].map((x) => PriceModel.fromJson(x))),
       );
     }
@@ -97,6 +184,15 @@ class CompanyDetailModel {
         "company_total_unit": companyTotalUnit,
         "company_yearly_rating": companyYearlyRating,
         "company_yearly_risk": companyYearlyRisk,
+        "company_frequency": companyFrequency,
+        "company_three_year": companyThreeYear,
+        "company_five_year": companyFiveYear,
+        "company_ten_year": companyTenYear,
+        "company_per": companyPer,
+        "company_pbr": companyPbr,
+        "company_per_annualized": companyPerAnnualized,
+        "company_psr_annualized": companyPsrAnnualized,
+        "company_pcfr_annualized": companyPcfrAnnualized,
         "company_prices": List<dynamic>.from(companyPrices.map((x) => x.toJson())),
     };
 }

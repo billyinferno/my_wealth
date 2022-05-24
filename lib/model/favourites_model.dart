@@ -3,7 +3,6 @@
 //     final favouritesModel = favouritesModelFromJson(jsonString);
 
 import 'dart:convert';
-import 'package:my_wealth/utils/extensions/string.dart';
 
 FavouritesModel favouritesModelFromJson(String str) => FavouritesModel.fromJson(json.decode(str));
 
@@ -14,6 +13,7 @@ class FavouritesModel {
         required this.favouritesId,
         required this.favouritesCompanyId,
         required this.favouritesCompanyName,
+        required this.favouritesSymbol,
         required this.favouritesNetAssetValue,
         required this.favouritesPrevAssetValue,
         required this.favouritesCompanyDailyReturn,
@@ -23,6 +23,7 @@ class FavouritesModel {
     final int favouritesId;
     final int favouritesCompanyId;
     final String favouritesCompanyName;
+    final String favouritesSymbol;
     final double favouritesNetAssetValue;
     final double favouritesPrevAssetValue;
     final double favouritesCompanyDailyReturn;
@@ -31,7 +32,8 @@ class FavouritesModel {
     factory FavouritesModel.fromJson(Map<String, dynamic> json) => FavouritesModel(
         favouritesId: json["favourites_id"],
         favouritesCompanyId: json["favourites_company_id"],
-        favouritesCompanyName: json["favourites_company_name"].toString().toTitleCase(),
+        favouritesCompanyName: json["favourites_company_name"].toString(),
+        favouritesSymbol: json["favourites_symbol"].toString(),
         favouritesNetAssetValue: (json["favourites_net_asset_value"] == null ? 0 : json["favourites_net_asset_value"].toDouble()),
         favouritesPrevAssetValue: (json["favourites_prev_asset_value"] == null ? 0 : json["favourites_prev_asset_value"].toDouble()),
         favouritesCompanyDailyReturn: (json["favourites_company_daily_return"] == null ? 0 : json["favourites_company_daily_return"].toDouble()),
@@ -42,6 +44,7 @@ class FavouritesModel {
         "favourites_id": favouritesId,
         "favourites_company_id": favouritesCompanyId,
         "favourites_company_name": favouritesCompanyName,
+        "favourites_symbol": favouritesSymbol,
         "favourites_net_asset_value": favouritesNetAssetValue,
         "favourites_prev_asset_value": favouritesPrevAssetValue,
         "favourites_company_daily_return": favouritesCompanyDailyReturn,

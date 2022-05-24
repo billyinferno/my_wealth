@@ -21,7 +21,7 @@ class WatchlistAPI {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
-  Future<List<WatchlistListModel>> getWatchlist() async {
+  Future<List<WatchlistListModel>> getWatchlist(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -30,7 +30,7 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/watchlists'),
+        Uri.parse(Globals.apiURL + 'api/watchlists/' + type),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ class WatchlistAPI {
     }
   }
 
-  Future<WatchlistListModel> add(int companyId) async {
+  Future<WatchlistListModel> add(String type, int companyId) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -71,7 +71,7 @@ class WatchlistAPI {
           HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({'watchlist_company_id': companyId}),
+        body: jsonEncode({'watchlist_company_id': companyId, 'watchlist_company_type': type}),
       );
 
       // check if we got 200 response or not?

@@ -196,7 +196,7 @@ class _WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvid
                   TabBar(
                     controller: _tabController,
                     tabs: const <Widget>[
-                      Tab(text: 'MUTUAL FUND',),
+                      Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),
                       Tab(text: 'CRYPTO',),
                     ],

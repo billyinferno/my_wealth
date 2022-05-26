@@ -17,10 +17,10 @@ class IndexPage extends StatefulWidget {
   const IndexPage({ Key? key }) : super(key: key);
 
   @override
-  _IndexPageState createState() => _IndexPageState();
+  IndexPageState createState() => IndexPageState();
 }
 
-class _IndexPageState extends State<IndexPage> {
+class IndexPageState extends State<IndexPage> {
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   final ScrollController _scrollController = ScrollController();
   final IndexAPI _indexApi = IndexAPI();
@@ -97,6 +97,7 @@ class _IndexPageState extends State<IndexPage> {
     await _indexApi.getIndex().then((resp) async {
       // set the shared preferences and provider for index
       await IndexSharedPreferences.setIndexList(resp);
+      if (!mounted) return;
       Provider.of<IndexProvider>(context, listen: false).setIndexList(resp);
     }).onError((error, stackTrace) {
       throw Exception(error.toString());

@@ -35,6 +35,10 @@ class ShowMyDialog {
           ),
           actions: <Widget>[
             CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: (() {
+                Navigator.pop(context, true);
+              }),
               child: Text(
                 confirmLabel ?? "Confirm",
                 style: TextStyle(
@@ -42,12 +46,11 @@ class ShowMyDialog {
                   color: (confirmColor ?? textPrimary)
                 ),
               ),
-              isDefaultAction: true,
-              onPressed: (() {
-                Navigator.pop(context, true);
-              }),
             ),
             CupertinoDialogAction(
+              onPressed: (() {
+                Navigator.pop(context, false);
+              }),
               child: Text(
                 cancelLabel ?? "Cancel",
                 style: TextStyle(
@@ -55,9 +58,6 @@ class ShowMyDialog {
                   color: (cancelColor ?? textPrimary),
                 ),
               ),
-              onPressed: (() {
-                Navigator.pop(context, false);
-              }),
             ),
           ],
         );

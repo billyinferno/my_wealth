@@ -12,11 +12,11 @@ class WatchlistSharedPreferences {
     }
 
     // convert the json to string so we can stored it on the local storage
-    List<String> _watchlistList = [];
-    for (WatchlistListModel _watchlist in watchlistData) {
-      _watchlistList.add(jsonEncode(_watchlist.toJson()));
+    List<String> watchlistList = [];
+    for (WatchlistListModel watchlist in watchlistData) {
+      watchlistList.add(jsonEncode(watchlist.toJson()));
     }
-    LocalBox.putStringList(_watchlistKey + "_" + type, _watchlistList);
+    LocalBox.putStringList("${_watchlistKey}_$type", watchlistList);
   }
 
   static List<WatchlistListModel> getWatchlist(String type) {
@@ -26,19 +26,19 @@ class WatchlistSharedPreferences {
     }
 
     // get the data from local box
-    List<String> _watchlistList = (LocalBox.getStringList(_watchlistKey + "_" + type) ?? []);
+    List<String> watchlistList = (LocalBox.getStringList("${_watchlistKey}_$type") ?? []);
 
     // check if the list is empty or not?
-    if (_watchlistList.isNotEmpty) {
+    if (watchlistList.isNotEmpty) {
       // list is not empty, parse the string to FavouriteModel
-      List<WatchlistListModel> _ret = [];
-      for (String _watchlistString in _watchlistList) {
-        WatchlistListModel _watchlist = WatchlistListModel.fromJson(jsonDecode(_watchlistString));
-        _ret.add(_watchlist);
+      List<WatchlistListModel> ret = [];
+      for (String watchlistString in watchlistList) {
+        WatchlistListModel watchlist = WatchlistListModel.fromJson(jsonDecode(watchlistString));
+        ret.add(watchlist);
       }
 
       // return the favourites list
-      return _ret;
+      return ret;
     }
     else {
       // no data

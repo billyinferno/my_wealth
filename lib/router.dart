@@ -29,10 +29,10 @@ class RouterPage extends StatefulWidget {
   const RouterPage({ Key? key }) : super(key: key);
 
   @override
-  _RouterPageState createState() => _RouterPageState();
+  RouterPageState createState() => RouterPageState();
 }
 
-class _RouterPageState extends State<RouterPage> {
+class RouterPageState extends State<RouterPage> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -60,10 +60,10 @@ class _RouterPageState extends State<RouterPage> {
 
   bool _isUserLogin() {
     // get bearer token from User Shared Preferences
-    String _bearerToken = UserSharedPreferences.getUserJWT();
+    String bearerToken = UserSharedPreferences.getUserJWT();
 
     // check if string is empty or not?
-    if(_bearerToken.isNotEmpty) {
+    if(bearerToken.isNotEmpty) {
       return true;
     }
     return false;
@@ -71,17 +71,17 @@ class _RouterPageState extends State<RouterPage> {
 
   Route<dynamic>? _switchRoute(RouteSettings settings) {
     // get the route name
-    String _routeName = (settings.name ?? '/');
-    _routeName = _routeName.toLowerCase();
+    String routeName = (settings.name ?? '/');
+    routeName = routeName.toLowerCase();
     
     // check if user try to access route other than "/" and "/login";
-    if ((_routeName != "/" || _routeName != "/login") && (!_isUserLogin())) {
+    if ((routeName != "/" || routeName != "/login") && (!_isUserLogin())) {
       // force the route to be "/"
-      _routeName = "/";
+      routeName = "/";
     }
 
     // check which route that user need to go
-    switch(_routeName) {
+    switch(routeName) {
       case '/login':
       case '/':
       {

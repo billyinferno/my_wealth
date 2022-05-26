@@ -20,10 +20,10 @@ class WatchlistDetailBuyPage
   const WatchlistDetailBuyPage({ Key? key, required this.watchlistArgs }) : super(key: key);
 
   @override
-  _WatchlistDetailBuyPageState createState() => _WatchlistDetailBuyPageState();
+  WatchlistDetailBuyPageState createState() => WatchlistDetailBuyPageState();
 }
 
-class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
+class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
   final TextEditingController _sharesController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
@@ -103,7 +103,7 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                   callback: (() async {
                     showLoaderDialog(context);
                     await _addDetail().then((_) {
-                      debugPrint("💾 Saved the watchlist detail for " + _watchlist.watchlistId.toString());
+                      debugPrint("💾 Saved the watchlist detail for ${_watchlist.watchlistId}");
                       // remove the loader dialog
                       Navigator.pop(context);
                       // return back to the previous page
@@ -138,18 +138,18 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
   }
 
   Future<void> _addDetail() async {
-    double _shares = (double.tryParse(_sharesController.text) ?? 0);
-    double _price = (double.tryParse(_priceController.text) ?? 0);
+    double shares = (double.tryParse(_sharesController.text) ?? 0);
+    double price = (double.tryParse(_priceController.text) ?? 0);
 
-    if(_shares > 0 && _price > 0) {
-      await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, _shares, _price).then((watchlistDetail) async {
+    if(shares > 0 && price > 0) {
+      await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
         // change the watchlist detail for this one
-        List<WatchlistListModel> _currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
-        List<WatchlistListModel> _newWatchList = [];
-        for (WatchlistListModel _data in _currentWatchList) {
+        List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
+        List<WatchlistListModel> newWatchList = [];
+        for (WatchlistListModel data in currentWatchList) {
           // check if this watchlist is the one that we add
-          if(_watchlist.watchlistId == _data.watchlistId) {
-            WatchlistListModel _updateWatchList = WatchlistListModel(
+          if(_watchlist.watchlistId == data.watchlistId) {
+            WatchlistListModel updateWatchList = WatchlistListModel(
               watchlistId: _watchlist.watchlistId,
               watchlistCompanyId: _watchlist.watchlistCompanyId,
               watchlistCompanyName: _watchlist.watchlistCompanyName,
@@ -159,16 +159,17 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
               watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
               watchlistFavouriteId: _watchlist.watchlistFavouriteId,
             );
-            _newWatchList.add(_updateWatchList);
+            newWatchList.add(updateWatchList);
           }
           else {
-            _newWatchList.add(_data);
+            newWatchList.add(data);
           }
         }
 
         // once got the new one then we can update the shared preferences and provider
-        await WatchlistSharedPreferences.setWatchlist(_type, _newWatchList);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, _newWatchList);
+        await WatchlistSharedPreferences.setWatchlist(_type, newWatchList);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
       });
     }
     else {
@@ -178,16 +179,16 @@ class _WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
 
   Future<bool> _checkForm() async {
     if(_sharesController.text.isNotEmpty && _priceController.text.isNotEmpty) {
-      bool _ret = false;
+      bool ret = false;
 
       await ShowMyDialog(
         title: "Data Not Saved",
         text: "Do you want to back?",
       ).show(context).then((value) {
-        _ret = value!;
+        ret = value!;
       });
 
-      return _ret;
+      return ret;
     }
     else {
       return true;

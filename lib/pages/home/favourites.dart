@@ -22,10 +22,10 @@ class FavouritesPage extends StatefulWidget {
   const FavouritesPage({ Key? key }) : super(key: key);
 
   @override
-  _FavouritesPageState createState() => _FavouritesPageState();
+  FavouritesPageState createState() => FavouritesPageState();
 }
 
-class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProviderStateMixin  {
+class FavouritesPageState extends State<FavouritesPage> with SingleTickerProviderStateMixin  {
   final DateFormat df = DateFormat("dd/MM/yyyy");
   final ScrollController _scrollController = ScrollController();
   final FavouritesAPI _faveAPI = FavouritesAPI();
@@ -69,6 +69,7 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
             Container(
               padding: const EdgeInsets.all(10),
               color: primaryDark,
+              width: double.infinity,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -151,7 +152,6 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
                   )
                 ],
               ),
-              width: double.infinity,
             ),
             Expanded(
               child: Column(
@@ -224,17 +224,17 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
       child: ListView.builder(
         itemCount: data.length,
         itemBuilder: ((context, index) {
-          FavouritesModel _fave = data[index];
+          FavouritesModel fave = data[index];
           return InkWell(
             onTap: (() {
-              CompanyDetailArgs _args = CompanyDetailArgs(
-                companyId: _fave.favouritesCompanyId,
-                companyName: _fave.favouritesCompanyName,
+              CompanyDetailArgs args = CompanyDetailArgs(
+                companyId: fave.favouritesCompanyId,
+                companyName: fave.favouritesCompanyName,
                 companyFavourite: true,
-                favouritesId: _fave.favouritesId,
+                favouritesId: fave.favouritesId,
                 type: type,
               );
-              Navigator.pushNamed(context, '/company/detail/' + type, arguments: _args);
+              Navigator.pushNamed(context, '/company/detail/$type', arguments: args);
             }),
             child: Slidable(
               endActionPane: ActionPane(
@@ -245,7 +245,7 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
                     onPressed: ((BuildContext context) {
                       Future<bool?> result = ShowMyDialog(
                         title: "Delete Favourites",
-                        text: "Do you want to delete " + _fave.favouritesCompanyName + "?",
+                        text: "Do you want to delete ${fave.favouritesCompanyName}?",
                         confirmLabel: "Delete",
                         confirmColor: secondaryColor,
                       ).show(context);
@@ -262,11 +262,11 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
                 ],
               ),
               child: FavouriteList(
-                name: _generateName(type, _fave.favouritesCompanyName, _fave.favouritesSymbol),
-                date: df.format(_fave.favouritesLastUpdate.toLocal()),
-                price: _fave.favouritesNetAssetValue,
-                percentChange: _fave.favouritesCompanyDailyReturn,
-                priceChange: (_fave.favouritesNetAssetValue - _fave.favouritesPrevAssetValue),
+                name: _generateName(type, fave.favouritesCompanyName, fave.favouritesSymbol),
+                date: df.format(fave.favouritesLastUpdate.toLocal()),
+                price: fave.favouritesNetAssetValue,
+                percentChange: fave.favouritesCompanyDailyReturn,
+                priceChange: (fave.favouritesNetAssetValue - fave.favouritesPrevAssetValue),
                 riskFactor: _userInfo!.risk
               ),
             ),
@@ -281,33 +281,33 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
       return name;
     }
     else {
-      return "(" + symbol + ") " + name;
+      return "($symbol) $name";
     }
   }
 
   Future<void> deleteFavourites(int index, String type) async {
     // check if this is already favourite or not?
-    late int _faveId;
+    late int faveId;
     if(type == "reksadana") {
-      _faveId = _favouriteListReksadana[index].favouritesId;
+      faveId = _favouriteListReksadana[index].favouritesId;
     }
     else if(type == "saham") {
-      _faveId = _favouriteListSaham[index].favouritesId;
+      faveId = _favouriteListSaham[index].favouritesId;
     }
     else if(type == "crypto") {
-      _faveId = _favouriteListCrypto[index].favouritesId;
+      faveId = _favouriteListCrypto[index].favouritesId;
     }
     
     showLoaderDialog(context);
-    await _faveAPI.delete(_faveId).then((_) {
+    await _faveAPI.delete(faveId).then((_) {
       if(type=="reksadana") {
-        debugPrint("🧹 Delete Favourite ID " + _faveId.toString() + " for company "+ _favouriteListReksadana[index].favouritesCompanyName);
+        debugPrint("🧹 Delete Favourite ID $faveId for company ${_favouriteListReksadana[index].favouritesCompanyName}");
       }
       else if(type == "saham") {
-        debugPrint("🧹 Delete Favourite ID " + _faveId.toString() + " for company "+ _favouriteListSaham[index].favouritesCompanyName);
+        debugPrint("🧹 Delete Favourite ID $faveId for company ${_favouriteListSaham[index].favouritesCompanyName}");
       }
       else if(type == "crypto") {
-        debugPrint("🧹 Delete Favourite ID " + _faveId.toString() + " for company "+ _favouriteListCrypto[index].favouritesCompanyName);
+        debugPrint("🧹 Delete Favourite ID $faveId for company ${_favouriteListCrypto[index].favouritesCompanyName}");
       }
       
       // remove the _favouriteList and re-render the page
@@ -327,19 +327,20 @@ class _FavouritesPageState extends State<FavouritesPage> with SingleTickerProvid
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
     });
     // remove the loader once it's finished
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
   Future<List<FavouritesModel>> _getFavourites(String type) async {
-    List<FavouritesModel> _ret = [];
+    List<FavouritesModel> ret = [];
 
     await _faveAPI.getFavourites(type).then((resp) async {
-      _ret = resp;
+      ret = resp;
     }).onError((error, stackTrace) {
       throw Exception("Error when refresh favourites");
     });
 
     // in any case it will return null
-    return _ret;
+    return ret;
   }
 }

@@ -9,10 +9,10 @@ class AnimationExpand extends StatefulWidget {
   const AnimationExpand({ Key? key, required this.child, required this.expand, this.duration, this.onExpand}) : super(key: key);
 
   @override
-  _AnimationExpandState createState() => _AnimationExpandState();
+  AnimationExpandState createState() => AnimationExpandState();
 }
 
-class _AnimationExpandState extends State<AnimationExpand> with SingleTickerProviderStateMixin {
+class AnimationExpandState extends State<AnimationExpand> with SingleTickerProviderStateMixin {
   late AnimationController _expandController;
   late Animation<double> _animation;
   late int _duration;

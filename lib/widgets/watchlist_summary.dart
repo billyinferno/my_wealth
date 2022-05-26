@@ -21,8 +21,8 @@ class WatchlistSummary extends StatelessWidget {
 
   String _totalGain() {
     // calculate the total gain by subtract the value and cost
-    double _gain = value - cost;
-    return formatCurrency(_gain);
+    double gain = value - cost;
+    return formatCurrency(gain);
   }
 
   Widget _summaryWidget() {
@@ -83,7 +83,7 @@ class WatchlistSummary extends StatelessWidget {
                       )
                     ],
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 5,),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,

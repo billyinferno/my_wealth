@@ -11,10 +11,10 @@ class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({ Key? key }) : super(key: key);
 
   @override
-  _ChangePasswordPageState createState() => _ChangePasswordPageState();
+  ChangePasswordPageState createState() => ChangePasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class ChangePasswordPageState extends State<ChangePasswordPage> {
   final UserAPI _userAPI = UserAPI();
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -145,15 +145,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   bool _validateForm() {
     // validate the form, and ensure all is filled correctly
     // first, let's check if all fields is being filled
-    String _currentPassword = _currentPasswordController.text;
-    String _newPassword = _newPasswordController.text;
-    String _confirmPassword = _confirmPasswordController.text;
+    String currentPassword = _currentPasswordController.text;
+    String newPassword = _newPasswordController.text;
+    String confirmPassword = _confirmPasswordController.text;
 
-    if(_currentPassword.isNotEmpty && _newPassword.isNotEmpty && _confirmPassword.isNotEmpty) {
+    if(currentPassword.isNotEmpty && newPassword.isNotEmpty && confirmPassword.isNotEmpty) {
       // all not empty, ensure that all the length is >= 6
-      if(_currentPassword.length >= 6 && _newPassword.length >= 6 && _confirmPassword.length >= 6) {
+      if(currentPassword.length >= 6 && newPassword.length >= 6 && confirmPassword.length >= 6) {
         // all have length at least 6, so now confirm if the new and confirm password is the same or not?
-        if(_newPassword == _confirmPassword) {
+        if(newPassword == confirmPassword) {
           // all good!
           return true;
         }
@@ -174,17 +174,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<bool> _changePassword() async {
-    bool _ret = false;
-    String _currentPassword = _currentPasswordController.text;
-    String _newPassword = _newPasswordController.text;
+    bool ret = false;
+    String currentPassword = _currentPasswordController.text;
+    String newPassword = _newPasswordController.text;
 
     // show the loader
     showLoaderDialog(context);
 
     // try to update the password
-    await _userAPI.updatePassword(_currentPassword, _newPassword).then((_) {
+    await _userAPI.updatePassword(currentPassword, newPassword).then((_) {
       // password is updated, set the return value as true
-      _ret = true; 
+      ret = true; 
     }).onError((error, stackTrace) {
       // got error
       throw Exception(error.toString());
@@ -193,6 +193,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       Navigator.pop(context);
     });
 
-    return _ret;
+    return ret;
   }
 }

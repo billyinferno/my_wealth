@@ -103,6 +103,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   callback: (() async {
                     showLoaderDialog(context);
                     await _addDetail().then((_) {
+                      // ignore: prefer_interpolation_to_compose_strings
                       debugPrint("💾 Sell the watchlist detail for " + _watchlist.watchlistId.toString());
                       // remove the loader dialog
                       Navigator.pop(context);
@@ -139,21 +140,21 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
 
   Future<void> _addDetail() async {
     // since it sell we need to make it a negative
-    double _shares = (double.tryParse(_sharesController.text) ?? 0) * -1;
-    double _price = (double.tryParse(_priceController.text) ?? 0);
+    double shares = (double.tryParse(_sharesController.text) ?? 0) * -1;
+    double price = (double.tryParse(_priceController.text) ?? 0);
 
     // since sell shares should be lesser than 0, but the price should be still positive
     // as this will be used to calculate the total value we have later on on the summary
     // watchlist page.
-    if(_shares < 0 && _price > 0) {
-      await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, _shares, _price).then((watchlistDetail) async {
+    if(shares < 0 && price > 0) {
+      await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
         // change the watchlist detail for this one
-        List<WatchlistListModel> _currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
-        List<WatchlistListModel> _newWatchList = [];
-        for (WatchlistListModel _data in _currentWatchList) {
+        List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
+        List<WatchlistListModel> newWatchList = [];
+        for (WatchlistListModel data in currentWatchList) {
           // check if this watchlist is the one that we add
-          if(_watchlist.watchlistId == _data.watchlistId) {
-            WatchlistListModel _updateWatchList = WatchlistListModel(
+          if(_watchlist.watchlistId == data.watchlistId) {
+            WatchlistListModel updateWatchList = WatchlistListModel(
               watchlistId: _watchlist.watchlistId,
               watchlistCompanyId: _watchlist.watchlistCompanyId,
               watchlistCompanyName: _watchlist.watchlistCompanyName,
@@ -163,16 +164,17 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
               watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
               watchlistFavouriteId: _watchlist.watchlistFavouriteId,
             );
-            _newWatchList.add(_updateWatchList);
+            newWatchList.add(updateWatchList);
           }
           else {
-            _newWatchList.add(_data);
+            newWatchList.add(data);
           }
         }
 
         // once got the new one then we can update the shared preferences and provider
-        await WatchlistSharedPreferences.setWatchlist(_type, _newWatchList);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, _newWatchList);
+        await WatchlistSharedPreferences.setWatchlist(_type, newWatchList);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
       });
     }
     else {
@@ -182,16 +184,16 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
 
   Future<bool> _checkForm() async {
     if(_sharesController.text.isNotEmpty && _priceController.text.isNotEmpty) {
-      bool _ret = false;
+      bool ret = false;
 
       await ShowMyDialog(
         title: "Data Not Saved",
         text: "Do you want to back?",
       ).show(context).then((value) {
-        _ret = value!;
+        ret = value!;
       });
 
-      return _ret;
+      return ret;
     }
     else {
       return true;

@@ -138,7 +138,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Text(
-                  "Showed " + _filterList.length.toString() + " company(s)",
+                  "Showed ${_filterList.length} company(s)",
                   style: const TextStyle(
                     color: primaryLight,
                     fontSize: 12,
@@ -154,8 +154,8 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                   itemBuilder: ((context, index) {
                     return InkWell(
                       onTap: (() {
-                        debugPrint("Open Company " + _filterList[index].favouritesCompanyName);
-                        CompanyDetailArgs _args = CompanyDetailArgs(
+                        debugPrint("Open Company ${_filterList[index].favouritesCompanyName}");
+                        CompanyDetailArgs args = CompanyDetailArgs(
                           companyId: _filterList[index].favouritesCompanyId,
                           companyName: _filterList[index].favouritesCompanyName,
                           companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
@@ -163,11 +163,11 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                           type: "crypto",
                         );
       
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: _args);
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
                       }),
                       child: FavouriteCompanyList(
                         companyId: _filterList[index].favouritesCompanyId,
-                        name: "(" + _filterList[index].favouritesSymbol + ") " + _filterList[index].favouritesCompanyName,
+                        name: "(${_filterList[index].favouritesSymbol}) ${_filterList[index].favouritesCompanyName}",
                         type: _filterList[index].favouritesCompanyType,
                         date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
                         value: _filterList[index].favouritesNetAssetValue,
@@ -214,16 +214,16 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
 
   Future<void> setFavourite(int index) async {
     // check if this is already favourite or not?
-    int _faveUserId = _filterList[index].favouritesUserId ?? -1;
-    int _faveId = _filterList[index].favouritesId ?? -1;
-    if (_faveUserId > 0 && _faveId > 0) {
+    int faveUserId = _filterList[index].favouritesUserId ?? -1;
+    int faveId = _filterList[index].favouritesId ?? -1;
+    if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
-      await _faveAPI.delete(_faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID " + _faveId.toString() + " for Crypto company "+ _filterList[index].favouritesCompanyName);
+      await _faveAPI.delete(faveId).then((_) {
+        debugPrint("🧹 Delete Favourite ID $faveId for Crypto company ${_filterList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
-        FavouritesListModel _resp = FavouritesListModel(
+        FavouritesListModel resp = FavouritesListModel(
           favouritesCompanyId: _filterList[index].favouritesCompanyId,
           favouritesCompanyName: _filterList[index].favouritesCompanyName,
           favouritesSymbol: _filterList[index].favouritesSymbol,
@@ -233,7 +233,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
         );
 
         // update the list and re-render the page
-        updateFaveList(index, _resp);
+        updateFaveList(index, resp);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
@@ -241,7 +241,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
     }
     else {
       await _faveAPI.add(_filterList[index].favouritesCompanyId, "crypto").then((resp) {
-        debugPrint("➕ Add Crypto company ID: " + _filterList[index].favouritesCompanyId.toString() +  " for company " + _filterList[index].favouritesCompanyName);
+        debugPrint("➕ Add Crypto company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         updateFaveList(index, resp);
       }).onError((error, stackTrace) {
@@ -275,6 +275,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
       // notify the provider
+      if (!mounted) return;
       Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
     });
   }

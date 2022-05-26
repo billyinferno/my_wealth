@@ -30,9 +30,9 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/watchlists/' + type),
+        Uri.parse('${Globals.apiURL}api/watchlists/$type'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -40,13 +40,13 @@ class WatchlistAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistListModel> _listWatchlist = [];
-        for (var _data in _commonModel.data) {
-          WatchlistListModel _watchlist = WatchlistListModel.fromJson(_data['attributes']);
-          _listWatchlist.add(_watchlist);
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<WatchlistListModel> listWatchlist = [];
+        for (var data in commonModel.data) {
+          WatchlistListModel watchlist = WatchlistListModel.fromJson(data['attributes']);
+          listWatchlist.add(watchlist);
         }
-        return _listWatchlist;
+        return listWatchlist;
       }
 
       // status code is not 200, means we got error
@@ -66,9 +66,9 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.post(
-        Uri.parse(Globals.apiURL + 'api/watchlists'),
+        Uri.parse('${Globals.apiURL}api/watchlists'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'watchlist_company_id': companyId, 'watchlist_company_type': type}),
@@ -77,9 +77,9 @@ class WatchlistAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonSingleModel _commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        WatchlistListModel _watchlist = WatchlistListModel.fromJson(_commonModel.data['attributes']);
-        return _watchlist;
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        WatchlistListModel watchlist = WatchlistListModel.fromJson(commonModel.data['attributes']);
+        return watchlist;
       }
 
       // status code is not 200, means we got error
@@ -99,9 +99,9 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.delete(
-        Uri.parse(Globals.apiURL + 'api/watchlists/' + watchlistId.toString()),
+        Uri.parse('${Globals.apiURL}api/watchlists/$watchlistId'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -130,9 +130,9 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.post(
-        Uri.parse(Globals.apiURL + 'api/watchlists-details'),
+        Uri.parse('${Globals.apiURL}api/watchlists-details'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -146,13 +146,13 @@ class WatchlistAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistDetailListModel> _watchlistDetail = [];
-        for (var _data in _commonModel.data) {
-          WatchlistDetailListModel _detail = WatchlistDetailListModel.fromJson(_data['attributes']);
-          _watchlistDetail.add(_detail);
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<WatchlistDetailListModel> watchlistDetail = [];
+        for (var data in commonModel.data) {
+          WatchlistDetailListModel detail = WatchlistDetailListModel.fromJson(data['attributes']);
+          watchlistDetail.add(detail);
         }
-        return _watchlistDetail;
+        return watchlistDetail;
       }
 
       // status code is not 200, means we got error
@@ -172,9 +172,9 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.delete(
-        Uri.parse(Globals.apiURL + 'api/watchlists-details/' + id.toString()),
+        Uri.parse('${Globals.apiURL}api/watchlists-details/$id'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -204,9 +204,9 @@ class WatchlistAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.put(
-        Uri.parse(Globals.apiURL + 'api/watchlists-details/' + id.toString()),
+        Uri.parse('${Globals.apiURL}api/watchlists-details/$id'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({

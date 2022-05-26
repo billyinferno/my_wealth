@@ -16,10 +16,10 @@ class UserPage extends StatefulWidget {
   const UserPage({ Key? key }) : super(key: key);
 
   @override
-  _UserPageState createState() => _UserPageState();
+  UserPageState createState() => UserPageState();
 }
 
-class _UserPageState extends State<UserPage> {
+class UserPageState extends State<UserPage> {
   final UserAPI _userApi = UserAPI();
   late UserLoginInfoModel? _userInfo;
   bool _isVisible = false;
@@ -120,7 +120,7 @@ class _UserPageState extends State<UserPage> {
                       const SizedBox(width: 10,),
                       Expanded(
                         child: Text(
-                          "Risk Factor (Current: " + _userInfo!.risk.toString() + "%)",
+                          "Risk Factor (Current: ${_userInfo!.risk}%)",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -186,7 +186,7 @@ class _UserPageState extends State<UserPage> {
                       onChanged: ((value) async {
                         _isVisible = !_isVisible;
                         await _updateVisibilitySummary(_isVisible).then((resp) {
-                          debugPrint("🔃 Update Visibility to " + _isVisible.toString());
+                          debugPrint("🔃 Update Visibility to $_isVisible");
                           setSummaryVisible(_isVisible);
                         }).onError((error, stackTrace) {
                           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
@@ -252,7 +252,7 @@ class _UserPageState extends State<UserPage> {
                       onChanged: ((value) async {
                         _showLots = !_showLots;
                         await _updateShowLots(_showLots).then((resp) {
-                          debugPrint("🔃 Update Show Lots to " + _showLots.toString());
+                          debugPrint("🔃 Update Show Lots to $_showLots");
                           setShowLots(_showLots);
                         }).onError((error, stackTrace) {
                           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
@@ -327,17 +327,18 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<bool> _updateVisibilitySummary(bool visibility) async {
-    bool _ret = false;
+    bool ret = false;
 
     showLoaderDialog(context);
     await _userApi.updateVisibilitySummary(visibility).then((resp) async {
       // set the return value as true
-      _ret = true;
+      ret = true;
 
       // update the user info and the user provider so it will affect all the listener
       await UserSharedPreferences.setUserInfo(resp);
 
       // update the provider to notify the user page
+      if (!mounted) return;
       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
 
       // remove the loader
@@ -350,7 +351,7 @@ class _UserPageState extends State<UserPage> {
       throw Exception(error.toString());
     });
 
-    return _ret;
+    return ret;
   }
 
   void setShowLots(showLots) {
@@ -360,17 +361,18 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<bool> _updateShowLots(bool showLots) async {
-    bool _ret = false;
+    bool ret = false;
 
     showLoaderDialog(context);
     await _userApi.updateShowLots(showLots).then((resp) async {
       // set the return value as true
-      _ret = true;
+      ret = true;
 
       // update the user info and the user provider so it will affect all the listener
       await UserSharedPreferences.setUserInfo(resp);
 
       // update the provider to notify the user page
+      if (!mounted) return;
       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
 
       // remove the loader
@@ -383,6 +385,6 @@ class _UserPageState extends State<UserPage> {
       throw Exception(error.toString());
     });
 
-    return _ret;
+    return ret;
   }
 }

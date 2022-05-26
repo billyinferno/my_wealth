@@ -5,8 +5,8 @@ class UserLoginModel {
   UserLoginModel(this.jwt, this.user);
 
   factory UserLoginModel.fromJson(Map<String, dynamic> json) {
-    UserLoginInfoModel _user = UserLoginInfoModel.fromJson(json['user']);
-    return UserLoginModel(json['jwt'], _user);
+    UserLoginInfoModel user = UserLoginInfoModel.fromJson(json['user']);
+    return UserLoginModel(json['jwt'], user);
   }
 
   Map<String, dynamic> toJson() {

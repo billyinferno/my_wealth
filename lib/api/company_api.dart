@@ -30,9 +30,9 @@ class CompanyAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/companies/' + type + '/detail/' + companyId.toString()),
+        Uri.parse('${Globals.apiURL}api/companies/$type/detail/$companyId'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -40,9 +40,9 @@ class CompanyAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonSingleModel _commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        CompanyDetailModel _company = CompanyDetailModel.fromJson(_commonModel.data[0]['attributes']);
-        return _company;
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data[0]['attributes']);
+        return company;
       }
 
       // status code is not 200, means we got error
@@ -62,9 +62,9 @@ class CompanyAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/companies/' + type + '/name/' + companyName.toLowerCase()),
+        Uri.parse('${Globals.apiURL}api/companies/$type/name/${companyName.toLowerCase()}'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -72,13 +72,13 @@ class CompanyAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<CompanySearchModel> _ret = [];
-        for (dynamic _data in _commonModel.data) {
-          CompanySearchModel _company = CompanySearchModel.fromJson(_data['attributes']);
-          _ret.add(_company);
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<CompanySearchModel> ret = [];
+        for (dynamic data in commonModel.data) {
+          CompanySearchModel company = CompanySearchModel.fromJson(data['attributes']);
+          ret.add(company);
         }
-        return _ret;
+        return ret;
       }
 
       // status code is not 200, means we got error

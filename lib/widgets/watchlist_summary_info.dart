@@ -31,7 +31,7 @@ class WatchlistSummaryInfo extends StatelessWidget {
                 fontSize: 10,
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 5,),
             Text(formatCurrencyWithNull(amount)),
           ],
         ),

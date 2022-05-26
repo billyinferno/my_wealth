@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -110,7 +112,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
           appBar: AppBar(
             title: const Center(
               child: Text(
-                "Company Detail",
+                "Crypto Detail",
                 style: TextStyle(
                   color: secondaryColor,
                 ),
@@ -150,7 +152,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              (_companyDetail.companySymbol == null ? "" : "(" + _companyDetail.companySymbol!.toUpperCase() + ") ") + _companyData.companyName,
+                              (_companyDetail.companySymbol == null ? "" : "(${_companyDetail.companySymbol!.toUpperCase()}) ") + _companyData.companyName,
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -170,7 +172,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 ),
                                 const SizedBox(width: 10,),
                                 Text(
-                                  "USD " + formatCurrency(_companyDetail.companyCurrentPriceUsd!),
+                                  "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -285,7 +287,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                   header: "High 24H",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    "USD " + formatCurrencyWithNull(_companyDetail.companyHigh24H),
+                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -294,7 +296,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                   header: "Low 24H",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    "USD " + formatCurrencyWithNull(_companyDetail.companyLow24H),
+                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -303,7 +305,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                   header: "Change 24H",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    "USD " + formatCurrencyWithNull(_companyDetail.companyPriceChange24H),
+                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -327,7 +329,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                   header: "ATH",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    "USD " + formatCurrencyWithNull(_companyDetail.companyAllTimeHigh),
+                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -336,13 +338,45 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                   header: "ATL",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    "USD " + formatCurrencyWithNull(_companyDetail.companyAllTimeLow),
+                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Min ($_numPrice)",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrencyWithNull(_minPrice!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Max ($_numPrice)",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrencyWithNull(_maxPrice!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Avg ($_numPrice)",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatCurrencyWithNull(_avgPrice!),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -414,9 +448,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   }
 
   List<Widget> _showTable() {
-    List<Widget> _table = [];
+    List<Widget> table = [];
 
-    _table.add(Row(
+    table.add(Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -523,7 +557,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       ],
     ));
 
-    _table.add(Expanded(
+    table.add(Expanded(
       child: ListView(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -548,13 +582,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       ),
     ));
 
-    return _table;
+    return table;
   }
 
   List<Widget> _showCalendar() {
-    List<Widget> _calendar = [];
+    List<Widget> calendar = [];
 
-    _calendar.add(Expanded(
+    calendar.add(Expanded(
       child: SingleChildScrollView(
         controller: _calendarScrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -594,6 +628,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 userInfo: _userInfo!,
                 currentPrice: _companyDetail.companyNetAssetValue!,
                 enableDailyComparison: _showCurrentPriceComparison,
+                weekend: true,
               ),
             ],
           ),
@@ -601,13 +636,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       ),
     ));
 
-    return _calendar;
+    return calendar;
   }
 
   List<Widget> _showGraph() {
-    List<Widget> _graph = [];
+    List<Widget> graph = [];
 
-    _graph.add(SingleChildScrollView(
+    graph.add(SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       child: LineChart(
@@ -616,7 +651,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       ),
     ));
 
-    return _graph;
+    return graph;
   }
 
   void _setIsLoading(bool val) {
@@ -627,51 +662,51 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
   void _generateGraphData(CompanyDetailModel data) {
     // map the price date on company
-    List<GraphData> _tempData = [];
-    int _totalData = 0;
-    double _totalPrice = 0;
-    int _totalPriceData = 0;
+    List<GraphData> tempData = [];
+    int totalData = 0;
+    double totalPrice = 0;
+    int totalPriceData = 0;
 
     _minPrice = double.maxFinite;
     _maxPrice = double.minPositive;
 
     // move the last update to friday
-    int _addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
-    DateTime _endDate = data.companyLastUpdate!.add(Duration(days: _addDay));
+    int addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
+    DateTime endDate = data.companyLastUpdate!.add(Duration(days: addDay));
 
     // then go 14 weeks before so we knew the start date
-    DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+    DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
     // only get the 1st 64 data, since we will want to get the latest data
-    for (PriceModel _price in data.companyPrices) {
+    for (PriceModel price in data.companyPrices) {
       // ensure that all the data we will put is more than or equal with startdate
-      if(_price.priceDate.compareTo(_startDate) >= 0) {
-        _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
-        _totalData += 1;
+      if(price.priceDate.compareTo(startDate) >= 0) {
+        tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+        totalData += 1;
       }
 
       // count for minimum, maximum, and average
-      if(_totalPriceData < 29) {
-        if(_minPrice! > _price.priceValue) {
-          _minPrice = _price.priceValue;
+      if(totalPriceData < 29) {
+        if(_minPrice! > price.priceValue) {
+          _minPrice = price.priceValue;
         }
 
-        if(_maxPrice! < _price.priceValue) {
-          _maxPrice = _price.priceValue;
+        if(_maxPrice! < price.priceValue) {
+          _maxPrice = price.priceValue;
         }
 
-        _totalPrice += _price.priceValue;
-        _totalPriceData++;
+        totalPrice += price.priceValue;
+        totalPriceData++;
       }
 
       // if total data already more than 64 break  the data, as heat map only will display 65 data
-      if(_totalData >= 64) {
+      if(totalData >= 64) {
         break;
       }
     }
 
     // add the current price which only in company
-    _tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
+    tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
 
     // check current price for minimum, maximum, and average
     if(_minPrice! > data.companyNetAssetValue!) {
@@ -682,21 +717,21 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       _maxPrice = data.companyNetAssetValue!;
     }
 
-    _totalPrice += data.companyNetAssetValue!;
-    _totalPriceData++;
+    totalPrice += data.companyNetAssetValue!;
+    totalPriceData++;
     
     // compute average
-    _avgPrice = _totalPrice / _totalPriceData;
-    _numPrice = _totalPriceData;
+    _avgPrice = totalPrice / totalPriceData;
+    _numPrice = totalPriceData;
 
     // sort the temporary data
-    _tempData.sort((a, b) {
+    tempData.sort((a, b) {
       return a.date.compareTo(b.date);
     });
 
     // once sorted, then we can put it on map
-    for (GraphData _data in _tempData) {
-      _graphData![_data.date] = _data;
+    for (GraphData data in tempData) {
+      _graphData![data.date] = data;
     }
   }
 }

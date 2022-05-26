@@ -9,13 +9,13 @@ class LineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double _height = (height ?? 250);
+    double chartHeight = (height ?? 250);
     return CustomPaint(
-      child: Container(
-        height: _height,
-      ),
       painter: LineChartPainter(
         data: _convertDataToList(),
+      ),
+      child: Container(
+        height: chartHeight,
       ),
     );
   }
@@ -25,25 +25,25 @@ class LineChart extends StatelessWidget {
     // expect to get all the date without skipping. So what we can do is to expand the
     // date given to exactly 91 days (65/5) * 7.
 
-    List<GraphData> _dataExpand = [];
+    List<GraphData> dataExpand = [];
 
     // first get the 1st keys
-    DateTime _firstDate = data.keys.first;
-    DateTime _lastDate = data.keys.last;
-    double _prevPrice = -1;
+    DateTime firstDate = data.keys.first;
+    DateTime lastDate = data.keys.last;
+    double prevPrice = -1;
 
     for(int day=0; day<91; day++) {
-      DateTime _keys = _firstDate.add(Duration(days: day));
-      if(_keys.compareTo(_lastDate) <= 0) {
+      DateTime keys = firstDate.add(Duration(days: day));
+      if(keys.compareTo(lastDate) <= 0) {
         // check if this weekend or weekday
-        if(_keys.weekday <= 5) {
+        if(keys.weekday <= 5) {
           // check if exists?
-          if(data.containsKey(_keys)) {
-            _dataExpand.add(GraphData(date: _keys, price: data[_keys]!.price));
-            _prevPrice = data[_keys]!.price;
+          if(data.containsKey(keys)) {
+            dataExpand.add(GraphData(date: keys, price: data[keys]!.price));
+            prevPrice = data[keys]!.price;
           }
           else {
-            _dataExpand.add(GraphData(date: _keys, price: _prevPrice));
+            dataExpand.add(GraphData(date: keys, price: prevPrice));
           }
         }
       }
@@ -53,6 +53,6 @@ class LineChart extends StatelessWidget {
       }
     }
 
-    return _dataExpand;
+    return dataExpand;
   }
 }

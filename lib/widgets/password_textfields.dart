@@ -12,10 +12,10 @@ class PasswordTextFields extends StatefulWidget {
     this.masked }) : super(key: key);
 
   @override
-  _PasswordTextFieldsState createState() => _PasswordTextFieldsState();
+  PasswordTextFieldsState createState() => PasswordTextFieldsState();
 }
 
-class _PasswordTextFieldsState extends State<PasswordTextFields> {
+class PasswordTextFieldsState extends State<PasswordTextFields> {
   bool _masked = false;
 
   @override

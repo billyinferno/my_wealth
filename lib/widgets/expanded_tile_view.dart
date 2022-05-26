@@ -16,10 +16,10 @@ class ExpandedTileView extends StatefulWidget {
   const ExpandedTileView({ Key? key, this.showedLot, required this.isVisible, required this.userInfo, required this.watchlist }) : super(key: key);
 
   @override
-  _ExpandedTileViewState createState() => _ExpandedTileViewState();
+  ExpandedTileViewState createState() => ExpandedTileViewState();
 }
 
-class _ExpandedTileViewState extends State<ExpandedTileView> {
+class ExpandedTileViewState extends State<ExpandedTileView> {
   final DateFormat dt = DateFormat("dd/MM/yyyy");
   final DateFormat dtSmall = DateFormat('dd/MM');
   bool _isShowedLots = false;
@@ -67,14 +67,14 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
   int _totalLot() {
     // loop thru widget.watchlist.watchlistDetail and ensure that we will only count
     // all the shares that > 0
-    int _total = 0;
-    for (WatchlistDetailListModel _data in widget.watchlist.watchlistDetail) {
-      if(_data.watchlistDetailShare > 0) {
-        _total++;
+    int total = 0;
+    for (WatchlistDetailListModel data in widget.watchlist.watchlistDetail) {
+      if(data.watchlistDetailShare > 0) {
+        total++;
       }
     }
     // return the correct total lot
-    return _total;
+    return total;
   }
 
   void _computeDetail() {
@@ -83,18 +83,25 @@ class _ExpandedTileViewState extends State<ExpandedTileView> {
     _totalGain = 0;
     _totalCost = 0;
 
-    double _gain = 0;
-    double _price = (widget.watchlist.watchlistCompanyNetAssetValue ?? 0);
-    for (WatchlistDetailListModel _detail in widget.watchlist.watchlistDetail) {
-      _totalShare += _detail.watchlistDetailShare;
-      
-      if(_price > 0) {
-        _totalCost += (_detail.watchlistDetailShare * _detail.watchlistDetailPrice);
+    double price = (widget.watchlist.watchlistCompanyNetAssetValue ?? 0);
+    for (WatchlistDetailListModel detail in widget.watchlist.watchlistDetail) {
+      _totalShare += detail.watchlistDetailShare;
 
-        _gain = (_price - _detail.watchlistDetailPrice) * _detail.watchlistDetailShare;
-        _totalGain += _gain;
+      // check whether this is buy or sell
+      if (detail.watchlistDetailShare > 0) {
+        // this is a buy, so we can just calculate the cost using the price we buy        
+        _totalCost += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+      }
+      else {
+        // this is a sell, so we need to use the current price as the cost calculation
+        // because something that we sell 2y ago, shouldn't affect the current day
+        // cost for the remaining shares.
+        _totalCost += (detail.watchlistDetailShare * price);
       }
     }
+
+    _totalGain = (_totalShare * price) - _totalCost;
+    // debugPrint("${widget.watchlist.watchlistCompanyName} cost :$_totalCost - gain:$_totalGain");
   }
 
 }

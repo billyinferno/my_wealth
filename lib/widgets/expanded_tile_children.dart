@@ -14,10 +14,10 @@ class ExpandedTileChildren extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _riskColor  = riskColor((shares * currentPrice), (shares * price), risk);
+    final rColor  = riskColor((shares * currentPrice), (shares * price), risk);
     
     return Container(
-      color: (shares > 0 ? _riskColor : Colors.blue),
+      color: (shares > 0 ? rColor : Colors.blue),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -70,7 +70,7 @@ class ExpandedTileChildren extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: (shares > 0 ? _riskColor : Colors.blue),
+                              color: (shares > 0 ? rColor : Colors.blue),
                               width: 2.0,
                               style: BorderStyle.solid,
                             )

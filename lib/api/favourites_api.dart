@@ -30,9 +30,9 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/favourites/' + type),
+        Uri.parse('${Globals.apiURL}api/favourites/$type'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -40,13 +40,13 @@ class FavouritesAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<FavouritesModel> _listFavourites = [];
-        for (var _data in _commonModel.data) {
-          FavouritesModel _fave = FavouritesModel.fromJson(_data['attributes']);
-          _listFavourites.add(_fave);
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<FavouritesModel> listFavourites = [];
+        for (var data in commonModel.data) {
+          FavouritesModel fave = FavouritesModel.fromJson(data['attributes']);
+          listFavourites.add(fave);
         }
-        return _listFavourites;
+        return listFavourites;
       }
 
       // status code is not 200, means we got error
@@ -66,9 +66,9 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/favourites/list/' + type),
+        Uri.parse('${Globals.apiURL}api/favourites/list/$type'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -76,14 +76,14 @@ class FavouritesAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<FavouritesListModel> _listFavourites = [];
-        for (var _data in _commonModel.data) {
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<FavouritesListModel> listFavourites = [];
+        for (var data in commonModel.data) {
           // print(_data['attributes'].toString());
-          FavouritesListModel _fave = FavouritesListModel.fromJson(_data['attributes']);
-          _listFavourites.add(_fave);
+          FavouritesListModel fave = FavouritesListModel.fromJson(data['attributes']);
+          listFavourites.add(fave);
         }
-        return _listFavourites;
+        return listFavourites;
       }
 
       // status code is not 200, means we got error
@@ -103,9 +103,9 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.post(
-        Uri.parse(Globals.apiURL + 'api/favourites/' + type),
+        Uri.parse('${Globals.apiURL}api/favourites/$type'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'favourites_company_id': companyId}),
@@ -114,9 +114,9 @@ class FavouritesAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonSingleModel _commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        FavouritesListModel _userFave = FavouritesListModel.fromJson(_commonModel.data['attributes']);
-        return _userFave;
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        FavouritesListModel userFave = FavouritesListModel.fromJson(commonModel.data['attributes']);
+        return userFave;
       }
 
       // status code is not 200, means we got error
@@ -136,9 +136,9 @@ class FavouritesAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.delete(
-        Uri.parse(Globals.apiURL + 'api/favourites/' + favouriteId.toString()),
+        Uri.parse('${Globals.apiURL}api/favourites/$favouriteId'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );

@@ -25,10 +25,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({ Key? key }) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final FocusNode _usernameFocus = FocusNode();
   final TextEditingController _passwordController = TextEditingController();
@@ -140,14 +140,14 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginScreen() {
     final mq = MediaQueryData.fromWindow(window);
-    final double _height = mq.size.height;
+    final double height = mq.size.height;
     
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
         color: Colors.transparent,
         width: double.infinity,
-        height: _height,
+        height: height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -283,13 +283,6 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 15,),
                     MaterialButton(
                       height: 50,
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                       onPressed: (() {
                         if (_formKey.currentState!.validate()) {
                           showLoaderDialog(context);
@@ -312,6 +305,13 @@ class _LoginPageState extends State<LoginPage> {
                       }),
                       color: secondaryDark,
                       minWidth: double.infinity,
+                      child: const Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -322,7 +322,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: Text(
-                  "version - " + Globals.appVersion,
+                  "version - ${Globals.appVersion}",
                   style: const TextStyle(
                     color: primaryLight,
                     fontSize: 10,
@@ -337,12 +337,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> _checkLogin() async {
-    bool _ret = false;
+    bool ret = false;
 
     await _userAPI.me().then((resp) async {
       // check if user confirmed and not blocked
       if(resp.confirmed == true && resp.blocked == false) {
-        _ret = true;
+        ret = true;
 
         // stored this information on the shared preference,
         // in case there are update from user that directly performed
@@ -354,21 +354,21 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     }).onError((error, stackTrace) {
-      debugPrint("⛔ " + error.toString());
+      debugPrint("⛔ $error");
     });
 
     // return the result of the check login to the caller
-    return _ret;
+    return ret;
   }
 
   Future<bool> _login(String username, String password) async {
-    bool _ret = false;
+    bool ret = false;
     debugPrint("🔑 Try to login");
     
     await _userAPI.login(username, password).then((resp) async {
       // login success, check and ensure that user is confirmed and not blocked
       if(resp.user.confirmed == true && resp.user.blocked == false) {
-        _ret = true;
+        ret = true;
 
         // as we already got the model here, we can store the JWT to the secured box here
         await UserSharedPreferences.setUserJWT(resp.jwt).then((_) {
@@ -391,44 +391,51 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint("🔐 Login failed");
     });
 
-    return _ret;
+    return ret;
   }
 
   Future<void> _getAdditionalInfo() async {
     await Future.wait([
-      _faveAPI.getFavourites("reksadana").then((_resp) async {
-        await FavouritesSharedPreferences.setFavouritesList("reksadana", _resp);
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", _resp);
+      _faveAPI.getFavourites("reksadana").then((resp) async {
+        await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
+        if (!mounted) return;
+        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
         debugPrint("4️⃣ Get user favourites reksadana");
       }),
-      _faveAPI.getFavourites("saham").then((_resp) async {
-        await FavouritesSharedPreferences.setFavouritesList("saham", _resp);
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", _resp);
+      _faveAPI.getFavourites("saham").then((resp) async {
+        await FavouritesSharedPreferences.setFavouritesList("saham", resp);
+        if (!mounted) return;
+        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
         debugPrint("4️⃣ Get user favourites saham");
       }),
-      _faveAPI.getFavourites("crypto").then((_resp) async {
-        await FavouritesSharedPreferences.setFavouritesList("crypto", _resp);
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", _resp);
+      _faveAPI.getFavourites("crypto").then((resp) async {
+        await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
+        if (!mounted) return;
+        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
         debugPrint("4️⃣ Get user favourites crypto");
       }),
-      _watchlistApi.getWatchlist("reksadana").then((_resp) async {
-        await WatchlistSharedPreferences.setWatchlist("reksadana", _resp);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", _resp);
+      _watchlistApi.getWatchlist("reksadana").then((resp) async {
+        await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
         debugPrint("5️⃣ Get user watchlist reksadana");
       }),
-      _watchlistApi.getWatchlist("saham").then((_resp) async {
-        await WatchlistSharedPreferences.setWatchlist("saham", _resp);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", _resp);
+      _watchlistApi.getWatchlist("saham").then((resp) async {
+        await WatchlistSharedPreferences.setWatchlist("saham", resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
         debugPrint("5️⃣ Get user watchlist saham");
       }),
-      _watchlistApi.getWatchlist("crypto").then((_resp) async {
-        await WatchlistSharedPreferences.setWatchlist("crypto", _resp);
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", _resp);
+      _watchlistApi.getWatchlist("crypto").then((resp) async {
+        await WatchlistSharedPreferences.setWatchlist("crypto", resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
         debugPrint("5️⃣ Get user watchlist crypto");
       }),
-      _indexApi.getIndex().then((_resp) async {
-        await IndexSharedPreferences.setIndexList(_resp);
-        Provider.of<IndexProvider>(context, listen: false).setIndexList(_resp);
+      _indexApi.getIndex().then((resp) async {
+        await IndexSharedPreferences.setIndexList(resp);
+        if (!mounted) return;
+        Provider.of<IndexProvider>(context, listen: false).setIndexList(resp);
         debugPrint("6️⃣ Get index");
       }),
     ]).then((_) {

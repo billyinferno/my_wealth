@@ -15,11 +15,11 @@ class FavouriteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color _color = riskColor((price + priceChange), price, riskFactor);
+    final Color color = riskColor((price + priceChange), price, riskFactor);
 
     return Container(
       decoration: BoxDecoration(
-        color: _color,
+        color: color,
         border: const Border(
           bottom: BorderSide(
             color: primaryLight,
@@ -127,14 +127,14 @@ class FavouriteList extends StatelessWidget {
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: _color,
+                                  color: color,
                                   width: 2.0,
                                   style: BorderStyle.solid,
                                 )
                               ),
                             ),
                             child: Text(
-                              formatCurrency(percentChange) + "%",
+                              "${formatCurrency(percentChange)}%",
                               style: const TextStyle(
                                 fontSize: 12,
                               )
@@ -149,7 +149,7 @@ class FavouriteList extends StatelessWidget {
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: _color,
+                                  color: color,
                                   width: 2.0,
                                   style: BorderStyle.solid,
                                 )

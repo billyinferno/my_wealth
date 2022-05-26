@@ -17,25 +17,25 @@ class LocalBox {
       await keyBox!.compact();
     }
 
-    List<int> _key = [];
-    Uint8List _keyInt;
+    List<int> key = [];
+    Uint8List keyInt;
     // check whether we already have key or not?
     if(!keyBox!.containsKey('key')) {
       // don't have key, so we need to generate a new key
-      _key = Hive.generateSecureKey();
-      _keyInt = _key as Uint8List;
-      keyBox!.put('key', _key);
+      key = Hive.generateSecureKey();
+      keyInt = key as Uint8List;
+      keyBox!.put('key', key);
     }
     else {
       // key already exists, get the current key
-      _key = keyBox!.get('key');
-      _keyInt = _key as Uint8List;
+      key = keyBox!.get('key');
+      keyInt = key as Uint8List;
     }
 
     // open the encrypted box based on the key we have
     if (encryptedBox == null) {
       debugPrint("🔐 Initialized Secured Box");
-      encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(_keyInt));
+      encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(keyInt));
     }
     else {
       debugPrint("🗜️ Compact Secured Box");
@@ -149,11 +149,11 @@ class LocalBox {
   }
 
   static Future<void> delete(String key, [bool? exact]) async {
-    bool _exact = (exact ?? false);
+    bool isExact = (exact ?? false);
 
     // check if key box is not null
     if (keyBox != null) {
-      if (_exact) {
+      if (isExact) {
         // check if we can find the key on the key box or not?
         if (keyBox!.containsKey(key)) {
           // delete the ke

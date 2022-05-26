@@ -16,9 +16,9 @@ class ExpandedTileTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _riskColor = (riskColor ?? primaryLight);
+    final rColor = (riskColor ?? primaryLight);
     return Container(
-      color: _riskColor,
+      color: rColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -51,7 +51,7 @@ class ExpandedTileTitle extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: _riskColor,
+                              color: rColor,
                               width: 2.0,
                               style: BorderStyle.solid,
                             )
@@ -97,7 +97,7 @@ class ExpandedTileTitle extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: Text(
-                          (lot > 0 ? lot.toString() + " Lots" : "- Lots"),
+                          (lot > 0 ? "$lot Lots" : "- Lots"),
                           style: const TextStyle(
                             fontSize: 12,
                           ),
@@ -107,7 +107,7 @@ class ExpandedTileTitle extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          (share > 0 ? formatCurrency(share) + " Shares" : "- Shares"),
+                          (share > 0 ? "${formatCurrency(share)} Shares" : "- Shares"),
                           style: const TextStyle(
                             fontSize: 12,
                           ),

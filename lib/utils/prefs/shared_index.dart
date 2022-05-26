@@ -12,11 +12,11 @@ class IndexSharedPreferences {
     }
 
     // convert the json to string so we can stored it on the local storage
-    List<String> _indexList = [];
-    for (IndexModel _index in indexList) {
-      _indexList.add(jsonEncode(_index.toJson()));
+    List<String> indexListResp = [];
+    for (IndexModel index in indexList) {
+      indexListResp.add(jsonEncode(index.toJson()));
     }
-    LocalBox.putStringList(_indexKey, _indexList);
+    LocalBox.putStringList(_indexKey, indexListResp);
   }
 
   static List<IndexModel> getIndexList() {
@@ -26,19 +26,19 @@ class IndexSharedPreferences {
     }
 
     // get the data from local box
-    List<String> _indexList = (LocalBox.getStringList(_indexKey) ?? []);
+    List<String> indexList = (LocalBox.getStringList(_indexKey) ?? []);
 
     // check if the list is empty or not?
-    if (_indexList.isNotEmpty) {
+    if (indexList.isNotEmpty) {
       // list is not empty, parse the string to FavouriteModel
-      List<IndexModel> _ret = [];
-      for (String _indexString in _indexList) {
-        IndexModel _index = IndexModel.fromJson(jsonDecode(_indexString));
-        _ret.add(_index);
+      List<IndexModel> ret = [];
+      for (String indexString in indexList) {
+        IndexModel index = IndexModel.fromJson(jsonDecode(indexString));
+        ret.add(index);
       }
 
       // return the favourites list
-      return _ret;
+      return ret;
     }
     else {
       // no data

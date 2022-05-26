@@ -18,15 +18,17 @@ class HeatGraph extends StatelessWidget {
   final Map<DateTime, GraphData> data;
   final bool? enableDailyComparison;
   final UserLoginInfoModel userInfo;
-  const HeatGraph({ Key? key, this.title, required this.currentPrice, required this.data, required this.userInfo, this.enableDailyComparison }) : super(key: key);
+  final bool? weekend;
+  const HeatGraph({ Key? key, this.title, required this.currentPrice, required this.data, required this.userInfo, this.enableDailyComparison, this.weekend }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final List<String> _weekDayName = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-    bool _isTitleShow = false;
+    final List<String> weekDayName = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    bool isTitleShow = false;
+    bool showWeekend = (weekend ?? false);
 
     if(title != null) {
-      _isTitleShow = true;
+      isTitleShow = true;
     }
 
     return Container(
@@ -36,13 +38,13 @@ class HeatGraph extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Visibility(
-            visible: _isTitleShow,
+            visible: isTitleShow,
             child: Center(
               child: title,
             )
           ),
           Visibility(
-            visible: _isTitleShow,
+            visible: isTitleShow,
             child: const SizedBox(height: 10,)
           ),
           Row(
@@ -53,12 +55,12 @@ class HeatGraph extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: List<Widget>.generate(5, (index) {
+                  children: List<Widget>.generate((showWeekend ? 7 : 5), (index) {
                     return Container(
                       height: 10,
                       margin: const EdgeInsets.all(5),
                       child: Text(
-                        _weekDayName[index],
+                        weekDayName[index],
                         style: const TextStyle(
                           fontSize: 10,
                         ),
@@ -67,7 +69,7 @@ class HeatGraph extends StatelessWidget {
                   }),
                 ),
               ),
-              ..._generateRows(),
+              ..._generateRows(showWeekend),
             ],
           ),
         ],
@@ -80,108 +82,110 @@ class HeatGraph extends StatelessWidget {
     // expect to get all the date without skipping. So what we can do is to expand the
     // date given to exactly 91 days (65/5) * 7.
 
-    List<GraphData> _dataExpand = [];
+    List<GraphData> dataExpand = [];
 
     // first get the 1st keys
-    DateTime _firstDate = data.keys.first;
+    DateTime firstDate = data.keys.first;
 
     for(int day=0; day<91; day++) {
-      DateTime _keys = _firstDate.add(Duration(days: day));
+      DateTime keys = firstDate.add(Duration(days: day));
       // check if exists?
-      if(data.containsKey(_keys)) {
-        _dataExpand.add(GraphData(date: _keys, price: data[_keys]!.price));
+      if(data.containsKey(keys)) {
+        dataExpand.add(GraphData(date: keys, price: data[keys]!.price));
       }
       else {
-        _dataExpand.add(GraphData(date: _keys, price: -1));
+        dataExpand.add(GraphData(date: keys, price: -1));
       }
     }
 
-    return _dataExpand;
+    return dataExpand;
   }
 
-  List<Widget> _generateRows() {
-    final DateFormat _df = DateFormat("dd/MMM");
-    final bool _enableDailyComparison = (enableDailyComparison ?? false);
+  List<Widget> _generateRows(bool showWeekend) {
+    final DateFormat df = DateFormat("dd/MM");
+    final bool isEnableDailyComparison = (enableDailyComparison ?? false);
 
-    List<Widget> _return = [];
+    List<Widget> response = [];
     int i = 0;
-    int _totalData = 0;
+    int totalData = 0;
+    int maxData = (showWeekend ? 91 : 65);
+    int loopLimit = (showWeekend ? 7 : 5);
 
     // history data
-    double _prevPrice = -1;
-    Color _boxColor;
-    Color _decorationColor;
+    double prevPrice = -1;
+    Color boxColor;
+    Color decorationColor;
 
     // before we do, let's expand the data first
-    List<GraphData> _dataExpand = _expandData();
+    List<GraphData> dataExpand = _expandData();
     
     // totalData will be number of here + 5, as we will ended on the next loop of 5
     // before we perform check on total data again.
-    while(_totalData < 65) {
+    while(totalData < maxData) {
       // do we still have data?
-      if(i<_dataExpand.length) {
+      if(i<dataExpand.length) {
         // we will only do if the date of weekday is below 5
-        if (_dataExpand[i].date.weekday <= 5) {
+        if (dataExpand[i].date.weekday <= loopLimit) {
           // do this as this is weekday
-          List<Widget> _boxes = _generateBoxes(primaryDark);
+          List<Widget> boxes = _generateBoxes(loopLimit, primaryDark);
 
           // get the label that we will put on this graph based on the
           // 1st day that we will process
           // int _weekNumber = weekNumber(_dataExpand[i].date);
-          DateTime _startDate = _dataExpand[i].date;
-          DateTime? _endDate;
+          DateTime startDate = dataExpand[i].date;
+          DateTime? endDate;
 
           // now loop from this weekday until friday, in case this is friday
           // then it will be only loop once
-          for (var day=_dataExpand[i].date.weekday; day <= 5 && i < _dataExpand.length; day++, i++, _totalData++) {
+          for (var day=dataExpand[i].date.weekday; day <= loopLimit && i < dataExpand.length; day++, i++, totalData++) {
             // debugPrint(_dataExpand[i].date.toString());
-            if(_dataExpand[i].price > 0) {
+            if(dataExpand[i].price > 0) {
               // change the box data with the current data
               // generate the color
-              if(_prevPrice > 0) {
-                _boxColor = riskColor(_dataExpand[i].price, _prevPrice, userInfo.risk);
+              if(prevPrice > 0) {
+                boxColor = riskColor(dataExpand[i].price, prevPrice, userInfo.risk);
               }
               else {
-                _boxColor = Colors.white;
+                boxColor = Colors.white;
               }
-              _prevPrice = _dataExpand[i].price;
+              prevPrice = dataExpand[i].price;
             }
             else {
-              _boxColor = primaryDark;
+              boxColor = primaryDark;
             }
             
             // check for the foreground color
-            if(_enableDailyComparison) {
-              if(currentPrice == _dataExpand[i].price) {
-                _decorationColor = Colors.transparent;
+            if(isEnableDailyComparison) {
+              if(currentPrice == dataExpand[i].price) {
+                decorationColor = Colors.transparent;
               }
               else {
-                if(currentPrice > 0 && _dataExpand[i].price > 0) {
-                  _decorationColor = riskColor(currentPrice, _dataExpand[i].price, userInfo.risk) ;
+                if(currentPrice > 0 && dataExpand[i].price > 0) {
+                  decorationColor = riskColor(currentPrice, dataExpand[i].price, userInfo.risk) ;
                 }
                 else {
-                  _decorationColor = Colors.transparent;
+                  decorationColor = Colors.transparent;
                 }
               }
             }
             else {
-              _decorationColor = Colors.transparent;
+              decorationColor = Colors.transparent;
             }
 
-            _boxes[day-1] = _generateBox(_boxColor, _decorationColor);
-            _endDate = _dataExpand[i].date;
+            boxes[day-1] = _generateBox(boxColor, decorationColor);
+            endDate = dataExpand[i].date;
           }
           // debugPrint("--- END OF WEEK ---");
           
           // last box will be put with text
-          _boxes.add(Container(
+          boxes.add(Container(
             width: 10,
             margin: const EdgeInsets.all(5),
             child: RotatedBox(
               quarterTurns: 1,
               child: Text(
                 // "Week " + _weekNumber.toString() + " (" + _monthName[_month-1] + ")",
-                _df.format(_startDate) + " - " + _df.format(_endDate!),
+                "${df.format(startDate)} - ${df.format(endDate!)}",
                 style: const TextStyle(
                   fontSize: 10,
                 ),
@@ -190,7 +194,7 @@ class HeatGraph extends StatelessWidget {
           ));
 
           // end of this week, so add this to the return variable
-          _return.add(_generateBoxColumn(_boxes));
+          response.add(_generateBoxColumn(boxes));
         }
         else {
           // skip this data
@@ -199,12 +203,12 @@ class HeatGraph extends StatelessWidget {
       }
       else {
         // no more data, so here we can just print black boxes
-        _return.add(_generateBoxColumn(_generateBoxes(primaryDark)));
-        _totalData += 5;
+        response.add(_generateBoxColumn(_generateBoxes(loopLimit, primaryDark)));
+        totalData += 5;
       }
     }
 
-    return _return;
+    return response;
   }
 
   Widget _generateBox(Color boxColor, Color decorationColor) {
@@ -220,8 +224,8 @@ class HeatGraph extends StatelessWidget {
     );
   }
 
-  List<Widget> _generateBoxes(Color boxColor) {
-    return List<Widget>.generate(5, (index) {
+  List<Widget> _generateBoxes(int numBox, Color boxColor) {
+    return List<Widget>.generate(numBox, (index) {
       return _generateBox(boxColor, Colors.transparent);
     });
   }

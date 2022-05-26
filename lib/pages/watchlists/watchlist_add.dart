@@ -24,10 +24,10 @@ class WatchlistAddPage extends StatefulWidget {
   const WatchlistAddPage({ Key? key, required this.watchlistArgs }) : super(key: key);
 
   @override
-  _WatchlistAddPageState createState() => _WatchlistAddPageState();
+  WatchlistAddPageState createState() => WatchlistAddPageState();
 }
 
-class _WatchlistAddPageState extends State<WatchlistAddPage> {
+class WatchlistAddPageState extends State<WatchlistAddPage> {
   final TextEditingController _textController = TextEditingController();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   final CompanyAPI _companyAPI = CompanyAPI();
@@ -98,7 +98,7 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
                 ),
                 onSubmitted: ((searchText) async {
                   if(searchText.isNotEmpty) {
-                    debugPrint("🔎 Searching for " + searchText);
+                    debugPrint("🔎 Searching for $searchText");
     
                     // show loader dialog
                     showLoaderDialog(context);
@@ -171,7 +171,7 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
                 canAdd: _companySearchResult![index].companyCanAdd,
                 onPress: (() async {
                   await _addCompanyToWatchlist(index).then((resp) async {
-                    debugPrint("🏁 Add Company " + _companySearchResult![index].companyName + " to watchlist");
+                    debugPrint("🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
 
                     // add the response to watchlist
                     _watchlists!.add(resp!);
@@ -180,6 +180,7 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
                     await WatchlistSharedPreferences.setWatchlist(_args.type, _watchlists!);
 
                     // notify the listener for the watchlist
+                    if (!mounted) return;
                     Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_args.type, _watchlists!);
                   }).onError((error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -196,14 +197,14 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
   }
 
   Future<List<CompanySearchModel>> _searchCompany(String companyName) async {
-    List<CompanySearchModel> _ret = [];
+    List<CompanySearchModel> ret = [];
     await _companyAPI.getCompanyByName(companyName, _args.type).then((resp) {
-      _ret = resp;
+      ret = resp;
     }).onError((error, stackTrace) {
       throw Exception("Error when search company");
     });
 
-    return _ret;
+    return ret;
   }
 
   void _setSearchResult(List<CompanySearchModel> result) {
@@ -213,12 +214,12 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
   }
 
   Future<WatchlistListModel?> _addCompanyToWatchlist(int index) async {
-    WatchlistListModel? _watchlist;
+    WatchlistListModel? watchlist;
 
     await _watchlistAPI.add(_args.type, _companySearchResult![index].companyId).then((resp) async {
-      _watchlist = resp;
+      watchlist = resp;
 
-      CompanySearchModel _ret = CompanySearchModel(
+      CompanySearchModel ret = CompanySearchModel(
         companyId: _companySearchResult![index].companyId,
         companyName: _companySearchResult![index].companyName,
         companyNetAssetValue: _companySearchResult![index].companyNetAssetValue!,
@@ -227,21 +228,21 @@ class _WatchlistAddPageState extends State<WatchlistAddPage> {
         companyCanAdd: false
       );
 
-      List<CompanySearchModel> _resp = [];
-      for (CompanySearchModel? _company in _companySearchResult!) {
-        if(_company!.companyId == _ret.companyId) {
-          _resp.add(_ret);
+      List<CompanySearchModel> response = [];
+      for (CompanySearchModel? company in _companySearchResult!) {
+        if(company!.companyId == ret.companyId) {
+          response.add(ret);
         }
         else {
-          _resp.add(_company);
+          response.add(company);
         }
       }
 
-      _setSearchResult(_resp);
+      _setSearchResult(response);
     }).onError((error, stackTrace) {
       throw Exception("Error when add to watchlist");
     });
 
-    return _watchlist!;
+    return watchlist!;
   }
 }

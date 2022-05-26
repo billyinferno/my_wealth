@@ -20,7 +20,7 @@ class UserAPI {
 
   Future<UserLoginModel> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse(Globals.apiURL + 'api/auth/local'),
+      Uri.parse('${Globals.apiURL}api/auth/local'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -30,8 +30,8 @@ class UserAPI {
     // check if we got 200 response or not?
     if (response.statusCode == 200) {
       // parse the response and put on user login model
-      UserLoginModel _userLogin = UserLoginModel.fromJson(jsonDecode(response.body));
-      return _userLogin;
+      UserLoginModel userLogin = UserLoginModel.fromJson(jsonDecode(response.body));
+      return userLogin;
     }
 
     // status code is not 200, means we got error
@@ -47,9 +47,9 @@ class UserAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/users/me'),
+        Uri.parse('${Globals.apiURL}api/users/me'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -57,8 +57,8 @@ class UserAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response and put on user login model
-        UserLoginInfoModel _userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
-        return _userInfo;
+        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return userInfo;
       }
 
       // status code is not 200, means we got error
@@ -78,9 +78,9 @@ class UserAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.patch(
-        Uri.parse(Globals.apiURL + 'api/risk'),
+        Uri.parse('${Globals.apiURL}api/risk'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'risk': risk}),
@@ -89,8 +89,8 @@ class UserAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response and put on user login model
-        UserLoginInfoModel _userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
-        return _userInfo;
+        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return userInfo;
       }
 
       // status code is not 200, means we got error
@@ -110,9 +110,9 @@ class UserAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.patch(
-        Uri.parse(Globals.apiURL + 'api/visibility/summary'),
+        Uri.parse('${Globals.apiURL}api/visibility/summary'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'visibility': visibility}),
@@ -121,8 +121,8 @@ class UserAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response and put on user login model
-        UserLoginInfoModel _userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
-        return _userInfo;
+        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return userInfo;
       }
 
       // status code is not 200, means we got error
@@ -142,9 +142,9 @@ class UserAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.patch(
-        Uri.parse(Globals.apiURL + 'api/visibility/lots'),
+        Uri.parse('${Globals.apiURL}api/visibility/lots'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'show_lots': showLots}),
@@ -153,8 +153,8 @@ class UserAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response and put on user login model
-        UserLoginInfoModel _userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
-        return _userInfo;
+        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return userInfo;
       }
 
       // status code is not 200, means we got error
@@ -174,9 +174,9 @@ class UserAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.patch(
-        Uri.parse(Globals.apiURL + 'api/password'),
+        Uri.parse('${Globals.apiURL}api/password'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -188,8 +188,8 @@ class UserAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response and put on user login model
-        UserLoginInfoModel _userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
-        return _userInfo;
+        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return userInfo;
       }
 
       // status code is not 200, means we got error

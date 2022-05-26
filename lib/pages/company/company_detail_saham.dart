@@ -110,7 +110,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
           appBar: AppBar(
             title: const Center(
               child: Text(
-                "Company Detail",
+                "Stock Detail",
                 style: TextStyle(
                   color: secondaryColor,
                 ),
@@ -150,7 +150,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              (_companyDetail.companySymbol == null ? "" : "(" + _companyDetail.companySymbol! + ") ") + _companyData.companyName,
+                              (_companyDetail.companySymbol == null ? "" : "(${_companyDetail.companySymbol!}) ") + _companyData.companyName,
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -245,7 +245,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "One Day",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -254,7 +254,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "One Week",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -263,7 +263,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "One Month",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -278,7 +278,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "Three Month",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -287,7 +287,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "Six Month",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -296,7 +296,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "One Year",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -311,7 +311,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "Three Years",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -320,7 +320,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "Five Years",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -329,7 +329,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "Ten Years",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -344,7 +344,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                   header: "YTD",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4) + "%",
+                                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4)}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -369,45 +369,45 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                               ],
                             ),
                             const SizedBox(height: 10,),
+                            // Row(
+                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //   mainAxisAlignment: MainAxisAlignment.start,
+                            //   children: <Widget>[
+                            //     CompanyInfoBox(
+                            //       header: "PBR",
+                            //       headerAlign: TextAlign.right,
+                            //       child: Text(
+                            //         formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
+                            //         textAlign: TextAlign.right,
+                            //       ),
+                            //     ),
+                            //     const SizedBox(width: 10,),
+                            //     CompanyInfoBox(
+                            //       header: "PSR Annual",
+                            //       headerAlign: TextAlign.right,
+                            //       child: Text(
+                            //         formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
+                            //         textAlign: TextAlign.right,
+                            //       ),
+                            //     ),
+                            //     const SizedBox(width: 10,),
+                            //     CompanyInfoBox(
+                            //       header: "PCFR Annual",
+                            //       headerAlign: TextAlign.right,
+                            //       child: Text(
+                            //         formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
+                            //         textAlign: TextAlign.right,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            // const SizedBox(height: 10,),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 CompanyInfoBox(
-                                  header: "PBR",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "PSR Annual",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "PCFR Annual",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Min (" + _numPrice.toString() + ")",
+                                  header: "Min ($_numPrice)",
                                   headerAlign: TextAlign.right,
                                   child: Text(
                                     formatCurrencyWithNull(_minPrice!),
@@ -416,7 +416,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Max (" + _numPrice.toString() + ")",
+                                  header: "Max ($_numPrice)",
                                   headerAlign: TextAlign.right,
                                   child: Text(
                                     formatCurrencyWithNull(_maxPrice!),
@@ -425,7 +425,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Avg (" + _numPrice.toString() + ")",
+                                  header: "Avg ($_numPrice)",
                                   headerAlign: TextAlign.right,
                                   child: Text(
                                     formatCurrencyWithNull(_avgPrice!),
@@ -505,9 +505,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   }
 
   List<Widget> _showTable() {
-    List<Widget> _table = [];
+    List<Widget> table = [];
 
-    _table.add(Row(
+    table.add(Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -614,7 +614,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       ],
     ));
 
-    _table.add(Expanded(
+    table.add(Expanded(
       child: ListView(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -639,13 +639,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       ),
     ));
 
-    return _table;
+    return table;
   }
 
   List<Widget> _showCalendar() {
-    List<Widget> _calendar = [];
+    List<Widget> calendar = [];
 
-    _calendar.add(Expanded(
+    calendar.add(Expanded(
       child: SingleChildScrollView(
         controller: _calendarScrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -692,13 +692,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       ),
     ));
 
-    return _calendar;
+    return calendar;
   }
 
   List<Widget> _showGraph() {
-    List<Widget> _graph = [];
+    List<Widget> graph = [];
 
-    _graph.add(SingleChildScrollView(
+    graph.add(SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       child: LineChart(
@@ -707,7 +707,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       ),
     ));
 
-    return _graph;
+    return graph;
   }
 
   void _setIsLoading(bool val) {
@@ -718,51 +718,51 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
 
   void _generateGraphData(CompanyDetailModel data) {
     // map the price date on company
-    List<GraphData> _tempData = [];
-    int _totalData = 0;
-    double _totalPrice = 0;
-    int _totalPriceData = 0;
+    List<GraphData> tempData = [];
+    int totalData = 0;
+    double totalPrice = 0;
+    int totalPriceData = 0;
 
     _minPrice = double.maxFinite;
     _maxPrice = double.minPositive;
 
     // move the last update to friday
-    int _addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
-    DateTime _endDate = data.companyLastUpdate!.add(Duration(days: _addDay));
+    int addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
+    DateTime endDate = data.companyLastUpdate!.add(Duration(days: addDay));
 
     // then go 14 weeks before so we knew the start date
-    DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+    DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
     // only get the 1st 64 data, since we will want to get the latest data
-    for (PriceModel _price in data.companyPrices) {
+    for (PriceModel price in data.companyPrices) {
       // ensure that all the data we will put is more than or equal with startdate
-      if(_price.priceDate.compareTo(_startDate) >= 0) {
-        _tempData.add(GraphData(date: _price.priceDate.toLocal(), price: _price.priceValue));
-        _totalData += 1;
+      if(price.priceDate.compareTo(startDate) >= 0) {
+        tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+        totalData += 1;
       }
 
       // count for minimum, maximum, and average
-      if(_totalPriceData < 29) {
-        if(_minPrice! > _price.priceValue) {
-          _minPrice = _price.priceValue;
+      if(totalPriceData < 29) {
+        if(_minPrice! > price.priceValue) {
+          _minPrice = price.priceValue;
         }
 
-        if(_maxPrice! < _price.priceValue) {
-          _maxPrice = _price.priceValue;
+        if(_maxPrice! < price.priceValue) {
+          _maxPrice = price.priceValue;
         }
 
-        _totalPrice += _price.priceValue;
-        _totalPriceData++;
+        totalPrice += price.priceValue;
+        totalPriceData++;
       }
 
       // if total data already more than 64 break  the data, as heat map only will display 65 data
-      if(_totalData >= 64) {
+      if(totalData >= 64) {
         break;
       }
     }
 
     // add the current price which only in company
-    _tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
+    tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
 
     // check current price for minimum, maximum, and average
     if(_minPrice! > data.companyNetAssetValue!) {
@@ -773,21 +773,21 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       _maxPrice = data.companyNetAssetValue!;
     }
 
-    _totalPrice += data.companyNetAssetValue!;
-    _totalPriceData++;
+    totalPrice += data.companyNetAssetValue!;
+    totalPriceData++;
     
     // compute average
-    _avgPrice = _totalPrice / _totalPriceData;
-    _numPrice = _totalPriceData;
+    _avgPrice = totalPrice / totalPriceData;
+    _numPrice = totalPriceData;
 
     // sort the temporary data
-    _tempData.sort((a, b) {
+    tempData.sort((a, b) {
       return a.date.compareTo(b.date);
     });
 
     // once sorted, then we can put it on map
-    for (GraphData _data in _tempData) {
-      _graphData![_data.date] = _data;
+    for (GraphData data in tempData) {
+      _graphData![data.date] = data;
     }
   }
 }

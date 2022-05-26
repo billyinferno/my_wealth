@@ -17,12 +17,12 @@ class UserSharedPreferences {
   }
 
   static String getUserJWT() {
-    String? _bearerToken;
+    String? bearerToken;
 
     if (LocalBox.encryptedBox != null) {
-      _bearerToken = LocalBox.getSecuredString('jwt');
+      bearerToken = LocalBox.getSecuredString('jwt');
       // if not null then return blank string
-      return (_bearerToken ?? '');
+      return (bearerToken ?? '');
     }
     else {
       return '';
@@ -36,8 +36,8 @@ class UserSharedPreferences {
     }
 
     // convert the json to string so we can stored it on the local storage
-    String _userInfo = jsonEncode(userInfo.toJson());
-    LocalBox.putString(_userMeKey, _userInfo);
+    String userInfoString = jsonEncode(userInfo.toJson());
+    LocalBox.putString(_userMeKey, userInfoString);
   }
   
   static UserLoginInfoModel? getUserInfo() {
@@ -47,13 +47,13 @@ class UserSharedPreferences {
     }
 
     // get the user information string from the local storage
-    String _userInfo = (LocalBox.getString(_userMeKey) ?? '');
+    String userInfo = (LocalBox.getString(_userMeKey) ?? '');
 
     // check if the user information is available or not?
-    if (_userInfo.isNotEmpty) {
+    if (userInfo.isNotEmpty) {
       // parse the user information string to json
-      UserLoginInfoModel _userInfoModel = UserLoginInfoModel.fromJson(jsonDecode(_userInfo));
-      return _userInfoModel;
+      UserLoginInfoModel userInfoModel = UserLoginInfoModel.fromJson(jsonDecode(userInfo));
+      return userInfoModel;
     }
     else {
       return null;

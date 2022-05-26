@@ -14,11 +14,12 @@ class WatchlistSubSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // defaulted the _isVisible to true if the parameter not being sent to the widget
-    bool _isVisible = isVisible ?? true;
+    bool isUserVisible = isVisible ?? true;
     
-    return SizedBox(
+    return Container(
       width: double.infinity,
       height: 80,
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -41,7 +42,7 @@ class WatchlistSubSummary extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  formatCurrencyWithNull(_isVisible ? (value - cost) : null),
+                  formatCurrencyWithNull(isUserVisible ? (value - cost) : null),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -71,7 +72,7 @@ class WatchlistSubSummary extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              formatCurrencyWithNull(_isVisible ? dayGain : null),
+                              formatCurrencyWithNull(isUserVisible ? dayGain : null),
                               style: const TextStyle(
                                 fontSize: 15,
                               ),
@@ -99,7 +100,7 @@ class WatchlistSubSummary extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              formatCurrencyWithNull(_isVisible ? value : null),
+                              formatCurrencyWithNull(isUserVisible ? value : null),
                               style: const TextStyle(
                                 fontSize: 15,
                               ),
@@ -127,7 +128,7 @@ class WatchlistSubSummary extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              formatCurrencyWithNull(_isVisible ? cost : null),
+                              formatCurrencyWithNull(isUserVisible ? cost : null),
                               style: const TextStyle(
                                 fontSize: 15,
                               ),
@@ -137,7 +138,7 @@ class WatchlistSubSummary extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

@@ -21,10 +21,10 @@ class WatchlistDetailEditPage extends StatefulWidget {
   const WatchlistDetailEditPage({ Key? key, required this.watchlistArgs }) : super(key: key);
 
   @override
-  _WatchlistDetailEditPageState createState() => _WatchlistDetailEditPageState();
+  WatchlistDetailEditPageState createState() => WatchlistDetailEditPageState();
 }
 
-class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
+class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
   final TextEditingController _sharesController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final WatchlistAPI _watchlistApi = WatchlistAPI();
@@ -128,15 +128,13 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
               children: <Widget>[
                 const SizedBox(width: 10,),
                 TransparentButton(
-                  text: "Update " + (_txn == "b" ? "Buy" : "Sell"),
+                  text: "Update ${_txn == "b" ? "Buy" : "Sell"}",
                   icon: Ionicons.save,
                   callback: (() async {
                     showLoaderDialog(context);
                     await _updateDetail().then((resp) {
                       if(resp) {                      
-                        debugPrint("💾 Update the watchlist detail ID " +
-                          _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId.toString() +
-                          " for " + _watchlist.watchlistId.toString());
+                        debugPrint("💾 Update the watchlist detail ID ${_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId} for ${_watchlist.watchlistId}");
                         // return back to the previous page
                         Navigator.pop(context);
                       }
@@ -173,79 +171,80 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
   }
 
   Future<bool> _updateDetail() async {
-    bool _ret = false;
-    double _shares = (double.tryParse(_sharesController.text) ?? 0);
-    double _price = (double.tryParse(_priceController.text) ?? 0);
+    bool ret = false;
+    double shares = (double.tryParse(_sharesController.text) ?? 0);
+    double price = (double.tryParse(_priceController.text) ?? 0);
 
-    if(_shares > 0 && _price > 0) {
+    if(shares > 0 && price > 0) {
       // once we reach here, we need to check whether the transaction is "b"(uy) or "s"(ell), so we can send the correct
       // share amount to the API
       if (_txn == "s") {
         // return back update of sales to minus again
-        _shares *= -1;
+        shares *= -1;
       }
 
       // call the update detail API
-      await _watchlistApi.updateDetail(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId, _selectedDate, _shares, _price).then((resp) async {
+      await _watchlistApi.updateDetail(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId, _selectedDate, shares, price).then((resp) async {
         // check if the response is success
         if(resp) {
           // update the current detail with new one
-          WatchlistDetailListModel _newWatchlistDetail = WatchlistDetailListModel(
+          WatchlistDetailListModel newWatchlistDetail = WatchlistDetailListModel(
             watchlistDetailId: _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId,
-            watchlistDetailShare: _shares,
-            watchlistDetailPrice: _price,
+            watchlistDetailShare: shares,
+            watchlistDetailPrice: price,
             watchlistDetailDate: _selectedDate);
           
           // create the new watchlist details
-          List<WatchlistDetailListModel> _newWatchlistDetailList = [];
+          List<WatchlistDetailListModel> newWatchlistDetailList = [];
           // loop thru the current watchlist detail list
-          for (WatchlistDetailListModel _watchDetail in _watchlist.watchlistDetail) {
-            if(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId == _watchDetail.watchlistDetailId) {
+          for (WatchlistDetailListModel watchDetail in _watchlist.watchlistDetail) {
+            if(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId == watchDetail.watchlistDetailId) {
               // put the update wathclist detail
-              _newWatchlistDetailList.add(_newWatchlistDetail);
+              newWatchlistDetailList.add(newWatchlistDetail);
             }
             else {
               // add the other
-              _newWatchlistDetailList.add(_watchDetail);
+              newWatchlistDetailList.add(watchDetail);
             }
           }
 
           // loop thru current watchlist
-          List<WatchlistListModel> _newWatchlist = [];
-          List<WatchlistListModel> _currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
-          for (WatchlistListModel _watch in _currWatchlist) {
+          List<WatchlistListModel> newWatchlist = [];
+          List<WatchlistListModel> currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
+          for (WatchlistListModel watch in currWatchlist) {
             // check if this is the same ID or not, if same then we need to recreate the new watchlist
-            if(_watch.watchlistId == _watchlist.watchlistId) {
-              WatchlistListModel _updateWatchlist = WatchlistListModel(
+            if(watch.watchlistId == _watchlist.watchlistId) {
+              WatchlistListModel updateWatchlist = WatchlistListModel(
                 watchlistId: _watchlist.watchlistId,
                 watchlistCompanyId: _watchlist.watchlistCompanyId,
                 watchlistCompanyName: _watchlist.watchlistCompanyName,
-                watchlistDetail: _newWatchlistDetailList,
+                watchlistDetail: newWatchlistDetailList,
                 watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
                 watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
                 watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
                 watchlistFavouriteId: _watchlist.watchlistFavouriteId,
               );
-              _newWatchlist.add(_updateWatchlist); 
+              newWatchlist.add(updateWatchlist); 
             }
             else {
-              _newWatchlist.add(_watch);
+              newWatchlist.add(watch);
             }
           }
 
           // got the new list, not time to update the shared preferences and the provider
-          await WatchlistSharedPreferences.setWatchlist(_type, _newWatchlist);
-          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, _newWatchlist);
+          await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
+          if (!mounted) return;
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
         }
 
-        _ret = resp;
+        ret = resp;
       });
     }
     else {
       throw Exception("Shares or Price cannot be zero");
     }
 
-    return _ret;
+    return ret;
   }
 
   Future<bool> _checkForm() async {
@@ -254,23 +253,23 @@ class _WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     // want to leave the page or not?
     if(_sharesController.text.isNotEmpty && _priceController.text.isNotEmpty) {
       // check the previous and current data is the same or not
-      double _shares = (double.tryParse(_sharesController.text) ?? 0);
-      double _price = (double.tryParse(_priceController.text) ?? 0);
+      double shares = (double.tryParse(_sharesController.text) ?? 0);
+      double price = (double.tryParse(_priceController.text) ?? 0);
 
-      if(_selectedDate == _prevDate && _shares == _prevShares && _price == _prevPrice) {
+      if(_selectedDate == _prevDate && shares == _prevShares && price == _prevPrice) {
         return true;
       }
       else {
-        bool _ret = false;
+        bool ret = false;
 
         await ShowMyDialog(
           title: "Data Not Saved",
           text: "Do you want to back?",
         ).show(context).then((value) {
-          _ret = value!;
+          ret = value!;
         });
 
-        return _ret;
+        return ret;
       }
     }
     else {

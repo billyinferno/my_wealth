@@ -19,8 +19,8 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int _decimal = (decimal ?? 4);
-    int _limit = (limit ?? 12);
+    int dec = (decimal ?? 4);
+    int lim = (limit ?? 12);
 
     return Container(
       decoration: const BoxDecoration(
@@ -61,8 +61,8 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
                 hintText: "0.00",
               ),
               inputFormatters: [
-                LengthLimitingTextInputFormatter(_limit),
-                DecimalTextInputFormatter(decimalRange: _decimal),
+                LengthLimitingTextInputFormatter(lim),
+                DecimalTextInputFormatter(decimalRange: dec),
               ],
             ),
           ),

@@ -13,10 +13,10 @@ class UpdateRiskPage extends StatefulWidget {
   const UpdateRiskPage({ Key? key }) : super(key: key);
 
   @override
-  _UpdateRiskPageState createState() => _UpdateRiskPageState();
+  UpdateRiskPageState createState() => UpdateRiskPageState();
 }
 
-class _UpdateRiskPageState extends State<UpdateRiskPage> {
+class UpdateRiskPageState extends State<UpdateRiskPage> {
   late UserLoginInfoModel? _userInfo;
   late double _riskValue;
   final UserAPI _userApi = UserAPI();
@@ -75,7 +75,7 @@ class _UpdateRiskPageState extends State<UpdateRiskPage> {
                       )
                     ),
                     child: Text(
-                      _userInfo!.risk.toString() + "%",
+                      "${_userInfo!.risk}%",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -109,14 +109,13 @@ class _UpdateRiskPageState extends State<UpdateRiskPage> {
                     width: 45,
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: Text(_riskValue.toString() + "%")
+                      child: Text("$_riskValue%")
                     )
                   ),
                 ],
               ),
               const SizedBox(height: 10,),
               MaterialButton(
-                child: const Text("Save"),
                 minWidth: double.infinity,
                 color: secondaryColor,
                 textColor: textPrimary,
@@ -139,6 +138,7 @@ class _UpdateRiskPageState extends State<UpdateRiskPage> {
                       await UserSharedPreferences.setUserInfo(resp);
     
                       // update the provider to notify the user page
+                      if (!mounted) return;
                       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
     
                       // once finished, then pop out from this page
@@ -155,7 +155,8 @@ class _UpdateRiskPageState extends State<UpdateRiskPage> {
                       );
                     });
                   }
-                })
+                }),
+                child: const Text("Save")
               ),
             ],
           ),

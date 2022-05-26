@@ -11,8 +11,8 @@ class CompanyInfoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color _headerColor = (headerColor ?? textPrimary);
-    TextAlign _headerAlign = (headerAlign ?? TextAlign.left);
+    Color currentHeaderColor = (headerColor ?? textPrimary);
+    TextAlign currentHeaderAlign = (headerAlign ?? TextAlign.left);
 
     return Expanded(
       child: Column(
@@ -32,9 +32,9 @@ class CompanyInfoBox extends StatelessWidget {
             ),
             child: Text(
               header,
-              textAlign: _headerAlign,
+              textAlign: currentHeaderAlign,
               style: TextStyle(
-                color: _headerColor,
+                color: currentHeaderColor,
                 fontWeight: FontWeight.bold,
               ),
             )

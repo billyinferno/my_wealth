@@ -10,13 +10,21 @@ class TransparentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool _active = (active ?? false);
+    bool isActive = (active ?? false);
 
     return Expanded(
       child: MaterialButton(
         onPressed: (() {
           callback();
         }),
+        shape: const RoundedRectangleBorder(
+          side: BorderSide(
+            color: primaryLight,
+            style: BorderStyle.solid,
+            width: 1.0,
+          ),
+        ),
+        color: (isActive ? secondaryColor : Colors.transparent),
         child: Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Row(
@@ -37,14 +45,6 @@ class TransparentButton extends StatelessWidget {
             ],
           ),
         ),
-        shape: const RoundedRectangleBorder(
-          side: BorderSide(
-            color: primaryLight,
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-        ),
-        color: (_active ? secondaryColor : Colors.transparent),
       ),
     );
   }

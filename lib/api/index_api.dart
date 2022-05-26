@@ -29,9 +29,9 @@ class IndexAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/indices'),
+        Uri.parse('${Globals.apiURL}api/indices'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -39,13 +39,13 @@ class IndexAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<IndexModel> _listIndex = [];
-        for (var _data in _commonModel.data) {
-          IndexModel _index = IndexModel.fromJson(_data['attributes']);
-          _listIndex.add(_index);
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<IndexModel> listIndex = [];
+        for (var data in commonModel.data) {
+          IndexModel index = IndexModel.fromJson(data['attributes']);
+          listIndex.add(index);
         }
-        return _listIndex;
+        return listIndex;
       }
 
       // status code is not 200, means we got error
@@ -65,9 +65,9 @@ class IndexAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse(Globals.apiURL + 'api/indices-prices/' + indexId.toString()),
+        Uri.parse('${Globals.apiURL}api/indices-prices/$indexId'),
         headers: {
-          HttpHeaders.authorizationHeader: "Bearer " + _bearerToken,
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
         },
       );
@@ -75,13 +75,13 @@ class IndexAPI {
       // check if we got 200 response or not?
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
-        CommonArrayModel _commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<IndexPriceModel> _listIndexPrice = [];
-        for (var _data in _commonModel.data) {
-          IndexPriceModel _indexPrice = IndexPriceModel.fromJson(_data['attributes']);
-          _listIndexPrice.add(_indexPrice);
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<IndexPriceModel> listIndexPrice = [];
+        for (var data in commonModel.data) {
+          IndexPriceModel indexPrice = IndexPriceModel.fromJson(data['attributes']);
+          listIndexPrice.add(indexPrice);
         }
-        return _listIndexPrice;
+        return listIndexPrice;
       }
 
       // status code is not 200, means we got error

@@ -22,10 +22,10 @@ class IndexDetailPage extends StatefulWidget {
   const IndexDetailPage({ Key? key, required this.index }) : super(key: key);
 
   @override
-  _IndexDetailPageState createState() => _IndexDetailPageState();
+  IndexDetailPageState createState() => IndexDetailPageState();
 }
 
-class _IndexDetailPageState extends State<IndexDetailPage> {
+class IndexDetailPageState extends State<IndexDetailPage> {
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   final IndexAPI _indexApi = IndexAPI();
   final ScrollController _scrollController = ScrollController();
@@ -203,7 +203,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Daily",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexDailyReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexDailyReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -212,7 +212,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Weekly",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexWeeklyReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexWeeklyReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -221,7 +221,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Monthly",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexMonthlyReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -236,7 +236,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "MTD",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexMtdReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexMtdReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -245,7 +245,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Monhtly",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexMonthlyReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -254,7 +254,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Quarterly",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexQuarterlyReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexQuarterlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -269,7 +269,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Semi Annual",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexSemiAnnualReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexSemiAnnualReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -278,7 +278,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "YTD",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexYtdReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexYtdReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -287,7 +287,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                                 header: "Yearly",
                                 headerAlign: TextAlign.right,
                                 child: Text(
-                                  formatDecimalWithNull(_index.indexYearlyReturn, 100) + "%",
+                                  "${formatDecimalWithNull(_index.indexYearlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -299,7 +299,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               CompanyInfoBox(
-                                header: "Min (" + _numPrice.toString() + ")",
+                                header: "Min ($_numPrice)",
                                 headerAlign: TextAlign.right,
                                 child: Text(
                                   formatCurrencyWithNull(_minPrice),
@@ -308,7 +308,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
-                                header: "Max (" + _numPrice.toString() + ")",
+                                header: "Max ($_numPrice)",
                                 headerAlign: TextAlign.right,
                                 child: Text(
                                   formatCurrencyWithNull(_maxPrice),
@@ -317,7 +317,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
-                                header: "Avg (" + _numPrice.toString() + ")",
+                                header: "Avg ($_numPrice)",
                                 headerAlign: TextAlign.right,
                                 child: Text(
                                   formatCurrencyWithNull(_avgPrice),
@@ -387,48 +387,48 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       _indexPrice = resp;
 
       // loop on the resp and put it on the graph
-      List<GraphData> _tempData = [];
-      int _totalData = 0;
+      List<GraphData> tempData = [];
+      int totalData = 0;
       
       // move the last update to friday
-      int _addDay = 5 - _index.indexLastUpdate.toLocal().weekday;
-      DateTime _endDate = _index.indexLastUpdate.add(Duration(days: _addDay));
+      int addDay = 5 - _index.indexLastUpdate.toLocal().weekday;
+      DateTime endDate = _index.indexLastUpdate.add(Duration(days: addDay));
 
       // then go 14 weeks before so we knew the start date
-      DateTime _startDate = _endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+      DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
       // initialize the minimum, maximum, and total price
-      double _totalPrice = 0;
+      double totalPrice = 0;
       _minPrice = double.maxFinite;
       _maxPrice = double.minPositive;
-      for (IndexPriceModel _price in resp) {
+      for (IndexPriceModel price in resp) {
         // ensure that this date is at least bigger than start date
-        if(_price.indexPriceDate.compareTo(_startDate) >= 0) {
-          _tempData.add(GraphData(date: _price.indexPriceDate.toLocal(), price: _price.indexPriceValue));
+        if(price.indexPriceDate.compareTo(startDate) >= 0) {
+          tempData.add(GraphData(date: price.indexPriceDate.toLocal(), price: price.indexPriceValue));
 
           // add total data, and if already 64 break the list
-          _totalData += 1;
+          totalData += 1;
         }
 
         if(_numPrice < 29) {
-          if(_minPrice! > _price.indexPriceValue) {
-            _minPrice = _price.indexPriceValue;
+          if(_minPrice! > price.indexPriceValue) {
+            _minPrice = price.indexPriceValue;
           }
-          if(_maxPrice! < _price.indexPriceValue) {
-            _maxPrice = _price.indexPriceValue;
+          if(_maxPrice! < price.indexPriceValue) {
+            _maxPrice = price.indexPriceValue;
           }
-          _totalPrice += _price.indexPriceValue;
+          totalPrice += price.indexPriceValue;
           _numPrice++;
         }
 
         // check total data now
-        if(_totalData >= 64) {
+        if(totalData >= 64) {
           break;
         }
       }
 
       // add the current price which only in index
-      _tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));
+      tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));
 
       // check the current price to min, max, and total
       if(_minPrice! > _index.indexNetAssetValue) {
@@ -437,20 +437,20 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       if(_maxPrice! < _index.indexNetAssetValue) {
         _maxPrice = _index.indexNetAssetValue;
       }
-      _totalPrice += _index.indexNetAssetValue;
+      totalPrice += _index.indexNetAssetValue;
       _numPrice++;
 
       // get average price
-      _avgPrice = _totalPrice / _numPrice;
+      _avgPrice = totalPrice / _numPrice;
 
       // once got the data now sort it
-      _tempData.sort((a, b) {
+      tempData.sort((a, b) {
         return a.date.compareTo(b.date);
       });
 
       // once sorted, then we can put it on map
-      for (GraphData _data in _tempData) {
-        _graphData![_data.date] = _data;
+      for (GraphData data in tempData) {
+        _graphData![data.date] = data;
         // debugPrint(_data.date.toString());
       }
       // debugPrint("--- END OF SORTED DATA ---");
@@ -480,9 +480,9 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
   }
 
   List<Widget> _showGraph() {
-    List<Widget> _graph = [];
+    List<Widget> graph = [];
 
-    _graph.add(SingleChildScrollView(
+    graph.add(SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       child: LineChart(
@@ -491,13 +491,13 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       ),
     ));
 
-    return _graph;
+    return graph;
   }
 
   List<Widget> _showCalendar() {
-    List<Widget> _calendar = [];
+    List<Widget> calendar = [];
 
-    _calendar.add(Expanded(
+    calendar.add(Expanded(
       child: SingleChildScrollView(
         controller: _calendarScrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -544,13 +544,13 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       ),
     ));
 
-    return _calendar;
+    return calendar;
   }
 
   List<Widget> _showTable() {
-    List<Widget> _table = [];
+    List<Widget> table = [];
 
-    _table.add(Row(
+    table.add(Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -656,7 +656,7 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       ],
     ));
 
-    _table.add(Expanded(
+    table.add(Expanded(
       child: ListView(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -765,6 +765,6 @@ class _IndexDetailPageState extends State<IndexDetailPage> {
       ),
     ));
     
-    return _table;
+    return table;
   }
 }

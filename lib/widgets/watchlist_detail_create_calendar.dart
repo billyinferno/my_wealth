@@ -9,10 +9,10 @@ class WatchlistDetailCreateCalendar extends StatefulWidget {
   const WatchlistDetailCreateCalendar({ Key? key, required this.onDateChange }) : super(key: key);
 
   @override
-  _WatchlistDetailCreateCalendarState createState() => _WatchlistDetailCreateCalendarState();
+  WatchlistDetailCreateCalendarState createState() => WatchlistDetailCreateCalendarState();
 }
 
-class _WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCalendar> {
+class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCalendar> {
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   bool _isDateVisible = false;
   DateTime _selectedDate = DateTime.now().toLocal();

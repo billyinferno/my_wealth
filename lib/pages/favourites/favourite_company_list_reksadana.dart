@@ -20,10 +20,10 @@ class FavouriteCompanyListReksadanaPage extends StatefulWidget {
   const FavouriteCompanyListReksadanaPage({ Key? key }) : super(key: key);
 
   @override
-  _FavouriteCompanyListReksadanaPageState createState() => _FavouriteCompanyListReksadanaPageState();
+  FavouriteCompanyListReksadanaPageState createState() => FavouriteCompanyListReksadanaPageState();
 }
 
-class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListReksadanaPage> {
+class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListReksadanaPage> {
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final ScrollController _scrollController = ScrollController();
   final DateFormat _dt = DateFormat("dd/MM/yyyy");
@@ -299,7 +299,7 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Text(
-                  "Showed " + _filterList.length.toString() + " company(s)",
+                  "Showed ${_filterList.length} company(s)",
                   style: const TextStyle(
                     color: primaryLight,
                     fontSize: 12,
@@ -315,7 +315,7 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
                   itemBuilder: ((context, index) {
                     return InkWell(
                       onTap: (() {
-                        CompanyDetailArgs _args = CompanyDetailArgs(
+                        CompanyDetailArgs args = CompanyDetailArgs(
                           companyId: _filterList[index].favouritesCompanyId,
                           companyName: _filterList[index].favouritesCompanyName,
                           companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
@@ -323,12 +323,12 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
                           type: "reksadana",
                         );
       
-                        Navigator.pushNamed(context, '/company/detail/reksadana', arguments: _args);
+                        Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
                       }),
                       child: FavouriteCompanyList(
                         companyId: _filterList[index].favouritesCompanyId,
                         name: _filterList[index].favouritesCompanyName,
-                        type: Globals.companyTypeEnum[_filterList[index].favouritesCompanyType]!,
+                        type: Globals.reksadanaCompanyTypeEnum[_filterList[index].favouritesCompanyType]!,
                         date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
                         value: _filterList[index].favouritesNetAssetValue,
                         isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
@@ -349,44 +349,44 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
 
   void filterData() {
     // create a temporary list to hold resulted filter list
-    List<FavouritesListModel> _result = [];
-    String _find = _textController.text;
+    List<FavouritesListModel> result = [];
+    String find = _textController.text;
 
     // first let's filter all the type needed
-    for (FavouritesListModel _fave in _faveList) {
+    for (FavouritesListModel fave in _faveList) {
       if (_isCampuran && _isPendapatanTetap && _isPasarUang && _isSaham) {
-        _result.add(_fave);
+        result.add(fave);
       }
       else {
         // check the type first
-        if(_fave.favouritesCompanyType == "reksadanacampuran" && _isCampuran) {
-          _result.add(_fave);
+        if(fave.favouritesCompanyType == "reksadanacampuran" && _isCampuran) {
+          result.add(fave);
         }
-        if(_fave.favouritesCompanyType == "reksadanapendapatantetap" && _isPendapatanTetap) {
-          _result.add(_fave);
+        if(fave.favouritesCompanyType == "reksadanapendapatantetap" && _isPendapatanTetap) {
+          result.add(fave);
         }
-        if(_fave.favouritesCompanyType == "reksadanapasaruang" && _isPasarUang) {
-          _result.add(_fave);
+        if(fave.favouritesCompanyType == "reksadanapasaruang" && _isPasarUang) {
+          result.add(fave);
         }
-        if(_fave.favouritesCompanyType == "reksadanasaham" && _isSaham) {
-          _result.add(_fave);
+        if(fave.favouritesCompanyType == "reksadanasaham" && _isSaham) {
+          result.add(fave);
         }
       }
     }
 
     // create a temporary list for moving the data
-    List<FavouritesListModel> _temp = [];
+    List<FavouritesListModel> temp = [];
 
     // now by right _result should be filled, we can now filter this based on the rating given
     if(_stepperControllerRating.value! > 0) {
       // duplicate the result
-      _temp.clear();
-      _temp = List<FavouritesListModel>.from(_result);
-      _result.clear();
+      temp.clear();
+      temp = List<FavouritesListModel>.from(result);
+      result.clear();
 
-      for (FavouritesListModel _fave in _temp) {
-        if (_fave.favouritesCompanyYearlyRating!.toInt() >= _stepperControllerRating.value!) {
-          _result.add(_fave);
+      for (FavouritesListModel fave in temp) {
+        if (fave.favouritesCompanyYearlyRating!.toInt() >= _stepperControllerRating.value!) {
+          result.add(fave);
         }
       }
     }
@@ -394,34 +394,34 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
     // now by right _result should be filled, we can now filter this based on the rating given
     if(_stepperControllerRisk.value! > 0) {
       // duplicate the result
-      _temp.clear();
-      _temp = List<FavouritesListModel>.from(_result);
-      _result.clear();
+      temp.clear();
+      temp = List<FavouritesListModel>.from(result);
+      result.clear();
 
-      for (FavouritesListModel _fave in _temp) {
-        if (_fave.favouritesCompanyYearlyRisk!.toInt() >= _stepperControllerRisk.value!) {
-          _result.add(_fave);
+      for (FavouritesListModel fave in temp) {
+        if (fave.favouritesCompanyYearlyRisk!.toInt() >= _stepperControllerRisk.value!) {
+          result.add(fave);
         }
       }
     }
 
     // now check if the find text is more than 3 or not?
-    if (_find.length >= 3) {
+    if (find.length >= 3) {
       // check if the name contain the text in find or not?
       // duplicate the result
-      _temp.clear();
-      _temp = List<FavouritesListModel>.from(_result);
-      _result.clear();
+      temp.clear();
+      temp = List<FavouritesListModel>.from(result);
+      result.clear();
 
-      for (FavouritesListModel _fave in _temp) {
-        if(_fave.favouritesCompanyName.toLowerCase().contains(_find.toLowerCase())) {
-          _result.add(_fave);
+      for (FavouritesListModel fave in temp) {
+        if(fave.favouritesCompanyName.toLowerCase().contains(find.toLowerCase())) {
+          result.add(fave);
         }
       }
     }
 
     // once finished, set the _filterList with result
-    setFilterList(_result);
+    setFilterList(result);
   }
 
   void updateFaveList(int index, FavouritesListModel resp) {
@@ -439,16 +439,16 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
 
   Future<void> setFavourite(int index) async {
     // check if this is already favourite or not?
-    int _faveUserId = _filterList[index].favouritesUserId ?? -1;
-    int _faveId = _filterList[index].favouritesId ?? -1;
-    if (_faveUserId > 0 && _faveId > 0) {
+    int faveUserId = _filterList[index].favouritesUserId ?? -1;
+    int faveId = _filterList[index].favouritesId ?? -1;
+    if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
-      await _faveAPI.delete(_faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID " + _faveId.toString() + " for reksadana company "+ _filterList[index].favouritesCompanyName);
+      await _faveAPI.delete(faveId).then((_) {
+        debugPrint("🧹 Delete Favourite ID $faveId for reksadana company ${_filterList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
-        FavouritesListModel _resp = FavouritesListModel(
+        FavouritesListModel resp = FavouritesListModel(
           favouritesCompanyId: _filterList[index].favouritesCompanyId,
           favouritesCompanyName: _filterList[index].favouritesCompanyName,
           favouritesSymbol: _filterList[index].favouritesSymbol,
@@ -458,7 +458,7 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
         );
 
         // update the list and re-render the page
-        updateFaveList(index, _resp);
+        updateFaveList(index, resp);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
@@ -466,7 +466,7 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
     }
     else {
       await _faveAPI.add(_filterList[index].favouritesCompanyId, "reksadana").then((resp) {
-        debugPrint("➕ Add reksadana company ID: " + _filterList[index].favouritesCompanyId.toString() +  " for company " + _filterList[index].favouritesCompanyName);
+        debugPrint("➕ Add reksadana company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         updateFaveList(index, resp);
       }).onError((error, stackTrace) {
@@ -502,6 +502,7 @@ class _FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyList
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
       // notify the provider
+      if (!mounted) return;
       Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
     });
   }

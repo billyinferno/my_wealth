@@ -291,72 +291,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
                               ],
                             ),
-                            const SizedBox(height: 20,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Weekly",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Monthly",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Quarterly",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Semi Annual",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "YTD",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Yearly",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
                             const SizedBox(height: 10,),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,32 +359,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Total Asset",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrency(_companyDetail.companyAssetUnderManagement!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Total Unit",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrency(_companyDetail.companyTotalUnit!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                const Expanded(child: SizedBox()),
-                              ],
-                            )
                           ],
                         ),
                       ),
@@ -465,14 +373,27 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 children: <Widget>[
                   const SizedBox(width: 10,),
                   TransparentButton(
-                    text: "Table",
-                    icon: Ionicons.list_outline,
+                    text: "Info",
+                    icon: Ionicons.speedometer_outline,
                     callback: (() {
                       setState(() {
                         _bodyPage = 0;
                       });
                     }),
                     active: (_bodyPage == 0),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Table",
+                    icon: Ionicons.list_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 1;
+                      });
+                    }),
+                    active: (_bodyPage == 1),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
@@ -480,10 +401,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     icon: Ionicons.calendar_clear_outline,
                     callback: (() {
                       setState(() {
-                        _bodyPage = 1;
+                        _bodyPage = 2;
                       });
                     }),
-                    active: (_bodyPage == 1),
+                    active: (_bodyPage == 2),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
@@ -491,15 +413,16 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     icon: Ionicons.stats_chart_outline,
                     callback: (() {
                       setState(() {
-                        _bodyPage = 2;
+                        _bodyPage = 3;
                       });
                     }),
-                    active: (_bodyPage == 2),
+                    active: (_bodyPage == 3),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 5,),
               ..._detail(),
             ],
           ),
@@ -561,14 +484,139 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   List<Widget> _detail() {
     switch(_bodyPage) {
       case 0:
-        return _showTable();
+        return _showSummary();
       case 1:
-        return _showCalendar();
+        return _showTable();
       case 2:
+        return _showCalendar();
+      case 3:
         return _showGraph();
       default:
         return _showTable();
     }
+  }
+
+  List<Widget> _showSummary() {
+    List<Widget> table = [];
+
+    table.add(
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Daily",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Weekly",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Monthly",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Quarterly",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Semi Annual",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Yearly",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "YTD",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Total Asset",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrency(_companyDetail.companyAssetUnderManagement!),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Total Unit",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrency(_companyDetail.companyTotalUnit!),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    // const Expanded(child: SizedBox()),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      )
+    );
+
+    return table;
   }
 
   List<Widget> _showTable() {

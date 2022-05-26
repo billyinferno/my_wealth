@@ -364,81 +364,150 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _totalCostCrypto = 0;
 
     double dayGain = 0;
-    double totalShare = 0;
 
     // loop thru all the mutual fund to get the total computation
+    double totalShareBuy = 0;
+    double totalShareSell = 0;
+    double totalShareCurrent = 0;
+    double totalCostBuy = 0;
+    double totalCostCurrent = 0;
+    double totalValueCurrent = 0;
+    double averageBuyPrice = 0;
     for (WatchlistListModel watchlist in watchlistsMutualfund) {
-      // loop thru all the detail in watchlist
-      totalShare = 0;
+      // initialize the variable needed for the calculation for each mutual fund
+      totalShareBuy = 0;
+      totalShareSell = 0;
+      totalShareCurrent = 0;
+      totalCostBuy = 0;
+      totalCostCurrent = 0;
+      totalValueCurrent = 0;
+      averageBuyPrice = 0;
+
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        // compute all the detail data
-        totalShare += detail.watchlistDetailShare;
-        if (detail.watchlistDetailShare < 0) {
-          // this is a sell, so we cannot use the price we sell as the cost
-          // we should assume that the cost will be equal to the current price as the profit
-          // taking we perform 2y ago, shouldn't affect the current cost
-          _totalCostReksadana += (watchlist.watchlistCompanyNetAssetValue! * detail.watchlistDetailShare);
+        if (detail.watchlistDetailShare > 0) {
+          totalShareBuy += detail.watchlistDetailShare;
+          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         }
         else {
-          _totalCostReksadana += (detail.watchlistDetailPrice * detail.watchlistDetailShare);
+          totalShareSell += detail.watchlistDetailShare;
         }
       }
+
+      // get what is the average buy price that we have
+      if (totalShareBuy > 0 && totalCostBuy > 0) {
+        averageBuyPrice = totalCostBuy / totalShareBuy;
+      }
+
+
+      // total sell is negative, make it a positive
+      totalShareSell *= -1;
+
+      // get the total of current share we have
+      totalShareCurrent = totalShareBuy - totalShareSell;
+
       // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShare;
-      
-      // get the total value
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareSell;
       _totalDayGainReksadana += dayGain;
-      _totalValueReksadana += totalShare * watchlist.watchlistCompanyNetAssetValue!;
+
+      // get the cost of the share
+      totalCostCurrent = totalShareCurrent * averageBuyPrice;
+      _totalCostReksadana += totalCostCurrent;
+
+      // get the value of the share now
+      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+      _totalValueReksadana += totalValueCurrent;
     }
 
     // loop thru all the stock to get the total computation
     for (WatchlistListModel watchlist in watchlistsStock) {
-      // loop thru all the detail in watchlist
-      totalShare = 0;
+      // initialize the variable needed for the calculation for each mutual fund
+      totalShareBuy = 0;
+      totalShareSell = 0;
+      totalShareCurrent = 0;
+      totalCostBuy = 0;
+      totalCostCurrent = 0;
+      totalValueCurrent = 0;
+      averageBuyPrice = 0;
+
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        // compute all the detail data
-        totalShare += detail.watchlistDetailShare;
-        if (detail.watchlistDetailShare < 0) {
-          // this is a sell, so we cannot use the price we sell as the cost
-          // we should assume that the cost will be equal to the current price as the profit
-          // taking we perform 2y ago, shouldn't affect the current cost
-          _totalCostSaham += (watchlist.watchlistCompanyNetAssetValue! * detail.watchlistDetailShare);
+        if (detail.watchlistDetailShare > 0) {
+          totalShareBuy += detail.watchlistDetailShare;
+          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         }
         else {
-          _totalCostSaham += (detail.watchlistDetailPrice * detail.watchlistDetailShare);
+          totalShareSell += detail.watchlistDetailShare;
         }
       }
+
+      // get what is the average buy price that we have
+      if (totalShareBuy > 0 && totalCostBuy > 0) {
+        averageBuyPrice = totalCostBuy / totalShareBuy;
+      }
+
+
+      // total sell is negative, make it a positive
+      totalShareSell *= -1;
+
+      // get the total of current share we have
+      totalShareCurrent = totalShareBuy - totalShareSell;
+
       // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShare;
-      
-      // get the total value
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareSell;
       _totalDayGainSaham += dayGain;
-      _totalValueSaham += totalShare * watchlist.watchlistCompanyNetAssetValue!;
+
+      // get the cost of the share
+      totalCostCurrent = totalShareCurrent * averageBuyPrice;
+      _totalCostSaham += totalCostCurrent;
+
+      // get the value of the share now
+      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+      _totalValueSaham += totalValueCurrent;
     }
 
     // loop thru all the crypto to get the total computation
     for (WatchlistListModel watchlist in watchlistsCrypto) {
-      // loop thru all the detail in watchlist
-      totalShare = 0;
+      // initialize the variable needed for the calculation for each mutual fund
+      totalShareBuy = 0;
+      totalShareSell = 0;
+      totalShareCurrent = 0;
+      totalCostBuy = 0;
+      totalCostCurrent = 0;
+      totalValueCurrent = 0;
+      averageBuyPrice = 0;
+
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        // compute all the detail data
-        totalShare += detail.watchlistDetailShare;
-        if (detail.watchlistDetailShare < 0) {
-          // this is a sell, so we cannot use the price we sell as the cost
-          // we should assume that the cost will be equal to the current price as the profit
-          // taking we perform 2y ago, shouldn't affect the current cost
-          _totalCostCrypto += (watchlist.watchlistCompanyNetAssetValue! * detail.watchlistDetailShare);
+        if (detail.watchlistDetailShare > 0) {
+          totalShareBuy += detail.watchlistDetailShare;
+          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         }
         else {
-          _totalCostCrypto += (detail.watchlistDetailPrice * detail.watchlistDetailShare);
+          totalShareSell += detail.watchlistDetailShare;
         }
       }
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShare;
+
+      // get what is the average buy price that we have
+      if (totalShareBuy > 0 && totalCostBuy > 0) {
+        averageBuyPrice = totalCostBuy / totalShareBuy;
+      }
+
+
+      // total sell is negative, make it a positive
+      totalShareSell *= -1;
+
+      // get the total of current share we have
+      totalShareCurrent = totalShareBuy - totalShareSell;
       
-      // get the total value
+      // get the day gain
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareSell;
       _totalDayGainCrypto += dayGain;
-      _totalValueCrypto += totalShare * watchlist.watchlistCompanyNetAssetValue!;
+
+      // get the cost of the share
+      totalCostCurrent = totalShareCurrent * averageBuyPrice;
+      _totalCostCrypto += totalCostCurrent;
+
+      // get the value of the share now
+      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+      _totalValueCrypto += totalValueCurrent;
     }
 
     _totalDayGain = _totalDayGainReksadana + _totalDayGainSaham + _totalDayGainCrypto;

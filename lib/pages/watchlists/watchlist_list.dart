@@ -228,7 +228,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 children: <Widget>[
                                   WatchlistDetailSummaryBox(
                                     title: "AVG PRICE",
-                                    text: formatCurrency(_totalCost / _totalCurrentShares)
+                                    text: (_totalCurrentShares > 0 ? formatCurrency(_totalCost / _totalCurrentShares) : "-"),
                                   ),
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
@@ -536,6 +536,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
           watchlistId: _watchlist.watchlistId,
           watchlistCompanyId: _watchlist.watchlistCompanyId,
           watchlistCompanyName: _watchlist.watchlistCompanyName,
+          watchlistCompanySymbol: _watchlist.watchlistCompanySymbol,
           watchlistDetail: newWatchlistDetail,
           watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
           watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
@@ -612,29 +613,67 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // compute the price diff
     _priceDiff = (_watchlist.watchlistCompanyNetAssetValue! - _watchlist.watchlistCompanyPrevPrice!) ;
 
-    // loop thru all the detail to compute
-    for(WatchlistDetailListModel detail in _watchlist.watchlistDetail) {
+    // for the calculation of the sell share's to avoid any average cost problem
+    // we need to see how much is the average cost for each share that we buy
+    double totalShareBuy = 0;
+    double totalCostBuy = 0;
+    double totalCostSell = 0;
+    double averageBuyPrice = 0;
+    for (WatchlistDetailListModel detail in _watchlist.watchlistDetail) {
       if (detail.watchlistDetailShare > 0) {
+        totalShareBuy += detail.watchlistDetailShare;
+        totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         _totalBuy++;
-        _totalCost += detail.watchlistDetailPrice * detail.watchlistDetailShare;
       }
       else {
+        _totalSharesSell += detail.watchlistDetailShare;
+        _totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         _totalSell++;
-        _totalSharesSell += (detail.watchlistDetailShare * -1);
-        _totalSellAmount += detail.watchlistDetailPrice * (detail.watchlistDetailShare * -1);
-
-        // for sell assuming we will always sell it as per current market price
-        // the profit gain that we already got shouldn't be calculate as the part to leverage
-        // the cost value for this.
-        _totalCost += _watchlist.watchlistCompanyNetAssetValue! * detail.watchlistDetailShare;
       }
-
-      // current share should be calculate all buy and share
-      _totalCurrentShares += detail.watchlistDetailShare;
     }
-    
+    // get what is the average buy price that we have
+    if (totalShareBuy > 0 && totalCostBuy > 0) {
+      averageBuyPrice = totalCostBuy / totalShareBuy;
+    }
+
+    // total sell is negative, make it a positive
+    _totalSharesSell *= -1;
+    _totalSellAmount *= -1;
+
+    // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
+    totalCostSell = _totalSharesSell * averageBuyPrice;
+
+    // set the result
+    // total share should be buy subtract by sell
+    _totalCurrentShares = totalShareBuy - _totalSharesSell;
+    _totalGain = (_watchlist.watchlistCompanyNetAssetValue! * (totalShareBuy - _totalSharesSell)) - (averageBuyPrice * (totalShareBuy - _totalSharesSell));
+    _totalCost = totalCostBuy - totalCostSell;
     _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
-    _totalGain += _totalValue - _totalCost;
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
+
+    // loop thru all the detail to compute
+    // for(WatchlistDetailListModel detail in _watchlist.watchlistDetail) {
+    //   if (detail.watchlistDetailShare > 0) {
+    //     _totalBuy++;
+    //     _totalCost += detail.watchlistDetailPrice * detail.watchlistDetailShare;
+    //   }
+    //   else {
+    //     _totalSell++;
+    //     _totalSharesSell += (detail.watchlistDetailShare * -1);
+    //     _totalSellAmount += detail.watchlistDetailPrice * (detail.watchlistDetailShare * -1);
+
+    //     // for sell assuming we will always sell it as per current market price
+    //     // the profit gain that we already got shouldn't be calculate as the part to leverage
+    //     // the cost value for this.
+    //     _totalCost += _watchlist.watchlistCompanyNetAssetValue! * detail.watchlistDetailShare;
+    //   }
+
+    //   // current share should be calculate all buy and share
+    //   _totalCurrentShares += detail.watchlistDetailShare;
+    // }
+    
+    // _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
+    // _totalGain += _totalValue - _totalCost;
+    // _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
   }
 }

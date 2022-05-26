@@ -8,9 +8,10 @@ class ExpandedTileChildren extends StatelessWidget {
   final double shares;
   final double price;
   final double currentPrice;
+  final double averagePrice;
   final int risk;
 
-  const ExpandedTileChildren({ Key? key, required this.date, required this.shares, required this.price, required this.currentPrice, required this.risk }) : super(key: key);
+  const ExpandedTileChildren({ Key? key, required this.date, required this.shares, required this.price, required this.currentPrice, required this.averagePrice, required this.risk }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +78,7 @@ class ExpandedTileChildren extends StatelessWidget {
                           )
                         ),
                         child: Text(
-                          (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(price * (shares * -1))),
+                          (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(averagePrice * (shares * -1))),
                           style: const TextStyle(
                             fontSize: 12,
                           ),

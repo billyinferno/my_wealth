@@ -18,7 +18,7 @@ class WatchlistSubSummary extends StatelessWidget {
     
     return Container(
       width: double.infinity,
-      height: 80,
+      height: 85,
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

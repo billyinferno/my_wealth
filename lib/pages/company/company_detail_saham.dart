@@ -43,7 +43,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   Map<DateTime, GraphData>? _graphData;
   
   int _numPrice = 0;
-  int _bodyPage = -1;
+  int _bodyPage = 0;
 
   double? _minPrice;
   double? _maxPrice;
@@ -203,7 +203,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                 Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
                               ],
                             ),
-                            const SizedBox(height: 20,),
+                            const SizedBox(height: 10,),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -227,181 +227,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
-                                  header: "Market Cap",
+                                  header: "Value",
                                   headerAlign: TextAlign.right,
                                   child: Text(
-                                    formatIntWithNull(_companyDetail.companyMarketCap),
+                                    formatIntWithNull(_companyDetail.companyValue),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "One Day",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "One Week",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "One Month",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Three Month",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Six Month",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "One Year",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Three Years",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Five Years",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Ten Years",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "YTD",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4)}%",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "PER",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyPer, 1, 4),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "PER Annual",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatDecimalWithNull(_companyDetail.companyPerAnnualized, 1, 4),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            // Row(
-                            //   crossAxisAlignment: CrossAxisAlignment.start,
-                            //   mainAxisAlignment: MainAxisAlignment.start,
-                            //   children: <Widget>[
-                            //     CompanyInfoBox(
-                            //       header: "PBR",
-                            //       headerAlign: TextAlign.right,
-                            //       child: Text(
-                            //         formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
-                            //         textAlign: TextAlign.right,
-                            //       ),
-                            //     ),
-                            //     const SizedBox(width: 10,),
-                            //     CompanyInfoBox(
-                            //       header: "PSR Annual",
-                            //       headerAlign: TextAlign.right,
-                            //       child: Text(
-                            //         formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
-                            //         textAlign: TextAlign.right,
-                            //       ),
-                            //     ),
-                            //     const SizedBox(width: 10,),
-                            //     CompanyInfoBox(
-                            //       header: "PCFR Annual",
-                            //       headerAlign: TextAlign.right,
-                            //       child: Text(
-                            //         formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
-                            //         textAlign: TextAlign.right,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                            // const SizedBox(height: 10,),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -448,14 +283,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                 children: <Widget>[
                   const SizedBox(width: 10,),
                   TransparentButton(
-                    text: "Table",
-                    icon: Ionicons.list_outline,
+                    text: "Info",
+                    icon: Ionicons.speedometer_outline,
                     callback: (() {
                       setState(() {
                         _bodyPage = 0;
                       });
                     }),
                     active: (_bodyPage == 0),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Table",
+                    icon: Ionicons.list_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 1;
+                      });
+                    }),
+                    active: (_bodyPage == 1),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
@@ -463,10 +311,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     icon: Ionicons.calendar_clear_outline,
                     callback: (() {
                       setState(() {
-                        _bodyPage = 1;
+                        _bodyPage = 2;
                       });
                     }),
-                    active: (_bodyPage == 1),
+                    active: (_bodyPage == 2),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
@@ -474,15 +323,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     icon: Ionicons.stats_chart_outline,
                     callback: (() {
                       setState(() {
-                        _bodyPage = 2;
+                        _bodyPage = 3;
                       });
                     }),
-                    active: (_bodyPage == 2),
+                    active: (_bodyPage == 3),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 5,),
               ..._detail(),
             ],
           ),
@@ -494,14 +344,294 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   List<Widget> _detail() {
     switch(_bodyPage) {
       case 0:
-        return _showTable();
+        return _showSummary();
       case 1:
-        return _showCalendar();
+        return _showTable();
       case 2:
+        return _showCalendar();
+      case 3:
         return _showGraph();
       default:
-        return _showTable();
+        return _showSummary();
     }
+  }
+
+  List<Widget> _showSummary() {
+    List<Widget> table = [];
+    table.add(
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Prev Close",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyPrevClosingPrice),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Adj Close",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyAdjustedClosingPrice),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Adj Open",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyAdjustedOpenPrice),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Adj High",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyAdjustedHighPrice),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Adj Low",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyAdjustedLowPrice),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Cptlztion",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_companyDetail.companyMarketCap),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "One Day",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "One Week",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "One Month",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Three Month",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Six Month",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "One Year",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Three Years",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Five Years",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Ten Years",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "MTD",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyMtd, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "YTD",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    const Expanded(child: SizedBox(),),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "PER",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatDecimalWithNull(_companyDetail.companyPer, 1, 4),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "PER Annual",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatDecimalWithNull(_companyDetail.companyPerAnnualized, 1, 4),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Beta 1Y",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatDecimalWithNull(_companyDetail.companyBetaOneYear, 1, 4),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "PBR",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "PSR Annual",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "PCFR Annual",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      )
+    );
+
+    return table;
   }
 
   List<Widget> _showTable() {

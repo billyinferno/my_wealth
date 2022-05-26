@@ -158,6 +158,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
               watchlistId: _watchlist.watchlistId,
               watchlistCompanyId: _watchlist.watchlistCompanyId,
               watchlistCompanyName: _watchlist.watchlistCompanyName,
+              watchlistCompanySymbol: _watchlist.watchlistCompanySymbol,
               watchlistDetail: watchlistDetail,
               watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
               watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,

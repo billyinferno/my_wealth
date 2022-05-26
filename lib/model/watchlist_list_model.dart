@@ -13,6 +13,7 @@ class WatchlistListModel {
         required this.watchlistId,
         required this.watchlistCompanyId,
         required this.watchlistCompanyName,
+        required this.watchlistCompanySymbol,
         required this.watchlistCompanyNetAssetValue,
         required this.watchlistCompanyPrevPrice,
         required this.watchlistCompanyLastUpdate,
@@ -23,6 +24,7 @@ class WatchlistListModel {
     final int watchlistId;
     final int watchlistCompanyId;
     final String watchlistCompanyName;
+    final String? watchlistCompanySymbol;
     final double? watchlistCompanyNetAssetValue;
     final double? watchlistCompanyPrevPrice;
     final DateTime? watchlistCompanyLastUpdate;
@@ -33,6 +35,7 @@ class WatchlistListModel {
         watchlistId: json["watchlist_id"],
         watchlistCompanyId: json["watchlist_company_id"],
         watchlistCompanyName: json["watchlist_company_name"].toString(),
+        watchlistCompanySymbol: json["watchlist_company_symbol"].toString(),
         watchlistCompanyNetAssetValue: (json["watchlist_company_net_asset_value"] == null ? 0 : json["watchlist_company_net_asset_value"].toDouble()),
         watchlistCompanyPrevPrice: (json["watchlist_company_prev_price"] == null ? 0 : json["watchlist_company_prev_price"].toDouble()),
         watchlistCompanyLastUpdate: (json["watchlist_company_last_update"] == null ? null : DateTime.parse(json["watchlist_company_last_update"])),
@@ -44,6 +47,7 @@ class WatchlistListModel {
         "watchlist_id": watchlistId,
         "watchlist_company_id": watchlistCompanyId,
         "watchlist_company_name": watchlistCompanyName,
+        "watchlist_company_symbol": watchlistCompanySymbol,
         "watchlist_company_net_asset_value": watchlistCompanyNetAssetValue!,
         "watchlist_company_prev_price": watchlistCompanyPrevPrice!,
         "watchlist_company_last_update": (watchlistCompanyLastUpdate == null ? null : watchlistCompanyLastUpdate!.toIso8601String()),

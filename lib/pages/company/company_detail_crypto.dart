@@ -45,7 +45,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   Map<DateTime, GraphData>? _graphData;
   
   int _numPrice = 0;
-  int _bodyPage = -1;
+  int _bodyPage = 0;
 
   double? _minPrice;
   double? _maxPrice;
@@ -227,118 +227,19 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 ),
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
+                                  header: "Rank",
+                                  headerAlign: TextAlign.right,
+                                  child: Text(
+                                    formatIntWithNull(_companyDetail.companyMarketCapRank),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
                                   header: "Fully Dilluted",
                                   headerAlign: TextAlign.right,
                                   child: Text(
                                     formatCurrencyWithNull(_companyDetail.companyFullyDilutedValuation),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Total Volume",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrencyWithNull(_companyDetail.companyTotalUnit),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Circulating",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Total Supply",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrencyWithNull(_companyDetail.companyTotalSupply),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Max Supply",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrencyWithNull(_companyDetail.companyMaxSupply),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "High 24H",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Low 24H",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Change 24H",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Cap Chg 24H",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "ATH",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "ATL",
-                                  headerAlign: TextAlign.right,
-                                  child: Text(
-                                    "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -391,14 +292,27 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 children: <Widget>[
                   const SizedBox(width: 10,),
                   TransparentButton(
-                    text: "Table",
-                    icon: Ionicons.list_outline,
+                    text: "Info",
+                    icon: Ionicons.speedometer_outline,
                     callback: (() {
                       setState(() {
                         _bodyPage = 0;
                       });
                     }),
                     active: (_bodyPage == 0),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Table",
+                    icon: Ionicons.list_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 1;
+                      });
+                    }),
+                    active: (_bodyPage == 1),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
@@ -406,10 +320,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     icon: Ionicons.calendar_clear_outline,
                     callback: (() {
                       setState(() {
-                        _bodyPage = 1;
+                        _bodyPage = 2;
                       });
                     }),
-                    active: (_bodyPage == 1),
+                    active: (_bodyPage == 2),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
@@ -417,10 +332,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     icon: Ionicons.stats_chart_outline,
                     callback: (() {
                       setState(() {
-                        _bodyPage = 2;
+                        _bodyPage = 3;
                       });
                     }),
-                    active: (_bodyPage == 2),
+                    active: (_bodyPage == 3),
+                    vertical: true,
                   ),
                   const SizedBox(width: 10,),
                 ],
@@ -437,14 +353,223 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   List<Widget> _detail() {
     switch(_bodyPage) {
       case 0:
-        return _showTable();
+        return _showSummary();
       case 1:
-        return _showCalendar();
+        return _showTable();
       case 2:
+        return _showCalendar();
+      case 3:
         return _showGraph();
       default:
-        return _showTable();
+        return _showSummary();
     }
+  }
+
+  List<Widget> _showSummary() {
+    List<Widget> table = [];
+    table.add(
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Total Volume",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyTotalUnit),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Circulating",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Total Supply",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyTotalSupply),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Max Supply",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatCurrencyWithNull(_companyDetail.companyMaxSupply),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "High 24H",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Low 24H",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Price Change 24H",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "%",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyPriceChangePercentage24H, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "Market Cap Chg 24H",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "\$ ${formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H)}",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "%",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyMarketCapChangePercentage24H, 100, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "ATH",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "%",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyAllTimeHighChangePercentage, 1, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Date",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeHighDate!)),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "ATL",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "%",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        "${formatDecimalWithNull(_companyDetail.companyAllTimeLowChangePercentage, 1, 4)}%",
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "Date",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeLowDate!)),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      )
+    );
+
+    return table;
   }
 
   List<Widget> _showTable() {

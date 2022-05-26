@@ -26,6 +26,7 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   double _totalShare = 0;
   double _totalGain = 0;
   double _totalCost = 0;
+  double _averagePrice = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
       iconColor: primaryLight,
       collapsedIconColor: primaryLight,
       title: ExpandedTileTitle(
-        name: widget.watchlist.watchlistCompanyName,
+        name: (widget.watchlist.watchlistCompanySymbol!.isNotEmpty ? "(${widget.watchlist.watchlistCompanySymbol}) ${widget.watchlist.watchlistCompanyName}" : widget.watchlist.watchlistCompanyName),
         lot: _totalLot(),
         share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
@@ -58,6 +59,7 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
           shares: widget.watchlist.watchlistDetail[index].watchlistDetailShare,
           price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
           currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
+          averagePrice: _averagePrice,
           risk: widget.userInfo.risk,
         );
       }),
@@ -83,25 +85,38 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
     _totalGain = 0;
     _totalCost = 0;
 
-    double price = (widget.watchlist.watchlistCompanyNetAssetValue ?? 0);
+    // for the calculation of the sell share's to avoid any average cost problem
+    // we need to see how much is the average cost for each share that we buy
+    double totalShareBuy = 0;
+    double totalShareSell = 0;
+    double totalCostBuy = 0;
+    double totalCostSell = 0;
+    double averageBuyPrice = 0;
     for (WatchlistDetailListModel detail in widget.watchlist.watchlistDetail) {
-      _totalShare += detail.watchlistDetailShare;
-
-      // check whether this is buy or sell
       if (detail.watchlistDetailShare > 0) {
-        // this is a buy, so we can just calculate the cost using the price we buy        
-        _totalCost += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        totalShareBuy += detail.watchlistDetailShare;
+        totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
       }
       else {
-        // this is a sell, so we need to use the current price as the cost calculation
-        // because something that we sell 2y ago, shouldn't affect the current day
-        // cost for the remaining shares.
-        _totalCost += (detail.watchlistDetailShare * price);
+        totalShareSell += detail.watchlistDetailShare;
       }
     }
+    // get what is the average buy price that we have
+    if (totalShareBuy > 0 && totalCostBuy > 0) {
+      averageBuyPrice = totalCostBuy / totalShareBuy;
+    }
 
-    _totalGain = (_totalShare * price) - _totalCost;
-    // debugPrint("${widget.watchlist.watchlistCompanyName} cost :$_totalCost - gain:$_totalGain");
+    // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
+    totalCostSell = totalShareSell * averageBuyPrice;
+
+    // set the result
+    // total share should be buy subtract by sell (remember here sell already negative)
+    _totalShare = totalShareBuy + totalShareSell;
+    _totalGain = (widget.watchlist.watchlistCompanyNetAssetValue! * (totalShareBuy - totalShareSell)) - (averageBuyPrice * (totalShareBuy - totalShareSell));
+    _totalCost = totalCostBuy + totalCostSell;
+    _averagePrice = averageBuyPrice;
+    
+    // debugPrint("Name: ${widget.watchlist.watchlistCompanyName}, Total: ${_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!}, Gain:$_totalGain, Total Share Sell:$totalShareSell,  Cost Buy:$totalCostBuy, Cost Sell:$totalCostSell,  Cost:$_totalCost, Average Price:$_averagePrice");
   }
 
 }

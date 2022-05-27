@@ -406,7 +406,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       totalShareCurrent = totalShareBuy - totalShareSell;
 
       // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareSell;
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
       _totalDayGainReksadana += dayGain;
 
       // get the cost of the share
@@ -452,7 +452,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       totalShareCurrent = totalShareBuy - totalShareSell;
 
       // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareSell;
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
       _totalDayGainSaham += dayGain;
 
       // get the cost of the share
@@ -498,7 +498,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       totalShareCurrent = totalShareBuy - totalShareSell;
       
       // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareSell;
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
       _totalDayGainCrypto += dayGain;
 
       // get the cost of the share

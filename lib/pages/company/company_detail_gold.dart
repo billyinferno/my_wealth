@@ -218,12 +218,26 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              formatCurrency(_companyDetail.companyNetAssetValue!),
-                              style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  formatCurrency(_companyDetail.companyNetAssetValue!),
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                Text(
+                                  "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -589,8 +603,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           }
           return CompanyDetailPriceList(
             date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-            price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
+            price: formatCurrency(_companyDetail.companyPrices[index].priceValue, true),
+            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue, true),
             riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
             dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
             dayDiffColor: dayDiffColor,

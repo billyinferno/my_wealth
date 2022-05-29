@@ -120,6 +120,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                 }
               }
             }
+            else if (_type == "gold") {
+              for(WatchlistListModel watch in watchlistProvider.watchlistGold!) {
+                if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                  _watchlist = watch;
+                  break;
+                }
+              }
+            }
     
             // compute all the necessary info for summary
             _compute();
@@ -650,30 +658,5 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     _totalCost = totalCostBuy - totalCostSell;
     _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
-
-    // loop thru all the detail to compute
-    // for(WatchlistDetailListModel detail in _watchlist.watchlistDetail) {
-    //   if (detail.watchlistDetailShare > 0) {
-    //     _totalBuy++;
-    //     _totalCost += detail.watchlistDetailPrice * detail.watchlistDetailShare;
-    //   }
-    //   else {
-    //     _totalSell++;
-    //     _totalSharesSell += (detail.watchlistDetailShare * -1);
-    //     _totalSellAmount += detail.watchlistDetailPrice * (detail.watchlistDetailShare * -1);
-
-    //     // for sell assuming we will always sell it as per current market price
-    //     // the profit gain that we already got shouldn't be calculate as the part to leverage
-    //     // the cost value for this.
-    //     _totalCost += _watchlist.watchlistCompanyNetAssetValue! * detail.watchlistDetailShare;
-    //   }
-
-    //   // current share should be calculate all buy and share
-    //   _totalCurrentShares += detail.watchlistDetailShare;
-    // }
-    
-    // _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
-    // _totalGain += _totalValue - _totalCost;
-    // _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
   }
 }

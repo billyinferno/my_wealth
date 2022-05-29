@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/pages/company/company_detail_crypto.dart';
+import 'package:my_wealth/pages/company/company_detail_gold.dart';
 import 'package:my_wealth/pages/company/company_detail_reksadana.dart';
 import 'package:my_wealth/pages/company/company_detail_saham.dart';
 import 'package:my_wealth/pages/favourites/favourite_company_list_crypto.dart';
@@ -126,6 +127,10 @@ class RouterPageState extends State<RouterPage> {
       case '/company/detail/crypto':
       {
         return createAnimationRoute(CompanyDetailCryptoPage(companyData: settings.arguments,));
+      }
+      case '/company/detail/gold':
+      {
+        return createAnimationRoute(const CompanyDetailGoldPage());
       }
       case '/watchlist/add':
       {

@@ -432,6 +432,12 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
         debugPrint("5️⃣ Get user watchlist crypto");
       }),
+      _watchlistApi.getWatchlist("gold").then((resp) async {
+        await WatchlistSharedPreferences.setWatchlist("gold", resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
+        debugPrint("5️⃣ Get user watchlist gold");
+      }),
       _indexApi.getIndex().then((resp) async {
         await IndexSharedPreferences.setIndexList(resp);
         if (!mounted) return;

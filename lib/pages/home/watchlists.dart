@@ -39,6 +39,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   late List<WatchlistListModel>? _watchlistReksadana;
   late List<WatchlistListModel>? _watchlistSaham;
   late List<WatchlistListModel>? _watchlistCrypto;
+  late List<WatchlistListModel>? _watchlistGold;
   
   bool _isShowedLots = false;
   bool _isSummaryVisible = false;
@@ -59,6 +60,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   double _totalValueCrypto = 0;
   double _totalCostCrypto = 0;
 
+  double _totalDayGainGold = 0;
+  double _totalValueGold = 0;
+  double _totalCostGold = 0;
+
   @override
   void initState() {
     super.initState();
@@ -66,10 +71,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _watchlistReksadana = WatchlistSharedPreferences.getWatchlist("reksadana");
     _watchlistSaham = WatchlistSharedPreferences.getWatchlist("saham");
     _watchlistCrypto = WatchlistSharedPreferences.getWatchlist("crypto");
+    _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
 
     _isSummaryVisible = _userInfo!.visibility;
     _isShowedLots = _userInfo!.showLots;
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -88,8 +94,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         _watchlistReksadana = watchlistProvider.watchlistReksadana;
         _watchlistSaham = watchlistProvider.watchlistSaham;
         _watchlistCrypto = watchlistProvider.watchlistCrypto;
+        _watchlistGold = watchlistProvider.watchlistGold;
 
-        _compute(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!);
+        _compute(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -198,6 +205,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     tabs: const <Widget>[
                       Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),
+                      Tab(text: 'GOLD'),
                       Tab(text: 'CRYPTO',),
                     ],
                   ),
@@ -207,6 +215,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       children: <Widget>[
                         (_watchlistReksadana!.isNotEmpty ? _generateWatchlistItem("reksadana", _watchlistReksadana, _totalDayGainReksadana, _totalCostReksadana, _totalValueReksadana) : const Center(child: Text("No mutual fund watchlists"))),
                         (_watchlistSaham!.isNotEmpty ? _generateWatchlistItem("saham", _watchlistSaham, _totalDayGainSaham, _totalCostSaham, _totalValueSaham) : const Center(child: Text("No stock watchlists"))),
+                        (_watchlistGold!.isNotEmpty ? _generateWatchlistItem("gold", _watchlistGold, _totalDayGainGold, _totalCostGold, _totalValueGold) : const Center(child: Text("Error while get gold watchlist"))),
                         (_watchlistCrypto!.isNotEmpty ? _generateWatchlistItem("crypto", _watchlistCrypto, _totalDayGainCrypto, _totalCostCrypto, _totalValueCrypto) : const Center(child: Text("No crypto watchlists"))),
                       ],
                     ),
@@ -345,7 +354,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     );
   }
 
-  void _compute(List<WatchlistListModel> watchlistsMutualfund, List<WatchlistListModel> watchlistsStock, List<WatchlistListModel> watchlistsCrypto) {
+  void _compute(List<WatchlistListModel> watchlistsMutualfund, List<WatchlistListModel> watchlistsStock, List<WatchlistListModel> watchlistsCrypto, List<WatchlistListModel> watchlistsGold) {
     // reset the value before we actually compute the data
     _totalDayGain = 0;
     _totalValue = 0;
@@ -363,6 +372,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _totalValueCrypto = 0;
     _totalCostCrypto = 0;
 
+    _totalDayGainGold = 0;
+    _totalValueGold = 0;
+    _totalCostGold = 0;
+
     double dayGain = 0;
 
     // loop thru all the mutual fund to get the total computation
@@ -373,6 +386,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     double totalCostCurrent = 0;
     double totalValueCurrent = 0;
     double averageBuyPrice = 0;
+    
     for (WatchlistListModel watchlist in watchlistsMutualfund) {
       // initialize the variable needed for the calculation for each mutual fund
       totalShareBuy = 0;
@@ -510,9 +524,55 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       _totalValueCrypto += totalValueCurrent;
     }
 
-    _totalDayGain = _totalDayGainReksadana + _totalDayGainSaham + _totalDayGainCrypto;
-    _totalValue = _totalValueReksadana + _totalValueSaham + _totalValueCrypto;
-    _totalCost = _totalCostReksadana + _totalCostSaham + _totalCostCrypto;
+    // loop thru all the gold to get the total computation
+    for (WatchlistListModel watchlist in watchlistsGold) {
+      // initialize the variable needed for the calculation for each mutual fund
+      totalShareBuy = 0;
+      totalShareSell = 0;
+      totalShareCurrent = 0;
+      totalCostBuy = 0;
+      totalCostCurrent = 0;
+      totalValueCurrent = 0;
+      averageBuyPrice = 0;
+
+      for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
+        if (detail.watchlistDetailShare > 0) {
+          totalShareBuy += detail.watchlistDetailShare;
+          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        }
+        else {
+          totalShareSell += detail.watchlistDetailShare;
+        }
+      }
+
+      // get what is the average buy price that we have
+      if (totalShareBuy > 0 && totalCostBuy > 0) {
+        averageBuyPrice = totalCostBuy / totalShareBuy;
+      }
+
+
+      // total sell is negative, make it a positive
+      totalShareSell *= -1;
+
+      // get the total of current share we have
+      totalShareCurrent = totalShareBuy - totalShareSell;
+      
+      // get the day gain
+      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
+      _totalDayGainGold += dayGain;
+
+      // get the cost of the share
+      totalCostCurrent = totalShareCurrent * averageBuyPrice;
+      _totalCostGold += totalCostCurrent;
+
+      // get the value of the share now
+      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+      _totalValueGold += totalValueCurrent;
+    }
+
+    _totalDayGain = _totalDayGainReksadana + _totalDayGainSaham + _totalDayGainCrypto + _totalDayGainGold;
+    _totalValue = _totalValueReksadana + _totalValueSaham + _totalValueCrypto + _totalValueGold;
+    _totalCost = _totalCostReksadana + _totalCostSaham + _totalCostCrypto + _totalCostGold;
   }
 
   Future<void> _refreshWatchlist() async {
@@ -549,6 +609,17 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       }).onError((error, stackTrace) {
         throw Exception("❌ Error when refresh watchlist crypto");
       }),
+
+      // get gold
+      _watchlistAPI.getWatchlist("gold").then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlist("gold", resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
+        debugPrint("🔃 Refresh watchlist gold");
+      }).onError((error, stackTrace) {
+        throw Exception("❌ Error when refresh watchlist gold");
+      }),
     ]);
   }
 
@@ -578,6 +649,13 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         }
         else if (type == "crypto") {
           for (WatchlistListModel watch in _watchlistCrypto!) {
+            if(watch.watchlistId != watchlistId) {
+              newWatchlist.add(watch);
+            }
+          }
+        }
+        else if (type == "gold") {
+          for (WatchlistListModel watch in _watchlistGold!) {
             if(watch.watchlistId != watchlistId) {
               newWatchlist.add(watch);
             }

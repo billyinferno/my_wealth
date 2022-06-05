@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/model/broker_model.dart';
-import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
-import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
 class BrokerPage extends StatefulWidget {

@@ -1,8 +1,13 @@
 import 'package:intl/intl.dart';
 
-String formatCurrency(double amount, [bool? checkThousand]) {
-  final ccy = NumberFormat("#,##0.00", "en_US");
+String formatCurrency(double amount, [bool? checkThousand, bool? showDecimal]) {
+  NumberFormat ccy = NumberFormat("#,##0.00", "en_US");
   bool isCheckThousand = checkThousand ?? false;
+  bool isShowDecimal = showDecimal ?? true;
+
+  if (!isShowDecimal) {
+    ccy = NumberFormat("#,##0", "en_US");
+  }
 
   String prefix = "";
   String posfix = "";
@@ -65,9 +70,11 @@ String formatDecimalWithNull(double? value, [double? times, int? decimal]) {
   return dec.format(value * timesMult);
 }
 
-String formatIntWithNull(int? value) {
+String formatIntWithNull(int? value, [bool? checkThousand, bool? showDecimal]) {
+  bool isCheckThousand = checkThousand ?? false;
+  bool isShowDecimal = showDecimal ?? true;
   if (value == null) {
     return "-";
   }
-  return formatCurrency(value.toDouble());
+  return formatCurrency(value.toDouble(), isCheckThousand, isShowDecimal);
 }

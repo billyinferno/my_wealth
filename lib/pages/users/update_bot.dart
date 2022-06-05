@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/user_api.dart';
+import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/provider/user_provider.dart';
+import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:provider/provider.dart';
+
+class UpdateBotPage extends StatefulWidget {
+  const UpdateBotPage({Key? key}) : super(key: key);
+
+  @override
+  State<UpdateBotPage> createState() => _UpdateBotPageState();
+}
+
+class _UpdateBotPageState extends State<UpdateBotPage> {
+  late UserLoginInfoModel? _userInfo;
+  late String _bot;
+  final TextEditingController _controller = TextEditingController();
+  final UserAPI _userApi = UserAPI();
+
+  @override
+  void initState() {
+    super.initState();
+    _userInfo = UserSharedPreferences.getUserInfo();
+    _bot = _userInfo!.bot;
+    _controller.text = _bot;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Center(
+              child: Text(
+            "Update Telegram Bot Token",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          )),
+          leading: IconButton(
+            icon: const Icon(Ionicons.arrow_back),
+            onPressed: (() {
+              Navigator.pop(context);
+            }),
+          ),
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Text("Telegram Token:"),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                )),
+                child: TextFormField(
+                  controller: _controller,
+                  showCursor: true,
+                  cursorColor: secondaryColor,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardAppearance: Brightness.dark,
+                  textAlign: TextAlign.right,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    focusColor: secondaryColor,
+                    hintText: "Token Bot",
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              MaterialButton(
+                  minWidth: double.infinity,
+                  color: secondaryColor,
+                  textColor: textPrimary,
+                  onPressed: (() async {
+                    // check if the current value and slide value for risk factor
+                    // is the same or not?
+                    if (_controller.text == _bot) {
+                      // skip, and just go back
+                      Navigator.pop(context);
+                    } else {
+                      if (_controller.text.isNotEmpty) {
+                        debugPrint("💾 Save the updated bot token");
+                        showLoaderDialog(context);
+                        await _userApi.updateBotToken(_controller.text).then((resp) async {
+                          // remove the loader dialog
+                          Navigator.pop(context);
+
+                          // we will get updated user info here, so stored the updated
+                          // user info with new risk factor to the local storea
+                          await UserSharedPreferences.setUserInfo(resp);
+
+                          // update the provider to notify the user page
+                          if (!mounted) return;
+                          Provider.of<UserProvider>(context, listen: false)
+                              .setUserLoginInfo(resp);
+
+                          // once finished, then pop out from this page
+                          Navigator.pop(context);
+                        }).onError((error, stackTrace) {
+                          // remove the loader dialog
+                          Navigator.pop(context);
+
+                          // showed the snack bar
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(createSnackBar(
+                            message: "Unable to update Bot Token",
+                          ));
+                        });
+                      } else {
+                        // showed the snack bar
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(createSnackBar(
+                          message: "Bot Token empty",
+                        ));
+                      }
+                    }
+                  }),
+                  child: const Text("Save")),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

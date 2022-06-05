@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/pages/home/broker.dart';
 import 'package:my_wealth/pages/home/favourites.dart';
 import 'package:my_wealth/pages/home/index.dart';
 import 'package:my_wealth/pages/home/user.dart';
@@ -15,10 +16,11 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 3;
 
   static const List<Widget> _widgetList = <Widget>[
     IndexPage(),
+    BrokerPage(),
     FavouritesPage(),
     WatchlistsPage(),
     UserPage()
@@ -56,6 +58,11 @@ class HomePageState extends State<HomePage> {
             icon: const Icon(Ionicons.analytics_outline),
             title: const Text("Index"),
             selectedColor: Colors.green[300],
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(Ionicons.business_outline),
+            title: const Text("Broker"),
+            selectedColor: Colors.purple[300],
           ),
           SalomonBottomBarItem(
             icon: const Icon(Ionicons.list_circle_outline),

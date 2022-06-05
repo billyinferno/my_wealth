@@ -10,12 +10,14 @@ import 'package:my_wealth/pages/home.dart';
 import 'package:my_wealth/pages/index/index_detail.dart';
 import 'package:my_wealth/pages/login.dart';
 import 'package:my_wealth/pages/users/change_password.dart';
+import 'package:my_wealth/pages/users/update_bot.dart';
 import 'package:my_wealth/pages/users/update_risk.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_sell.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_add.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_list.dart';
+import 'package:my_wealth/provider/broker_provider.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
@@ -42,6 +44,7 @@ class RouterPageState extends State<RouterPage> {
         ChangeNotifierProvider<FavouritesProvider>(create: (context) => FavouritesProvider()),
         ChangeNotifierProvider<WatchlistProvider>(create: (context) => WatchlistProvider()),
         ChangeNotifierProvider<IndexProvider>(create: (context) => IndexProvider()),
+        ChangeNotifierProvider<BrokerProvider>(create: (context) => BrokerProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -99,6 +102,10 @@ class RouterPageState extends State<RouterPage> {
       case '/user/password':
       {
         return createAnimationRoute(const ChangePasswordPage());
+      }
+      case '/user/bot':
+      {
+        return createAnimationRoute(const UpdateBotPage());
       }
       case '/index/detail':
       {

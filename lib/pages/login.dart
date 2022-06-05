@@ -3,10 +3,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/api/favourites_api.dart';
 import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
+import 'package:my_wealth/provider/broker_provider.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
@@ -14,6 +16,7 @@ import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/utils/prefs/shared_broker.dart';
 import 'package:my_wealth/utils/prefs/shared_favourites.dart';
 import 'package:my_wealth/utils/prefs/shared_index.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
@@ -39,6 +42,7 @@ class LoginPageState extends State<LoginPage> {
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final WatchlistAPI _watchlistApi = WatchlistAPI();
   final IndexAPI _indexApi = IndexAPI();
+  final BrokerAPI _brokerApi = BrokerAPI();
   
   bool _isLoading = true;
 
@@ -443,6 +447,12 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<IndexProvider>(context, listen: false).setIndexList(resp);
         debugPrint("6️⃣ Get index");
+      }),
+      _brokerApi.getBroker().then((resp) async {
+        await BrokerSharedPreferences.setBrokerList(resp);
+        if (!mounted) return;
+        Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
+        debugPrint('7️⃣ Get Broker');
       }),
     ]).then((_) {
       debugPrint("💯 Finished get additional information");

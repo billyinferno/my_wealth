@@ -264,6 +264,44 @@ class UserPageState extends State<UserPage> {
               ),
               InkWell(
                 onTap: (() {
+                  Navigator.pushNamed(context, '/user/bot');
+                }),
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    )
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const <Widget>[
+                      Icon(
+                        Ionicons.notifications_outline,
+                        color: secondaryColor,
+                        size: 20,
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: Text(
+                          "Telegram Bot Token",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ),
+                    ],
+                  )
+                ),
+              ),
+              InkWell(
+                onTap: (() {
                   Future<bool?> result = ShowMyDialog(
                     title: "Logout",
                     text: "Do you want to logout?",

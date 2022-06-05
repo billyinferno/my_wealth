@@ -199,4 +199,36 @@ class UserAPI {
       throw Exception("No bearer token");
     }
   }
+
+  Future<UserLoginInfoModel> updateBotToken(String bot) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _bearerToken = UserSharedPreferences.getUserJWT();
+    }
+    
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.patch(
+        Uri.parse('${Globals.apiURL}api/bot'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'bot': bot}),
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response and put on user login model
+        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+        return userInfo;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
 }

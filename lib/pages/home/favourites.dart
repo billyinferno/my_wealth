@@ -27,7 +27,9 @@ class FavouritesPage extends StatefulWidget {
 
 class FavouritesPageState extends State<FavouritesPage> with SingleTickerProviderStateMixin  {
   final DateFormat df = DateFormat("dd/MM/yyyy");
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollControllerMutual = ScrollController();
+  final ScrollController _scrollControllerStock = ScrollController();
+  final ScrollController _scrollControllerCrypto = ScrollController(); 
   final FavouritesAPI _faveAPI = FavouritesAPI();
   late TabController _tabController;
 
@@ -49,7 +51,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
   @override
   void dispose() {
     super.dispose();
-    _scrollController.dispose();
+    _scrollControllerMutual.dispose();
+    _scrollControllerStock.dispose();
+    _scrollControllerCrypto.dispose();
     _tabController.dispose();
   }
 
@@ -171,9 +175,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
                     child: TabBarView(
                       controller: _tabController,
                       children: <Widget>[
-                        (_favouriteListReksadana.isNotEmpty ? _createList("reksadana", _favouriteListReksadana) : const Center(child: Text("No favourites data"))),
-                        (_favouriteListSaham.isNotEmpty ? _createList("saham", _favouriteListSaham) : const Center(child: Text("No favourites data"))),
-                        (_favouriteListCrypto.isNotEmpty ? _createList("crypto", _favouriteListCrypto) : const Center(child: Text("No favourites data"))),
+                        (_favouriteListReksadana.isNotEmpty ? _createList(_scrollControllerMutual, "reksadana", _favouriteListReksadana) : const Center(child: Text("No favourites data"))),
+                        (_favouriteListSaham.isNotEmpty ? _createList(_scrollControllerStock, "saham", _favouriteListSaham) : const Center(child: Text("No favourites data"))),
+                        (_favouriteListCrypto.isNotEmpty ? _createList(_scrollControllerCrypto, "crypto", _favouriteListCrypto) : const Center(child: Text("No favourites data"))),
                       ],
                     ),
                   ),
@@ -186,7 +190,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
     );
   }
 
-  Widget _createList(String type, List<FavouritesModel> data) {
+  Widget _createList(ScrollController controller, String type, List<FavouritesModel> data) {
     return RefreshIndicator(
       onRefresh: (() async {
         debugPrint("🔃 Refresh favourites ");
@@ -222,6 +226,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
       }),
       color: accentColor,
       child: ListView.builder(
+        controller: controller,
         itemCount: data.length,
         itemBuilder: ((context, index) {
           FavouritesModel fave = data[index];
@@ -230,6 +235,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
               CompanyDetailArgs args = CompanyDetailArgs(
                 companyId: fave.favouritesCompanyId,
                 companyName: fave.favouritesCompanyName,
+                companyCode: fave.favouritesSymbol,
                 companyFavourite: true,
                 favouritesId: fave.favouritesId,
                 type: type,

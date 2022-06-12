@@ -3,14 +3,18 @@ import 'package:my_wealth/themes/colors.dart';
 
 class TransparentButton extends StatelessWidget {
   final String? text;
+  final double? textSize;
   final IconData icon;
+  final double? iconSize;
   final VoidCallback callback;
   final bool? active;
   final bool? vertical;
-  const TransparentButton({ Key? key, this.text, required this.icon, required this.callback, this.active, this.vertical }) : super(key: key);
+  const TransparentButton({ Key? key, this.text, this.textSize, required this.icon, this.iconSize, required this.callback, this.active, this.vertical }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double currentTextSize = (textSize ?? 12);
+    double currentIconSize = (iconSize ?? 18);
     bool isActive = (active ?? false);
     String buttonText = (text ?? "");
     bool isVertical = (vertical ?? false);
@@ -40,15 +44,16 @@ class TransparentButton extends StatelessWidget {
                 children: <Widget>[
                   Icon(
                     icon,
-                    size: 18,
+                    size: currentIconSize,
                   ),
                   Visibility(visible: buttonText.isNotEmpty && !isVertical, child: const SizedBox(width: 10,)),
                   Visibility(
                     visible: buttonText.isNotEmpty && !isVertical,
                     child: Text(
                       buttonText,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: textPrimary,
+                        fontSize: currentTextSize,
                       ),
                     ),
                   ),
@@ -62,8 +67,9 @@ class TransparentButton extends StatelessWidget {
                 visible: buttonText.isNotEmpty && isVertical,
                 child: Text(
                   buttonText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: textPrimary,
+                    fontSize: currentTextSize,
                   ),
                 ),
               ),

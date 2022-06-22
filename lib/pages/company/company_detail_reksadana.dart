@@ -61,6 +61,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _companyData = CompanyDetailArgs(
         companyId: -1,
         companyName: "Unknown Company",
+        companyCode: "",
         companyFavourite: false,
         favouritesId: -1,
         type: ""

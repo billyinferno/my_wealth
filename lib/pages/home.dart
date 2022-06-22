@@ -3,7 +3,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/pages/home/broker.dart';
 import 'package:my_wealth/pages/home/favourites.dart';
 import 'package:my_wealth/pages/home/index.dart';
-import 'package:my_wealth/pages/home/user.dart';
+import 'package:my_wealth/pages/home/inisght.dart';
 import 'package:my_wealth/pages/home/watchlists.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -16,42 +16,53 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
 
   static const List<Widget> _widgetList = <Widget>[
     IndexPage(),
     BrokerPage(),
-    FavouritesPage(),
     WatchlistsPage(),
-    UserPage()
+    FavouritesPage(),
+    InsightPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text(
-            "myWealth",
-            style: TextStyle(
-              color: secondaryColor,
-            ),
-          )
+    return SafeArea(
+      bottom: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Center(
+            child: Text(
+              "myWealth",
+              style: TextStyle(
+                color: secondaryColor,
+              ),
+            )
+          ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: (() {
+                Navigator.pushNamed(context, '/user');
+              }),
+              icon: const Icon(Ionicons.person_outline)
+            )
+          ],
+          automaticallyImplyLeading: false,
         ),
-        automaticallyImplyLeading: false,
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _widgetList,
+        ),
+        bottomNavigationBar: _generateBottomBar(),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _widgetList,
-      ),
-      bottomNavigationBar: _generateBottomBar(),
     );
   }
 
   Widget _generateBottomBar() {
     return Container(
       color: primaryDark,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
       child: SalomonBottomBar(
         items: <SalomonBottomBarItem>[
           SalomonBottomBarItem(
@@ -65,18 +76,18 @@ class HomePageState extends State<HomePage> {
             selectedColor: Colors.purple[300],
           ),
           SalomonBottomBarItem(
-            icon: const Icon(Ionicons.list_circle_outline),
-            title: const Text("Favourites"),
-            selectedColor: accentLight,
-          ),
-          SalomonBottomBarItem(
             icon: const Icon(Ionicons.eye_outline),
-            title: const Text("Watchlists"),
+            title: const Text("Watch"),
             selectedColor: secondaryLight,
           ),
           SalomonBottomBarItem(
-            icon: const Icon(Ionicons.person_outline),
-            title: const Text("User"),
+            icon: const Icon(Ionicons.list_circle_outline),
+            title: const Text("Fave"),
+            selectedColor: accentLight,
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(Ionicons.bulb_outline),
+            title: const Text("Insight"),
             selectedColor: extendedLight,
           ),
         ],

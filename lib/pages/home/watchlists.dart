@@ -11,6 +11,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_add_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
+import 'package:my_wealth/utils/arguments/watchlist_summary_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -101,17 +102,40 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            WatchlistSummary(
-              dayGain: _totalDayGain,
-              value: _totalValue,
-              cost: _totalCost,
-              riskFactor: _userInfo!.risk,
-              visibility: _isSummaryVisible,
-              onVisibilityPress: (() {
-                setState(() {
-                  _isSummaryVisible = !_isSummaryVisible;
-                });
+            InkWell(
+              onTap: (() {
+                WatchlistSummaryArgs args = WatchlistSummaryArgs(
+                  totalDayGain: _totalDayGain,
+                  totalValue: _totalValue,
+                  totalCost: _totalCost,
+                  totalDayGainReksadana: _totalDayGainReksadana,
+                  totalValueReksadana: _totalValueReksadana,
+                  totalCostReksadana: _totalCostReksadana,
+                  totalDayGainSaham: _totalDayGainSaham,
+                  totalValueSaham: _totalValueSaham,
+                  totalCostSaham: _totalCostSaham,
+                  totalDayGainCrypto: _totalDayGainCrypto,
+                  totalValueCrypto: _totalValueCrypto,
+                  totalCostCrypto: _totalCostCrypto,
+                  totalDayGainGold: _totalDayGainGold,
+                  totalValueGold: _totalValueGold,
+                  totalCostGold: _totalCostGold
+                );
+
+                Navigator.pushNamed(context, '/watchlist/summary', arguments: args);
               }),
+              child: WatchlistSummary(
+                dayGain: _totalDayGain,
+                value: _totalValue,
+                cost: _totalCost,
+                riskFactor: _userInfo!.risk,
+                visibility: _isSummaryVisible,
+                onVisibilityPress: (() {
+                  setState(() {
+                    _isSummaryVisible = !_isSummaryVisible;
+                  });
+                }),
+              ),
             ),
             const SizedBox(height: 10,),
             Row(
@@ -264,6 +288,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 CompanyDetailArgs args = CompanyDetailArgs(
                   companyId: data[idx].watchlistCompanyId,
                   companyName: data[idx].watchlistCompanyName,
+                  companyCode: (data[idx].watchlistCompanySymbol ?? ''),
                   companyFavourite: (data[idx].watchlistFavouriteId > 0 ? true : false),
                   favouritesId: data[idx].watchlistFavouriteId,
                   type: type,

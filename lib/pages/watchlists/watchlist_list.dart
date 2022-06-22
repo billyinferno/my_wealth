@@ -83,6 +83,17 @@ class WatchlistListPageState extends State<WatchlistListPage> {
               Navigator.pop(context);
             }),
           ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: (() {
+                //TODO: show company detail here
+                debugPrint("Show company");
+              }),
+              icon: const Icon(
+                Ionicons.business_outline
+              ),
+            )
+          ],
           title: const Center(
             child: Text(
               "Watchlist List",

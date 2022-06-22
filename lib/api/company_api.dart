@@ -88,4 +88,68 @@ class CompanyAPI {
       throw Exception("No bearer token");
     }
   }
+
+  Future<CompanyDetailModel> getCompanyByID(int companyId, String type) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/$type/id/$companyId'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data['attributes']);
+        return company;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<CompanyDetailModel> getCompanyByCode(String companyCode, String type) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/$type/code/${companyCode.toUpperCase()}'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data['attributes']);
+        return company;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
 }

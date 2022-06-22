@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/pages/broker/broker_detail.dart';
 import 'package:my_wealth/pages/company/company_detail_crypto.dart';
 import 'package:my_wealth/pages/company/company_detail_gold.dart';
 import 'package:my_wealth/pages/company/company_detail_reksadana.dart';
@@ -8,18 +9,22 @@ import 'package:my_wealth/pages/favourites/favourite_company_list_reksadana.dart
 import 'package:my_wealth/pages/favourites/favourite_company_list_saham.dart';
 import 'package:my_wealth/pages/home.dart';
 import 'package:my_wealth/pages/index/index_detail.dart';
+import 'package:my_wealth/pages/insight/stock/insight_stock_industry.dart';
 import 'package:my_wealth/pages/login.dart';
 import 'package:my_wealth/pages/users/change_password.dart';
 import 'package:my_wealth/pages/users/update_bot.dart';
 import 'package:my_wealth/pages/users/update_risk.dart';
+import 'package:my_wealth/pages/users/user.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_sell.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_add.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_list.dart';
+import 'package:my_wealth/pages/watchlists/watchlist_summary.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/provider/index_provider.dart';
+import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -45,6 +50,7 @@ class RouterPageState extends State<RouterPage> {
         ChangeNotifierProvider<WatchlistProvider>(create: (context) => WatchlistProvider()),
         ChangeNotifierProvider<IndexProvider>(create: (context) => IndexProvider()),
         ChangeNotifierProvider<BrokerProvider>(create: (context) => BrokerProvider()),
+        ChangeNotifierProvider<InsightProvider>(create: (context) => InsightProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -94,6 +100,10 @@ class RouterPageState extends State<RouterPage> {
       case '/home':
       {
         return MaterialPageRoute(builder: (context) => const HomePage());
+      }
+      case '/user':
+      {
+        return createAnimationRoute(const UserPage());
       }
       case '/user/risk':
       {
@@ -147,6 +157,10 @@ class RouterPageState extends State<RouterPage> {
       {
         return createAnimationRoute(WatchlistListPage(watchlistArgs: settings.arguments,));
       }
+      case '/watchlist/summary':
+      {
+        return createAnimationRoute(WatchlistSummaryPage(args: settings.arguments,));
+      }
       case '/watchlist/detail/buy':
       {
         return createAnimationRoute(WatchlistDetailBuyPage(watchlistArgs: settings.arguments,));
@@ -158,6 +172,14 @@ class RouterPageState extends State<RouterPage> {
       case '/watchlist/detail/edit':
       {
         return createAnimationRoute(WatchlistDetailEditPage(watchlistArgs: settings.arguments,));
+      }
+      case '/broker/detail':
+      {
+        return createAnimationRoute(BrokerDetailPage(args: settings.arguments,));
+      }
+      case '/insight/stock/industry':
+      {
+        return createAnimationRoute(InsightStockIndustryPage(args: settings.arguments,));
       }
       default:
       {

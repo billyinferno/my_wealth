@@ -154,16 +154,17 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                   itemBuilder: ((context, index) {
                     return InkWell(
                       onTap: (() {
-                        debugPrint("Open Company ${_filterList[index].favouritesCompanyName}");
+                        // debugPrint("Open Company ${_filterList[index].favouritesCompanyName}");
                         CompanyDetailArgs args = CompanyDetailArgs(
                           companyId: _filterList[index].favouritesCompanyId,
                           companyName: _filterList[index].favouritesCompanyName,
+                          companyCode: _filterList[index].favouritesSymbol,
                           companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
                           favouritesId: (_filterList[index].favouritesId ?? -1),
                           type: "crypto",
                         );
       
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                        Navigator.pushNamed(context, '/company/detail/crypto', arguments: args);
                       }),
                       child: FavouriteCompanyList(
                         companyId: _filterList[index].favouritesCompanyId,

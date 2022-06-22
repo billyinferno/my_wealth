@@ -19,7 +19,7 @@ class BrokerModel {
         required this.brokerDate,
     });
 
-    final String brokerSummaryId;
+    final int brokerSummaryId;
     final String brokerFirmId;
     final String brokerFirmName;
     final int brokerVolume;

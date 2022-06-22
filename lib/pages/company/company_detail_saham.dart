@@ -2,12 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/price_api.dart';
+import 'package:my_wealth/model/broker_summary_date_model.dart';
+import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/price_model.dart';
+import 'package:my_wealth/model/price_saham_ma_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -34,10 +40,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
-  
+  late BrokerSummaryModel _brokerSummary;
+  late BrokerSummaryBuySellModel _brokerSummaryBuySell;
+  late BrokerSummaryDateModel _brokerSummaryDate;
+  late PriceSahamMovingAverageModel _priceMA;
+  late String _brokerSummarySelected;
+
   final CompanyAPI _companyApi = CompanyAPI();
+  final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
+  final PriceAPI _priceAPI = PriceAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
 
+  late DateTime _brokerSummaryDateFrom;
+  late DateTime _brokerSummaryDateTo;
+  
   bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
   Map<DateTime, GraphData>? _graphData;
@@ -68,18 +84,41 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     Future.microtask(() async {
       // show the loader dialog
       showLoaderDialog(context);
-      // perform the get company detail information here
+
+      // get all the information needed
       await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
-        // copy the response to company detail data
-        _companyDetail = resp;
-        
-        // generate map data
-        _generateGraphData(resp);        
-      }).whenComplete(() {
-        // once finished then remove the loader dialog
-        Navigator.pop(context);
-        _setIsLoading(false);
+          // copy the response to company detail data
+          _companyDetail = resp;
+
+          // set the broker summary date based on the last update of the company
+          _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());
+          _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());
+          
+          // generate map data
+          _generateGraphData(resp);        
       });
+
+      await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+        _brokerSummary = resp;
+        _brokerSummaryBuySell = resp.brokerSummaryAll;
+        _brokerSummarySelected = "a";
+      });
+
+      await _brokerSummaryAPI.getBrokerSummaryCodeDate(_companyData.companyCode).then((resp) {
+        _brokerSummaryDate = resp;
+      });
+
+      await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
+        _priceMA = resp;
+      });
+    }).onError((error, stackTrace) {
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
+    }).whenComplete(() {
+      // once finished then remove the loader dialog
+      Navigator.pop(context);
+      _setIsLoading(false);
     });
   }
 
@@ -284,6 +323,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                   const SizedBox(width: 10,),
                   TransparentButton(
                     text: "Info",
+                    textSize: 11,
                     icon: Ionicons.speedometer_outline,
                     callback: (() {
                       setState(() {
@@ -293,10 +333,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     active: (_bodyPage == 0),
                     vertical: true,
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(width: 5,),
                   TransparentButton(
-                    text: "Table",
-                    icon: Ionicons.list_outline,
+                    text: "Broker",
+                    textSize: 11,
+                    icon: Ionicons.business_outline,
                     callback: (() {
                       setState(() {
                         _bodyPage = 1;
@@ -305,10 +346,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     active: (_bodyPage == 1),
                     vertical: true,
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(width: 5,),
                   TransparentButton(
-                    text: "Map",
-                    icon: Ionicons.calendar_clear_outline,
+                    text: "Table",
+                    textSize: 11,
+                    icon: Ionicons.list_outline,
                     callback: (() {
                       setState(() {
                         _bodyPage = 2;
@@ -317,10 +359,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     active: (_bodyPage == 2),
                     vertical: true,
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(width: 5,),
                   TransparentButton(
-                    text: "Graph",
-                    icon: Ionicons.stats_chart_outline,
+                    text: "Map",
+                    textSize: 11,
+                    icon: Ionicons.calendar_clear_outline,
                     callback: (() {
                       setState(() {
                         _bodyPage = 3;
@@ -329,7 +372,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     active: (_bodyPage == 3),
                     vertical: true,
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(width: 5,),
+                  TransparentButton(
+                    text: "Stat",
+                    textSize: 11,
+                    icon: Ionicons.stats_chart_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 4;
+                      });
+                    }),
+                    active: (_bodyPage == 4),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 5,),
                 ],
               ),
               const SizedBox(height: 5,),
@@ -346,10 +402,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       case 0:
         return _showSummary();
       case 1:
-        return _showTable();
+        return _showBroker();
       case 2:
-        return _showCalendar();
+        return _showTable();
       case 3:
+        return _showCalendar();
+      case 4:
         return _showGraph();
       default:
         return _showSummary();
@@ -624,6 +682,72 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "MA5",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa5),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "MA8",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa8),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "MA13",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa13),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    CompanyInfoBox(
+                      header: "MA20",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa20),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "MA30",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa30),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    CompanyInfoBox(
+                      header: "MA50",
+                      headerAlign: TextAlign.right,
+                      child: Text(
+                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa50),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -632,6 +756,264 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     );
 
     return table;
+  }
+
+  List<Widget> _showBroker() {
+    List<Widget> table = [];
+
+    table.add(Expanded(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              InkWell(
+                onTap: (() async {
+                  DateTimeRange? result = await showDateRangePicker(
+                    context: context,
+                    firstDate: _brokerSummaryDate.brokerMinDate,
+                    lastDate: _brokerSummaryDate.brokerMaxDate,
+                    initialDateRange: DateTimeRange(start: _brokerSummaryDateFrom.toLocal(), end: _brokerSummaryDateTo.toLocal()),
+                    confirmText: 'Done',
+                    currentDate: _companyDetail.companyLastUpdate,
+                  );
+
+                  // check if we got the result or not?
+                  if (result != null) {
+                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                    if ((result.start.compareTo(_brokerSummaryDateFrom) != 0) || (result.end.compareTo(_brokerSummaryDateTo) != 0)) {                      
+                      // set the broker from and to date
+                      _brokerSummaryDateFrom = result.start;
+                      _brokerSummaryDateTo = result.end;
+
+                      // get the broker summary
+                      await _getBrokerSummary();
+                    }
+                  }
+                }),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      _df.format(_brokerSummary.brokerSummaryFromDate.toLocal()),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
+                      ),
+                    ),
+                    const Text(
+                      " - ",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
+                      ),
+                    ),
+                    Text(
+                      _df.format(_brokerSummary.brokerSummaryToDate.toLocal()),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    const Icon(
+                      Ionicons.calendar_outline,
+                      size: 15,
+                      color: secondaryLight,
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10,),
+              SizedBox(
+                width: double.infinity,
+                child: CupertinoSegmentedControl(
+                  children: const {
+                    "a": Text("All"),
+                    "d": Text("Domestic"),
+                    "f": Text("Foreign"),
+                  },
+                  onValueChanged: ((value) {
+                    String selectedValue = value.toString();
+          
+                    setState(() {
+                      if(selectedValue == "a") {
+                        _brokerSummaryBuySell = _brokerSummary.brokerSummaryAll;
+                        _brokerSummarySelected = "a";
+                      }
+                      else if(selectedValue == "d") {
+                        _brokerSummaryBuySell = _brokerSummary.brokerSummaryDomestic;
+                        _brokerSummarySelected = "d";
+                      }
+                      else if(selectedValue == "f") {
+                        _brokerSummaryBuySell = _brokerSummary.brokerSummaryForeign;
+                        _brokerSummarySelected = "f";
+                      }
+                    });
+                  }),
+                  groupValue: _brokerSummarySelected,
+                  selectedColor: secondaryColor,
+                  borderColor: secondaryDark,
+                  pressedColor: primaryDark,
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: primaryLight,
+                    style: BorderStyle.solid,
+                    width: 1.0
+                  ),
+                  color: primaryDark
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            child: _tableRow(brokerCode: "BY", lot: "B.lot", value: "B.val", average: "B.avg", isBold: true, backgroundColor: secondaryDark)
+                          ),
+                          ...List<Widget>.generate(10, (index) {
+                            if (_brokerSummaryBuySell.brokerSummaryBuy.length > index) {
+                              return _tableRow(
+                                brokerCode: _brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryID!,
+                                lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryLot, true, false),
+                                value: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, false),
+                                average: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryAverage, false, false),
+                              );
+                            }
+                            else {
+                              return _tableRow(
+                                brokerCode: "-",
+                                lot: "-",
+                                value: "-",
+                                average: "-"
+                              );
+                            }
+                          },),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            child: _tableRow(brokerCode: "SY", lot: "S.lot", value: "S.val", average: "S.avg", isBold: true, backgroundColor: Colors.green[900])
+                          ),
+                          ...List<Widget>.generate(10, (index) {
+                            if (_brokerSummaryBuySell.brokerSummarySell.length > index) {
+                              return _tableRow(
+                                brokerCode: _brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryID!,
+                                lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryLot, true, false),
+                                value: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, false),
+                                average: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryAverage, false, false),
+                              );
+                            }
+                            else {
+                              return _tableRow(
+                                brokerCode: "-",
+                                lot: "-",
+                                value: "-",
+                                average: "-"
+                              );
+                            }
+                          },),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
+
+    return table;
+  }
+
+  Widget _tableRow({required String brokerCode, required String lot, required String value, required String average, Color? textColor, bool? isBold, Color? backgroundColor, double? fontSize}) {
+    Color textColorUse = (textColor ?? Colors.white);
+    Color backgroundColorUse = (backgroundColor ?? Colors.transparent);
+    bool isBoldUse = (isBold ?? false);
+    double fontSizeUse = (fontSize ?? 10);
+
+    return Container(
+      color: backgroundColorUse,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+            width: 30,
+            child: Text(
+              brokerCode,
+              style: TextStyle(
+                fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                fontSize: fontSizeUse,
+                color: textColorUse,
+              ),
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+              child: Text(
+                lot,
+                style: TextStyle(
+                  fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                  fontSize: fontSizeUse,
+                  color: textColorUse,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                  fontSize: fontSizeUse,
+                  color: textColorUse,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+              child: Text(
+                average,
+                style: TextStyle(
+                  fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                  fontSize: fontSizeUse,
+                  color: textColorUse,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> _showTable() {
@@ -831,9 +1213,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     graph.add(SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      child: LineChart(
-        data: _graphData!,
-        height: 250,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          LineChart(
+            data: _graphData!,
+            height: 250,
+          ),
+        ],
       ),
     ));
 
@@ -919,5 +1307,41 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     for (GraphData data in tempData) {
       _graphData![data.date] = data;
     }
+  }
+
+  void _setBrokerSummary(BrokerSummaryModel value) {
+    setState(() {
+      _brokerSummary = value;
+      // check what is current broker summary being selected
+      if (_brokerSummarySelected == 'a') {
+        _brokerSummaryBuySell = value.brokerSummaryAll;
+      }
+      else if (_brokerSummarySelected == 'd') {
+        _brokerSummaryBuySell = value.brokerSummaryDomestic;
+      }
+      else if (_brokerSummarySelected == 'f') {
+        _brokerSummaryBuySell = value.brokerSummaryForeign;
+      }
+    });
+  }
+
+  Future<void> _getBrokerSummary() async {
+    // show loader dialog
+    showLoaderDialog(context);
+
+    // get the broker summary
+    await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+      _setBrokerSummary(resp);
+      // remove the loader dialog
+      Navigator.pop(context);
+    }).onError((error, stackTrace) {
+      // remove the loader dialog
+      Navigator.pop(context);
+      // show snack bar
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get broker data from server'));
+      // show error
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
+    });
   }
 }

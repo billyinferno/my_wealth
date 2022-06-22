@@ -318,6 +318,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                         CompanyDetailArgs args = CompanyDetailArgs(
                           companyId: _filterList[index].favouritesCompanyId,
                           companyName: _filterList[index].favouritesCompanyName,
+                          companyCode: _filterList[index].favouritesSymbol,
                           companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
                           favouritesId: (_filterList[index].favouritesId ?? -1),
                           type: "reksadana",

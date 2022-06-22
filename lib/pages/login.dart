@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
+import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/favourites_api.dart';
 import 'package:my_wealth/api/index_api.dart';
+import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/provider/index_provider.dart';
+import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
@@ -19,6 +22,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
 import 'package:my_wealth/utils/prefs/shared_favourites.dart';
 import 'package:my_wealth/utils/prefs/shared_index.dart';
+import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
@@ -43,6 +47,8 @@ class LoginPageState extends State<LoginPage> {
   final WatchlistAPI _watchlistApi = WatchlistAPI();
   final IndexAPI _indexApi = IndexAPI();
   final BrokerAPI _brokerApi = BrokerAPI();
+  final BrokerSummaryAPI _brokerSummaryApi = BrokerSummaryAPI();
+  final InsightAPI _insightAPI = InsightAPI();
   
   bool _isLoading = true;
 
@@ -453,6 +459,18 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
         debugPrint('7️⃣ Get Broker');
+      }),
+      _brokerSummaryApi.getBrokerSummaryTop().then((resp) async {
+        await BrokerSharedPreferences.setBroketTopList(resp);
+        if (!mounted) return;
+        Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
+        debugPrint('8️⃣ Get Broker Top List');
+      }),
+      _insightAPI.getSectorSummary().then((resp) async {
+        await InsightSharedPreferences.setSectorSummaryList(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
+        debugPrint('9️⃣ Get Sector Summary List');
       }),
     ]).then((_) {
       debugPrint("💯 Finished get additional information");

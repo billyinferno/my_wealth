@@ -194,10 +194,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
             const SizedBox(height: 10,),
             InkWell(
               onTap: (() async {
+                DateTimeRange? initialDateRange = DateTimeRange(start: _fromDateCurrent, end: _toDateCurrent);
                 DateTimeRange? result = await showDateRangePicker(
                   context: context,
                   firstDate: _fromDateMax,
-                  lastDate: _toDateMax
+                  lastDate: _toDateMax,
+                  initialDateRange: initialDateRange,
+                  currentDate: DateTime.now().toLocal(),
                 );
 
                 if (result != null) {

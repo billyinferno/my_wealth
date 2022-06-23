@@ -90,6 +90,7 @@ class _WatchlistSummaryPageState extends State<WatchlistSummaryPage> {
             const SizedBox(height: 10,),
             _summaryBox(
               barColor: Colors.green,
+              backgroundColor: Colors.green[900],
               title: "Reksadana",
               value: _args.totalValueReksadana,
               cost: _args.totalCostReksadana,
@@ -97,6 +98,7 @@ class _WatchlistSummaryPageState extends State<WatchlistSummaryPage> {
             ),
             _summaryBox(
               barColor: Colors.pink,
+              backgroundColor: Colors.pink[900],
               title: "Stock",
               value: _args.totalValueSaham,
               cost: _args.totalCostSaham,
@@ -104,6 +106,7 @@ class _WatchlistSummaryPageState extends State<WatchlistSummaryPage> {
             ),
             _summaryBox(
               barColor: Colors.purple,
+              backgroundColor: Colors.purple[900],
               title: "Crypto",
               value: _args.totalValueCrypto,
               cost: _args.totalCostCrypto,
@@ -111,6 +114,7 @@ class _WatchlistSummaryPageState extends State<WatchlistSummaryPage> {
             ),
             _summaryBox(
               barColor: Colors.amber,
+              backgroundColor: Colors.amber[900],
               title: "Gold",
               value: _args.totalValueGold,
               cost: _args.totalValueGold,

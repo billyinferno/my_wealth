@@ -92,7 +92,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                   ),
                   Center(
                     child: Text(
-                      _df.format(_brokerTopList!.brokerSummaryDate),
+                      _df.format(_brokerTopList!.brokerSummaryDate.toLocal()),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,

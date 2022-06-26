@@ -8,6 +8,7 @@ import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
@@ -39,6 +40,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   late String _type;
   late WatchlistListModel _watchlist;
   late UserLoginInfoModel? _userInfo;
+  late CompanyDetailArgs? args;
 
   int _totalBuy = 0;
   int _totalSell = 0;
@@ -86,8 +88,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
           actions: <Widget>[
             IconButton(
               onPressed: (() {
-                //TODO: show company detail here
-                debugPrint("Show company");
+                if (args != null) {
+                  debugPrint("Show company");
+                  Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
+                }
               }),
               icon: const Icon(
                 Ionicons.business_outline
@@ -111,6 +115,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
               for(WatchlistListModel watch in watchlistProvider.watchlistReksadana!) {
                 if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
                   _watchlist = watch;
+                  args = CompanyDetailArgs(
+                    companyId: _watchlist.watchlistCompanyId,
+                    companyName: _watchlist.watchlistCompanyName,
+                    companyCode: _watchlist.watchlistCompanySymbol!,
+                    companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                    favouritesId: _watchlist.watchlistFavouriteId,
+                    type: _type
+                  );
                   break;
                 }
               }
@@ -119,6 +131,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
               for(WatchlistListModel watch in watchlistProvider.watchlistSaham!) {
                 if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
                   _watchlist = watch;
+                  args = CompanyDetailArgs(
+                    companyId: _watchlist.watchlistCompanyId,
+                    companyName: _watchlist.watchlistCompanyName,
+                    companyCode: _watchlist.watchlistCompanySymbol!,
+                    companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                    favouritesId: _watchlist.watchlistFavouriteId,
+                    type: _type
+                  );
                   break;
                 }
               }
@@ -127,6 +147,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
               for(WatchlistListModel watch in watchlistProvider.watchlistCrypto!) {
                 if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
                   _watchlist = watch;
+                  args = CompanyDetailArgs(
+                    companyId: _watchlist.watchlistCompanyId,
+                    companyName: _watchlist.watchlistCompanyName,
+                    companyCode: _watchlist.watchlistCompanySymbol!,
+                    companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                    favouritesId: _watchlist.watchlistFavouriteId,
+                    type: _type
+                  );
                   break;
                 }
               }

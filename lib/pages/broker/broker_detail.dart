@@ -900,7 +900,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       _updateTransactionList(resp);
     }).onError((error, stackTrace) {
       debugPrintStack(stackTrace: stackTrace);
-      throw new Exception('Error when loading more data');
+      throw Exception('Error when loading more data');
     });
   }
 

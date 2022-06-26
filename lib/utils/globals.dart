@@ -1,11 +1,39 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:line_icons/line_icons.dart';
 
 class Globals {
   static String apiURL = (dotenv.env['API_URL'] ?? 'http://192.168.1.176:1337/');
   static String appVersion = (dotenv.env['APP_VERSION'] ?? '0.0.1 - dev');
   static Map<String, String> reksadanaCompanyTypeEnum = {"reksadanacampuran":"Campuran", "reksadanasaham":"Saham", "reksadanapasaruang":"Pasar Uang", "reksadanapendapatantetap":"Pendapatan Tetap"};
+
+  static List<Color> colorList = [
+    // -- 1st shade --
+    const Color.fromRGBO(220,20,60,1), // crimson
+    const Color.fromRGBO(255,165,0,1), // orange
+    const Color.fromRGBO(154,205,50,1), // yellow green
+    const Color.fromRGBO(102,205,170,1), // medium aqua marine
+    const Color.fromRGBO(221,160,221,1), // plum
+    const Color.fromRGBO(245,245,220,1), // beige
+    const Color.fromRGBO(210,105,30,1), // chocolate
+    // -- 2nd shade --
+    const Color.fromRGBO(255,99,71,1), // tomato
+    const Color.fromRGBO(255,215,0,1), // gold
+    const Color.fromRGBO(127,255,0,1), // chartreuse
+    const Color.fromRGBO(0,206,209,1), // dark turquoise
+    const Color.fromRGBO(255,105,180,1), // hot pink
+    const Color.fromRGBO(255,228,196,1), // bisque
+    const Color.fromRGBO(222,184,135,1), // burly brown
+    // -- 3rd share --
+    const Color.fromRGBO(240,128,128,1), // light coral
+    const Color.fromRGBO(240,230,140,1), // khaki
+    const Color.fromRGBO(34,139,34,1), // forest green
+    const Color.fromRGBO(176,224,230,1), // powder blue
+    const Color.fromRGBO(255,192,203,1), // pink
+    const Color.fromRGBO(245,222,179,1), // wheat
+    const Color.fromRGBO(255,222,173,1), // navajo white
+  ];
 
   // icon list for sector
   static Map<String, IconData> sectorIcon = {
@@ -21,76 +49,125 @@ class Globals {
   };
 
   static Map<String, String> sectorName = {
-    "MISCELLANEOUS INDUSTRY":"Misc Industry",
+    "MISCELLANEOUS INDUSTRY":"Miscellaneous",
     "CONSUMER GOODS INDUSTRY":"Consumer Goods",
     "FINANCE":"Finance",
     "AGRICULTURE":"Agriculture",
-    "INFRASTRUCTURE, UTILITIES & TRANSPORTATION":"Infrastructure",
-    "BASIC INDUSTRY AND CHEMICALS":"Chemicals",
+    "INFRASTRUCTURE, UTILITIES & TRANSPORTATION":"Infra, Utility, & Transport",
+    "BASIC INDUSTRY AND CHEMICALS":"Basic Industry & Chemicals",
     "MINING":"Mining",
-    "TRADE, SERVICES, & INVESTMENT":"Investment",
-    "PROPERTY, REAL ESTATE AND BUILDING CONSTRUCTION":"Property",
-  }; 
+    "TRADE, SERVICES, & INVESTMENT":"Trade, Service, & Investment",
+    "PROPERTY, REAL ESTATE AND BUILDING CONSTRUCTION":"Property & Construction",
+  };
+
+  static Map<String, IconData> subSectorIcon = {
+    "Electronics":LineIcons.plug,
+    "Restaurant, Hotel And Tourism":LineIcons.hotel,
+    "Food & Beverages":LineIcons.hamburger,
+    "Computer And Services":LineIcons.server,
+    "Land / Stone Quarrying":LineIcons.mountain,
+    "Others":LineIcons.table,
+    "Wood Industries":LineIcons.tree,
+    "Bank":LineIcons.piggyBank,
+    "Houseware":LineIcons.utensils,
+    "Footwear":LineIcons.shoePrints,
+    "Toll Road, Airport, Harbor and Allied Products":LineIcons.planeDeparture,
+    "Insurance":LineIcons.carCrash,
+    "Property and Real Estate":LineIcons.home,
+    "Chemicals":LineIcons.flask,
+    "Coal Mining":LineIcons.tractor,
+    "Plantation":LineIcons.tree,
+    "Cosmetics & Household":LineIcons.mask,
+    "Textile, Garment":LineIcons.tShirt,
+    "Animal Husbandary":LineIcons.dog,
+    "Retail Trade":LineIcons.alternateStore,
+    "Health Care":LineIcons.medkit,
+    "Crops":LineIcons.seedling,
+    "Financial Institution":LineIcons.coins,
+    "Tobacco Manufacturers":LineIcons.smoking,
+    "Cement":LineIcons.tractor,
+    "Non Building Construction":LineIcons.hardHat,
+    "Crude Petroleum & Natural Gas Production":LineIcons.oilCan,
+    "Wholesale (Durable & Non Durable Goods)":LineIcons.industry,
+    "Automotive & Components":LineIcons.cogs,
+    "Plastics & Packaging":LineIcons.shoppingBag,
+    "Building Construction":LineIcons.building,
+    "Machinery & Heavy Equipment":LineIcons.wrench,
+    "Ceramics, Glass, Porcelain":LineIcons.alternateWineGlas,
+    "Energy":LineIcons.solarPanel,
+    "Metal & Mineral Mining":LineIcons.tractor,
+    "Pulp & Paper":LineIcons.scroll,
+    "Advertising, Printing, dan Media":LineIcons.ad,
+    "Fishery":LineIcons.fish,
+    "Cable":LineIcons.ethernet,
+    "Animal Feed":LineIcons.paw,
+    "Telecommunication":LineIcons.phone,
+    "Transportation":LineIcons.bus,
+    "Pharmaceuticals":LineIcons.prescriptionBottle,
+    "Metal & Allied Products":LineIcons.cog,
+    "Securities Company":LineIcons.userSecret,
+    "Investment Company":LineIcons.handHoldingUsDollar,
+  };
 
   // icon list for industry
-  /*
-  Peralatan Energi Alternatif
-Operator Infrastruktur Transportasi
-Farmasi
-Produk Perawatan Tubuh
-Pengangkutan Darat Penumpang
-Jasa Profesional
-Pendidikan &amp; Jasa Penunjang
-Logam &amp; Mineral
-Logistik &amp; Pengantaran
-Media
-Perangkat Lunak
-Jasa &amp; Konsultan TI
-Produk &amp; Perlengkapan Bangunan
-Jasa Telekomunikasi Nirkabel
-Jasa Telekomunikasi
-Perdagangan Ritel Barang Primer
-Distributor Barang Konsumen
-Asuransi
-Pengelola &amp; Pengembang Real Estat
-Jasa Investasi
-Material Konstruksi
-Minuman
-Konstruksi Bangunan
-Department Store
-Pembiayaan Konsumen
-Perangkat, Instrumen &amp; Komponen Elektronik
-Makanan Olahan
-Perdagangan Aneka Barang Perindustrian
-Wadah &amp; Kemasan
-Maskapai Penerbangan
-Peralatan &amp; Perlengkapan Kesehatan
-Perhutanan &amp; Kertas
-Aplikasi &amp; Jasa Internet
-Minyak &amp; Gas
-Utilitas Gas
-Hiburan &amp; Film
-Penyedia Jasa Kesehatan
-Pariwisata &amp; Rekreasi
-Barang Kimia
-Peralatan Olah Raga &amp; Barang Hobi
-Machinery
-Rokok
-Bank
-Komponen Otomotif
-Jasa Komersial
-Pendukung Minyak, Gas &amp; Batu Bara
-Barang Rumah Tangga
-Perusahaan Holding Multi-sektor
-Kelistrikan
-Perusahaan Holding &amp; Investasi
-Peralatan Jaringan
-Ritel Khusus
-Perangkat Komputer
-Utilitas Listrik
-Bahan Bakar Alternatif
-Pakaian &amp; Barang Mewah
-Batu Bara
-Produk Makanan Pertanian
-  */
+  static Map<String, IconData> industryIcon = {
+    "Peralatan Energi Alternatif":LineIcons.alternateRadiation,
+    "Operator Infrastruktur Transportasi":LineIcons.bus,
+    "Farmasi":LineIcons.flask,
+    "Produk Perawatan Tubuh":LineIcons.eyeDropper,
+    "Pengangkutan Darat Penumpang":LineIcons.shuttleVan,
+    "Jasa Profesional":LineIcons.userTie,
+    "Pendidikan & Jasa Penunjang":LineIcons.school,
+    "Logam & Mineral":LineIcons.eraser,
+    "Logistik & Pengantaran":LineIcons.truck,
+    "Media":LineIcons.photoVideo,
+    "Perangkat Lunak":LineIcons.laptopCode,
+    "Jasa & Konsultan TI":LineIcons.server,
+    "Produk & Perlengkapan Bangunan":LineIcons.wrench,
+    "Jasa Telekomunikasi Nirkabel":LineIcons.wifi,
+    "Jasa Telekomunikasi":LineIcons.phone,
+    "Perdagangan Ritel Barang Primer":LineIcons.hamburger,
+    "Distributor Barang Konsumen":LineIcons.truck,
+    "Asuransi":LineIcons.carCrash,
+    "Pengelola & Pengembang Real Estat":LineIcons.home,
+    "Jasa Investasi":LineIcons.piggyBank,
+    "Material Konstruksi":LineIcons.warehouse,
+    "Minuman":LineIcons.beer,
+    "Konstruksi Bangunan":LineIcons.wrench,
+    "Department Store":LineIcons.alternateStore,
+    "Pembiayaan Konsumen":LineIcons.users,
+    "Perangkat, Instrumen & Komponen Elektronik":LineIcons.plug,
+    "Makanan Olahan":LineIcons.hamburger,
+    "Perdagangan Aneka Barang Perindustrian":LineIcons.alternateStore,
+    "Wadah & Kemasan":LineIcons.shoppingBag,
+    "Maskapai Penerbangan":LineIcons.planeDeparture,
+    "Peralatan & Perlengkapan Kesehatan":LineIcons.stethoscope,
+    "Perhutanan & Kertas":LineIcons.scroll,
+    "Aplikasi & Jasa Internet":LineIcons.wifi,
+    "Minyak & Gas":LineIcons.oilCan,
+    "Utilitas Gas":LineIcons.gasPump,
+    "Hiburan & Film":LineIcons.film,
+    "Penyedia Jasa Kesehatan":LineIcons.stethoscope,
+    "Pariwisata & Rekreasi":LineIcons.campground,
+    "Barang Kimia":LineIcons.flask,
+    "Peralatan Olah Raga & Barang Hobi":LineIcons.bicycle,
+    "Machinery":LineIcons.wrench,
+    "Rokok":LineIcons.smoking,
+    "Bank":LineIcons.university,
+    "Komponen Otomotif":LineIcons.cog,
+    "Jasa Komersial":LineIcons.store,
+    "Pendukung Minyak, Gas & Batu Bara":LineIcons.fire,
+    "Barang Rumah Tangga":LineIcons.couch,
+    "Perusahaan Holding Multi-sektor":LineIcons.city,
+    "Kelistrikan":LineIcons.plug,
+    "Perusahaan Holding & Investasi":LineIcons.handHoldingUsDollar,
+    "Peralatan Jaringan":LineIcons.ethernet,
+    "Ritel Khusus":LineIcons.store,
+    "Perangkat Komputer":LineIcons.desktop,
+    "Utilitas Listrik":LineIcons.plug,
+    "Bahan Bakar Alternatif":LineIcons.solarPanel,
+    "Pakaian & Barang Mewah":LineIcons.tShirt,
+    "Batu Bara":LineIcons.fire,
+    "Produk Makanan Pertanian":LineIcons.tractor,
+  };
 }

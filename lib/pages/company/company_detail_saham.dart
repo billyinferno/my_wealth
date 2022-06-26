@@ -36,6 +36,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   final ScrollController _scrollController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
+  final ScrollController _chipController = ScrollController();
 
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
@@ -128,6 +129,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     _scrollController.dispose();
     _calendarScrollController.dispose();
     _graphScrollController.dispose();
+    _chipController.dispose();
   }
   
   @override
@@ -196,13 +198,53 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              _companyDetail.companyType,
-                              style: const TextStyle(
-                                fontSize: 12,
+                            const SizedBox(height: 5,),
+                            SingleChildScrollView(
+                              controller: _chipController,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: secondaryLight, style: BorderStyle.solid, width: 1.0),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    padding: const EdgeInsets.all(2),
+                                    child: Text(
+                                      _companyDetail.companyType,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: secondaryLight,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Visibility(
+                                    visible: (_companyDetail.companyType.toLowerCase() != _companyDetail.companyIndustry.toLowerCase()),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: secondaryLight, style: BorderStyle.solid, width: 1.0),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      padding: const EdgeInsets.all(2),
+                                      child: Text(
+                                        _companyDetail.companyIndustry,
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: secondaryLight,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
+                            const SizedBox(height: 5,),
                             Text(
                               formatCurrency(_companyDetail.companyNetAssetValue!),
                               style: const TextStyle(

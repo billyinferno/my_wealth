@@ -59,6 +59,7 @@ class _BrokerPageState extends State<BrokerPage> {
                 controller: _searchController,
                 style: const TextStyle(
                   color: Colors.white,
+                  fontFamily: '--apple-system',
                 ),
                 onChanged: ((search) {
                   // we will filter the broker list and set the result to the filter list
@@ -88,7 +89,6 @@ class _BrokerPageState extends State<BrokerPage> {
                     return InkWell(
                       onTap: (() {
                         BrokerDetailArgs args = BrokerDetailArgs(
-                          brokerID: _filterBrokerList[index].brokerSummaryId,
                           brokerFirmID: _filterBrokerList[index].brokerFirmId
                         );
                         Navigator.pushNamed(context, '/broker/detail', arguments: args);

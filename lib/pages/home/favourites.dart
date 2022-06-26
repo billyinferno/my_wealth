@@ -16,6 +16,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_favourites.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/favourite_list.dart';
+import 'package:my_wealth/widgets/transparent_button.dart';
 import 'package:provider/provider.dart';
 
 class FavouritesPage extends StatefulWidget {
@@ -92,68 +93,73 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: (() {
-                      showCupertinoModalPopup<void>(
-                        context: context,
-                        builder: (BuildContext context) => CupertinoActionSheet(
-                          title: const Text(
-                            "Add Favourites",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                            ),
-                          ),
-                          actions: <CupertinoActionSheetAction>[
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                // navigate to reksadana
-                                Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
-                              }),
-                              child: const Text(
-                                "Mutual Fund",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
+                  SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        TransparentButton(
+                          icon: Ionicons.search,
+                          text: "Search",
+                          textColor: accentColor,
+                          borderColor: Colors.transparent,
+                          callback: (() {
+                            showCupertinoModalPopup<void>(
+                              context: context,
+                              builder: (BuildContext context) => CupertinoActionSheet(
+                                title: const Text(
+                                  "Add Favourites",
+                                  style: TextStyle(
+                                    fontFamily: '--apple-system',
+                                  ),
                                 ),
+                                actions: <CupertinoActionSheetAction>[
+                                  CupertinoActionSheetAction(
+                                    onPressed: (() {
+                                      // navigate to reksadana
+                                      Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
+                                    }),
+                                    child: const Text(
+                                      "Mutual Fund",
+                                      style: TextStyle(
+                                        fontFamily: '--apple-system',
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  CupertinoActionSheetAction(
+                                    onPressed: (() {
+                                      // navigate to reksadana
+                                      Navigator.popAndPushNamed(context, '/favourites/list/saham');
+                                    }),
+                                    child: const Text(
+                                      "Stock",
+                                      style: TextStyle(
+                                        fontFamily: '--apple-system',
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  CupertinoActionSheetAction(
+                                    onPressed: (() {
+                                      // navigate to reksadana
+                                      Navigator.popAndPushNamed(context, '/favourites/list/crypto');
+                                    }),
+                                    child: const Text(
+                                      "Crypto",
+                                      style: TextStyle(
+                                        fontFamily: '--apple-system',
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                            ),
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                // navigate to reksadana
-                                Navigator.popAndPushNamed(context, '/favourites/list/saham');
-                              }),
-                              child: const Text(
-                                "Stock",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
-                              ),
-                            ),
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                // navigate to reksadana
-                                Navigator.popAndPushNamed(context, '/favourites/list/crypto');
-                              }),
-                              child: const Text(
-                                "Crypto",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
-                              ),
-                            )
-                          ],
+                            );
+                          })
                         ),
-                      );
-                    }),
-                    icon: const Icon(
-                      Ionicons.add_circle_outline,
-                      color: accentColor,
+                      ],
                     ),
-                    splashRadius: 30,
-                    splashColor: primaryColor,
-                  )
+                  ),
                 ],
               ),
             ),

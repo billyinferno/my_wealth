@@ -466,11 +466,29 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
         debugPrint('8️⃣ Get Broker Top List');
       }),
+      _insightAPI.getBrokerTopTransaction().then((resp) async {
+        await InsightSharedPreferences.setBrokerTopTxn(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
+        debugPrint('8️⃣ Get Broker Top Transaction List');
+      }),
       _insightAPI.getSectorSummary().then((resp) async {
         await InsightSharedPreferences.setSectorSummaryList(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
         debugPrint('9️⃣ Get Sector Summary List');
+      }),
+      _insightAPI.getTopWorseCompany('top').then((resp) async {
+        await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
+        debugPrint('🔟 Get Top Company Summary List');
+      }),
+      _insightAPI.getTopWorseCompany('worse').then((resp) async {
+        await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
+        debugPrint('🔟 Get Worse Company Summary List');
       }),
     ]).then((_) {
       debugPrint("💯 Finished get additional information");

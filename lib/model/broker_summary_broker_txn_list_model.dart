@@ -54,8 +54,10 @@ class BrokerSummaryBrokerTxnListModel {
 
 class BrokerSummaryCodeListModel {
     BrokerSummaryCodeListModel({
+        required this.brokerSummaryCompanyId,
         required this.brokerSummaryCode,
         required this.brokerSummaryName,
+        required this.brokerSummaryFavouriteId,
         required this.brokerSummaryLastPrice,
         required this.brokerSummaryAdjustedClosingPrice,
         required this.brokerSummaryLot,
@@ -63,8 +65,10 @@ class BrokerSummaryCodeListModel {
         required this.brokerSummaryCount,
     });
 
+    final int brokerSummaryCompanyId;
     final String brokerSummaryCode;
     final String brokerSummaryName;
+    final int brokerSummaryFavouriteId;
     final int brokerSummaryLastPrice;
     final int brokerSummaryAdjustedClosingPrice;
     final int brokerSummaryLot;
@@ -72,8 +76,10 @@ class BrokerSummaryCodeListModel {
     final String brokerSummaryCount;
 
     factory BrokerSummaryCodeListModel.fromJson(Map<String, dynamic> json) => BrokerSummaryCodeListModel(
+        brokerSummaryCompanyId: json["broker_summary_company_id"],
         brokerSummaryCode: json["broker_summary_code"],
         brokerSummaryName: json["broker_summary_name"],
+        brokerSummaryFavouriteId: json["broker_summary_favourite_id"],
         brokerSummaryLastPrice: json["broker_summary_last_price"],
         brokerSummaryAdjustedClosingPrice: json["broker_summary_adjusted_closing_price"],
         brokerSummaryLot: json["broker_summary_lot"],
@@ -82,8 +88,10 @@ class BrokerSummaryCodeListModel {
     );
 
     Map<String, dynamic> toJson() => {
+        "broker_summary_company_id": brokerSummaryCompanyId,
         "broker_summary_code": brokerSummaryCode,
         "broker_summary_name": brokerSummaryName,
+        "broker_summary_favourite_id": brokerSummaryFavouriteId,
         "broker_summary_last_price": brokerSummaryLastPrice,
         "broker_summary_adjusted_closing_price": brokerSummaryAdjustedClosingPrice,
         "broker_summary_lot": brokerSummaryLot,

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user_login.dart';
-import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
@@ -11,9 +10,9 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_add_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
-import 'package:my_wealth/utils/arguments/watchlist_summary_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
+import 'package:my_wealth/utils/function/compute_watchlist.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
@@ -41,29 +40,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   late List<WatchlistListModel>? _watchlistSaham;
   late List<WatchlistListModel>? _watchlistCrypto;
   late List<WatchlistListModel>? _watchlistGold;
+  late ComputeWatchlistResult? _watchlistAll;
   
   bool _isShowedLots = false;
   bool _isSummaryVisible = false;
-
-  double _totalDayGain = 0;
-  double _totalValue = 0;
-  double _totalCost = 0;
-
-  double _totalDayGainReksadana = 0;
-  double _totalValueReksadana = 0;
-  double _totalCostReksadana = 0;
-
-  double _totalDayGainSaham = 0;
-  double _totalValueSaham = 0;
-  double _totalCostSaham = 0;
-  
-  double _totalDayGainCrypto = 0;
-  double _totalValueCrypto = 0;
-  double _totalCostCrypto = 0;
-
-  double _totalDayGainGold = 0;
-  double _totalValueGold = 0;
-  double _totalCostGold = 0;
 
   @override
   void initState() {
@@ -73,6 +53,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _watchlistSaham = WatchlistSharedPreferences.getWatchlist("saham");
     _watchlistCrypto = WatchlistSharedPreferences.getWatchlist("crypto");
     _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
+
+    // initialize also in the initial state
+    _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
 
     _isSummaryVisible = _userInfo!.visibility;
     _isShowedLots = _userInfo!.showLots;
@@ -97,45 +80,24 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         _watchlistCrypto = watchlistProvider.watchlistCrypto;
         _watchlistGold = watchlistProvider.watchlistGold;
 
-        _compute(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+        // compute all the watchlist first
+        _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            InkWell(
-              onTap: (() {
-                WatchlistSummaryArgs args = WatchlistSummaryArgs(
-                  totalDayGain: _totalDayGain,
-                  totalValue: _totalValue,
-                  totalCost: _totalCost,
-                  totalDayGainReksadana: _totalDayGainReksadana,
-                  totalValueReksadana: _totalValueReksadana,
-                  totalCostReksadana: _totalCostReksadana,
-                  totalDayGainSaham: _totalDayGainSaham,
-                  totalValueSaham: _totalValueSaham,
-                  totalCostSaham: _totalCostSaham,
-                  totalDayGainCrypto: _totalDayGainCrypto,
-                  totalValueCrypto: _totalValueCrypto,
-                  totalCostCrypto: _totalCostCrypto,
-                  totalDayGainGold: _totalDayGainGold,
-                  totalValueGold: _totalValueGold,
-                  totalCostGold: _totalCostGold
-                );
-
-                Navigator.pushNamed(context, '/watchlist/summary', arguments: args);
+            WatchlistSummary(
+              dayGain: _watchlistAll!.totalDayGain,
+              value: _watchlistAll!.totalValue,
+              cost: _watchlistAll!.totalCost,
+              riskFactor: _userInfo!.risk,
+              visibility: _isSummaryVisible,
+              onVisibilityPress: (() {
+                setState(() {
+                  _isSummaryVisible = !_isSummaryVisible;
+                });
               }),
-              child: WatchlistSummary(
-                dayGain: _totalDayGain,
-                value: _totalValue,
-                cost: _totalCost,
-                riskFactor: _userInfo!.risk,
-                visibility: _isSummaryVisible,
-                onVisibilityPress: (() {
-                  setState(() {
-                    _isSummaryVisible = !_isSummaryVisible;
-                  });
-                }),
-              ),
             ),
             const SizedBox(height: 10,),
             Row(
@@ -237,10 +199,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     child: TabBarView(
                       controller: _tabController,
                       children: <Widget>[
-                        (_watchlistReksadana!.isNotEmpty ? _generateWatchlistItem("reksadana", _watchlistReksadana, _totalDayGainReksadana, _totalCostReksadana, _totalValueReksadana) : const Center(child: Text("No mutual fund watchlists"))),
-                        (_watchlistSaham!.isNotEmpty ? _generateWatchlistItem("saham", _watchlistSaham, _totalDayGainSaham, _totalCostSaham, _totalValueSaham) : const Center(child: Text("No stock watchlists"))),
-                        (_watchlistGold!.isNotEmpty ? _generateWatchlistItem("gold", _watchlistGold, _totalDayGainGold, _totalCostGold, _totalValueGold) : const Center(child: Text("Error while get gold watchlist"))),
-                        (_watchlistCrypto!.isNotEmpty ? _generateWatchlistItem("crypto", _watchlistCrypto, _totalDayGainCrypto, _totalCostCrypto, _totalValueCrypto) : const Center(child: Text("No crypto watchlists"))),
+                        (_watchlistReksadana!.isNotEmpty ? _generateWatchlistItem("reksadana", _watchlistReksadana, _watchlistAll!.totalDayGainReksadana, _watchlistAll!.totalCostReksadana, _watchlistAll!.totalValueReksadana) : const Center(child: Text("No mutual fund watchlists"))),
+                        (_watchlistSaham!.isNotEmpty ? _generateWatchlistItem("saham", _watchlistSaham, _watchlistAll!.totalDayGainSaham, _watchlistAll!.totalCostSaham, _watchlistAll!.totalValueSaham) : const Center(child: Text("No stock watchlists"))),
+                        (_watchlistGold!.isNotEmpty ? _generateWatchlistItem("gold", _watchlistGold, _watchlistAll!.totalDayGainGold, _watchlistAll!.totalCostGold, _watchlistAll!.totalValueGold) : const Center(child: Text("Error while get gold watchlist"))),
+                        (_watchlistCrypto!.isNotEmpty ? _generateWatchlistItem("crypto", _watchlistCrypto, _watchlistAll!.totalDayGainCrypto, _watchlistAll!.totalCostCrypto, _watchlistAll!.totalValueCrypto) : const Center(child: Text("No crypto watchlists"))),
                       ],
                     ),
                   ),
@@ -377,227 +339,6 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         ],
       ),
     );
-  }
-
-  void _compute(List<WatchlistListModel> watchlistsMutualfund, List<WatchlistListModel> watchlistsStock, List<WatchlistListModel> watchlistsCrypto, List<WatchlistListModel> watchlistsGold) {
-    // reset the value before we actually compute the data
-    _totalDayGain = 0;
-    _totalValue = 0;
-    _totalCost = 0;   
-    
-    _totalDayGainReksadana = 0;
-    _totalValueReksadana = 0;
-    _totalCostReksadana = 0;
-
-    _totalDayGainSaham = 0;
-    _totalValueSaham = 0;
-    _totalCostSaham = 0;
-
-    _totalDayGainCrypto = 0;
-    _totalValueCrypto = 0;
-    _totalCostCrypto = 0;
-
-    _totalDayGainGold = 0;
-    _totalValueGold = 0;
-    _totalCostGold = 0;
-
-    double dayGain = 0;
-
-    // loop thru all the mutual fund to get the total computation
-    double totalShareBuy = 0;
-    double totalShareSell = 0;
-    double totalShareCurrent = 0;
-    double totalCostBuy = 0;
-    double totalCostCurrent = 0;
-    double totalValueCurrent = 0;
-    double averageBuyPrice = 0;
-    
-    for (WatchlistListModel watchlist in watchlistsMutualfund) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        }
-        else {
-          totalShareSell += detail.watchlistDetailShare;
-        }
-      }
-
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
-      }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      _totalDayGainReksadana += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      _totalCostReksadana += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      _totalValueReksadana += totalValueCurrent;
-    }
-
-    // loop thru all the stock to get the total computation
-    for (WatchlistListModel watchlist in watchlistsStock) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        }
-        else {
-          totalShareSell += detail.watchlistDetailShare;
-        }
-      }
-
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
-      }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      _totalDayGainSaham += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      _totalCostSaham += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      _totalValueSaham += totalValueCurrent;
-    }
-
-    // loop thru all the crypto to get the total computation
-    for (WatchlistListModel watchlist in watchlistsCrypto) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        }
-        else {
-          totalShareSell += detail.watchlistDetailShare;
-        }
-      }
-
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
-      }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-      
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      _totalDayGainCrypto += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      _totalCostCrypto += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      _totalValueCrypto += totalValueCurrent;
-    }
-
-    // loop thru all the gold to get the total computation
-    for (WatchlistListModel watchlist in watchlistsGold) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail) {
-        if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        }
-        else {
-          totalShareSell += detail.watchlistDetailShare;
-        }
-      }
-
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
-      }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-      
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      _totalDayGainGold += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      _totalCostGold += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      _totalValueGold += totalValueCurrent;
-    }
-
-    _totalDayGain = _totalDayGainReksadana + _totalDayGainSaham + _totalDayGainCrypto + _totalDayGainGold;
-    _totalValue = _totalValueReksadana + _totalValueSaham + _totalValueCrypto + _totalValueGold;
-    _totalCost = _totalCostReksadana + _totalCostSaham + _totalCostCrypto + _totalCostGold;
   }
 
   Future<void> _refreshWatchlist() async {

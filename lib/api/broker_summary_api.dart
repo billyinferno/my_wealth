@@ -63,7 +63,7 @@ class BrokerSummaryAPI {
     }
   }
 
-  Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList(String brokerCode, [DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList(String brokerCode, int start, int limit, [DateTime? dateFrom, DateTime? dateTo]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -78,7 +78,7 @@ class BrokerSummaryAPI {
       String dateToString = _df.format(currentDateTo);
 
       final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/broker/$brokerCode/from/$dateFromString/to/$dateToString'),
+        Uri.parse('${Globals.apiURL}api/broker-summaries/broker/$brokerCode/from/$dateFromString/to/$dateToString/start/$start/limit/$limit'),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',

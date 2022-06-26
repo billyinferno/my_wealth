@@ -152,4 +152,42 @@ class CompanyAPI {
       throw Exception("No bearer token");
     }
   }
+
+  Future<List<CompanyDetailModel>> getCompanySectorAndSubSector(String type, String sectorName, String subSectorName) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
+      String subSectorNameBase64 = base64.encode(utf8.encode(subSectorName));
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/sector/$sectorNameBase64/$type/$subSectorNameBase64'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<CompanyDetailModel> companyList = [];
+        for (var data in commonModel.data) {
+          CompanyDetailModel company = CompanyDetailModel.fromJson(data['attributes']);
+          companyList.add(company);
+        }
+        return companyList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
 }

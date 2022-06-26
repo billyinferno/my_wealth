@@ -27,11 +27,14 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   double _totalGain = 0;
   double _totalCost = 0;
   double _averagePrice = 0;
+  int _totalBuy = 0;
+  int _totalSell = 0;
 
   @override
   Widget build(BuildContext context) {
     _isShowedLots = (widget.showedLot ?? false);
     _computeDetail();
+    _computeLot();
 
     return ExpansionTile(
       key: Key(widget.key.toString() + _isShowedLots.toString()),
@@ -43,7 +46,8 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
       collapsedIconColor: primaryLight,
       title: ExpandedTileTitle(
         name: (widget.watchlist.watchlistCompanySymbol!.isNotEmpty ? "(${widget.watchlist.watchlistCompanySymbol}) ${widget.watchlist.watchlistCompanyName}" : widget.watchlist.watchlistCompanyName),
-        lot: _totalLot(),
+        buy: _totalBuy,
+        sell: _totalSell,
         share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
         gain: (widget.isVisible ? _totalGain : null),
@@ -66,17 +70,19 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
     );
   }
 
-  int _totalLot() {
+  void _computeLot() {
     // loop thru widget.watchlist.watchlistDetail and ensure that we will only count
     // all the shares that > 0
-    int total = 0;
+    _totalBuy = 0;
+    _totalSell = 0;
     for (WatchlistDetailListModel data in widget.watchlist.watchlistDetail) {
       if(data.watchlistDetailShare > 0) {
-        total++;
+        _totalBuy++;
+      }
+      if(data.watchlistDetailShare < 0) {
+        _totalSell++;
       }
     }
-    // return the correct total lot
-    return total;
   }
 
   void _computeDetail() {

@@ -606,8 +606,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         textAlign: TextAlign.right,
                       ),
                     ),
-                    const SizedBox(width: 10,),
-                    // const Expanded(child: SizedBox()),
                   ],
                 ),
               ],

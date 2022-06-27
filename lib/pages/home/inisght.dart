@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/pages/insight/insight_bandar.dart';
 import 'package:my_wealth/pages/insight/insight_broker.dart';
+import 'package:my_wealth/pages/insight/insight_reksadana.dart';
 import 'package:my_wealth/pages/insight/insight_stock.dart';
 
 class InsightPage extends StatefulWidget {
@@ -16,13 +18,12 @@ class InsightPageState extends State<InsightPage> with SingleTickerProviderState
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-
     super.dispose();
   }
   
@@ -37,6 +38,7 @@ class InsightPageState extends State<InsightPage> with SingleTickerProviderState
           tabs: const <Widget>[
             Tab(text: 'BROKER',),
             Tab(text: 'STOCK',),
+            Tab(text: 'MUTUAL',),
             Tab(text: 'BANDAR',),
           ],
         ),
@@ -47,7 +49,8 @@ class InsightPageState extends State<InsightPage> with SingleTickerProviderState
             children: const <Widget>[
               InsightBrokerPage(),
               InsightStockPage(),
-              Center(child: Text("Bandar")),
+              InsightReksadanaPage(),
+              InsightBandarPage(),
             ],
           ),
         ),

@@ -7,6 +7,7 @@ import 'package:my_wealth/storage/local_box.dart';
 class InsightSharedPreferences {
   static const _sectorSummaryKey = "sector_summary";
   static const _topWorseCompanyListKey = "insight_company_list_";
+  static const _topReksadanaListKey = "insight_reksadana_list_";
   static const _brokerTopTransactionKey = "insight_broker_top_txn";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
@@ -88,7 +89,8 @@ class InsightSharedPreferences {
           the3M: [],
           the3Y: [],
           the5Y: [],
-          the6M: [])
+          the6M: [],
+          theYTD: [])
         );
     }
   }
@@ -128,6 +130,50 @@ class InsightSharedPreferences {
         domestic: BuySell(buy: [], sell: []),
         foreign: BuySell(buy: [], sell: []),
       );
+    }
+  }
+
+  static Future<void> setTopReksadanaList(String type, TopWorseCompanyListModel topReksadanaList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    String topReksadanaString = jsonEncode(topReksadanaList.toJson());
+    LocalBox.putString(_topReksadanaListKey + type, topReksadanaString);
+  }
+
+  static TopWorseCompanyListModel getTopReksadanaList(String type) {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String topReksadanaString = (LocalBox.getString(_topReksadanaListKey + type) ?? '');
+
+    // check if the list is empty or not?
+    if (topReksadanaString.isNotEmpty) {
+      // string is not empty parse it
+      TopWorseCompanyListModel topReksadana = TopWorseCompanyListModel.fromJson(jsonDecode(topReksadanaString));
+      // return the top worse
+      return topReksadana;
+    }
+    else {
+      // no data
+      return TopWorseCompanyListModel(
+        companyList: CompanyList(
+          the1D: [],
+          the1M: [],
+          the1W: [],
+          the1Y: [],
+          the3M: [],
+          the3Y: [],
+          the5Y: [],
+          the6M: [],
+          theYTD: [])
+        );
     }
   }
 }

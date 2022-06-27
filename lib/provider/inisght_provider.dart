@@ -7,6 +7,7 @@ class InsightProvider extends ChangeNotifier {
   List<SectorSummaryModel>? sectorSummaryList;
   TopWorseCompanyListModel? topCompanyList;
   TopWorseCompanyListModel? worseCompanyList;
+  Map<String, TopWorseCompanyListModel>? topReksadanaList;
   BrokerTopTransactionModel? brokerTopTransactionList;
 
   setSectorSummaryList(List<SectorSummaryModel> list) {
@@ -26,6 +27,15 @@ class InsightProvider extends ChangeNotifier {
 
   setBrokerTopTransactionList(BrokerTopTransactionModel data) {
     brokerTopTransactionList = data;
+    notifyListeners();
+  }
+
+  setTopReksadanaList(String type, TopWorseCompanyListModel data) {
+    // check if null? if so initialze it
+    topReksadanaList ??= {};
+
+    // check if the key already there or not?
+    topReksadanaList![type] = data;
     notifyListeners();
   }
 }

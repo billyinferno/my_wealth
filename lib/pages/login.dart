@@ -490,6 +490,30 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
         debugPrint('🔟 Get Worse Company Summary List');
       }),
+      _insightAPI.getTopReksadana('saham').then((resp) async {
+        await InsightSharedPreferences.setTopReksadanaList('saham', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
+        debugPrint('🔟 Get Top Reksadana Saham Summary List');
+      }),
+      _insightAPI.getTopReksadana('campuran').then((resp) async {
+        await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
+        debugPrint('🔟 Get Top Reksadana Campuran Summary List');
+      }),
+      _insightAPI.getTopReksadana('pasaruang').then((resp) async {
+        await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
+        debugPrint('🔟 Get Top Reksadana Pasar Uang Summary List');
+      }),
+      _insightAPI.getTopReksadana('pendapatantetap').then((resp) async {
+        await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
+        debugPrint('🔟 Get Top Reksadana Pendapatan Tetap Summary List');
+      }),
     ]).then((_) {
       debugPrint("💯 Finished get additional information");
     });

@@ -35,6 +35,7 @@ class SectorAverage {
         required this.the1M,
         required this.the3M,
         required this.the6M,
+        required this.theYTD,
         required this.the1Y,
         required this.the3Y,
         required this.the5Y,
@@ -45,6 +46,7 @@ class SectorAverage {
     final double the1M;
     final double the3M;
     final double the6M;
+    final double theYTD;
     final double the1Y;
     final double the3Y;
     final double the5Y;
@@ -55,6 +57,7 @@ class SectorAverage {
         the1M: json["1m"].toDouble(),
         the3M: json["3m"].toDouble(),
         the6M: json["6m"].toDouble(),
+        theYTD: json["ytd"].toDouble(),
         the1Y: json["1y"].toDouble(),
         the3Y: json["3y"].toDouble(),
         the5Y: json["5y"].toDouble(),
@@ -66,6 +69,7 @@ class SectorAverage {
         "1m": the1M,
         "3m": the3M,
         "6m": the6M,
+        "ytd": theYTD,
         "1y": the1Y,
         "3y": the3Y,
         "5y": the5Y,

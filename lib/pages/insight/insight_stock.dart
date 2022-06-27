@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/selectable_button.dart';
 import 'package:provider/provider.dart';
 
 class InsightStockPage extends StatefulWidget {
@@ -83,56 +84,63 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      _selectableButton(
+                      SelectableButton(
                         text: "1d",
                         selected: (_sectorSummaryPeriod == "1d"),
                         onPress: (() {
                           _setSectorSummaryPeriod('1d');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "1w",
                         selected: (_sectorSummaryPeriod == "1w"),
                         onPress: (() {
                           _setSectorSummaryPeriod('1w');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "1m",
                         selected: (_sectorSummaryPeriod == "1m"),
                         onPress: (() {
                           _setSectorSummaryPeriod('1m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "3m",
                         selected: (_sectorSummaryPeriod == "3m"),
                         onPress: (() {
                           _setSectorSummaryPeriod('3m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "6m",
                         selected: (_sectorSummaryPeriod == "6m"),
                         onPress: (() {
                           _setSectorSummaryPeriod('6m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
+                        text: "ytd",
+                        selected: (_sectorSummaryPeriod == "ytd"),
+                        onPress: (() {
+                          _setSectorSummaryPeriod('ytd');
+                        })
+                      ),
+                      SelectableButton(
                         text: "1y",
                         selected: (_sectorSummaryPeriod == "1y"),
                         onPress: (() {
                           _setSectorSummaryPeriod('1y');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "3y",
                         selected: (_sectorSummaryPeriod == "3y"),
                         onPress: (() {
                           _setSectorSummaryPeriod('3y');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "5y",
                         selected: (_sectorSummaryPeriod == "5y"),
                         onPress: (() {
@@ -166,6 +174,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                             break;
                           case '6m':
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the6M;
+                            break;
+                          case 'ytd':
+                            sectorAverage = _sectorSummaryList[index].sectorAverage.theYTD;
                             break;
                           case '1y':
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1Y;
@@ -255,56 +266,63 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      _selectableButton(
+                      SelectableButton(
                         text: "1d",
                         selected: (_topCompanyPeriod == "1d"),
                         onPress: (() {
                           _setTopCompanyPeriod('1d');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "1w",
                         selected: (_topCompanyPeriod == "1w"),
                         onPress: (() {
                           _setTopCompanyPeriod('1w');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "1m",
                         selected: (_topCompanyPeriod == "1m"),
                         onPress: (() {
                           _setTopCompanyPeriod('1m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "3m",
                         selected: (_topCompanyPeriod == "3m"),
                         onPress: (() {
                           _setTopCompanyPeriod('3m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "6m",
                         selected: (_topCompanyPeriod == "6m"),
                         onPress: (() {
                           _setTopCompanyPeriod('6m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
+                        text: "ytd",
+                        selected: (_topCompanyPeriod == "ytd"),
+                        onPress: (() {
+                          _setTopCompanyPeriod('ytd');
+                        })
+                      ),
+                      SelectableButton(
                         text: "1y",
                         selected: (_topCompanyPeriod == "1y"),
                         onPress: (() {
                           _setTopCompanyPeriod('1y');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "3y",
                         selected: (_topCompanyPeriod == "3y"),
                         onPress: (() {
                           _setTopCompanyPeriod('3y');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "5y",
                         selected: (_topCompanyPeriod == "5y"),
                         onPress: (() {
@@ -329,56 +347,63 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      _selectableButton(
+                      SelectableButton(
                         text: "1d",
                         selected: (_worseCompanyPeriod == "1d"),
                         onPress: (() {
                           _setWorseCompanyPeriod('1d');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "1w",
                         selected: (_worseCompanyPeriod == "1w"),
                         onPress: (() {
                           _setWorseCompanyPeriod('1w');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "1m",
                         selected: (_worseCompanyPeriod == "1m"),
                         onPress: (() {
                           _setWorseCompanyPeriod('1m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "3m",
                         selected: (_worseCompanyPeriod == "3m"),
                         onPress: (() {
                           _setWorseCompanyPeriod('3m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "6m",
                         selected: (_worseCompanyPeriod == "6m"),
                         onPress: (() {
                           _setWorseCompanyPeriod('6m');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
+                        text: "ytd",
+                        selected: (_worseCompanyPeriod == "ytd"),
+                        onPress: (() {
+                          _setWorseCompanyPeriod('ytd');
+                        })
+                      ),
+                      SelectableButton(
                         text: "1y",
                         selected: (_worseCompanyPeriod == "1y"),
                         onPress: (() {
                           _setWorseCompanyPeriod('1y');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "3y",
                         selected: (_worseCompanyPeriod == "3y"),
                         onPress: (() {
                           _setWorseCompanyPeriod('3y');
                         })
                       ),
-                      _selectableButton(
+                      SelectableButton(
                         text: "5y",
                         selected: (_worseCompanyPeriod == "5y"),
                         onPress: (() {
@@ -419,6 +444,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
         case '6m':
           info = _topCompanyList.companyList.the6M;
           break;
+        case 'ytd':
+          info = _topCompanyList.companyList.theYTD;
+          break;
         case '1y':
           info = _topCompanyList.companyList.the1Y;
           break;
@@ -450,6 +478,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
           break;
         case '6m':
           info = _worseCompanyList.companyList.the6M;
+          break;
+        case 'ytd':
+          info = _worseCompanyList.companyList.theYTD;
           break;
         case '1y':
           info = _worseCompanyList.companyList.the1Y;
@@ -532,36 +563,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
           ),
         );
       }),
-    );
-  }
-
-  Widget _selectableButton({required String text, VoidCallback? onPress, required bool selected}) {
-    return InkWell(
-      onTap: (() {
-        // check if not null
-        if (onPress != null) {
-          onPress();
-        }
-      }),
-      child: Container(
-        height: 20,
-        width: 20,
-        margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: (selected ? secondaryColor : Colors.transparent),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: (selected ? textPrimary : secondaryColor),
-              fontSize: 10,
-            ),
-          ),
-        ),
-      ),
     );
   }
 

@@ -34,6 +34,7 @@ class CompanyList {
         required this.the1Y,
         required this.the3Y,
         required this.the5Y,
+        required this.theYTD,
     });
 
     final List<CompanyInfo> the1D;
@@ -44,6 +45,7 @@ class CompanyList {
     final List<CompanyInfo> the1Y;
     final List<CompanyInfo> the3Y;
     final List<CompanyInfo> the5Y;
+    final List<CompanyInfo> theYTD;
 
     factory CompanyList.fromJson(Map<String, dynamic> json) => CompanyList(
         the1D: List<CompanyInfo>.from(json["1d"].map((x) => CompanyInfo.fromJson(x))),
@@ -54,6 +56,7 @@ class CompanyList {
         the1Y: List<CompanyInfo>.from(json["1y"].map((x) => CompanyInfo.fromJson(x))),
         the3Y: List<CompanyInfo>.from(json["3y"].map((x) => CompanyInfo.fromJson(x))),
         the5Y: List<CompanyInfo>.from(json["5y"].map((x) => CompanyInfo.fromJson(x))),
+        theYTD: List<CompanyInfo>.from(json["ytd"].map((x) => CompanyInfo.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -65,6 +68,7 @@ class CompanyList {
         "1y": List<dynamic>.from(the1Y.map((x) => x.toJson())),
         "3y": List<dynamic>.from(the3Y.map((x) => x.toJson())),
         "5y": List<dynamic>.from(the5Y.map((x) => x.toJson())),
+        "ytd": List<dynamic>.from(theYTD.map((x) => x.toJson())),
     };
 }
 

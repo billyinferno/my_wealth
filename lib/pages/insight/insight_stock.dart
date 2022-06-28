@@ -99,6 +99,13 @@ class _InsightStockPageState extends State<InsightStockPage> {
                         })
                       ),
                       SelectableButton(
+                        text: "mtd",
+                        selected: (_sectorSummaryPeriod == "mtd"),
+                        onPress: (() {
+                          _setSectorSummaryPeriod('mtd');
+                        })
+                      ),
+                      SelectableButton(
                         text: "1m",
                         selected: (_sectorSummaryPeriod == "1m"),
                         onPress: (() {
@@ -165,6 +172,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                             break;
                           case '1w':
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1W;
+                            break;
+                          case 'mtd':
+                            sectorAverage = _sectorSummaryList[index].sectorAverage.theMTD;
                             break;
                           case '1m':
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1M;
@@ -281,6 +291,13 @@ class _InsightStockPageState extends State<InsightStockPage> {
                         })
                       ),
                       SelectableButton(
+                        text: "mtd",
+                        selected: (_topCompanyPeriod == "mtd"),
+                        onPress: (() {
+                          _setTopCompanyPeriod('mtd');
+                        })
+                      ),
+                      SelectableButton(
                         text: "1m",
                         selected: (_topCompanyPeriod == "1m"),
                         onPress: (() {
@@ -362,6 +379,13 @@ class _InsightStockPageState extends State<InsightStockPage> {
                         })
                       ),
                       SelectableButton(
+                        text: "mtd",
+                        selected: (_worseCompanyPeriod == "mtd"),
+                        onPress: (() {
+                          _setWorseCompanyPeriod('mtd');
+                        })
+                      ),
+                      SelectableButton(
                         text: "1m",
                         selected: (_worseCompanyPeriod == "1m"),
                         onPress: (() {
@@ -435,6 +459,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
         case '1w':
           info = _topCompanyList.companyList.the1W;
           break;
+        case 'mtd':
+          info = _topCompanyList.companyList.theMTD;
+          break;
         case '1m':
           info = _topCompanyList.companyList.the1M;
           break;
@@ -469,6 +496,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
           break;
         case '1w':
           info = _worseCompanyList.companyList.the1W;
+          break;
+        case 'mtd':
+          info = _worseCompanyList.companyList.theMTD;
           break;
         case '1m':
           info = _worseCompanyList.companyList.the1M;

@@ -32,6 +32,7 @@ class SectorAverage {
     SectorAverage({
         required this.the1D,
         required this.the1W,
+        required this.theMTD,
         required this.the1M,
         required this.the3M,
         required this.the6M,
@@ -43,6 +44,7 @@ class SectorAverage {
 
     final double the1D;
     final double the1W;
+    final double theMTD;
     final double the1M;
     final double the3M;
     final double the6M;
@@ -54,6 +56,7 @@ class SectorAverage {
     factory SectorAverage.fromJson(Map<String, dynamic> json) => SectorAverage(
         the1D: json["1d"].toDouble(),
         the1W: json["1w"].toDouble(),
+        theMTD: json["mtd"].toDouble(),
         the1M: json["1m"].toDouble(),
         the3M: json["3m"].toDouble(),
         the6M: json["6m"].toDouble(),
@@ -66,6 +69,7 @@ class SectorAverage {
     Map<String, dynamic> toJson() => {
         "1d": the1D,
         "1w": the1W,
+        "mtd": theMTD,
         "1m": the1M,
         "3m": the3M,
         "6m": the6M,

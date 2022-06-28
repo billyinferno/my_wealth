@@ -18,8 +18,8 @@ class SelectableButton extends StatelessWidget {
         }
       }),
       child: Container(
-        height: 20,
-        width: 20,
+        height: 25,
+        width: 25,
         margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),

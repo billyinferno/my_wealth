@@ -28,6 +28,7 @@ class CompanyList {
     CompanyList({
         required this.the1D,
         required this.the1W,
+        required this.theMTD,
         required this.the1M,
         required this.the3M,
         required this.the6M,
@@ -39,6 +40,7 @@ class CompanyList {
 
     final List<CompanyInfo> the1D;
     final List<CompanyInfo> the1W;
+    final List<CompanyInfo> theMTD;
     final List<CompanyInfo> the1M;
     final List<CompanyInfo> the3M;
     final List<CompanyInfo> the6M;
@@ -50,6 +52,7 @@ class CompanyList {
     factory CompanyList.fromJson(Map<String, dynamic> json) => CompanyList(
         the1D: List<CompanyInfo>.from(json["1d"].map((x) => CompanyInfo.fromJson(x))),
         the1W: List<CompanyInfo>.from(json["1w"].map((x) => CompanyInfo.fromJson(x))),
+        theMTD: List<CompanyInfo>.from(json["mtd"].map((x) => CompanyInfo.fromJson(x))),
         the1M: List<CompanyInfo>.from(json["1m"].map((x) => CompanyInfo.fromJson(x))),
         the3M: List<CompanyInfo>.from(json["3m"].map((x) => CompanyInfo.fromJson(x))),
         the6M: List<CompanyInfo>.from(json["6m"].map((x) => CompanyInfo.fromJson(x))),
@@ -62,6 +65,7 @@ class CompanyList {
     Map<String, dynamic> toJson() => {
         "1d": List<dynamic>.from(the1D.map((x) => x.toJson())),
         "1w": List<dynamic>.from(the1W.map((x) => x.toJson())),
+        "mtd": List<dynamic>.from(theMTD.map((x) => x.toJson())),
         "1m": List<dynamic>.from(the1M.map((x) => x.toJson())),
         "3m": List<dynamic>.from(the3M.map((x) => x.toJson())),
         "6m": List<dynamic>.from(the6M.map((x) => x.toJson())),

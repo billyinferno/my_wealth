@@ -90,7 +90,8 @@ class InsightSharedPreferences {
           the3Y: [],
           the5Y: [],
           the6M: [],
-          theYTD: [])
+          theYTD: [],
+          theMTD: [])
         );
     }
   }
@@ -172,7 +173,8 @@ class InsightSharedPreferences {
           the3Y: [],
           the5Y: [],
           the6M: [],
-          theYTD: [])
+          theYTD: [],
+          theMTD: [])
         );
     }
   }

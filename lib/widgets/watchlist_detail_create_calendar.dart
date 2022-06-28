@@ -6,7 +6,8 @@ import 'package:my_wealth/utils/animation/animation_expand.dart';
 
 class WatchlistDetailCreateCalendar extends StatefulWidget {
   final Function(DateTime) onDateChange;
-  const WatchlistDetailCreateCalendar({ Key? key, required this.onDateChange }) : super(key: key);
+  final DateTime? initialDate;
+  const WatchlistDetailCreateCalendar({ Key? key, required this.onDateChange, this.initialDate }) : super(key: key);
 
   @override
   WatchlistDetailCreateCalendarState createState() => WatchlistDetailCreateCalendarState();
@@ -15,7 +16,7 @@ class WatchlistDetailCreateCalendar extends StatefulWidget {
 class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCalendar> {
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   bool _isDateVisible = false;
-  DateTime _selectedDate = DateTime.now().toLocal();
+  late DateTime _selectedDate;
 
   @override
   void initState() {
@@ -23,7 +24,7 @@ class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCale
 
     // initialize variable
     _isDateVisible = false;
-    _selectedDate = DateTime.now().toLocal();
+    _selectedDate = (widget.initialDate ?? DateTime.now().toLocal());
   }
 
   @override

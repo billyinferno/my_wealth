@@ -107,6 +107,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             WatchlistDetailCreateCalendar(
+              initialDate: _selectedDate,
               onDateChange: ((newDate) {
                 _selectedDate = newDate;
               })

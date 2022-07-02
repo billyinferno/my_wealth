@@ -41,6 +41,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
   final ScrollController _chipController = ScrollController();
+  final ScrollController _fundamentalController = ScrollController();
+  final ScrollController _fundamentalItemController = ScrollController();
   late TabController _tabController;
 
   late CompanyDetailArgs _companyData;
@@ -150,6 +152,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _chipController.dispose();
     _infoController.dispose();
     _brokerController.dispose();
+    _fundamentalController.dispose();
+    _fundamentalItemController.dispose();
   }
   
   @override
@@ -505,264 +509,268 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   Widget _tabFundamentalInfo() {
     return Container(
       padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Center(
-            child: InkWell(
-              onTap: (() async {
-                int? quarter;
-                await showCupertinoModalPopup<void>(
-                  context: context,
-                  builder: (BuildContext context) => CupertinoActionSheet(
-                    title: const Text(
-                      "Select Period",
-                      style: TextStyle(
-                        fontFamily: '--apple-system',
+      child: SingleChildScrollView(
+        controller: _fundamentalController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Center(
+              child: InkWell(
+                onTap: (() async {
+                  int? quarter;
+                  await showCupertinoModalPopup<void>(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoActionSheet(
+                      title: const Text(
+                        "Select Period",
+                        style: TextStyle(
+                          fontFamily: '--apple-system',
+                        ),
                       ),
+                      actions: <CupertinoActionSheetAction>[
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 5;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "Every Quarter",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 1;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "3 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 2;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "6 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 3;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "9 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 4;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "12 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    actions: <CupertinoActionSheetAction>[
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          quarter = 5;
-                          Navigator.pop(context);
-                        }),
-                        child: const Text(
-                          "Every Quarter",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      ),
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          quarter = 1;
-                          Navigator.pop(context);
-                        }),
-                        child: const Text(
-                          "3 Month",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      ),
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          quarter = 2;
-                          Navigator.pop(context);
-                        }),
-                        child: const Text(
-                          "6 Month",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      ),
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          quarter = 3;
-                          Navigator.pop(context);
-                        }),
-                        child: const Text(
-                          "9 Month",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      ),
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          quarter = 4;
-                          Navigator.pop(context);
-                        }),
-                        child: const Text(
-                          "12 Month",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-
-                // check if quarter is null or not?
-                if (quarter  != null) {
-                  // set the quarter selection
-                  _quarterSelection = quarter!;
-                  // set the quarter selection text
-                  switch(_quarterSelection) {
-                    case 1:
-                      _quarterSelectionText = "3 Month";
-                      break;
-                    case 2:
-                      _quarterSelectionText = "6 Month";
-                      break;
-                    case 3:
-                      _quarterSelectionText = "9 Month";
-                      break;
-                    case 4:
-                      _quarterSelectionText = "12 Month";
-                      break;
-                    case 5:
-                      _quarterSelectionText = "Every Quarter";
-                      break;
-                    default:
-                      _quarterSelectionText = "Every Quarter";
-                      break;
+                  );
+      
+                  // check if quarter is null or not?
+                  if (quarter  != null) {
+                    // set the quarter selection
+                    _quarterSelection = quarter!;
+                    // set the quarter selection text
+                    switch(_quarterSelection) {
+                      case 1:
+                        _quarterSelectionText = "3 Month";
+                        break;
+                      case 2:
+                        _quarterSelectionText = "6 Month";
+                        break;
+                      case 3:
+                        _quarterSelectionText = "9 Month";
+                        break;
+                      case 4:
+                        _quarterSelectionText = "12 Month";
+                        break;
+                      case 5:
+                        _quarterSelectionText = "Every Quarter";
+                        break;
+                      default:
+                        _quarterSelectionText = "Every Quarter";
+                        break;
+                    }
+      
+                    // get the new data from api
+                    await _getFundamental();
                   }
-
-                  // get the new data from api
-                  await _getFundamental();
-                }
-              }),
-              child: Text(
-                _quarterSelectionText,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: secondaryColor,
+                }),
+                child: Text(
+                  _quarterSelectionText,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: secondaryColor,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 20,),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                width: 125,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    _text(
-                      text: "Period",
-                      fontWeight: FontWeight.bold,
-                      color: secondaryColor,
-                    ),
-                    _text(
-                      text: "Last Price",
-                    ),
-                    _text(
-                      text: "Share Out",
-                    ),
-                    _text(
-                      text: "Market Cap",
-                    ),
-                    _text(
-                      text: "BALANCE SHEET",
-                      fontWeight: FontWeight.bold,
-                      color: accentColor,
-                    ),
-                    _text(
-                      text: "Cash",
-                    ),
-                    _text(
-                      text: "Total Asset",
-                    ),
-                    _text(
-                      text: "S.T.Borrowing",
-                    ),
-                    _text(
-                      text: "L.T.Borrowing",
-                    ),
-                    _text(
-                      text: "Total Equity",
-                    ),
-                    _text(
-                      text: "INCOME STATEMENT",
-                      fontWeight: FontWeight.bold,
-                      color: accentColor,
-                    ),
-                    _text(
-                      text: "Revenue",
-                    ),
-                    _text(
-                      text: "Gross Profit",
-                    ),
-                    _text(
-                      text: "Operating Profit",
-                    ),
-                    _text(
-                      text: "Net.Profit",
-                    ),
-                    _text(
-                      text: "EBITDA",
-                    ),
-                    _text(
-                      text: "Interest Expense",
-                    ),
-                    _text(
-                      text: "RATIO",
-                      fontWeight: FontWeight.bold,
-                      color: accentColor,
-                    ),
-                    _text(
-                      text: "Deviden",
-                    ),
-                    _text(
-                      text: "EPS",
-                    ),
-                    _text(
-                      text: "PER",
-                    ),
-                    _text(
-                      text: "BVPS",
-                    ),
-                    _text(
-                      text: "PBV",
-                    ),
-                    _text(
-                      text: "ROA",
-                    ),
-                    _text(
-                      text: "ROE",
-                    ),
-                    _text(
-                      text: "EV/EBITDA",
-                    ),
-                    _text(
-                      text: "Debt/Equity",
-                    ),
-                    _text(
-                      text: "Debt/TotalCap",
-                    ),
-                    _text(
-                      text: "Debt/EBITDA",
-                    ),
-                    _text(
-                      text: "EBITDA/IntExps",
-                    ),
-                  ],
-                )
-              ),
-              const SizedBox(width: 10,),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+            const SizedBox(height: 20,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  width: 125,
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: List<Widget>.generate(_infoFundamental.length, (index) {
-                      return SizedBox(
-                        width: 85,
-                        child: _fundamentalItem(fundamental: _infoFundamental[index])
-                      );
-                    }),
+                    children: <Widget>[
+                      _text(
+                        text: "Period",
+                        fontWeight: FontWeight.bold,
+                        color: secondaryColor,
+                      ),
+                      _text(
+                        text: "Last Price",
+                      ),
+                      _text(
+                        text: "Share Out",
+                      ),
+                      _text(
+                        text: "Market Cap",
+                      ),
+                      _text(
+                        text: "BALANCE SHEET",
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                      _text(
+                        text: "Cash",
+                      ),
+                      _text(
+                        text: "Total Asset",
+                      ),
+                      _text(
+                        text: "S.T.Borrowing",
+                      ),
+                      _text(
+                        text: "L.T.Borrowing",
+                      ),
+                      _text(
+                        text: "Total Equity",
+                      ),
+                      _text(
+                        text: "INCOME STATEMENT",
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                      _text(
+                        text: "Revenue",
+                      ),
+                      _text(
+                        text: "Gross Profit",
+                      ),
+                      _text(
+                        text: "Operating Profit",
+                      ),
+                      _text(
+                        text: "Net.Profit",
+                      ),
+                      _text(
+                        text: "EBITDA",
+                      ),
+                      _text(
+                        text: "Interest Expense",
+                      ),
+                      _text(
+                        text: "RATIO",
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                      _text(
+                        text: "Deviden",
+                      ),
+                      _text(
+                        text: "EPS",
+                      ),
+                      _text(
+                        text: "PER",
+                      ),
+                      _text(
+                        text: "BVPS",
+                      ),
+                      _text(
+                        text: "PBV",
+                      ),
+                      _text(
+                        text: "ROA",
+                      ),
+                      _text(
+                        text: "ROE",
+                      ),
+                      _text(
+                        text: "EV/EBITDA",
+                      ),
+                      _text(
+                        text: "Debt/Equity",
+                      ),
+                      _text(
+                        text: "Debt/TotalCap",
+                      ),
+                      _text(
+                        text: "Debt/EBITDA",
+                      ),
+                      _text(
+                        text: "EBITDA/IntExps",
+                      ),
+                    ],
+                  )
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _fundamentalItemController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: List<Widget>.generate(_infoFundamental.length, (index) {
+                        return SizedBox(
+                          width: 85,
+                          child: _fundamentalItem(fundamental: _infoFundamental[index])
+                        );
+                      }),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

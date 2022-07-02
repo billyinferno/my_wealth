@@ -219,6 +219,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     return RefreshIndicator(
       onRefresh: (() async {
         await _refreshWatchlist();
+        // once finished rebuild widget
+        setState(() {
+          // just rebuild
+        });
       }),
       color: accentColor,
       child: Column(
@@ -342,9 +346,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   }
 
   Future<void> _refreshWatchlist() async {
-    Future.wait([
+    showLoaderDialog(context);
+    await Future.microtask((() async {
       // get reksadana
-      _watchlistAPI.getWatchlist("reksadana").then((resp) async {
+      await _watchlistAPI.getWatchlist("reksadana").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
         if (!mounted) return;
@@ -352,10 +357,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         debugPrint("🔃 Refresh watchlist reksadana");
       }).onError((error, stackTrace) {
         throw Exception("❌ Error when refresh watchlist reksadana");
-      }),
+      });
 
       // get saham
-      _watchlistAPI.getWatchlist("saham").then((resp) async {
+      await _watchlistAPI.getWatchlist("saham").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("saham", resp);
         if (!mounted) return;
@@ -363,10 +368,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         debugPrint("🔃 Refresh watchlist saham");
       }).onError((error, stackTrace) {
         throw Exception("❌ Error when refresh watchlist saham");
-      }),
+      });
 
       // get crypto
-      _watchlistAPI.getWatchlist("crypto").then((resp) async {
+      await _watchlistAPI.getWatchlist("crypto").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("crypto", resp);
         if (!mounted) return;
@@ -374,10 +379,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         debugPrint("🔃 Refresh watchlist crypto");
       }).onError((error, stackTrace) {
         throw Exception("❌ Error when refresh watchlist crypto");
-      }),
+      });
 
       // get gold
-      _watchlistAPI.getWatchlist("gold").then((resp) async {
+      await _watchlistAPI.getWatchlist("gold").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("gold", resp);
         if (!mounted) return;
@@ -385,8 +390,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         debugPrint("🔃 Refresh watchlist gold");
       }).onError((error, stackTrace) {
         throw Exception("❌ Error when refresh watchlist gold");
-      }),
-    ]);
+      });
+    })).whenComplete(() {
+      Navigator.pop(context);
+    });
   }
 
   Future<void> _deleteWatchlist(String type, int watchlistId) async {

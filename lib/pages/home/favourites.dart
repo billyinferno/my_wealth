@@ -200,8 +200,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
     return RefreshIndicator(
       onRefresh: (() async {
         debugPrint("🔃 Refresh favourites ");
-        Future.wait([
-          _getFavourites("reksadana").then((resp) async {
+        showLoaderDialog(context);
+        Future.microtask(() async {
+          await _getFavourites("reksadana").then((resp) async {
             if(resp.isNotEmpty) {
               Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
               await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
@@ -209,8 +210,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
           }).onError((error, stackTrace) {
             debugPrint("⛔ Error when refresh favourites reksadana");
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-          }),
-          _getFavourites("saham").then((resp) async {
+          });
+
+          await _getFavourites("saham").then((resp) async {
             if(resp.isNotEmpty) {
               Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
               await FavouritesSharedPreferences.setFavouritesList("saham", resp);
@@ -218,8 +220,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
           }).onError((error, stackTrace) {
             debugPrint("⛔ Error when refresh favourites saham");
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-          }),
-          _getFavourites("crypto").then((resp) async {
+          });
+          
+          await _getFavourites("crypto").then((resp) async {
             if(resp.isNotEmpty) {
               Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
               await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
@@ -227,8 +230,15 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
           }).onError((error, stackTrace) {
             debugPrint("⛔ Error when refresh favourites crypto");
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-          }),
-        ]);
+          });
+        }).whenComplete(() {
+          Navigator.pop(context);
+        });
+
+        // once finished just rebuild the widget
+        setState(() {
+          // just rebuild
+        });
       }),
       color: accentColor,
       child: ListView.builder(

@@ -64,6 +64,11 @@ class IndexPageState extends State<IndexPage> {
                     // remove the loader
                     Navigator.pop(context);
                   });
+
+                  // once finished just rebuild the widget
+                  setState(() {
+                    // just rebuild
+                  });
                 }),
                 color: accentColor,
                 child: ListView(

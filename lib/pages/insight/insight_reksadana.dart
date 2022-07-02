@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/selectable_button.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +20,7 @@ class InsightReksadanaPage extends StatefulWidget {
 
 class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
   final ScrollController _scrollController = ScrollController();
+  final InsightAPI _insightAPI = InsightAPI();
 
   late Map<String, TopWorseCompanyListModel> _topReksadanaList;
 
@@ -55,13 +59,51 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         _topReksadanaList['pasaruang'] = insightProvider.topReksadanaList!['pasaruang'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
         _topReksadanaList['pendapatantetap'] = insightProvider.topReksadanaList!['pendapatantetap'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
 
-        return SingleChildScrollView(
-          controller: _scrollController,
-          child: RefreshIndicator(
-            onRefresh: (() async {
-              //TODO: to call api and refresh the data
-              debugPrint("Refresh top reksadana");
-            }),
+        return RefreshIndicator(
+          color: accentColor,
+          onRefresh: (() async {
+            await Future.microtask(() async {
+              showLoaderDialog(context);
+              await _insightAPI.getTopReksadana('saham').then((resp) async {
+                debugPrint("🔃 Refresh Reksdana Saham");
+                await InsightSharedPreferences.setTopReksadanaList('saham', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
+              });
+              await _insightAPI.getTopReksadana('campuran').then((resp) async {
+                debugPrint("🔃 Refresh Reksadana Campuran");
+                await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
+              });
+              await _insightAPI.getTopReksadana('pasaruang').then((resp) async {
+                debugPrint("🔃 Refresh Reksadana Pasar Uang");
+                await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
+              });
+              await _insightAPI.getTopReksadana('pendapatantetap').then((resp) async {
+                debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
+                await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
+              });
+            }).onError((error, stackTrace) {
+              debugPrintStack(stackTrace: stackTrace);
+              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when refresh reksadana insight"));
+            }).whenComplete(() {
+              // remove the loader
+              Navigator.pop(context);
+            });
+            
+            // once finished just do rebuild so we can get all the latest data from provide since we didn't
+            // set the provide as listen on above async call
+            setState(() {
+              // just rebuild
+            });
+          }),
+          child: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

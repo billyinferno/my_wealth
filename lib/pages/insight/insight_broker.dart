@@ -77,6 +77,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
             Future.microtask(() async {
               // get the broker summary top list
               await _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
+                debugPrint("🔃 Refresh Broker Summary Top");
                 await BrokerSharedPreferences.setBroketTopList(resp);
                 if (!mounted) return;
                 Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
@@ -87,6 +88,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               });
 
               await _insightAPI.getBrokerTopTransaction().then((resp) async {
+                debugPrint("🔃 Refresh Broker Top Transaction List");
                 await InsightSharedPreferences.setBrokerTopTxn(resp);
                 if (!mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);

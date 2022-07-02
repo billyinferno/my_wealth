@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/model/user_login.dart';
@@ -6,9 +7,11 @@ import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/industry_summary_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/selectable_button.dart';
@@ -23,6 +26,8 @@ class InsightStockPage extends StatefulWidget {
 
 class _InsightStockPageState extends State<InsightStockPage> {
   final ScrollController _scrollController = ScrollController();
+  final InsightAPI _insightAPI = InsightAPI();
+
   late List<SectorSummaryModel> _sectorSummaryList;
   late TopWorseCompanyListModel _topCompanyList;
   late TopWorseCompanyListModel _worseCompanyList;
@@ -57,14 +62,49 @@ class _InsightStockPageState extends State<InsightStockPage> {
         _topCompanyList = insightProvider.topCompanyList!;
         _worseCompanyList = insightProvider.worseCompanyList!;
 
-        return SingleChildScrollView(
-          controller: _scrollController,
-          child: RefreshIndicator(
-            color: accentColor,
-            onRefresh: (() async {
-              //TODO: refresh all the data in this page
-              debugPrint("Refresh");
-            }),
+        return RefreshIndicator(
+          color: accentColor,
+          onRefresh: (() async {
+            showLoaderDialog(context);
+            await Future.microtask(() async {
+              await _insightAPI.getSectorSummary().then((resp) async {
+                debugPrint("🔃 Refresh Sector Summary");
+                await InsightSharedPreferences.setSectorSummaryList(resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
+              });
+              await _insightAPI.getTopWorseCompany('top').then((resp) async {
+                debugPrint("🔃 Refresh Top Company Summary");
+                await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
+              });
+              await _insightAPI.getTopWorseCompany('worse').then((resp) async {
+                debugPrint("🔃 Refresh Worse Company Summary");
+                await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
+              });
+
+              // rebuild again the widget as the provide above is set with listen false
+              setState(() {
+                // just rebuild
+              });
+            }).onError((error, stackTrace) {
+              debugPrintStack(stackTrace: stackTrace);
+              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when refresh stock insight"));
+            }).whenComplete(() {
+              // remove the loader
+              Navigator.pop(context);
+            });
+
+            // rebuild widget once finished
+            setState(() {
+              // just rebuild
+            });
+          }),
+          child: SingleChildScrollView(
+            controller: _scrollController,
             child: Container(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -165,7 +205,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                       children: List<Widget>.generate(_sectorSummaryList.length, (index) {
                         double sectorAverage = 0;
                         IndustrySummaryArgs industryArgs = IndustrySummaryArgs(sectorData: _sectorSummaryList[index]);
-
+        
                         switch (_sectorSummaryPeriod) {
                           case '1d':
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1D;
@@ -201,7 +241,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1D;
                             break;
                         }
-
+        
                         // Color bgColor = (sectorAverage >= 0 ? Colors.green : secondaryColor);
                         Color bgColor = riskColor((1 + sectorAverage), 1, _userInfo!.risk);
                         Color textColor = riskColorReverse((1 + sectorAverage), 1);

@@ -80,6 +80,11 @@ class _BrokerPageState extends State<BrokerPage> {
                     // remove the loader
                     Navigator.pop(context);
                   });
+
+                  // once finished just rebuild the widget
+                  setState(() {
+                    // just rebuild
+                  });
                 }),
                 color: accentColor,
                 child: ListView(

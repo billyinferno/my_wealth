@@ -514,6 +514,12 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
         debugPrint('🔟 Get Top Reksadana Pendapatan Tetap Summary List');
       }),
+      _insightAPI.getBandarInteresting().then((resp) async {
+        await InsightSharedPreferences.setBandarInterestingList(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setBandarInterestingList(resp);
+        debugPrint('🔟 Get Bandar Interesting List');
+      }),
     ]).then((_) {
       debugPrint("💯 Finished get additional information");
     });

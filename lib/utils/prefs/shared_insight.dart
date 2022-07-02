@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
+import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
@@ -9,6 +10,7 @@ class InsightSharedPreferences {
   static const _topWorseCompanyListKey = "insight_company_list_";
   static const _topReksadanaListKey = "insight_reksadana_list_";
   static const _brokerTopTransactionKey = "insight_broker_top_txn";
+  static const _bandarInterestingKey = "insight_bandar_interesting";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -176,6 +178,42 @@ class InsightSharedPreferences {
           theYTD: [],
           theMTD: [])
         );
+    }
+  }
+
+  static Future<void> setBandarInterestingList(InsightBandarInterestModel bandarInterest) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    String bandarInterestString = jsonEncode(bandarInterest.toJson());
+    LocalBox.putString(_bandarInterestingKey, bandarInterestString);
+  }
+
+  static InsightBandarInterestModel getBandarInterestingList() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String bandarInterestString = (LocalBox.getString(_bandarInterestingKey) ?? '');
+
+    // check if the list is empty or not?
+    if (bandarInterestString.isNotEmpty) {
+      // string is not empty parse it
+      InsightBandarInterestModel bandarInterest = InsightBandarInterestModel.fromJson(jsonDecode(bandarInterestString));
+      // return the top worse
+      return bandarInterest;
+    }
+    else {
+      // no data
+      return InsightBandarInterestModel(
+        atl: [],
+        nonAtl: [],
+      );
     }
   }
 }

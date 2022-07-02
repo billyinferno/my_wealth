@@ -28,7 +28,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
   
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _summaryController = ScrollController();
+  final ScrollController _priceController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
 
@@ -146,7 +147,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   @override
   void dispose() {
     super.dispose();
-    _scrollController.dispose();
+    _summaryController.dispose();
+    _priceController.dispose();
     _graphScrollController.dispose();
     _calendarScrollController.dispose();
   }
@@ -405,6 +407,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
         child: Container(
           padding: const EdgeInsets.all(10),
           child: SingleChildScrollView(
+            controller: _summaryController,
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -590,7 +593,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
     table.add(Expanded(
       child: ListView(
-        controller: _scrollController,
+        controller: _priceController,
         physics: const AlwaysScrollableScrollPhysics(),
         children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
           double? dayDiff;

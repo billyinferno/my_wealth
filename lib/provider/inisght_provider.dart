@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
+import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 
@@ -9,6 +10,7 @@ class InsightProvider extends ChangeNotifier {
   TopWorseCompanyListModel? worseCompanyList;
   Map<String, TopWorseCompanyListModel>? topReksadanaList;
   BrokerTopTransactionModel? brokerTopTransactionList;
+  InsightBandarInterestModel? bandarInterestList;
 
   setSectorSummaryList(List<SectorSummaryModel> list) {
     sectorSummaryList = list;
@@ -36,6 +38,11 @@ class InsightProvider extends ChangeNotifier {
 
     // check if the key already there or not?
     topReksadanaList![type] = data;
+    notifyListeners();
+  }
+
+  setBandarInterestingList(InsightBandarInterestModel data) {
+    bandarInterestList = data;
     notifyListeners();
   }
 }

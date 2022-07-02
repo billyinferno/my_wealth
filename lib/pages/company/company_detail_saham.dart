@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/info_fundamental_api.dart';
 import 'package:my_wealth/api/price_api.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
+import 'package:my_wealth/model/info_fundamentals_model.dart';
 import 'package:my_wealth/model/price_model.dart';
 import 'package:my_wealth/model/price_saham_ma_model.dart';
 import 'package:my_wealth/model/user_login.dart';
@@ -32,11 +34,14 @@ class CompanyDetailSahamPage extends StatefulWidget {
   State<CompanyDetailSahamPage> createState() => _CompanyDetailSahamPageState();
 }
 
-class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
-  final ScrollController _scrollController = ScrollController();
+class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with SingleTickerProviderStateMixin {
+  final ScrollController _infoController = ScrollController();
+  final ScrollController _brokerController = ScrollController();
+  final ScrollController _priceController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
   final ScrollController _chipController = ScrollController();
+  late TabController _tabController;
 
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
@@ -45,11 +50,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   late BrokerSummaryBuySellModel _brokerSummaryBuySell;
   late BrokerSummaryDateModel _brokerSummaryDate;
   late PriceSahamMovingAverageModel _priceMA;
+  late List<InfoFundamentalsModel> _infoFundamental;
   late String _brokerSummarySelected;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final PriceAPI _priceAPI = PriceAPI();
+  final InfoFundamentalAPI _infoFundamentalAPI = InfoFundamentalAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
 
   late DateTime _brokerSummaryDateFrom;
@@ -61,6 +68,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   
   int _numPrice = 0;
   int _bodyPage = 0;
+  int _quarterSelection = 5;
+  String _quarterSelectionText = "Every Quarter";
 
   double? _minPrice;
   double? _maxPrice;
@@ -69,6 +78,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   @override
   void initState() {
     super.initState();
+
+    // initialize the tab controller for summary page
+    _tabController = TabController(length: 2, vsync: this);
 
     // set that this is still loading
     _isLoading = true;
@@ -85,6 +97,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     Future.microtask(() async {
       // show the loader dialog
       showLoaderDialog(context);
+
+      // get the min and max broker summary date
+      await _brokerSummaryAPI.getBrokerSummaryCodeDate(_companyData.companyCode).then((resp) {
+        _brokerSummaryDate = resp;
+      });
 
       // get all the information needed
       await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
@@ -105,12 +122,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
         _brokerSummarySelected = "a";
       });
 
-      await _brokerSummaryAPI.getBrokerSummaryCodeDate(_companyData.companyCode).then((resp) {
-        _brokerSummaryDate = resp;
-      });
 
       await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
         _priceMA = resp;
+      });
+
+      await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
+        _infoFundamental = resp;
       });
     }).onError((error, stackTrace) {
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
@@ -126,10 +144,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
   @override
   void dispose() {
     super.dispose();
-    _scrollController.dispose();
+    _priceController.dispose();
     _calendarScrollController.dispose();
     _graphScrollController.dispose();
     _chipController.dispose();
+    _infoController.dispose();
+    _brokerController.dispose();
   }
   
   @override
@@ -431,7 +451,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
                 ],
               ),
               const SizedBox(height: 5,),
-              ..._detail(),
+              Expanded(child: _detail()),
             ],
           ),
         ),
@@ -439,7 +459,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     }
   }
 
-  List<Widget> _detail() {
+  Widget _detail() {
     switch(_bodyPage) {
       case 0:
         return _showSummary();
@@ -456,535 +476,991 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     }
   }
 
-  List<Widget> _showSummary() {
-    List<Widget> table = [];
-    table.add(
-      Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Prev Close",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyPrevClosingPrice),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Adj Close",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyAdjustedClosingPrice),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Adj Open",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyAdjustedOpenPrice),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Adj High",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyAdjustedHighPrice),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Adj Low",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyAdjustedLowPrice),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Cptlztion",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_companyDetail.companyMarketCap),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "One Day",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "One Week",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "One Month",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Three Month",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Six Month",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "One Year",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Three Years",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Five Years",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Ten Years",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "MTD",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyMtd, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "YTD",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    const Expanded(child: SizedBox(),),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "PER",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatDecimalWithNull(_companyDetail.companyPer, 1, 4),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "PER Annual",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatDecimalWithNull(_companyDetail.companyPerAnnualized, 1, 4),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Beta 1Y",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatDecimalWithNull(_companyDetail.companyBetaOneYear, 1, 4),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "PBR",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "PSR Annual",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "PCFR Annual",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "MA5",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa5),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "MA8",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa8),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "MA13",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa13),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "MA20",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa20),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "MA30",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa30),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "MA50",
-                      headerAlign: TextAlign.right,
-                      child: Text(
-                        formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa50),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+  Widget _showSummary() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        TabBar(
+          controller: _tabController,
+          tabs: const <Widget>[
+            Tab(text: 'SUMMARY',),
+            Tab(text: 'FUNDAMENTAL',),
+          ],
+        ),
+        const SizedBox(height: 10,),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: <Widget>[
+              _tabSummaryInfo(),
+              _tabFundamentalInfo(),
+            ],
           ),
-        )
-      )
+        ),
+      ],
     );
-
-    return table;
   }
 
-  List<Widget> _showBroker() {
-    List<Widget> table = [];
+  Widget _tabFundamentalInfo() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Center(
+            child: InkWell(
+              onTap: (() async {
+                int? quarter;
+                await showCupertinoModalPopup<void>(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoActionSheet(
+                    title: const Text(
+                      "Select Period",
+                      style: TextStyle(
+                        fontFamily: '--apple-system',
+                      ),
+                    ),
+                    actions: <CupertinoActionSheetAction>[
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          quarter = 5;
+                          Navigator.pop(context);
+                        }),
+                        child: const Text(
+                          "Every Quarter",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          quarter = 1;
+                          Navigator.pop(context);
+                        }),
+                        child: const Text(
+                          "3 Month",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          quarter = 2;
+                          Navigator.pop(context);
+                        }),
+                        child: const Text(
+                          "6 Month",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          quarter = 3;
+                          Navigator.pop(context);
+                        }),
+                        child: const Text(
+                          "9 Month",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          quarter = 4;
+                          Navigator.pop(context);
+                        }),
+                        child: const Text(
+                          "12 Month",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
 
-    table.add(Expanded(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
+                // check if quarter is null or not?
+                if (quarter  != null) {
+                  // set the quarter selection
+                  _quarterSelection = quarter!;
+                  // set the quarter selection text
+                  switch(_quarterSelection) {
+                    case 1:
+                      _quarterSelectionText = "3 Month";
+                      break;
+                    case 2:
+                      _quarterSelectionText = "6 Month";
+                      break;
+                    case 3:
+                      _quarterSelectionText = "9 Month";
+                      break;
+                    case 4:
+                      _quarterSelectionText = "12 Month";
+                      break;
+                    case 5:
+                      _quarterSelectionText = "Every Quarter";
+                      break;
+                    default:
+                      _quarterSelectionText = "Every Quarter";
+                      break;
+                  }
+
+                  // get the new data from api
+                  await _getFundamental();
+                }
+              }),
+              child: Text(
+                _quarterSelectionText,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: secondaryColor,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              InkWell(
-                onTap: (() async {
-                  DateTimeRange? result = await showDateRangePicker(
-                    context: context,
-                    firstDate: _brokerSummaryDate.brokerMinDate,
-                    lastDate: _brokerSummaryDate.brokerMaxDate,
-                    initialDateRange: DateTimeRange(start: _brokerSummaryDateFrom.toLocal(), end: _brokerSummaryDateTo.toLocal()),
-                    confirmText: 'Done',
-                    currentDate: _companyDetail.companyLastUpdate,
-                  );
-
-                  // check if we got the result or not?
-                  if (result != null) {
-                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                    if ((result.start.compareTo(_brokerSummaryDateFrom) != 0) || (result.end.compareTo(_brokerSummaryDateTo) != 0)) {                      
-                      // set the broker from and to date
-                      _brokerSummaryDateFrom = result.start;
-                      _brokerSummaryDateTo = result.end;
-
-                      // get the broker summary
-                      await _getBrokerSummary();
-                    }
-                  }
-                }),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      _df.format(_brokerSummary.brokerSummaryFromDate.toLocal()),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: secondaryLight,
-                      ),
-                    ),
-                    const Text(
-                      " - ",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: secondaryLight,
-                      ),
-                    ),
-                    Text(
-                      _df.format(_brokerSummary.brokerSummaryToDate.toLocal()),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: secondaryLight,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    const Icon(
-                      Ionicons.calendar_outline,
-                      size: 15,
-                      color: secondaryLight,
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10,),
               SizedBox(
-                width: double.infinity,
-                child: CupertinoSegmentedControl(
-                  children: const {
-                    "a": Text("All"),
-                    "d": Text("Domestic"),
-                    "f": Text("Foreign"),
-                  },
-                  onValueChanged: ((value) {
-                    String selectedValue = value.toString();
-          
-                    setState(() {
-                      if(selectedValue == "a") {
-                        _brokerSummaryBuySell = _brokerSummary.brokerSummaryAll;
-                        _brokerSummarySelected = "a";
-                      }
-                      else if(selectedValue == "d") {
-                        _brokerSummaryBuySell = _brokerSummary.brokerSummaryDomestic;
-                        _brokerSummarySelected = "d";
-                      }
-                      else if(selectedValue == "f") {
-                        _brokerSummaryBuySell = _brokerSummary.brokerSummaryForeign;
-                        _brokerSummarySelected = "f";
-                      }
-                    });
-                  }),
-                  groupValue: _brokerSummarySelected,
-                  selectedColor: secondaryColor,
-                  borderColor: secondaryDark,
-                  pressedColor: primaryDark,
-                ),
-              ),
-              const SizedBox(height: 10,),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: primaryLight,
-                    style: BorderStyle.solid,
-                    width: 1.0
-                  ),
-                  color: primaryDark
-                ),
-                child: Row(
+                width: 125,
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            child: _tableRow(brokerCode: "BY", lot: "B.lot", value: "B.val", average: "B.avg", isBold: true, backgroundColor: secondaryDark)
-                          ),
-                          ...List<Widget>.generate(10, (index) {
-                            if (_brokerSummaryBuySell.brokerSummaryBuy.length > index) {
-                              return _tableRow(
-                                brokerCode: _brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryID!,
-                                lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryLot, true, false),
-                                value: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, false),
-                                average: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryAverage, false, false),
-                              );
-                            }
-                            else {
-                              return _tableRow(
-                                brokerCode: "-",
-                                lot: "-",
-                                value: "-",
-                                average: "-"
-                              );
-                            }
-                          },),
-                        ],
-                      ),
+                    _text(
+                      text: "Period",
+                      fontWeight: FontWeight.bold,
+                      color: secondaryColor,
                     ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            child: _tableRow(brokerCode: "SY", lot: "S.lot", value: "S.val", average: "S.avg", isBold: true, backgroundColor: Colors.green[900])
-                          ),
-                          ...List<Widget>.generate(10, (index) {
-                            if (_brokerSummaryBuySell.brokerSummarySell.length > index) {
-                              return _tableRow(
-                                brokerCode: _brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryID!,
-                                lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryLot, true, false),
-                                value: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, false),
-                                average: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryAverage, false, false),
-                              );
-                            }
-                            else {
-                              return _tableRow(
-                                brokerCode: "-",
-                                lot: "-",
-                                value: "-",
-                                average: "-"
-                              );
-                            }
-                          },),
-                        ],
-                      ),
+                    _text(
+                      text: "Last Price",
+                    ),
+                    _text(
+                      text: "Share Out",
+                    ),
+                    _text(
+                      text: "Market Cap",
+                    ),
+                    _text(
+                      text: "BALANCE SHEET",
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
+                    ),
+                    _text(
+                      text: "Cash",
+                    ),
+                    _text(
+                      text: "Total Asset",
+                    ),
+                    _text(
+                      text: "S.T.Borrowing",
+                    ),
+                    _text(
+                      text: "L.T.Borrowing",
+                    ),
+                    _text(
+                      text: "Total Equity",
+                    ),
+                    _text(
+                      text: "INCOME STATEMENT",
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
+                    ),
+                    _text(
+                      text: "Revenue",
+                    ),
+                    _text(
+                      text: "Gross Profit",
+                    ),
+                    _text(
+                      text: "Operating Profit",
+                    ),
+                    _text(
+                      text: "Net.Profit",
+                    ),
+                    _text(
+                      text: "EBITDA",
+                    ),
+                    _text(
+                      text: "Interest Expense",
+                    ),
+                    _text(
+                      text: "RATIO",
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
+                    ),
+                    _text(
+                      text: "Deviden",
+                    ),
+                    _text(
+                      text: "EPS",
+                    ),
+                    _text(
+                      text: "PER",
+                    ),
+                    _text(
+                      text: "BVPS",
+                    ),
+                    _text(
+                      text: "PBV",
+                    ),
+                    _text(
+                      text: "ROA",
+                    ),
+                    _text(
+                      text: "ROE",
+                    ),
+                    _text(
+                      text: "EV/EBITDA",
+                    ),
+                    _text(
+                      text: "Debt/Equity",
+                    ),
+                    _text(
+                      text: "Debt/TotalCap",
+                    ),
+                    _text(
+                      text: "Debt/EBITDA",
+                    ),
+                    _text(
+                      text: "EBITDA/IntExps",
                     ),
                   ],
+                )
+              ),
+              const SizedBox(width: 10,),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List<Widget>.generate(_infoFundamental.length, (index) {
+                      return SizedBox(
+                        width: 85,
+                        child: _fundamentalItem(fundamental: _infoFundamental[index])
+                      );
+                    }),
+                  ),
                 ),
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _fundamentalItem({required InfoFundamentalsModel fundamental}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        _text(
+          text: "${fundamental.period}M ${fundamental.year}",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+          color: secondaryLight
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.lastPrice, false, false),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.shareOut, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.marketCap, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: "",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.cash, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.totalAsset, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.stBorrowing, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.ltBorrowing, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.totalEquity, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: "",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.revenue, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.grossProfit, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.operatingProfit, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.netProfit, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.ebitda, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.interestExpense, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: "",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.deviden),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.eps),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.per)} x',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.bvps),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.pbv)} x',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.roa)} %',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.roe)} %',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.evEbitda),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.debtEquity),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.debtTotalcap),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.debtEbitda),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.ebitdaInterestexpense),
+          bgColor: primaryDark,
+        ),
+      ],
+    );
+  }
+
+  Widget _tabSummaryInfo() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        controller: _infoController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "Prev Close",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatCurrencyWithNull(_companyDetail.companyPrevClosingPrice),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Adj Close",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatCurrencyWithNull(_companyDetail.companyAdjustedClosingPrice),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Adj Open",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatCurrencyWithNull(_companyDetail.companyAdjustedOpenPrice),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "Adj High",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatCurrencyWithNull(_companyDetail.companyAdjustedHighPrice),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Adj Low",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatCurrencyWithNull(_companyDetail.companyAdjustedLowPrice),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Cptlztion",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_companyDetail.companyMarketCap),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "One Day",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "One Week",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "One Month",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "Three Month",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Six Month",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "One Year",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "Three Years",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Five Years",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Ten Years",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "MTD",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyMtd, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "YTD",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                const Expanded(child: SizedBox(),),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "PER",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatDecimalWithNull(_companyDetail.companyPer, 1, 4),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "PER Annual",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatDecimalWithNull(_companyDetail.companyPerAnnualized, 1, 4),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Beta 1Y",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatDecimalWithNull(_companyDetail.companyBetaOneYear, 1, 4),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "PBR",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "PSR Annual",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "PCFR Annual",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "MA5",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa5),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "MA8",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa8),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "MA13",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa13),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "MA20",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa20),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "MA30",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa30),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "MA50",
+                  headerAlign: TextAlign.right,
+                  child: Text(
+                    formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa50),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-    ));
+    );
+  }
 
-    return table;
+  Widget _text({required String text, FontWeight? fontWeight, double? fontSize, Color? color, Color? bgColor}) {
+    FontWeight? fontWeightUsed = (fontWeight ?? FontWeight.normal);
+    double? fontSizeUsed = (fontSize ?? 10);
+    Color? colorUsed = (color ?? textPrimary);
+    Color? bgColorUsed = (bgColor ?? Colors.transparent);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Container(
+            color: bgColorUsed,
+            child: Text(
+              text,
+              style: TextStyle(
+                fontWeight: fontWeightUsed,
+                fontSize: fontSizeUsed,
+                color: colorUsed,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _showBroker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+            child: SingleChildScrollView(
+              controller: _brokerController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  InkWell(
+                    onTap: (() async {
+                      // check for the max date to avoid any assertion that the initial date range
+                      // is more than the lastDate
+                      DateTime maxDate = _brokerSummaryDate.brokerMaxDate.toLocal();
+                      if (maxDate.isBefore(_brokerSummaryDateTo.toLocal())) {
+                        maxDate = _brokerSummaryDateTo;
+                      }
+
+                      DateTimeRange? result = await showDateRangePicker(
+                        context: context,
+                        firstDate: _brokerSummaryDate.brokerMinDate.toLocal(),
+                        lastDate: maxDate.toLocal(),
+                        initialDateRange: DateTimeRange(start: _brokerSummaryDateFrom.toLocal(), end: _brokerSummaryDateTo.toLocal()),
+                        confirmText: 'Done',
+                        currentDate: _companyDetail.companyLastUpdate,
+                      );
+
+                      // check if we got the result or not?
+                      if (result != null) {
+                        // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                        if ((result.start.compareTo(_brokerSummaryDateFrom) != 0) || (result.end.compareTo(_brokerSummaryDateTo) != 0)) {                      
+                          // set the broker from and to date
+                          _brokerSummaryDateFrom = result.start;
+                          _brokerSummaryDateTo = result.end;
+
+                          // get the broker summary
+                          await _getBrokerSummary();
+                        }
+                      }
+                    }),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          _df.format(_brokerSummary.brokerSummaryFromDate.toLocal()),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        const Text(
+                          " - ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        Text(
+                          _df.format(_brokerSummary.brokerSummaryToDate.toLocal()),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        const Icon(
+                          Ionicons.calendar_outline,
+                          size: 15,
+                          color: secondaryLight,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  SizedBox(
+                    width: double.infinity,
+                    child: CupertinoSegmentedControl(
+                      children: const {
+                        "a": Text("All"),
+                        "d": Text("Domestic"),
+                        "f": Text("Foreign"),
+                      },
+                      onValueChanged: ((value) {
+                        String selectedValue = value.toString();
+              
+                        setState(() {
+                          if(selectedValue == "a") {
+                            _brokerSummaryBuySell = _brokerSummary.brokerSummaryAll;
+                            _brokerSummarySelected = "a";
+                          }
+                          else if(selectedValue == "d") {
+                            _brokerSummaryBuySell = _brokerSummary.brokerSummaryDomestic;
+                            _brokerSummarySelected = "d";
+                          }
+                          else if(selectedValue == "f") {
+                            _brokerSummaryBuySell = _brokerSummary.brokerSummaryForeign;
+                            _brokerSummarySelected = "f";
+                          }
+                        });
+                      }),
+                      groupValue: _brokerSummarySelected,
+                      selectedColor: secondaryColor,
+                      borderColor: secondaryDark,
+                      pressedColor: primaryDark,
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: primaryLight,
+                        style: BorderStyle.solid,
+                        width: 1.0
+                      ),
+                      color: primaryDark
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                child: _tableRow(brokerCode: "BY", lot: "B.lot", value: "B.val", average: "B.avg", isBold: true, backgroundColor: secondaryDark)
+                              ),
+                              ...List<Widget>.generate(10, (index) {
+                                if (_brokerSummaryBuySell.brokerSummaryBuy.length > index) {
+                                  return _tableRow(
+                                    brokerCode: _brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryID!,
+                                    lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryLot, true, false),
+                                    value: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, false),
+                                    average: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryAverage, false, false),
+                                  );
+                                }
+                                else {
+                                  return _tableRow(
+                                    brokerCode: "-",
+                                    lot: "-",
+                                    value: "-",
+                                    average: "-"
+                                  );
+                                }
+                              },),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                child: _tableRow(brokerCode: "SY", lot: "S.lot", value: "S.val", average: "S.avg", isBold: true, backgroundColor: Colors.green[900])
+                              ),
+                              ...List<Widget>.generate(10, (index) {
+                                if (_brokerSummaryBuySell.brokerSummarySell.length > index) {
+                                  return _tableRow(
+                                    brokerCode: _brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryID!,
+                                    lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryLot, true, false),
+                                    value: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, false),
+                                    average: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryAverage, false, false),
+                                  );
+                                }
+                                else {
+                                  return _tableRow(
+                                    brokerCode: "-",
+                                    lot: "-",
+                                    value: "-",
+                                    average: "-"
+                                  );
+                                }
+                              },),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _tableRow({required String brokerCode, required String lot, required String value, required String average, Color? textColor, bool? isBold, Color? backgroundColor, double? fontSize}) {
@@ -1058,216 +1534,221 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
     );
   }
 
-  List<Widget> _showTable() {
-    List<Widget> table = [];
-
-    table.add(Row(
+  Widget _showTable() {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Container(
-            color: primaryColor,
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Price",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.swap_vertical,
-                        size: 16,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(width: 10,),
+            Expanded(
+              child: Container(
+                color: primaryColor,
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Price",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
                       )
                     ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.pulse_outline,
-                        size: 16,
-                      ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.swap_vertical,
+                            size: 16,
+                          ),
+                        ),
+                      )
                     ),
-                  )
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.pulse_outline,
+                            size: 16,
+                          ),
+                        ),
+                      )
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
+        Expanded(
+          child: ListView(
+            controller: _priceController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
+              double? dayDiff;
+              Color dayDiffColor = Colors.transparent;
+              if((index+1) < _companyDetail.companyPrices.length) {
+                double currPrice = _companyDetail.companyPrices[index].priceValue;
+                double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+                dayDiff = currPrice - prevPrice;
+                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+              }
+              return CompanyDetailPriceList(
+                date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
+                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
+                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
+                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                dayDiffColor: dayDiffColor,
+              );
+            }),
+          ),
+        )
       ],
-    ));
-
-    table.add(Expanded(
-      child: ListView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-          double? dayDiff;
-          Color dayDiffColor = Colors.transparent;
-          if((index+1) < _companyDetail.companyPrices.length) {
-            double currPrice = _companyDetail.companyPrices[index].priceValue;
-            double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-            dayDiff = currPrice - prevPrice;
-            dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-          }
-          return CompanyDetailPriceList(
-            date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-            price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-            riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-            dayDiffColor: dayDiffColor,
-          );
-        }),
-      ),
-    ));
-
-    return table;
+    );
   }
 
-  List<Widget> _showCalendar() {
-    List<Widget> calendar = [];
-
-    calendar.add(Expanded(
-      child: SingleChildScrollView(
-        controller: _calendarScrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: primaryLight,
-              width: 1.0,
-              style: BorderStyle.solid,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 5,),
-              Row(
+  Widget _showCalendar() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _calendarScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Current Price Comparison"),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showCurrentPriceComparison,
-                    onChanged: ((val) {
-                      setState(() {
-                        _showCurrentPriceComparison = val;
-                      });
-                    })
-                  )
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text("Current Price Comparison"),
+                      const SizedBox(width: 10,),
+                      CupertinoSwitch(
+                        value: _showCurrentPriceComparison,
+                        onChanged: ((val) {
+                          setState(() {
+                            _showCurrentPriceComparison = val;
+                          });
+                        })
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  HeatGraph(
+                    data: _graphData!,
+                    userInfo: _userInfo!,
+                    currentPrice: _companyDetail.companyNetAssetValue!,
+                    enableDailyComparison: _showCurrentPriceComparison,
+                  ),
                 ],
               ),
-              const SizedBox(height: 5,),
-              HeatGraph(
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _showGraph() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SingleChildScrollView(
+          controller: _graphScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              LineChart(
                 data: _graphData!,
-                userInfo: _userInfo!,
-                currentPrice: _companyDetail.companyNetAssetValue!,
-                enableDailyComparison: _showCurrentPriceComparison,
+                height: 250,
               ),
             ],
           ),
-        ),
-      ),
-    ));
-
-    return calendar;
-  }
-
-  List<Widget> _showGraph() {
-    List<Widget> graph = [];
-
-    graph.add(SingleChildScrollView(
-      controller: _graphScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          LineChart(
-            data: _graphData!,
-            height: 250,
-          ),
-        ],
-      ),
-    ));
-
-    return graph;
+        )
+      ],
+    );
   }
 
   void _setIsLoading(bool val) {
@@ -1384,6 +1865,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> {
       // show error
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
+    });
+  }
+
+  Future<void> _getFundamental() async {
+    List<InfoFundamentalsModel> result = [];
+    // show loader dialog
+    showLoaderDialog(context);
+
+    // get the fundamental data
+    await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
+      Navigator.pop(context);
+      result = resp;
+    }).onError((error, stackTrace) {
+      Navigator.pop(context);
+      debugPrintStack(stackTrace: stackTrace);
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when fetching fundamental data"));
+    });
+
+    // set the current info fundamental with the result we got
+    setState(() {
+      _infoFundamental = result;
     });
   }
 }

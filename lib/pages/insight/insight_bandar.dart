@@ -199,7 +199,7 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
           const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
-              controller: _scrollControllerATL,
+              controller: _scrollControllerNonATL,
               itemCount: _bandarInterest.nonAtl.length,
               itemBuilder: ((context, index) {
                 return _item(data: _bandarInterest.nonAtl[index]);            

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
@@ -21,6 +22,7 @@ class InsightReksadanaPage extends StatefulWidget {
 class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
   final ScrollController _scrollController = ScrollController();
   final InsightAPI _insightAPI = InsightAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
 
   late Map<String, TopWorseCompanyListModel> _topReksadanaList;
 
@@ -425,18 +427,32 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: List.generate(info.length, (index) {
-        CompanyDetailArgs args = CompanyDetailArgs(
-          companyId: info[index].companySahamId,
-          companyCode: info[index].code,
-          companyName: info[index].name,
-          companyFavourite: false,
-          favouritesId: -1,
-          type: 'reksadana'
-        );
 
         return InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
+          onTap: () async {
+            showLoaderDialog(context);
+            await _companyAPI.getCompanyByID(info[index].companySahamId, 'reksadana').then((resp) {
+              CompanyDetailArgs args = CompanyDetailArgs(
+                companyId: info[index].companySahamId,
+                companyName: resp.companyName,
+                companyCode: (resp.companySymbol ?? ''),
+                companyFavourite: (resp.companyFavourites ?? false),
+                favouritesId: (resp.companyFavouritesId ?? -1),
+                type: "reksadana",
+              );
+              
+              // remove the loader dialog
+              Navigator.pop(context);
+
+              // go to the company page
+              Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
+            }).onError((error, stackTrace) {
+              // remove the loader dialog
+              Navigator.pop(context);
+
+              // show the error message
+              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+            });
           },
           child: Container(
             padding: const EdgeInsets.all(10),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
@@ -27,6 +28,7 @@ class InsightStockPage extends StatefulWidget {
 class _InsightStockPageState extends State<InsightStockPage> {
   final ScrollController _scrollController = ScrollController();
   final InsightAPI _insightAPI = InsightAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
 
   late List<SectorSummaryModel> _sectorSummaryList;
   late TopWorseCompanyListModel _topCompanyList;
@@ -571,18 +573,31 @@ class _InsightStockPageState extends State<InsightStockPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: List.generate(info.length, (index) {
-        CompanyDetailArgs args = CompanyDetailArgs(
-          companyId: info[index].companySahamId,
-          companyCode: info[index].code,
-          companyName: info[index].name,
-          companyFavourite: false,
-          favouritesId: -1,
-          type: 'saham'
-        );
-
         return InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+          onTap: () async {
+            showLoaderDialog(context);
+            await _companyAPI.getCompanyByCode(info[index].code, 'saham').then((resp) {
+              CompanyDetailArgs args = CompanyDetailArgs(
+                companyId: resp.companyId,
+                companyName: resp.companyName,
+                companyCode: info[index].code,
+                companyFavourite: (resp.companyFavourites ?? false),
+                favouritesId: (resp.companyFavouritesId ?? -1),
+                type: "saham",
+              );
+              
+              // remove the loader dialog
+              Navigator.pop(context);
+
+              // go to the company page
+              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+            }).onError((error, stackTrace) {
+              // remove the loader dialog
+              Navigator.pop(context);
+
+              // show the error message
+              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+            });
           },
           child: Container(
             padding: const EdgeInsets.all(10),

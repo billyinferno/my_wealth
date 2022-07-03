@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +21,7 @@ class InsightBandarPage extends StatefulWidget {
 }
 
 class _InsightBandarPageState extends State<InsightBandarPage> {
+  final CompanyAPI _companyAPI = CompanyAPI();
   final ScrollController _scrollControllerATL = ScrollController();
   final ScrollController _scrollControllerNonATL = ScrollController();
 
@@ -213,18 +217,30 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
 
   Widget _item({required BandarInterestAttributes data}) {
     return InkWell(
-      onTap: (() {
-        // create the company args
-        CompanyDetailArgs args = CompanyDetailArgs(
-          companyId: data.companyId,
-          companyName: data.name,
-          companyCode: data.code,
-          companyFavourite: false,
-          favouritesId: -1,
-          type: 'saham'
-        );
+      onTap: (() async {
+        showLoaderDialog(context);
+        await _companyAPI.getCompanyByCode(data.code, 'saham').then((resp) {
+          CompanyDetailArgs args = CompanyDetailArgs(
+            companyId: resp.companyId,
+            companyName: resp.companyName,
+            companyCode: data.code,
+            companyFavourite: (resp.companyFavourites ?? false),
+            favouritesId: (resp.companyFavouritesId ?? -1),
+            type: "saham",
+          );
+          
+          // remove the loader dialog
+          Navigator.pop(context);
 
-        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+          // go to the company page
+          Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+        }).onError((error, stackTrace) {
+          // remove the loader dialog
+          Navigator.pop(context);
+
+          // show the error message
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+        });
       }),
       child: Container(
         decoration: const BoxDecoration(

@@ -377,8 +377,8 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
             companyId: resp.companyId,
             companyName: resp.companyName,
             companyCode: code,
-            companyFavourite: false,
-            favouritesId: -1,
+            companyFavourite: (resp.companyFavourites ?? false),
+            favouritesId: (resp.companyFavouritesId ?? -1),
             type: "saham",
           );
           

@@ -6,6 +6,7 @@ import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/insight_stock_sub_list_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -95,18 +96,32 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                 double currentPrice = (_companyList[index].companyNetAssetValue ?? 0);
                 double prevPrice = (_companyList[index].companyPrevPrice ?? 0);
                 Color color = riskColor(currentPrice, prevPrice, _userInfo!.risk);
-                CompanyDetailArgs args = CompanyDetailArgs(
-                  companyId: _companyList[index].companyId,
-                  companyName: _companyList[index].companyName,
-                  companyCode: _companyList[index].companySymbol!,
-                  companyFavourite: false,
-                  favouritesId: -1,
-                  type: 'saham'
-                );
                 
                 return InkWell(
-                  onTap: (() {
-                    Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                  onTap: (() async {
+                    showLoaderDialog(context);
+                    await _companyAPI.getCompanyByCode(_companyList[index].companySymbol!, 'saham').then((resp) {
+                      CompanyDetailArgs args = CompanyDetailArgs(
+                        companyId: resp.companyId,
+                        companyName: resp.companyName,
+                        companyCode: _companyList[index].companySymbol!,
+                        companyFavourite: (resp.companyFavourites ?? false),
+                        favouritesId: (resp.companyFavouritesId ?? -1),
+                        type: "saham",
+                      );
+                      
+                      // remove the loader dialog
+                      Navigator.pop(context);
+
+                      // go to the company page
+                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                    }).onError((error, stackTrace) {
+                      // remove the loader dialog
+                      Navigator.pop(context);
+
+                      // show the error message
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                    });
                   }),
                   child: Container(
                     color: color,

@@ -71,6 +71,8 @@ class CompanyDetailModel {
         this.companyAllTimeLowChangePercentage,
         this.companyAllTimeLowDate,
         required this.companyPrices,
+        this.companyFavourites,
+        this.companyFavouritesId,
     });
 
     final int companyId;
@@ -131,6 +133,8 @@ class CompanyDetailModel {
     final double? companyAllTimeLowChangePercentage;
     final DateTime? companyAllTimeLowDate;
     final List<PriceModel> companyPrices;
+    final bool? companyFavourites;
+    final int? companyFavouritesId;
 
     factory CompanyDetailModel.fromJson(Map<String, dynamic> json) {
       return CompanyDetailModel(
@@ -192,6 +196,8 @@ class CompanyDetailModel {
         companyAllTimeLowChangePercentage: (json["company_all_time_low_change_percentage"] == null ? null : json["company_all_time_low_change_percentage"].toDouble()),
         companyAllTimeLowDate: (json["company_all_time_low_date"] == null ? null : DateTime.parse(json["company_all_time_low_date"])),
         companyPrices: List<PriceModel>.from(json["company_prices"].map((x) => PriceModel.fromJson(x))),
+        companyFavourites: (json["company_favourites"] ?? false),
+        companyFavouritesId: (json["company_favourites_id"] ?? -1),
       );
     }
 
@@ -254,5 +260,7 @@ class CompanyDetailModel {
         "company_all_time_low_change_percentage": companyAllTimeLowChangePercentage,
         "company_all_time_low_date": (companyAllTimeLowDate == null ? null : companyAllTimeLowDate!.toIso8601String()),
         "company_prices": List<dynamic>.from(companyPrices.map((x) => x.toJson())),
+        "company_favourites": companyFavourites,
+        "company_favourites_id": companyFavouritesId,
     };
 }

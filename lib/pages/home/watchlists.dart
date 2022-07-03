@@ -274,7 +274,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         onPressed: ((BuildContext context) {
                           if(data[idx].watchlistDetail.isNotEmpty) {
                             // only do when the list is not empty, otherwise there are nothing that need to be edited
-                            Navigator.pushNamed(context, '/watchlist/detail/create', arguments: watchlistArgs);
+                            Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: watchlistArgs);
                           }
                         }),
                         icon: Ionicons.add,

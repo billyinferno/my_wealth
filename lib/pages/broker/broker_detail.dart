@@ -79,7 +79,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
           return false;
         });
       });
-
     }).whenComplete(() {
       Navigator.pop(context);
       // once finished then set the loading into false
@@ -234,7 +233,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
 
                 if (result != null) {
                   // means we got the result, ensure it's not the same with from date and to date
-                  if ((result.start.compareTo(_fromDateCurrent) != 0) || (result.end.compareTo(_toDateCurrent) != 0)) {                      
+                  if ((result.start.compareTo(_fromDateCurrent) != 0) || (result.end.compareTo(_toDateCurrent) != 0)) {
                     // set the broker from and to date
                     _fromDateCurrent = result.start;
                     _toDateCurrent = result.end;
@@ -246,20 +245,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                     await _refreshTransactionList().onError((error, stackTrace) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                     });
-                    // setLoading(true);
-                    // await _brokerSummaryAPI.getBrokerTransactionList(_args.brokerFirmID, _fromDateCurrent, _toDateCurrent).then((resp) {
-                    //   _transactionList = resp;
-
-                    //   // clear all the detail
-                    //   _transactionDetail.clear();
-
-                    //   // assume that all is not expanded
-                    //   _isExpanded = List<bool>.generate(_transactionList.brokerSummaryCodeList.length, (index) {
-                    //     return false;
-                    //   });
-                    // }).whenComplete(() {
-                    //   setLoading(false);
-                    // });
                   }
                 }
               }),
@@ -833,11 +818,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   }
 
   void _updateTransactionList(BrokerSummaryBrokerTxnListModel updateTxn) {
-    // ensure that the code length is more than 0
-    if (updateTxn.brokerSummaryCodeList.isEmpty) {
-      return;
-    }
-
     // check if start is 0, if 0, it means that this is the first transaction
     if (_start == 0) {
       // assume that all is not expanded

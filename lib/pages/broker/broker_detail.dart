@@ -825,6 +825,9 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         return false;
       });
 
+      // and clear all transaction detail
+      _transactionDetail.clear();
+
       setState(() {
         // set the transaction list
         _transactionList = updateTxn;

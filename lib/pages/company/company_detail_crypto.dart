@@ -345,6 +345,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
               ),
               const SizedBox(height: 10,),
               ..._detail(),
+              const SizedBox(height: 30,),
             ],
           ),
         ),

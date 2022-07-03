@@ -5,11 +5,13 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/info_fundamental_api.dart';
+import 'package:my_wealth/api/info_sahams_api.dart';
 import 'package:my_wealth/api/price_api.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/info_fundamentals_model.dart';
+import 'package:my_wealth/model/info_saham_price_model.dart';
 import 'package:my_wealth/model/price_model.dart';
 import 'package:my_wealth/model/price_saham_ma_model.dart';
 import 'package:my_wealth/model/user_login.dart';
@@ -20,7 +22,6 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
-import 'package:my_wealth/widgets/company_detail_price_list.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
@@ -53,12 +54,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late BrokerSummaryDateModel _brokerSummaryDate;
   late PriceSahamMovingAverageModel _priceMA;
   late List<InfoFundamentalsModel> _infoFundamental;
+  late List<InfoSahamPriceModel> _infoSahamPrice;
   late String _brokerSummarySelected;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final PriceAPI _priceAPI = PriceAPI();
   final InfoFundamentalAPI _infoFundamentalAPI = InfoFundamentalAPI();
+  final InfoSahamsAPI _infoSahamsAPI = InfoSahamsAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
 
   late DateTime _brokerSummaryDateFrom;
@@ -131,6 +134,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
       await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
         _infoFundamental = resp;
+      });
+
+      await _infoSahamsAPI.getInfoSahamPrice(_companyData.companyCode).then((resp) {
+        _infoSahamPrice = resp;
       });
     }).onError((error, stackTrace) {
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
@@ -456,6 +463,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               ),
               const SizedBox(height: 5,),
               Expanded(child: _detail()),
+              const SizedBox(height: 30,),
             ],
           ),
         ),
@@ -769,7 +777,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 ),
               ],
             ),
-            const SizedBox(height: 30,),
           ],
         ),
       ),
@@ -1242,7 +1249,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 ),
               ],
             ),
-            const SizedBox(height: 30,),
           ],
         ),
       ),
@@ -1659,22 +1665,180 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           child: ListView(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-              double? dayDiff;
+            children: List<Widget>.generate(_infoSahamPrice.length, (index) {
+              int? dayDiff;
               Color dayDiffColor = Colors.transparent;
-              if((index+1) < _companyDetail.companyPrices.length) {
-                double currPrice = _companyDetail.companyPrices[index].priceValue;
-                double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+              int lowDiff = _infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedLowPrice;
+              int highDiff = (_infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedHighPrice) * -1;
+
+              if((index+1) < _infoSahamPrice.length) {
+                int currPrice = _infoSahamPrice[index].lastPrice;
+                int prevPrice = _infoSahamPrice[index + 1].lastPrice;
                 dayDiff = currPrice - prevPrice;
-                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+                dayDiffColor = riskColor(currPrice.toDouble(), prevPrice.toDouble(), _userInfo!.risk);
               }
-              return CompanyDetailPriceList(
-                date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-                dayDiffColor: dayDiffColor,
+
+              return Container(
+                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      child: Container(
+                        color: primaryColor,
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _df.format(_infoSahamPrice[index].date.toLocal()),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(_infoSahamPrice[index].volume, false, true),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    formatCurrency(_infoSahamPrice[index].lastPrice.toDouble()),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(_infoSahamPrice[index].adjustedLowPrice.toDouble()),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(_infoSahamPrice[index].adjustedHighPrice.toDouble()),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: riskColor(_companyDetail.companyNetAssetValue!, _infoSahamPrice[index].lastPrice.toDouble(), _userInfo!.risk),
+                                          width: 2.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      formatCurrency(_companyDetail.companyNetAssetValue! - _infoSahamPrice[index].lastPrice.toDouble()),
+                                      textAlign: TextAlign.right,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  ),
+                                  Text(
+                                    formatIntWithNull(lowDiff, false, false),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(highDiff, false, false),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: dayDiffColor,
+                                          width: 2.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      (dayDiff == null ? "-" : formatCurrency(dayDiff.toDouble())),
+                                      textAlign: TextAlign.right,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  ),
+                                  Text(
+                                    '${formatDecimalWithNull(lowDiff / _infoSahamPrice[index].lastPrice, 100, 2)}%',
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${formatDecimalWithNull(highDiff / _infoSahamPrice[index].lastPrice, 100, 2)}%',
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }),
           ),

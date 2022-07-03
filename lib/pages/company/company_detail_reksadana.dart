@@ -427,6 +427,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               ),
               const SizedBox(height: 5,),
               ..._detail(),
+              const SizedBox(height: 30,),
             ],
           ),
         ),

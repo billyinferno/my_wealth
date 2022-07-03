@@ -304,7 +304,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                     itemCount: _transactionList.brokerSummaryCodeList.length,
                     itemBuilder: (context, index) {
                       // generate the diff color
-                      int? diffPrice = (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 0 ? ((_transactionList.brokerSummaryCodeList[index].brokerSummaryValue ~/ (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot * 100)) - _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice) : null);
+                      int? diffPrice;
+                      int? currLeftPrice;
+
+                      if (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 0) {
+                        currLeftPrice = (_transactionList.brokerSummaryCodeList[index].brokerSummaryValue ~/ (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot * 100));
+                        diffPrice = currLeftPrice - _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice;
+                      }
                       Color diffColor = textPrimary;
                       if (diffPrice != null) {
                         if (diffPrice < 0) {
@@ -399,7 +405,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                             ),
                                           ),
                                           Text(
-                                            formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, false),
+                                            (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 1000000 ? formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, true) : formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, false)),
                                             style: const TextStyle(
                                               fontSize: 10,
                                               color: Colors.white,
@@ -446,26 +452,20 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                               color: Colors.white,
                                             ),
                                           ),
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice, false, false),
-                                                style: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 5,),
-                                              Text(
-                                                '(${formatIntWithNull(diffPrice, false, false)})',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: diffColor,
-                                                ),
-                                              ),
-                                            ],
+                                          Text(
+                                            formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice, false, false),
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5,),
+                                          Text(
+                                            '(${formatIntWithNull(currLeftPrice, false, false)})',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: diffColor,
+                                            ),
                                           ),
                                         ],
                                       ),

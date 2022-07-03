@@ -371,6 +371,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
               ),
               const SizedBox(height: 5,),
               ..._detail(),
+              const SizedBox(height: 30,),
             ],
           ),
         ),

@@ -107,22 +107,26 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
         totalShareSell += detail.watchlistDetailShare;
       }
     }
-    // get what is the average buy price that we have
-    if (totalShareBuy > 0 && totalCostBuy > 0) {
-      averageBuyPrice = totalCostBuy / totalShareBuy;
+
+    // check we still have share left or not?
+    if ((totalShareBuy + totalShareSell) > 0) {
+      // get what is the average buy price that we have
+      if (totalShareBuy > 0 && totalCostBuy > 0) {
+        averageBuyPrice = totalCostBuy / totalShareBuy;
+      }
+
+      // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
+      totalCostSell = totalShareSell * averageBuyPrice;
+
+      // set the result
+      // total share should be buy subtract by sell (remember here sell already negative)
+      _totalShare = totalShareBuy + totalShareSell;
+      _totalGain = (widget.watchlist.watchlistCompanyNetAssetValue! * (totalShareBuy - totalShareSell)) - (averageBuyPrice * (totalShareBuy - totalShareSell));
+      _totalCost = totalCostBuy + totalCostSell;
+      _averagePrice = averageBuyPrice;
     }
-
-    // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
-    totalCostSell = totalShareSell * averageBuyPrice;
-
-    // set the result
-    // total share should be buy subtract by sell (remember here sell already negative)
-    _totalShare = totalShareBuy + totalShareSell;
-    _totalGain = (widget.watchlist.watchlistCompanyNetAssetValue! * (totalShareBuy - totalShareSell)) - (averageBuyPrice * (totalShareBuy - totalShareSell));
-    _totalCost = totalCostBuy + totalCostSell;
-    _averagePrice = averageBuyPrice;
     
-    // debugPrint("Name: ${widget.watchlist.watchlistCompanyName}, Total: ${_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!}, Gain:$_totalGain, Total Share Sell:$totalShareSell,  Cost Buy:$totalCostBuy, Cost Sell:$totalCostSell,  Cost:$_totalCost, Average Price:$_averagePrice");
+    // debugPrint("Name: ${widget.watchlist.watchlistCompanyName}, Total: ${_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!}, Gain:$_totalGain, Total Share Buy:$totalShareBuy, Total Share Sell:$totalShareSell,  Cost Buy:$totalCostBuy, Cost Sell:$totalCostSell,  Cost:$_totalCost, Average Price:$_averagePrice");
   }
 
 }

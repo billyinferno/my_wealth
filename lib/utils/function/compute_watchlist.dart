@@ -130,29 +130,31 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
       }
 
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
+      // check if we still have share left
+      if ((totalShareBuy + totalShareSell) > 0) {
+        // get what is the average buy price that we have
+        if (totalShareBuy > 0 && totalCostBuy > 0) {
+          averageBuyPrice = totalCostBuy / totalShareBuy;
+        }
+
+        // total sell is negative, make it a positive
+        totalShareSell *= -1;
+
+        // get the total of current share we have
+        totalShareCurrent = totalShareBuy - totalShareSell;
+
+        // get the day gain
+        dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
+        totalDayGainSaham += dayGain;
+
+        // get the cost of the share
+        totalCostCurrent = totalShareCurrent * averageBuyPrice;
+        totalCostSaham += totalCostCurrent;
+
+        // get the value of the share now
+        totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+        totalValueSaham += totalValueCurrent;
       }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      totalDayGainSaham += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      totalCostSaham += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      totalValueSaham += totalValueCurrent;
     }
 
     // loop thru all the crypto to get the total computation
@@ -176,29 +178,32 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
       }
 
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
+      // check if we still have share left or not?
+      if ((totalShareBuy + totalShareSell) > 0) {
+        // get what is the average buy price that we have
+        if (totalShareBuy > 0 && totalCostBuy > 0) {
+          averageBuyPrice = totalCostBuy / totalShareBuy;
+        }
+
+
+        // total sell is negative, make it a positive
+        totalShareSell *= -1;
+
+        // get the total of current share we have
+        totalShareCurrent = totalShareBuy - totalShareSell;
+        
+        // get the day gain
+        dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
+        totalDayGainCrypto += dayGain;
+
+        // get the cost of the share
+        totalCostCurrent = totalShareCurrent * averageBuyPrice;
+        totalCostCrypto += totalCostCurrent;
+
+        // get the value of the share now
+        totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+        totalValueCrypto += totalValueCurrent;
       }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-      
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      totalDayGainCrypto += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      totalCostCrypto += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      totalValueCrypto += totalValueCurrent;
     }
 
     // loop thru all the gold to get the total computation
@@ -222,29 +227,30 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
       }
 
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
+      if ((totalShareBuy + totalShareSell) > 0) {
+        // get what is the average buy price that we have
+        if (totalShareBuy > 0 && totalCostBuy > 0) {
+          averageBuyPrice = totalCostBuy / totalShareBuy;
+        }
+
+        // total sell is negative, make it a positive
+        totalShareSell *= -1;
+
+        // get the total of current share we have
+        totalShareCurrent = totalShareBuy - totalShareSell;
+        
+        // get the day gain
+        dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
+        totalDayGainGold += dayGain;
+
+        // get the cost of the share
+        totalCostCurrent = totalShareCurrent * averageBuyPrice;
+        totalCostGold += totalCostCurrent;
+
+        // get the value of the share now
+        totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
+        totalValueGold += totalValueCurrent;
       }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-      
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      totalDayGainGold += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      totalCostGold += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      totalValueGold += totalValueCurrent;
     }
 
     totalDayGain = totalDayGainReksadana + totalDayGainSaham + totalDayGainCrypto + totalDayGainGold;

@@ -12,7 +12,7 @@ class InfoSahamPriceModel {
     InfoSahamPriceModel({
         required this.date,
         required this.lastPrice,
-        required this.prevClosingPrice,
+        this.prevClosingPrice,
         required this.adjustedClosingPrice,
         required this.adjustedOpenPrice,
         required this.adjustedHighPrice,
@@ -22,7 +22,7 @@ class InfoSahamPriceModel {
 
     final DateTime date;
     final int lastPrice;
-    final int prevClosingPrice;
+    final int? prevClosingPrice;
     final int adjustedClosingPrice;
     final int adjustedOpenPrice;
     final int adjustedHighPrice;

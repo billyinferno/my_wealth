@@ -12,7 +12,6 @@ import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/info_fundamentals_model.dart';
 import 'package:my_wealth/model/info_saham_price_model.dart';
-import 'package:my_wealth/model/price_model.dart';
 import 'package:my_wealth/model/price_saham_ma_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -25,6 +24,8 @@ import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
+import 'package:my_wealth/widgets/stock_candlestick_painter.dart';
+import 'package:my_wealth/widgets/stock_volume_painter.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
 
 class CompanyDetailSahamPage extends StatefulWidget {
@@ -79,6 +80,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   double? _minPrice;
   double? _maxPrice;
   double? _avgPrice;
+  int? _maxVolume;
+  int? _maxHigh;
+  int? _minLow;
 
   @override
   void initState() {
@@ -115,10 +119,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
           // set the broker summary date based on the last update of the company
           _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());
-          _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());
-          
-          // generate map data
-          _generateGraphData(resp);        
+          _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());     
       });
 
       await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
@@ -126,7 +127,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _brokerSummaryBuySell = resp.brokerSummaryAll;
         _brokerSummarySelected = "a";
       });
-
 
       await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
         _priceMA = resp;
@@ -138,6 +138,32 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
       await _infoSahamsAPI.getInfoSahamPrice(_companyData.companyCode).then((resp) {
         _infoSahamPrice = resp;
+
+        // loop thru _infoSahamPrice to get the max volume
+        _maxVolume = -1;
+        _maxHigh = -1;
+        _minLow = 999999999;
+        
+        for (InfoSahamPriceModel price in _infoSahamPrice) {
+          if (price.volume > _maxVolume!) {
+            _maxVolume = price.volume;
+          }
+          if (price.adjustedHighPrice > _maxHigh!) {
+            _maxHigh = price.adjustedHighPrice;
+          }
+          if (price.adjustedLowPrice < _minLow!) {
+            _minLow = price.adjustedLowPrice;
+          }
+          if (price.lastPrice > _maxHigh!) {
+            _maxHigh = price.lastPrice;
+          }
+          if (price.lastPrice < _minLow!) {
+            _minLow = price.lastPrice;
+          }
+        }
+
+        // generate map data
+        _generateGraphData(_infoSahamPrice, _companyDetail);   
       });
     }).onError((error, stackTrace) {
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
@@ -1679,7 +1705,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               }
 
               return Container(
-                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                color: riskColor(_companyDetail.companyNetAssetValue!, _infoSahamPrice[index].lastPrice.toDouble(), _userInfo!.risk),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -1907,18 +1933,43 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SingleChildScrollView(
-          controller: _graphScrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              LineChart(
-                data: _graphData!,
-                height: 250,
-              ),
-            ],
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _graphScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                LineChart(
+                  data: _graphData!,
+                  height: 250,
+                ),
+                const SizedBox(height: 5,),
+                SizedBox(
+                  height: 160,
+                  child: CustomPaint(
+                    size: Size.infinite,
+                    painter: StockCandleStickPainter(
+                      stockData: _infoSahamPrice,
+                      maxHigh: _maxHigh!,
+                      minLow: _minLow!,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15,),
+                SizedBox(
+                  height: 30,
+                  child: CustomPaint(
+                    size: Size.infinite,
+                    painter: StockVolumePainter(
+                      stockData: _infoSahamPrice,
+                      maxVolume: _maxVolume!,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         )
       ],
@@ -1931,7 +1982,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     });
   }
 
-  void _generateGraphData(CompanyDetailModel data) {
+  void _generateGraphData(List<InfoSahamPriceModel> prices, CompanyDetailModel company) {
     // map the price date on company
     List<GraphData> tempData = [];
     int totalData = 0;
@@ -1942,31 +1993,31 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _maxPrice = double.minPositive;
 
     // move the last update to friday
-    int addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
-    DateTime endDate = data.companyLastUpdate!.add(Duration(days: addDay));
+    int addDay = 5 - company.companyLastUpdate!.toLocal().weekday;
+    DateTime endDate = company.companyLastUpdate!.add(Duration(days: addDay));
 
     // then go 14 weeks before so we knew the start date
     DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
     // only get the 1st 64 data, since we will want to get the latest data
-    for (PriceModel price in data.companyPrices) {
+    for (InfoSahamPriceModel price in prices) {
       // ensure that all the data we will put is more than or equal with startdate
-      if(price.priceDate.compareTo(startDate) >= 0) {
-        tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+      if(price.date.compareTo(startDate) >= 0) {
+        tempData.add(GraphData(date: price.date.toLocal(), price: price.lastPrice.toDouble()));
         totalData += 1;
       }
 
       // count for minimum, maximum, and average
       if(totalPriceData < 29) {
-        if(_minPrice! > price.priceValue) {
-          _minPrice = price.priceValue;
+        if(_minPrice! > price.lastPrice.toDouble()) {
+          _minPrice = price.lastPrice.toDouble();
         }
 
-        if(_maxPrice! < price.priceValue) {
-          _maxPrice = price.priceValue;
+        if(_maxPrice! < price.lastPrice.toDouble()) {
+          _maxPrice = price.lastPrice.toDouble();
         }
 
-        totalPrice += price.priceValue;
+        totalPrice += price.lastPrice.toDouble();
         totalPriceData++;
       }
 
@@ -1977,18 +2028,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     }
 
     // add the current price which only in company
-    tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
+    tempData.add(GraphData(date: company.companyLastUpdate!.toLocal(), price: company.companyNetAssetValue!));
 
     // check current price for minimum, maximum, and average
-    if(_minPrice! > data.companyNetAssetValue!) {
-      _minPrice = data.companyNetAssetValue!;
+    if(_minPrice! > company.companyNetAssetValue!) {
+      _minPrice = company.companyNetAssetValue!;
     }
 
-    if(_maxPrice! < data.companyNetAssetValue!) {
-      _maxPrice = data.companyNetAssetValue!;
+    if(_maxPrice! < company.companyNetAssetValue!) {
+      _maxPrice = company.companyNetAssetValue!;
     }
 
-    totalPrice += data.companyNetAssetValue!;
+    totalPrice += company.companyNetAssetValue!;
     totalPriceData++;
     
     // compute average

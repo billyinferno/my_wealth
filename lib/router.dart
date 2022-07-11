@@ -9,9 +9,11 @@ import 'package:my_wealth/pages/favourites/favourite_company_list_reksadana.dart
 import 'package:my_wealth/pages/favourites/favourite_company_list_saham.dart';
 import 'package:my_wealth/pages/home.dart';
 import 'package:my_wealth/pages/index/index_detail.dart';
+import 'package:my_wealth/pages/insight_stock/insight_stock_per_list.dart';
 import 'package:my_wealth/pages/insight_stock/insight_stock_sub.dart';
 import 'package:my_wealth/pages/insight_stock/insight_stock_sub_list.dart';
 import 'package:my_wealth/pages/login.dart';
+import 'package:my_wealth/pages/portofolio/portofolio_detail.dart';
 import 'package:my_wealth/pages/portofolio/portofolio_list.dart';
 import 'package:my_wealth/pages/users/change_password.dart';
 import 'package:my_wealth/pages/users/update_bot.dart';
@@ -23,6 +25,7 @@ import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_sell.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_add.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_list.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
+import 'package:my_wealth/provider/company_provider.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
@@ -52,6 +55,7 @@ class RouterPageState extends State<RouterPage> {
         ChangeNotifierProvider<IndexProvider>(create: (context) => IndexProvider()),
         ChangeNotifierProvider<BrokerProvider>(create: (context) => BrokerProvider()),
         ChangeNotifierProvider<InsightProvider>(create: (context) => InsightProvider()),
+        ChangeNotifierProvider<CompanyProvider>(create: (context) => CompanyProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -182,9 +186,17 @@ class RouterPageState extends State<RouterPage> {
       {
         return createAnimationRoute(InsightStockSubListPage(args: settings.arguments,));
       }
+      case '/insight/stock/per':
+      {
+        return createAnimationRoute(InsightStockPERListPage(args: settings.arguments,));
+      }
       case '/portofolio/list':
       {
         return createAnimationRoute(PortofolioListPage(args: settings.arguments,));
+      }
+      case '/portofolio/list/detail':
+      {
+        return createAnimationRoute(PortofolioDetailPage(args: settings.arguments,));
       }
       default:
       {

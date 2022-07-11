@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
+import 'package:my_wealth/model/sector_name_list_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/provider/company_provider.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/industry_summary_args.dart';
+import 'package:my_wealth/utils/arguments/insight_stock_sub_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/utils/prefs/shared_company.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/selectable_button.dart';
@@ -33,6 +37,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
   late List<SectorSummaryModel> _sectorSummaryList;
   late TopWorseCompanyListModel _topCompanyList;
   late TopWorseCompanyListModel _worseCompanyList;
+  late List<SectorNameModel> _sectorNameList;
   late UserLoginInfoModel? _userInfo;
 
   String _sectorSummaryPeriod = "1d";
@@ -44,6 +49,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
     _sectorSummaryList = InsightSharedPreferences.getSectorSummaryList();
     _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList('top');
     _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList('worse');
+    _sectorNameList = CompanySharedPreferences.getSectorNameList();
 
     _userInfo = UserSharedPreferences.getUserInfo();
     super.initState();
@@ -58,11 +64,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<InsightProvider>(
-      builder: ((context, insightProvider, child) {
+    return Consumer2<InsightProvider, CompanyProvider>(
+      builder: ((context, insightProvider, companyProvider, child) {
         _sectorSummaryList = (insightProvider.sectorSummaryList ?? []);
         _topCompanyList = insightProvider.topCompanyList!;
         _worseCompanyList = insightProvider.worseCompanyList!;
+        _sectorNameList = companyProvider.sectorNameList!;
 
         return RefreshIndicator(
           color: accentColor,
@@ -203,6 +210,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     width: double.infinity,
                     height: 370,
                     child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: 3,
                       children: List<Widget>.generate(_sectorSummaryList.length, (index) {
                         double sectorAverage = 0;
@@ -480,6 +488,73 @@ class _InsightStockPageState extends State<InsightStockPage> {
                   ),
                   const SizedBox(height: 10,),
                   _generateTopWorseList(type: 'worse', codeColor: accentColor, gainColor: secondaryLight),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "PER Per Sector",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ),
+                  const SizedBox(height: 10,),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 370,
+                    child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 3,
+                      children: List<Widget>.generate(_sectorNameList.length, (index) {             
+                        InsightStockSubListArgs args = InsightStockSubListArgs(
+                          type: 'PER',
+                          sectorName: _sectorNameList[index].sectorName,
+                          subName: _sectorNameList[index].sectorFriendlyname
+                        );
+
+                        return InkWell(
+                          onTap: (() {
+                            Navigator.pushNamed(context, '/insight/stock/per', arguments: args);
+                          }),
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            height: 90,
+                            width: 90,
+                            decoration: BoxDecoration(
+                              color: extendedColor,
+                              border: Border.all(
+                                color: extendedDark,
+                                style: BorderStyle.solid,
+                                width: 1.0,
+                              )
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  Globals.sectorIcon[_sectorNameList[index].sectorName.replaceAll('&amp;', '&')]!,
+                                  size: 25,
+                                  color: extendedLight,
+                                ),
+                                const SizedBox(height: 5,),
+                                Center(
+                                  child: Text(
+                                    _sectorNameList[index].sectorFriendlyname,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: extendedLight,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
                 ],
               ),
             ),

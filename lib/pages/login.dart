@@ -5,12 +5,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/favourites_api.dart';
 import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
+import 'package:my_wealth/provider/company_provider.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
@@ -20,6 +22,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
+import 'package:my_wealth/utils/prefs/shared_company.dart';
 import 'package:my_wealth/utils/prefs/shared_favourites.dart';
 import 'package:my_wealth/utils/prefs/shared_index.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
@@ -49,6 +52,7 @@ class LoginPageState extends State<LoginPage> {
   final BrokerAPI _brokerApi = BrokerAPI();
   final BrokerSummaryAPI _brokerSummaryApi = BrokerSummaryAPI();
   final InsightAPI _insightAPI = InsightAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
   
   bool _isLoading = true;
 
@@ -519,6 +523,12 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setBandarInterestingList(resp);
         debugPrint('🔟 Get Bandar Interesting List');
+      }),
+      _companyAPI.getSectorNameList().then((resp) async {
+        await CompanySharedPreferences.setSectorNameList(resp);
+        if (!mounted) return;
+        Provider.of<CompanyProvider>(context, listen: false).setSectorList(resp);
+        debugPrint('🔟1️⃣ Get Saham Sector Name List');
       }),
     ]).then((_) {
       debugPrint("💯 Finished get additional information");

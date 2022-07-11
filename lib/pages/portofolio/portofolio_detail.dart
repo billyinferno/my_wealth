@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/portofolio_api.dart';
-import 'package:my_wealth/model/portofolio_summary_model.dart';
+import 'package:my_wealth/model/portofolio_detail_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/widgets/bar_chart.dart';
 import 'package:my_wealth/widgets/product_list_item.dart';
 
-class PortofolioListPage extends StatefulWidget {
+class PortofolioDetailPage extends StatefulWidget {
   final Object? args;
-  const PortofolioListPage({Key? key, required this.args}) : super(key: key);
+  const PortofolioDetailPage({Key? key, required this.args}) : super(key: key);
 
   @override
-  State<PortofolioListPage> createState() => _PortofolioListPageState();
+  State<PortofolioDetailPage> createState() => _PortofolioDetailPageState();
 }
 
-class _PortofolioListPageState extends State<PortofolioListPage> {
+class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   final ScrollController _scrollController = ScrollController();
   final PortofolioAPI _portofolioAPI = PortofolioAPI();
   
   late PortofolioListArgs _args;
   
-  late List<BarChartData> _barChartData;
-  late List<PortofolioSummaryModel> _portofolioList;
+  late List<PortofolioDetailModel> _portofolioList;
 
   double _gain = 0;
   Color trendColor = Colors.white;
@@ -36,7 +34,6 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   @override
   void initState() {
     // init list
-    _barChartData = [];
     _portofolioList = [];
 
     // convert the arguments into portofilio list args
@@ -56,19 +53,13 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
     Future.microtask(() async {
       showLoaderDialog(context);
 
-      await _portofolioAPI.getPortofolioSummary(_args.type).then((resp) {
+      await _portofolioAPI.getPortofolioDetail(_args.type, _args.subType!).then((resp) {
         _portofolioList = resp;
 
         // generate the _barChartData based on response
         _portofolioTotalValue = 0;
-        for (PortofolioSummaryModel porto in resp) {
-          _portofolioTotalValue += porto.portofolioTotalValue;
-        }
-
-        int index = 0;
-        for (PortofolioSummaryModel porto in resp) {
-          _barChartData.add(BarChartData(title: porto.portofolioCompanyDescription, value: porto.portofolioTotalValue, total: _portofolioTotalValue, color: Globals.colorList[index]));
-          index = index + 1;
+        for (PortofolioDetailModel porto in resp) {
+          _portofolioTotalValue += porto.watchlistSubTotalValue;
         }
       }).whenComplete(() {
         // remove the loader
@@ -110,7 +101,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         ),
         title: Center(
           child: Text(
-            "Portofolio ${_args.title}",
+            _args.title,
             style: const TextStyle(
               color: secondaryColor,
             ),
@@ -201,41 +192,18 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                 ),
               ],
             ),
-            BarChart(
-              data: _barChartData,
-              showLegend: false,
-            ),
-            const SizedBox(height: 10,),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: List<Widget>.generate(_portofolioList.length, ((index) {
                 int colorMap = (index % Globals.colorList.length);
+                
                 return ProductListItem(
-                  onTap: (() {
-                    // convert the total product
-                    int? numProd = int.tryParse(_portofolioList[index].portofolioTotalProduct);
-                    numProd = numProd ?? 0;
-
-                    // check if we have product here or not?
-                    if (numProd > 0) {
-                      // got product means we can display the details here 
-                      PortofolioListArgs args = PortofolioListArgs(
-                        title: _portofolioList[index].portofolioCompanyDescription,
-                        value: _portofolioList[index].portofolioTotalValue,
-                        cost: _portofolioList[index].portofolioTotalCost,
-                        type: _args.type,
-                        subType: _portofolioList[index].portofolioCompanyType
-                      );
-
-                      Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
-                    }
-                  }),
                   bgColor: Globals.colorList[colorMap],
-                  title: _portofolioList[index].portofolioCompanyDescription,
-                  subTitle: "- ${_portofolioList[index].portofolioTotalProduct} product(s)",
-                  value: _portofolioList[index].portofolioTotalValue,
-                  cost: _portofolioList[index].portofolioTotalCost,
+                  title: (_portofolioList[index].companyCode.isNotEmpty ? "(${_portofolioList[index].companyCode}) ${_portofolioList[index].companyName}" : _portofolioList[index].companyName),
+                  subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} share(s)",
+                  value: _portofolioList[index].watchlistSubTotalValue,
+                  cost: _portofolioList[index].watchlistSubTotalCost,
                   total: _portofolioTotalValue,
                 );
               })),

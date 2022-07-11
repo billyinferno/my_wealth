@@ -379,10 +379,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                     Text(
                                       _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
                                       style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -845,11 +845,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       // add the updated code list to the current code list
       currentCodeList.addAll(updateTxn.brokerSummaryCodeList);
 
-      // generate the expanded data
-      List<bool> updateExpanded = List<bool>.generate(updateTxn.brokerSummaryCodeList.length, (index) {
+      // assuming that all will be closed when we get a new data
+      _isExpanded = List<bool>.generate(currentCodeList.length, (index) {
         return false;
       });
-      _isExpanded.addAll(updateExpanded);
 
       // now we need to generate a new BrokerSummaryTransaction model with additional code list added
       BrokerSummaryBrokerTxnListModel tmpTransactionList = BrokerSummaryBrokerTxnListModel(

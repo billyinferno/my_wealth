@@ -125,37 +125,6 @@ class HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      // child: SalomonBottomBar(
-      //   items: <SalomonBottomBarItem>[
-      //     SalomonBottomBarItem(
-      //       icon: const Icon(Ionicons.analytics_outline),
-      //       title: const Text(""),
-      //       selectedColor: Colors.green[300],
-      //     ),
-      //     SalomonBottomBarItem(
-      //       icon: const Icon(Ionicons.business_outline),
-      //       title: const Text(""),
-      //       selectedColor: Colors.purple[300],
-      //     ),
-      //     SalomonBottomBarItem(
-      //       icon: const Icon(Ionicons.eye_outline),
-      //       title: const Text(""),
-      //       selectedColor: secondaryLight,
-      //     ),
-      //     SalomonBottomBarItem(
-      //       icon: const Icon(Ionicons.list_circle_outline),
-      //       title: const Text(""),
-      //       selectedColor: accentLight,
-      //     ),
-      //     SalomonBottomBarItem(
-      //       icon: const Icon(Ionicons.bulb_outline),
-      //       title: const Text(""),
-      //       selectedColor: extendedLight,
-      //     ),
-      //   ],
-      //   currentIndex: _selectedIndex,
-      //   onTap: _onItemTapped,
-      // ),
     );
   }
 

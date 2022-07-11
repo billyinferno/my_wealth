@@ -10,6 +10,7 @@ String portofolioSummaryModelToJson(PortofolioSummaryModel data) => json.encode(
 
 class PortofolioSummaryModel {
     PortofolioSummaryModel({
+        required this.portofolioCompanyDescription,
         required this.portofolioCompanyType,
         required this.portofolioTotalProduct,
         required this.portofolioTotalShare,
@@ -17,6 +18,7 @@ class PortofolioSummaryModel {
         required this.portofolioTotalValue,
     });
 
+    final String portofolioCompanyDescription;
     final String portofolioCompanyType;
     final String portofolioTotalProduct;
     final double portofolioTotalShare;
@@ -24,6 +26,7 @@ class PortofolioSummaryModel {
     final double portofolioTotalValue;
 
     factory PortofolioSummaryModel.fromJson(Map<String, dynamic> json) => PortofolioSummaryModel(
+        portofolioCompanyDescription: json["portofolio_company_description"],
         portofolioCompanyType: json["portofolio_company_type"],
         portofolioTotalProduct: json["portofolio_total_product"],
         portofolioTotalShare: json["portofolio_total_share"].toDouble(),
@@ -32,6 +35,7 @@ class PortofolioSummaryModel {
     );
 
     Map<String, dynamic> toJson() => {
+        "portofolio_company_description": portofolioCompanyDescription,
         "portofolio_company_type": portofolioCompanyType,
         "portofolio_total_product": portofolioTotalProduct,
         "portofolio_total_share": portofolioTotalShare,

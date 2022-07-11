@@ -5,6 +5,8 @@ import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/company_search_model.dart';
+import 'package:my_wealth/model/sector_name_list_model.dart';
+import 'package:my_wealth/model/sector_per_detail_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
@@ -181,6 +183,75 @@ class CompanyAPI {
           companyList.add(company);
         }
         return companyList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<SectorNameModel>> getSectorNameList() async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/sector/list'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<SectorNameModel> sectorNameList = [];
+        for (var data in commonModel.data) {
+          SectorNameModel company = SectorNameModel.fromJson(data['attributes']);
+          sectorNameList.add(company);
+        }
+        return sectorNameList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<SectorPerDetailModel> getCompanySectorPER(String sectorName) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/sector/$sectorNameBase64/per'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        SectorPerDetailModel per = SectorPerDetailModel.fromJson(commonModel.data['attributes']);
+        return per;
       }
 
       // status code is not 200, means we got error

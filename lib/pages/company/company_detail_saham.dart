@@ -162,6 +162,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           }
         }
 
+        // check if maxHigh, minLow is the same, if same then it probably because all the while
+        // the price is the same, so we don't have low and high, for this we can just ignore the maxHigh and minLow
+        // and add new ceiling for this.
+        if (_maxHigh == _minLow) {
+          _maxHigh = _maxHigh! + _maxHigh!;
+        }
+
         // generate map data
         _generateGraphData(_infoSahamPrice, _companyDetail);   
       });

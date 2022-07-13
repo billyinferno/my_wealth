@@ -39,6 +39,11 @@ class StockVolumePainter extends CustomPainter {
   }
 
   List<Bar> _generateBars(Size size) {
+    // since we will use maxVolume to perform calculation, in case that the max volume
+    // is 0, just return with empty list, since it means that there are no movement
+    // for this stock.
+    if (maxVolume == 0) return [];
+
     // calculate maximum width and heigh that we can use per bar
     final double pixelPerBar = (size.width - padding!) / stockData.length;
     final double pixelPerOrder = size.height / maxVolume;

@@ -170,6 +170,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
                 children: <Widget>[
                   TabBar(
                     controller: _tabController,
+                    isScrollable: true,
                     tabs: const <Widget>[
                       Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),

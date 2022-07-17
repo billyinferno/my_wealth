@@ -7,6 +7,7 @@ import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_index.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
@@ -75,12 +76,17 @@ class IndexPageState extends State<IndexPage> {
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: List.generate(_indexList.length, (index) {
+                    String indexName = _indexList[index].indexName;
+                    if (Globals.indexName.containsKey(_indexList[index].indexName)) {
+                      indexName = "(${_indexList[index].indexName}) ${Globals.indexName[_indexList[index].indexName]}";
+                    }
+
                     return InkWell(
                       onTap: (() {
                         Navigator.pushNamed(context, '/index/detail', arguments: _indexList[index]);
                       }),
                       child: FavouriteList(
-                        name: _indexList[index].indexName,
+                        name: indexName,
                         date: _df.format(_indexList[index].indexLastUpdate.toLocal()),
                         price: _indexList[index].indexNetAssetValue,
                         percentChange: (_indexList[index].indexDailyReturn * 100),

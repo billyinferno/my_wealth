@@ -117,132 +117,140 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
           )
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Total",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 5,),
-                        Text(
-                          formatCurrency(_args.value, false, false, false),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Gain",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(
-                              trendIcon,
-                              size: 15,
-                              color: trendColor,
-                            ),
-                            const SizedBox(width: 5,),
-                            Text(
-                              formatCurrency(_gain, false, false, false),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: trendColor
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Total",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "${_gain > 0 ? '+' : ''}${formatDecimal((_gain / _args.value), 2)}%",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                            color: trendColor
+                              const SizedBox(height: 5,),
+                              Text(
+                                formatCurrency(_args.value, false, false, false),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Gain",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    trendIcon,
+                                    size: 15,
+                                    color: trendColor,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    formatCurrency(_gain, false, false, false),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      color: trendColor
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "${_gain > 0 ? '+' : ''}${formatDecimal((_gain / _args.value), 2)}%",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                  color: trendColor
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-            BarChart(
-              data: _barChartData,
-              showLegend: false,
-            ),
-            const SizedBox(height: 10,),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: List<Widget>.generate(_portofolioList.length, ((index) {
-                int colorMap = (index % Globals.colorList.length);
-                return ProductListItem(
-                  onTap: (() {
-                    // convert the total product
-                    int? numProd = int.tryParse(_portofolioList[index].portofolioTotalProduct);
-                    numProd = numProd ?? 0;
-
-                    // check if we have product here or not?
-                    if (numProd > 0) {
-                      // got product means we can display the details here 
-                      PortofolioListArgs args = PortofolioListArgs(
+                  BarChart(
+                    data: _barChartData,
+                    showLegend: false,
+                  ),
+                  const SizedBox(height: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List<Widget>.generate(_portofolioList.length, ((index) {
+                      int colorMap = (index % Globals.colorList.length);
+                      return ProductListItem(
+                        onTap: (() {
+                          // convert the total product
+                          int? numProd = int.tryParse(_portofolioList[index].portofolioTotalProduct);
+                          numProd = numProd ?? 0;
+          
+                          // check if we have product here or not?
+                          if (numProd > 0) {
+                            // got product means we can display the details here 
+                            PortofolioListArgs args = PortofolioListArgs(
+                              title: _portofolioList[index].portofolioCompanyDescription,
+                              value: _portofolioList[index].portofolioTotalValue,
+                              cost: _portofolioList[index].portofolioTotalCost,
+                              type: _args.type,
+                              subType: _portofolioList[index].portofolioCompanyType
+                            );
+          
+                            Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
+                          }
+                        }),
+                        bgColor: Globals.colorList[colorMap],
                         title: _portofolioList[index].portofolioCompanyDescription,
+                        subTitle: "- ${_portofolioList[index].portofolioTotalProduct} product(s)",
                         value: _portofolioList[index].portofolioTotalValue,
                         cost: _portofolioList[index].portofolioTotalCost,
-                        type: _args.type,
-                        subType: _portofolioList[index].portofolioCompanyType
+                        total: _portofolioTotalValue,
                       );
-
-                      Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
-                    }
-                  }),
-                  bgColor: Globals.colorList[colorMap],
-                  title: _portofolioList[index].portofolioCompanyDescription,
-                  subTitle: "- ${_portofolioList[index].portofolioTotalProduct} product(s)",
-                  value: _portofolioList[index].portofolioTotalValue,
-                  cost: _portofolioList[index].portofolioTotalCost,
-                  total: _portofolioTotalValue,
-                );
-              })),
+                    })),
+                  ),
+                  const SizedBox(height: 30,),
+                ],
+              ),
             ),
-            const SizedBox(height: 30,),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

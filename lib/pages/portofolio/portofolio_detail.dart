@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/portofolio_api.dart';
 import 'package:my_wealth/model/portofolio_detail_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -20,6 +23,7 @@ class PortofolioDetailPage extends StatefulWidget {
 class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   final ScrollController _scrollController = ScrollController();
   final PortofolioAPI _portofolioAPI = PortofolioAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
   
   late PortofolioListArgs _args;
   
@@ -108,109 +112,142 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
           )
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Total",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 5,),
-                        Text(
-                          formatCurrency(_args.value, false, false, false),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Gain",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(
-                              trendIcon,
-                              size: 15,
-                              color: trendColor,
-                            ),
-                            const SizedBox(width: 5,),
-                            Text(
-                              formatCurrency(_gain, false, false, false),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: trendColor
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Total",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "${_gain > 0 ? '+' : ''}${formatDecimal((_gain / _args.value), 2)}%",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                            color: trendColor
+                              const SizedBox(height: 5,),
+                              Text(
+                                formatCurrency(_args.value, false, false, false),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Gain",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    trendIcon,
+                                    size: 15,
+                                    color: trendColor,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    formatCurrency(_gain, false, false, false),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      color: trendColor
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "${_gain > 0 ? '+' : ''}${formatDecimal((_gain / _args.value), 2)}%",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                  color: trendColor
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List<Widget>.generate(_portofolioList.length, ((index) {
+                      int colorMap = (index % Globals.colorList.length);
+                      
+                      return ProductListItem(
+                        bgColor: Globals.colorList[colorMap],
+                        title: (_args.type == 'reksadana' ? _portofolioList[index].companyName : "(${_portofolioList[index].companyCode}) ${_portofolioList[index].companyName}"),
+                        subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} share(s)",
+                        value: _portofolioList[index].watchlistSubTotalValue,
+                        cost: _portofolioList[index].watchlistSubTotalCost,
+                        total: _portofolioTotalValue,
+                        onTap: (() async {
+                          showLoaderDialog(context);
+                          await _companyAPI.getCompanyByCode(_portofolioList[index].companyCode, _args.type).then((resp) {
+                            CompanyDetailArgs companyArgs = CompanyDetailArgs(
+                              companyId: resp.companyId,
+                              companyName: resp.companyName,
+                              companyCode: (resp.companySymbol ?? ''),
+                              companyFavourite: (resp.companyFavourites ?? false),
+                              favouritesId: (resp.companyFavouritesId ?? -1),
+                              type: _args.type,
+                            );
+                            
+                            // remove the loader dialog
+                            Navigator.pop(context);
+
+                            // go to the company page
+                            Navigator.pushNamed(context, '/company/detail/${_args.type}', arguments: companyArgs);
+                          }).onError((error, stackTrace) {
+                            // remove the loader dialog
+                            Navigator.pop(context);
+
+                            // show the error message
+                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                          });
+                        }),
+                      );
+                    })),
+                  ),
+                  const SizedBox(height: 30,),
+                ],
+              ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: List<Widget>.generate(_portofolioList.length, ((index) {
-                int colorMap = (index % Globals.colorList.length);
-                
-                return ProductListItem(
-                  bgColor: Globals.colorList[colorMap],
-                  title: (_portofolioList[index].companyCode.isNotEmpty ? "(${_portofolioList[index].companyCode}) ${_portofolioList[index].companyName}" : _portofolioList[index].companyName),
-                  subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} share(s)",
-                  value: _portofolioList[index].watchlistSubTotalValue,
-                  cost: _portofolioList[index].watchlistSubTotalCost,
-                  total: _portofolioTotalValue,
-                );
-              })),
-            ),
-            const SizedBox(height: 30,),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

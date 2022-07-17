@@ -10,6 +10,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
@@ -34,6 +35,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
   late IndexModel _index;
   late UserLoginInfoModel? _userInfo;
+  late String _indexName;
 
   double _priceDiff = 0;
   Color _riskColor = Colors.green;
@@ -51,6 +53,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   void initState() {
     super.initState();
     _index = widget.index as IndexModel;
+    _indexName = _index.indexName;
+    if (Globals.indexName.containsKey(_index.indexName)) {
+      _indexName = "($_indexName) ${Globals.indexName[_indexName]}";
+    }
     _userInfo = UserSharedPreferences.getUserInfo();
 
     _priceDiff = _index.indexNetAssetValue - _index.indexPrevPrice;
@@ -148,7 +154,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            _index.indexName,
+                            _indexName,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,

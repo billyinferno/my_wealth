@@ -528,6 +528,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       children: <Widget>[
         TabBar(
           controller: _tabController,
+          isScrollable: true,
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
             Tab(text: 'FUNDAMENTAL',),

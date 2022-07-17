@@ -75,79 +75,87 @@ class _PortofolioPageState extends State<PortofolioPage> {
         _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
         _generateBarChartData();
 
-        return SingleChildScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              _summaryBox(
-                barColor: riskColor(_watchlistAll!.totalValue, _watchlistAll!.totalCost, _userInfo!.risk),
-                backgroundColor: primaryDark,
-                value: _watchlistAll!.totalValue,
-                cost: _watchlistAll!.totalCost,
-                dayGain: _watchlistAll!.totalDayGain,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    _summaryBox(
+                      barColor: riskColor(_watchlistAll!.totalValue, _watchlistAll!.totalCost, _userInfo!.risk),
+                      backgroundColor: primaryDark,
+                      value: _watchlistAll!.totalValue,
+                      cost: _watchlistAll!.totalCost,
+                      dayGain: _watchlistAll!.totalDayGain,
+                    ),
+                    const SizedBox(height: 10,),
+                    BarChart(
+                      data: _barChartData
+                    ),
+                    const SizedBox(height: 20,),
+                    ProductListItem(
+                      bgColor: Colors.green,
+                      title: "Reksadana",
+                      value: _watchlistAll!.totalValueReksadana,
+                      cost: _watchlistAll!.totalCostReksadana,
+                      total: _watchlistAll!.totalValue,
+                      onTap: (() {
+                        PortofolioListArgs args = PortofolioListArgs(
+                          title: "Reksadana",
+                          value: _watchlistAll!.totalValueReksadana,
+                          cost: _watchlistAll!.totalCostReksadana,
+                          type: "reksadana"
+                        );
+                        Navigator.pushNamed(context, '/portofolio/list', arguments: args);
+                      })
+                    ),
+                    ProductListItem(
+                      bgColor: Colors.pink,
+                      title: "Stock",
+                      value: _watchlistAll!.totalValueSaham,
+                      cost: _watchlistAll!.totalCostSaham,
+                      total: _watchlistAll!.totalValue,
+                      onTap: (() {
+                        PortofolioListArgs args = PortofolioListArgs(
+                          title: "Stock",
+                          value: _watchlistAll!.totalValueSaham,
+                          cost: _watchlistAll!.totalCostSaham,
+                          type: "saham"
+                        );
+                        Navigator.pushNamed(context, '/portofolio/list', arguments: args);
+                      })
+                    ),
+                    ProductListItem(
+                      bgColor: Colors.purple,
+                      title: "Crypto",
+                      value: _watchlistAll!.totalValueCrypto,
+                      cost: _watchlistAll!.totalCostCrypto,
+                      total: _watchlistAll!.totalValue,
+                      onTap: (() {
+                        // do nothing, we just want to showed the chevron icon here
+                      })
+                    ),
+                    ProductListItem(
+                      bgColor: Colors.amber,
+                      title: "Gold",
+                      value: _watchlistAll!.totalValueGold,
+                      cost: _watchlistAll!.totalCostGold,
+                      total: _watchlistAll!.totalValue,
+                      onTap: (() {
+                        // do nothing, we just want to showed the chevron icon here
+                      })
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 10,),
-              BarChart(
-                data: _barChartData
-              ),
-              const SizedBox(height: 20,),
-              ProductListItem(
-                bgColor: Colors.green,
-                title: "Reksadana",
-                value: _watchlistAll!.totalValueReksadana,
-                cost: _watchlistAll!.totalCostReksadana,
-                total: _watchlistAll!.totalValue,
-                onTap: (() {
-                  PortofolioListArgs args = PortofolioListArgs(
-                    title: "Reksadana",
-                    value: _watchlistAll!.totalValueReksadana,
-                    cost: _watchlistAll!.totalCostReksadana,
-                    type: "reksadana"
-                  );
-                  Navigator.pushNamed(context, '/portofolio/list', arguments: args);
-                })
-              ),
-              ProductListItem(
-                bgColor: Colors.pink,
-                title: "Stock",
-                value: _watchlistAll!.totalValueSaham,
-                cost: _watchlistAll!.totalCostSaham,
-                total: _watchlistAll!.totalValue,
-                onTap: (() {
-                  PortofolioListArgs args = PortofolioListArgs(
-                    title: "Stock",
-                    value: _watchlistAll!.totalValueSaham,
-                    cost: _watchlistAll!.totalCostSaham,
-                    type: "saham"
-                  );
-                  Navigator.pushNamed(context, '/portofolio/list', arguments: args);
-                })
-              ),
-              ProductListItem(
-                bgColor: Colors.purple,
-                title: "Crypto",
-                value: _watchlistAll!.totalValueCrypto,
-                cost: _watchlistAll!.totalCostCrypto,
-                total: _watchlistAll!.totalValue,
-                onTap: (() {
-                  // do nothing, we just want to showed the chevron icon here
-                })
-              ),
-              ProductListItem(
-                bgColor: Colors.amber,
-                title: "Gold",
-                value: _watchlistAll!.totalValueGold,
-                cost: _watchlistAll!.totalCostGold,
-                total: _watchlistAll!.totalValue,
-                onTap: (() {
-                  // do nothing, we just want to showed the chevron icon here
-                })
-              ),
-            ],
-          ),
+            ),
+          ],
         );
       }),
     );

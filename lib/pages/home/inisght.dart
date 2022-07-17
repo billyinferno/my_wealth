@@ -35,6 +35,7 @@ class InsightPageState extends State<InsightPage> with SingleTickerProviderState
       children: <Widget>[
         TabBar(
           controller: _tabController,
+          isScrollable: true,
           tabs: const <Widget>[
             Tab(text: 'BROKER',),
             Tab(text: 'STOCK',),

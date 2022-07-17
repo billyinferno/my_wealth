@@ -120,6 +120,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
               children: <Widget>[
                 TabBar(
                   controller: _tabController,
+                  isScrollable: true,
                   tabs: const <Widget>[
                     Tab(text: 'SUB SECTOR',),
                     Tab(text: 'INDUSTRY',),

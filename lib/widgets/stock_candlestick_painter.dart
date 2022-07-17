@@ -46,7 +46,11 @@ class StockCandleStickPainter extends CustomPainter {
     totalData = stockData.length - 1;
 
     // return if no stock data
-    if (stockData.isEmpty) return;
+    if (stockData.isEmpty) {
+      // draw border only if the stock is empty
+      _drawBorder(canvas, size);
+      return;
+    }
 
     // draw the max - min and the middle
     _drawCurrency(canvas, size);

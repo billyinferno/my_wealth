@@ -28,8 +28,12 @@ class StockVolumePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // if the stock data is empty, then just return blank painter
-    if (stockData.isEmpty) return;
+    // if the stock data is empty, then just return border only
+    if (stockData.isEmpty) {
+      // just draw a border if the stock is empty
+      _drawBorder(canvas, size);
+      return;
+    }
 
     totalData = stockData.length - 1;
     padding = (padding ?? 20);

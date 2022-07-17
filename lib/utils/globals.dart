@@ -25,7 +25,7 @@ class Globals {
     const Color.fromRGBO(255,105,180,1), // hot pink
     const Color.fromRGBO(255,228,196,1), // bisque
     const Color.fromRGBO(222,184,135,1), // burly brown
-    // -- 3rd share --
+    // -- 3rd shade --
     const Color.fromRGBO(240,128,128,1), // light coral
     const Color.fromRGBO(240,230,140,1), // khaki
     const Color.fromRGBO(34,139,34,1), // forest green
@@ -34,6 +34,35 @@ class Globals {
     const Color.fromRGBO(245,222,179,1), // wheat
     const Color.fromRGBO(255,222,173,1), // navajo white
   ];
+
+  // index name
+  static Map<String,String> indexName = {
+    'IHSG'   : 'IDX Composite',
+    'LQ45'   : 'Indeks LQ45',
+    'ISSI'   : 'Indonesia Sharia Stock Index',
+    'JII'    : 'Jakarta Islamic Index',
+    'JII 70' : 'Jakarta Islamic Index 70',
+    'PCMBI'  : 'Bond Index',
+    'PCCMBI' : 'Conventional Bond Index',
+    'PCCBI'  : 'Conventional Corporate Bond Index',
+    'PCGBI'  : 'Conventional Government Bond Index',
+    'PCBI'   : 'Corporate Bond Index',
+    'PGBI'   : 'Government Bond Index',
+    'PIRC'   : 'Indeks Reksadana Campuran',
+    'PIRC-S' : 'Indeks Reksadana Campuran - Syariah',
+    'PIRFI'  : 'Indeks Reksadana Pendapatan Tetap',
+    'PIRFI-S': 'Indeks Reksadana Pendapatan Tetap - Syariah',
+    'PIRS'   : 'Indeks Reksadana Saham',
+    'PIRS-S' : 'Indeks Reksadana Saham - Syariah',
+    'PIUC'   : 'Indeks Unitlink Campuran',
+    'PIUPU'  : 'Indeks Unitlink Pasar Uang',
+    'PIUFI'  : 'Indeks Unitlink Pendapatan Tetap',
+    'PIUS'   : 'Indeks Unitlink Saham',
+    'PIRPU'  : 'Index Reksadana Pasar Uang',
+    'PSCMBI' : 'Sharia Bond Index',
+    'PSCBI'  : 'Sharia Corporate Bond Index',
+    'PSGBI'  : 'Sharia Government Bond Index',
+  };
 
   // icon list for sector
   static Map<String, IconData> sectorIcon = {

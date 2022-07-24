@@ -14,10 +14,15 @@ docker build -t adimartha/my_wealth .
 
 # once finished build then get the current tag from the environment file
 tag=`cat env/.prod.env | sed '2q;d' | awk -F "=" '{print $2}' | sed "s/['\"]//g" | awk -F "-" '{print $1}'`
+echo current tag is $tag
 
 # then tag the latest docker image to the current tag
+echo tag latest image to $tag
 docker image tag adimartha/my_wealth:latest adimartha/my_wealth:$tag
 
 # push both of the image to the docker repo
+echo push latest docker image
 docker image push adimartha/my_wealth:latest
+
+echo push $tag docker image
 docker image push adimartha/my_wealth:$tag

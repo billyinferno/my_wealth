@@ -7,6 +7,7 @@ import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/info_fundamental_api.dart';
 import 'package:my_wealth/api/info_sahams_api.dart';
 import 'package:my_wealth/api/price_api.dart';
+import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
@@ -14,6 +15,7 @@ import 'package:my_wealth/model/info_fundamentals_model.dart';
 import 'package:my_wealth/model/info_saham_price_model.dart';
 import 'package:my_wealth/model/price_saham_ma_model.dart';
 import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
@@ -57,12 +59,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late List<InfoFundamentalsModel> _infoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
   late String _brokerSummarySelected;
+  late Map<DateTime, WatchlistDetailListModel> _watchlistDetail;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final PriceAPI _priceAPI = PriceAPI();
   final InfoFundamentalAPI _infoFundamentalAPI = InfoFundamentalAPI();
   final InfoSahamsAPI _infoSahamsAPI = InfoSahamsAPI();
+  final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
 
   late DateTime _brokerSummaryDateFrom;
@@ -102,6 +106,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // initialize graph data
     _graphData = {};
+
+    // assuming we don't have any watchlist detail
+    _watchlistDetail = {};
 
     Future.microtask(() async {
       // show the loader dialog
@@ -171,6 +178,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
         // generate map data
         _generateGraphData(_infoSahamPrice, _companyDetail);   
+      });
+
+      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+        // if we got response then map it to the map, so later we can sent it
+        // to the graph for rendering the time when we buy the share
+        DateTime tempDate;
+        for(WatchlistDetailListModel data in resp) {
+          tempDate = data.watchlistDetailDate.toLocal();
+          _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data;
+        }
       });
     }).onError((error, stackTrace) {
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
@@ -1952,6 +1969,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 LineChart(
                   data: _graphData!,
                   height: 250,
+                  watchlist: _watchlistDetail,
                 ),
                 const SizedBox(height: 5,),
                 SizedBox(

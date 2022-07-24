@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart_painter.dart';
 
 class LineChart extends StatelessWidget {
   final Map<DateTime, GraphData> data;
+  final Map<DateTime, WatchlistDetailListModel>? watchlist;
   final double? height;
-  const LineChart({ Key? key, required this.data, this.height }) : super(key: key);
+  const LineChart({ Key? key, required this.data, this.height, this.watchlist }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +15,7 @@ class LineChart extends StatelessWidget {
     return CustomPaint(
       painter: LineChartPainter(
         data: _convertDataToList(),
+        watchlist: watchlist,
       ),
       child: Container(
         height: chartHeight,

@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/price_model.dart';
 import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -37,8 +40,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
+  late Map<DateTime, WatchlistDetailListModel> _watchlistDetail;
   
   final CompanyAPI _companyApi = CompanyAPI();
+  final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
 
   bool _isLoading = true;
@@ -68,6 +73,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     // initialize graph data
     _graphData = {};
 
+    // assuming we don't have any watchlist detail
+    _watchlistDetail = {};
+
     Future.microtask(() async {
       // show the loader dialog
       showLoaderDialog(context);
@@ -78,11 +86,25 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         
         // generate map data
         _generateGraphData(resp);        
-      }).whenComplete(() {
-        // once finished then remove the loader dialog
-        Navigator.pop(context);
-        _setIsLoading(false);
       });
+
+      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+        // if we got response then map it to the map, so later we can sent it
+        // to the graph for rendering the time when we buy the share
+        DateTime tempDate;
+        for(WatchlistDetailListModel data in resp) {
+          tempDate = data.watchlistDetailDate.toLocal();
+          _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data;
+        }
+      });
+    }).onError((error, stackTrace) {
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
+    }).whenComplete(() {
+      // once finished then remove the loader dialog
+      Navigator.pop(context);
+      _setIsLoading(false);
     });
   }
 
@@ -777,6 +799,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       child: LineChart(
         data: _graphData!,
         height: 250,
+        watchlist: _watchlistDetail,
       ),
     ));
 

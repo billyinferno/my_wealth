@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -6,7 +7,9 @@ import 'package:my_wealth/widgets/heat_graph.dart';
 
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
-  const LineChartPainter({required this.data});
+  final Map<DateTime, WatchlistDetailListModel>? watchlist;
+  
+  const LineChartPainter({required this.data, this.watchlist});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -78,6 +81,10 @@ class LineChartPainter extends CustomPainter {
       ..color = primaryLight
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
+    Paint watchlistPaintBuy = Paint()
+      ..color = accentColor;
+    Paint watchlistPaintSell = Paint()
+      ..color = extendedLight;
     
     // draw the guides
     // draw vertical lines
@@ -121,6 +128,17 @@ class LineChartPainter extends CustomPainter {
     // loop thru data
     for (GraphData value in data) {
       y = 10 + graphRect.height - ((value.price - min) * ratio);
+
+      // check if watchlist is not null
+      if (watchlist != null) {
+        if (watchlist!.isNotEmpty) {
+          // check if this date is on the watchlist or not?
+          if (watchlist!.containsKey(value.date)) {
+            // got the date, so now we can just draw the circle in this position
+            canvas.drawCircle(Offset(x, y), 3.0, (watchlist![value.date]!.watchlistDetailShare > 0 ? watchlistPaintBuy : watchlistPaintSell));
+          }
+        }
+      }
 
       // check whether this is the first data?
       if(isFirst) {

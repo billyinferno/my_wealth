@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/company_search_model.dart';
+import 'package:my_wealth/model/company_top_broker_model.dart';
 import 'package:my_wealth/model/sector_name_list_model.dart';
 import 'package:my_wealth/model/sector_per_detail_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
@@ -13,6 +15,7 @@ import 'package:my_wealth/utils/prefs/shared_user.dart';
 
 class CompanyAPI {
   late String _bearerToken;
+  final DateFormat _df = DateFormat('yyyy-MM-dd');
 
   CompanyAPI() {
     // get the bearer token from user shared secured box
@@ -252,6 +255,41 @@ class CompanyAPI {
         CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
         SectorPerDetailModel per = SectorPerDetailModel.fromJson(commonModel.data['attributes']);
         return per;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      String dateFromString = _df.format(fromDate);
+      String dateToString = _df.format(toDate);
+
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/broker/$code/from/$dateFromString/to/$dateToString'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        CompanyTopBrokerModel topBroker = CompanyTopBrokerModel.fromJson(commonModel.data['attributes']);
+        return topBroker;
       }
 
       // status code is not 200, means we got error

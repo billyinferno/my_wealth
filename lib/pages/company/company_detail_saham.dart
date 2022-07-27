@@ -11,6 +11,7 @@ import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
+import 'package:my_wealth/model/company_top_broker_model.dart';
 import 'package:my_wealth/model/info_fundamentals_model.dart';
 import 'package:my_wealth/model/info_saham_price_model.dart';
 import 'package:my_wealth/model/price_saham_ma_model.dart';
@@ -53,6 +54,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
   late BrokerSummaryModel _brokerSummary;
+  late CompanyTopBrokerModel _topBroker;
   late BrokerSummaryBuySellModel _brokerSummaryBuySell;
   late BrokerSummaryDateModel _brokerSummaryDate;
   late PriceSahamMovingAverageModel _priceMA;
@@ -71,6 +73,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
+  late DateTime _topBrokerDateFrom;
+  late DateTime _topBrokerDateTo;
   
   bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
@@ -126,13 +130,23 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
           // set the broker summary date based on the last update of the company
           _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());
-          _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());     
+          _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());    
+
+          // we will try to get the broker data for 3 month of current date
+          _topBrokerDateTo =  (_companyDetail.companyLastUpdate ?? DateTime.now());
+          _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
       });
 
       await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
         _brokerSummary = resp;
         _brokerSummaryBuySell = resp.brokerSummaryAll;
         _brokerSummarySelected = "a";
+      });
+
+      await _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo).then((resp) {
+        _topBroker = resp;
+        _topBrokerDateFrom = resp.brokerMinDate;
+        _topBrokerDateTo = resp.brokerMaxDate;
       });
 
       await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
@@ -1348,6 +1362,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
+                  const Center(
+                    child: Text(
+                      "Broker Summary",
+                      style: TextStyle(
+                        color: secondaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
                   InkWell(
                     onTap: (() async {
                       // check for the max date to avoid any assertion that the initial date range
@@ -1520,6 +1544,194 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "Top Broker",
+                      style: TextStyle(
+                        color: secondaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  InkWell(
+                    onTap: (() async {
+                      // check for the max date to avoid any assertion that the initial date range
+                      // is more than the lastDate
+                      DateTime maxDate = _brokerSummaryDate.brokerMaxDate.toLocal();
+                      DateTime minDate = _brokerSummaryDate.brokerMinDate.toLocal();
+                      if (maxDate.isBefore(_topBrokerDateTo.toLocal())) {
+                        maxDate = _topBrokerDateTo;
+                      }
+                      if (minDate.isAfter(_topBrokerDateFrom.toLocal())) {
+                        minDate = _topBrokerDateFrom;
+                      }
+
+                      DateTimeRange? result = await showDateRangePicker(
+                        context: context,
+                        firstDate: minDate.toLocal(),
+                        lastDate: maxDate.toLocal(),
+                        initialDateRange: DateTimeRange(start: _topBrokerDateFrom.toLocal(), end: _topBrokerDateTo.toLocal()),
+                        confirmText: 'Done',
+                        currentDate: _companyDetail.companyLastUpdate,
+                      );
+
+                      // check if we got the result or not?
+                      if (result != null) {
+                        // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                        if ((result.start.compareTo(_topBrokerDateFrom) != 0) || (result.end.compareTo(_topBrokerDateTo) != 0)) {                      
+                          // set the broker from and to date
+                          _topBrokerDateFrom = result.start;
+                          _topBrokerDateTo = result.end;
+
+                          await _getTopBroker();
+                        }
+                      }
+                    }),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          _df.format(_topBroker.brokerMinDate.toLocal()),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        const Text(
+                          " - ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        Text(
+                          _df.format(_topBroker.brokerMaxDate.toLocal()),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        const Icon(
+                          Ionicons.calendar_outline,
+                          size: 15,
+                          color: secondaryLight,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: primaryDark,
+                      border: Border.all(color: primaryLight, width: 1.0, style: BorderStyle.solid),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            "ID",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ),
+                        SizedBox(width: 5,),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Current Lot",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ),
+                        SizedBox(width: 5,),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Avg Price",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ),
+                        SizedBox(width: 5,),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Value",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                  ...List.generate(
+                    _topBroker.brokerData.length,
+                    (index) {
+                      return Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            left: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            ),
+                            right: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            ),
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: Text(_topBroker.brokerData[index].brokerSummaryId)
+                            ),
+                            const SizedBox(width: 5,),
+                            Expanded(
+                              flex: 2,
+                              child: Text(formatIntWithNull(_topBroker.brokerData[index].brokerSummaryLot, false, false))
+                            ),
+                            const SizedBox(width: 5,),
+                            Expanded(
+                              flex: 2,
+                              child: Text(formatCurrency(_topBroker.brokerData[index].brokerSummaryAverage, false, false, false))
+                            ),
+                            const SizedBox(width: 5,),
+                            Expanded(
+                              flex: 2,
+                              child: Text(formatIntWithNull(_topBroker.brokerData[index].brokerSummaryValue))
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   ),
                 ],
               ),
@@ -2113,6 +2325,28 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       Navigator.pop(context);
       // show snack bar
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get broker data from server'));
+      // show error
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
+    });
+  }
+
+  Future<void> _getTopBroker() async {
+    // show loader dialog
+    showLoaderDialog(context);
+
+    // get the broker summary
+    await _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom.toLocal(), _topBrokerDateTo.toLocal()).then((resp) {
+      setState(() {
+        _topBroker = resp;
+      });
+      // remove the loader dialog
+      Navigator.pop(context);
+    }).onError((error, stackTrace) {
+      // remove the loader dialog
+      Navigator.pop(context);
+      // show snack bar
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get top broker data from server'));
       // show error
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);

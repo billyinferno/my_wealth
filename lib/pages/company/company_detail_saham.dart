@@ -70,6 +70,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final InfoSahamsAPI _infoSahamsAPI = InfoSahamsAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
+  final TextStyle _topBrokerHeader = TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 10,);
+  final TextStyle _topBrokerRow = TextStyle(fontSize: 10,);
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
@@ -1634,48 +1636,52 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: const <Widget>[
+                      children: <Widget>[
                         Expanded(
                           flex: 1,
                           child: Text(
                             "ID",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: _topBrokerHeader,
                           )
                         ),
-                        SizedBox(width: 5,),
+                        const SizedBox(width: 3,),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Text(
-                            "Current Lot",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            "Lot",
+                            style: _topBrokerHeader,
                           )
                         ),
-                        SizedBox(width: 5,),
+                        const SizedBox(width: 3,),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
                           child: Text(
-                            "Avg Price",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            "Avg",
+                            style: _topBrokerHeader,
                           )
                         ),
-                        SizedBox(width: 5,),
+                        const SizedBox(width: 3,),
                         Expanded(
-                          flex: 2,
+                          flex: 3,
+                          child: Text(
+                            "Cost",
+                            style: _topBrokerHeader,
+                          )
+                        ),
+                        const SizedBox(width: 3,),
+                        Expanded(
+                          flex: 3,
                           child: Text(
                             "Value",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: _topBrokerHeader,
+                          )
+                        ),
+                        const SizedBox(width: 3,),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            "Diff",
+                            style: _topBrokerHeader,
                           )
                         ),
                       ],
@@ -1684,6 +1690,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                   ...List.generate(
                     _topBroker.brokerData.length,
                     (index) {
+                      double currentValue = _topBroker.brokerData[index].brokerSummaryLot * (_companyDetail.companyNetAssetValue ?? 0);
+                      double currentDiff = (currentValue - _topBroker.brokerData[index].brokerSummaryValue);
                       return Container(
                         padding: const EdgeInsets.all(5),
                         decoration: const BoxDecoration(
@@ -1711,22 +1719,52 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                           children: <Widget>[
                             Expanded(
                               flex: 1,
-                              child: Text(_topBroker.brokerData[index].brokerSummaryId)
+                              child: Text(
+                                _topBroker.brokerData[index].brokerSummaryId,
+                                style: _topBrokerRow,
+                              )
                             ),
-                            const SizedBox(width: 5,),
+                            const SizedBox(width: 3,),
                             Expanded(
-                              flex: 2,
-                              child: Text(formatIntWithNull(_topBroker.brokerData[index].brokerSummaryLot, false, false))
+                              flex: 3,
+                              child: Text(
+                                formatIntWithNull(_topBroker.brokerData[index].brokerSummaryLot, false, false),
+                                style: _topBrokerRow,
+                              )
                             ),
-                            const SizedBox(width: 5,),
+                            const SizedBox(width: 3,),
                             Expanded(
-                              flex: 2,
-                              child: Text(formatCurrency(_topBroker.brokerData[index].brokerSummaryAverage, false, false, false))
+                              flex: 3,
+                              child: Text(
+                                formatCurrency(_topBroker.brokerData[index].brokerSummaryAverage, false, false, true),
+                                style: _topBrokerRow,
+                              )
                             ),
-                            const SizedBox(width: 5,),
+                            const SizedBox(width: 3,),
                             Expanded(
-                              flex: 2,
-                              child: Text(formatIntWithNull(_topBroker.brokerData[index].brokerSummaryValue))
+                              flex: 3,
+                              child: Text(
+                                formatIntWithNull(_topBroker.brokerData[index].brokerSummaryValue),
+                                style: _topBrokerRow,
+                              )
+                            ),
+                            const SizedBox(width: 3,),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                formatCurrency(currentValue, false, false, true),
+                                style: _topBrokerRow,
+                              )
+                            ),
+                            const SizedBox(width: 3,),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                formatCurrency(currentDiff, false, false, true),
+                                style: _topBrokerRow.copyWith(
+                                  color: (currentDiff < 0 ? secondaryColor : currentDiff > 0 ? Colors.green : textPrimary)
+                                ),
+                              )
                             ),
                           ],
                         ),

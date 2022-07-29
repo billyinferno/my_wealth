@@ -63,6 +63,7 @@ class TransparentButton extends StatelessWidget {
                       style: TextStyle(
                         color: currentTextColor,
                         fontSize: currentTextSize,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
@@ -79,6 +80,7 @@ class TransparentButton extends StatelessWidget {
                   style: TextStyle(
                     color: currentTextColor,
                     fontSize: currentTextSize,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),

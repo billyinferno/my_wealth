@@ -68,6 +68,7 @@ class ProductListItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
+                      flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -79,17 +80,42 @@ class ProductListItem extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 5,),
-                          Text(
-                            "${formatDecimalWithNull(itemPercentage, 100, 2)}% ${subTitle ?? ''}",
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(width: 5,),
+                              Visibility(
+                                visible: (subTitle == null ? false : true),
+                                child: const Icon(
+                                  Ionicons.ellipse,
+                                  size: 5,
+                                )
+                              ),
+                              const SizedBox(width: 5,),
+                              Visibility(
+                                visible: (subTitle == null ? false : true),
+                                child: Text(
+                                  subTitle ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 5,),
                     Expanded(
+                      flex: 2,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.start,

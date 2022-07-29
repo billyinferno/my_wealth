@@ -193,7 +193,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                                 ],
                               ),
                               Text(
-                                "${_gain > 0 ? '+' : ''}${formatDecimal((_gain / _args.value), 2)}%",
+                                "${_gain > 0 ? '+' : ''}${formatDecimalWithNull((_gain / _args.value), 100, 2)}%",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 10,
@@ -238,7 +238,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                         }),
                         bgColor: Globals.colorList[colorMap],
                         title: _portofolioList[index].portofolioCompanyDescription,
-                        subTitle: "- ${_portofolioList[index].portofolioTotalProduct} product(s)",
+                        subTitle: "${_portofolioList[index].portofolioTotalProduct} product${int.tryParse(_portofolioList[index].portofolioTotalProduct)! > 1 ? "s" : ""}",
                         value: _portofolioList[index].portofolioTotalValue,
                         cost: _portofolioList[index].portofolioTotalCost,
                         total: _portofolioTotalValue,

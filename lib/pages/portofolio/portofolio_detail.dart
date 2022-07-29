@@ -188,7 +188,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                                 ],
                               ),
                               Text(
-                                "${_gain > 0 ? '+' : ''}${formatDecimal((_gain / _args.value), 2)}%",
+                                "${_gain > 0 ? '+' : ''}${formatDecimalWithNull((_gain / _args.value), 100, 2)}%",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 10,
@@ -210,7 +210,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                       return ProductListItem(
                         bgColor: Globals.colorList[colorMap],
                         title: (_args.type == 'reksadana' ? _portofolioList[index].companyName : "(${_portofolioList[index].companyCode}) ${_portofolioList[index].companyName}"),
-                        subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} share(s)",
+                        subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} shares",
                         value: _portofolioList[index].watchlistSubTotalValue,
                         cost: _portofolioList[index].watchlistSubTotalCost,
                         total: _portofolioTotalValue,

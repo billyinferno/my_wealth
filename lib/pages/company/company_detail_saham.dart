@@ -18,6 +18,7 @@ import 'package:my_wealth/model/price_saham_ma_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -1690,83 +1691,91 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                   ...List.generate(
                     _topBroker.brokerData.length,
                     (index) {
-                      double currentValue = _topBroker.brokerData[index].brokerSummaryLot * (_companyDetail.companyNetAssetValue ?? 0);
-                      double currentDiff = (currentValue - _topBroker.brokerData[index].brokerSummaryValue);
-                      return Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            left: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                            right: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
+                      double currentValue = (_topBroker.brokerData[index].brokerSummaryLot * (_companyDetail.companyNetAssetValue ?? 0)) * 100;
+                      double currentDiff = (currentValue - (_topBroker.brokerData[index].brokerSummaryValue * 100));
+                      return InkWell(
+                        onTap: (() {
+                          BrokerDetailArgs args = BrokerDetailArgs(
+                            brokerFirmID: _topBroker.brokerData[index].brokerSummaryId
+                          );
+                          Navigator.pushNamed(context, '/broker/detail', arguments: args);
+                        }),
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              left: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              right: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              )
                             )
-                          )
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                _topBroker.brokerData[index].brokerSummaryId,
-                                style: _topBrokerRow,
-                              )
-                            ),
-                            const SizedBox(width: 3,),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                formatIntWithNull(_topBroker.brokerData[index].brokerSummaryLot, false, false),
-                                style: _topBrokerRow,
-                              )
-                            ),
-                            const SizedBox(width: 3,),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                formatCurrency(_topBroker.brokerData[index].brokerSummaryAverage, false, false, true),
-                                style: _topBrokerRow,
-                              )
-                            ),
-                            const SizedBox(width: 3,),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                formatIntWithNull(_topBroker.brokerData[index].brokerSummaryValue),
-                                style: _topBrokerRow,
-                              )
-                            ),
-                            const SizedBox(width: 3,),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                formatCurrency(currentValue, false, false, true),
-                                style: _topBrokerRow,
-                              )
-                            ),
-                            const SizedBox(width: 3,),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                formatCurrency(currentDiff, false, false, true),
-                                style: _topBrokerRow.copyWith(
-                                  color: (currentDiff < 0 ? secondaryColor : currentDiff > 0 ? Colors.green : textPrimary)
-                                ),
-                              )
-                            ),
-                          ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  _topBroker.brokerData[index].brokerSummaryId,
+                                  style: _topBrokerRow,
+                                )
+                              ),
+                              const SizedBox(width: 3,),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  formatIntWithNull(_topBroker.brokerData[index].brokerSummaryLot, false, false),
+                                  style: _topBrokerRow,
+                                )
+                              ),
+                              const SizedBox(width: 3,),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  formatCurrency(_topBroker.brokerData[index].brokerSummaryAverage, false, false, true),
+                                  style: _topBrokerRow,
+                                )
+                              ),
+                              const SizedBox(width: 3,),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  formatIntWithNull(_topBroker.brokerData[index].brokerSummaryValue * 100),
+                                  style: _topBrokerRow,
+                                )
+                              ),
+                              const SizedBox(width: 3,),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  formatCurrency(currentValue, false, false, true),
+                                  style: _topBrokerRow,
+                                )
+                              ),
+                              const SizedBox(width: 3,),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  formatCurrency(currentDiff, false, false, true),
+                                  style: _topBrokerRow.copyWith(
+                                    color: (currentDiff < 0 ? secondaryColor : currentDiff > 0 ? Colors.green : textPrimary)
+                                  ),
+                                )
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }
@@ -1786,30 +1795,24 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     bool isBoldUse = (isBold ?? false);
     double fontSizeUse = (fontSize ?? 10);
 
-    return Container(
-      color: backgroundColorUse,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-            width: 30,
-            child: Text(
-              brokerCode,
-              style: TextStyle(
-                fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-                fontSize: fontSizeUse,
-                color: textColorUse,
-              ),
-            ),
-          ),
-          const SizedBox(width: 5,),
-          Expanded(
-            child: Container(
+    return InkWell(
+      onTap: (() {
+        BrokerDetailArgs args = BrokerDetailArgs(
+          brokerFirmID: brokerCode
+        );
+        Navigator.pushNamed(context, '/broker/detail', arguments: args);
+      }),
+      child: Container(
+        color: backgroundColorUse,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
               padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+              width: 30,
               child: Text(
-                lot,
+                brokerCode,
                 style: TextStyle(
                   fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
                   fontSize: fontSizeUse,
@@ -1817,36 +1820,50 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 5,),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-                  fontSize: fontSizeUse,
-                  color: textColorUse,
+            const SizedBox(width: 5,),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Text(
+                  lot,
+                  style: TextStyle(
+                    fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                    fontSize: fontSizeUse,
+                    color: textColorUse,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 5,),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-              child: Text(
-                average,
-                style: TextStyle(
-                  fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-                  fontSize: fontSizeUse,
-                  color: textColorUse,
+            const SizedBox(width: 5,),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                    fontSize: fontSizeUse,
+                    color: textColorUse,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 5,),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Text(
+                  average,
+                  style: TextStyle(
+                    fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
+                    fontSize: fontSizeUse,
+                    color: textColorUse,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

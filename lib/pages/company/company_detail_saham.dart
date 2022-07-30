@@ -71,8 +71,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final InfoSahamsAPI _infoSahamsAPI = InfoSahamsAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
-  final TextStyle _topBrokerHeader = TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 10,);
-  final TextStyle _topBrokerRow = TextStyle(fontSize: 10,);
+  final TextStyle _topBrokerHeader = const TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 10,);
+  final TextStyle _topBrokerRow = const TextStyle(fontSize: 10,);
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;

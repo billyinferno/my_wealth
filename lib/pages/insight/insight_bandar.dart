@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
-import 'package:my_wealth/pages/insight/insight_page/insight_bandar_atl_page.dart';
+import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';

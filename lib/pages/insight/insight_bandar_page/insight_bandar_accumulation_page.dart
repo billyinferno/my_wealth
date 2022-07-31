@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/utils/prefs/shared_broker.dart';
+import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/number_stepper.dart';
 
 class InsightBandarAccumulationPage extends StatefulWidget {
@@ -20,6 +24,8 @@ class InsightBandarAccumulationPage extends StatefulWidget {
 class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulationPage> {
   final InsightAPI _insightAPI = InsightAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
+
   final DateFormat _df = DateFormat('yyyy-MM-dd');
   final ScrollController _scrollController = ScrollController();
 
@@ -37,52 +43,71 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
     super.initState();
 
     // initialize the data we will use for query the accumulation
-    _oneDayRate = 8; // 8%
-    _toDate = DateTime.now(); // today date
-    _currentDate = DateTime.now(); // today date
-    _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before today
-    _listAccumulation = []; // empty list accumulation
+    _oneDayRate = InsightSharedPreferences.getTopAccumulationRate(); // default 8%
+    _toDate = InsightSharedPreferences.getTopAccumulationToDate(); // today date
+    _currentDate = _toDate; // today date
+    _fromDate = InsightSharedPreferences.getTopAccumulationFromDate(); // 7 days before today
+    _listAccumulation = InsightSharedPreferences.getTopAccumulationResult(); // empty list accumulation
 
-    // once got then we will try to query the data
-    Future.microtask(() async {
-      showLoaderDialog(context);
+    // once got then check if we got result or not? if got result then no need to query to server
+    // we can display the one that already stored on the cache.
 
-      // get the min and max broker summary date
-      await _brokerSummaryAPI.getBrokerSummaryDate().then((resp) {
-        _brokerSummaryDate = resp;
+    if (_listAccumulation.isEmpty) {
+      Future.microtask(() async {
+        showLoaderDialog(context);
 
-        // check whether the toDate is more than maxDate, and whether fromDate is lesser than minDate
-        if (_brokerSummaryDate.brokerMaxDate.isBefore(_toDate)) {
-          _toDate = _brokerSummaryDate.brokerMaxDate.toLocal();
-          // here todate should be current date, but since maxdate is lesser than today date
-          // we will assume that current date is same as todate
-          _currentDate = _toDate;
+        // get the min and max broker summary date
+        await _brokerSummaryAPI.getBrokerSummaryDate().then((resp) async {
+          _brokerSummaryDate = resp;
 
-          // in case there are changes on the todate, we also need to perform the calculation
-          // of from date, in case the from date is now after the to date.
-          if (_fromDate.isAfter(_toDate)) {
-            _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before to date is the from date is passed the to date
+          // check whether the toDate is more than maxDate, and whether fromDate is lesser than minDate
+          if (_brokerSummaryDate.brokerMaxDate.isBefore(_toDate)) {
+            _toDate = _brokerSummaryDate.brokerMaxDate.toLocal();
+            // here todate should be current date, but since maxdate is lesser than today date
+            // we will assume that current date is same as todate
+            _currentDate = _toDate;
+
+            // in case there are changes on the todate, we also need to perform the calculation
+            // of from date, in case the from date is now after the to date.
+            if (_fromDate.isAfter(_toDate)) {
+              _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before to date is the from date is passed the to date
+            }
           }
-        }
 
-        // check if the broker minimum date is after the from date, if so, then change the from date to
-        // broker minimum date.
-        if (_brokerSummaryDate.brokerMinDate.isAfter(_fromDate)) {
-          _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
-        }
+          // check if the broker minimum date is after the from date, if so, then change the from date to
+          // broker minimum date.
+          if (_brokerSummaryDate.brokerMinDate.isAfter(_fromDate)) {
+            _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
+          }
+
+          await BrokerSharedPreferences.setBrokerMinMaxDate(_brokerSummaryDate.brokerMinDate, _brokerSummaryDate.brokerMaxDate);
+        });
+
+        // get the accumulation list
+        await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
+          _listAccumulation = resp;
+
+          // stored all the data to shared preferences
+          await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, _listAccumulation);
+        });
+      }).whenComplete(() {
+        // remove the loader
+        Navigator.pop(context);
+
+        // then set the isloading state into false
+        _setLoading(false);
       });
+    }
+    else {
+      // already got the data, so we can just get the broker min max date from the shared preferences
+      DateTime brokerMinDate = BrokerSharedPreferences.getBrokerMinDate()!;
+      DateTime brokerMaxDate = BrokerSharedPreferences.getBrokerMaxDate()!;
 
-      // get the accumulation list
-      await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) {
-        _listAccumulation = resp;
-      });
-    }).whenComplete(() {
-      // remove the loader
-      Navigator.pop(context);
-
+      _brokerSummaryDate = BrokerSummaryDateModel(brokerMinDate: brokerMinDate, brokerMaxDate: brokerMaxDate);
+      
       // then set the isloading state into false
       _setLoading(false);
-    });
+    }
   }
 
   @override
@@ -225,7 +250,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
             onTap: (() async {
               // get the accumulation result from the insight API
               showLoaderDialog(context);
-              await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) {
+              await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
+                // stored all the data to shared preferences
+                await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, resp);
+
                 setState(() {
                   _listAccumulation = resp;
                 });
@@ -467,38 +495,38 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                   ...List.generate(
                     _listAccumulation.length,
                     (index) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            width: 50,
-                            padding: const EdgeInsets.all(2),
-                            decoration: const BoxDecoration(
-                              color: primaryDark,
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                ),
-                                left: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              _listAccumulation[index].code,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
+                      return InkWell(
+                        onTap: (() async {
+                          showLoaderDialog(context);
+                          await _companyAPI.getCompanyByCode(_listAccumulation[index].code, 'saham').then((resp) {
+                            CompanyDetailArgs args = CompanyDetailArgs(
+                              companyId: resp.companyId,
+                              companyName: resp.companyName,
+                              companyCode: _listAccumulation[index].code,
+                              companyFavourite: (resp.companyFavourites ?? false),
+                              favouritesId: (resp.companyFavouritesId ?? -1),
+                              type: "saham",
+                            );
+                            
+                            // remove the loader dialog
+                            Navigator.pop(context);
+
+                            // go to the company page
+                            Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                          }).onError((error, stackTrace) {
+                            // remove the loader dialog
+                            Navigator.pop(context);
+
+                            // show the error message
+                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                          });
+                        }),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              width: 50,
                               padding: const EdgeInsets.all(2),
                               decoration: const BoxDecoration(
                                 color: primaryDark,
@@ -516,123 +544,150 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                                 ),
                               ),
                               child: Text(
-                                '${formatDecimalWithNull(_listAccumulation[index].oneDay, 1, 3)}%',
+                                _listAccumulation[index].code,
                                 style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 10,
                                 ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: primaryDark,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: primaryDark,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
                                     left: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Text(
-                                formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
-                                style: const TextStyle(
-                                  fontSize: 10,
+                                child: Text(
+                                  '${formatDecimalWithNull(_listAccumulation[index].oneDay, 1, 3)}%',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: primaryDark,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                    left: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: primaryDark,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                      left: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Text(
-                                formatIntWithNull(_listAccumulation[index].buyLot, false, false),
-                                style: const TextStyle(
-                                  fontSize: 10,
+                                child: Text(
+                                  formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: primaryDark,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                    left: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: primaryDark,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                      left: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Text(
-                                formatIntWithNull(_listAccumulation[index].sellLot, false, false),
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: primaryDark,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
+                                child: Text(
+                                  formatIntWithNull(_listAccumulation[index].buyLot, false, false),
+                                  style: const TextStyle(
+                                    fontSize: 10,
                                   ),
-                                    left: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                  right: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                ),
-                              ),
-                              child: Text(
-                                formatIntWithNull(_listAccumulation[index].diff, false, false),
-                                style: const TextStyle(
-                                  fontSize: 10,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: primaryDark,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                      left: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                  ),
+                                ),
+                                child: Text(
+                                  formatIntWithNull(_listAccumulation[index].sellLot, false, false),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: primaryDark,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                      left: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                    right: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    )
+                                  ),
+                                ),
+                                child: Text(
+                                  formatIntWithNull(_listAccumulation[index].diff, false, false),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     }
                   ),

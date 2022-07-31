@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
+import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
@@ -11,6 +12,10 @@ class InsightSharedPreferences {
   static const _topReksadanaListKey = "insight_reksadana_list_";
   static const _brokerTopTransactionKey = "insight_broker_top_txn";
   static const _bandarInterestingKey = "insight_bandar_interesting";
+  static const _topAccumFromDateKey = "insight_top_accum_from_date";
+  static const _topAccumToDateKey = "insight_top_accum_to_date";
+  static const _topAccumRateKey = "insight_top_accum_rate";
+  static const _topAccumResultKey = "insight_top_accum_result";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -215,5 +220,109 @@ class InsightSharedPreferences {
         nonAtl: [],
       );
     }
+  }
+
+  static Future<void> setTopAccumulation(DateTime fromDate, DateTime toDate, int rate, List<InsightAccumulationModel> accum) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // store the from and to date
+    LocalBox.putString(_topAccumFromDateKey, fromDate.toString());
+    LocalBox.putString(_topAccumToDateKey, toDate.toString());
+
+    // store the rate
+    LocalBox.putString(_topAccumRateKey, rate.toString());
+
+    // store the accum list
+    List<String> strAccum = [];
+    for (InsightAccumulationModel data in accum) {
+      strAccum.add(jsonEncode(data.toJson()));
+    }
+    LocalBox.putStringList(_topAccumResultKey, strAccum);
+  }
+
+  static DateTime getTopAccumulationFromDate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String fromDateString = (LocalBox.getString(_topAccumFromDateKey) ?? '');
+    if (fromDateString.isNotEmpty) {
+      return DateTime.parse(fromDateString);
+    }
+
+    return DateTime.now().add(const Duration(days: -7)); // default 7 days before
+  }
+
+  static DateTime getTopAccumulationToDate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String toDateString = (LocalBox.getString(_topAccumToDateKey) ?? '');
+    if (toDateString.isNotEmpty) {
+      return DateTime.parse(toDateString);
+    }
+
+    return DateTime.now(); // default to today time
+  }
+
+  static int getTopAccumulationRate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_topAccumRateKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 8%
+    return 8;
+  }
+
+  static List<InsightAccumulationModel> getTopAccumulationResult() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> accumString = (LocalBox.getStringList(_topAccumResultKey) ?? []);
+    if (accumString.isNotEmpty) {
+      // loop thru the stringList
+      List<InsightAccumulationModel> accumResult = [];
+      for (String accumData in accumString) {
+        InsightAccumulationModel accum = InsightAccumulationModel.fromJson(jsonDecode(accumData));
+        accumResult.add(accum);
+      }
+
+      return accumResult;
+    }
+
+    // default it as empty array
+    return [];
+  }
+
+  static Future<void> clearTopAccumulation() async {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      // null no need to clear
+      return;
+    }
+
+    // clear all the key for the topAccumulation
+    LocalBox.delete(_topAccumFromDateKey, true);
+    LocalBox.delete(_topAccumToDateKey, true);
+    LocalBox.delete(_topAccumRateKey, true);
+    LocalBox.delete(_topAccumResultKey, true);
   }
 }

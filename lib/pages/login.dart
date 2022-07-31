@@ -530,6 +530,7 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<CompanyProvider>(context, listen: false).setSectorList(resp);
         debugPrint('🔟1️⃣ Get Saham Sector Name List');
       }),
+      InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
     ]).then((_) {
       debugPrint("💯 Finished get additional information");
     });

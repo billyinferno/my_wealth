@@ -6,6 +6,8 @@ import 'package:my_wealth/storage/local_box.dart';
 class BrokerSharedPreferences {
   static const _brokerKey = "broker_list";
   static const _brokerTopKey = "broker_top_list";
+  static const _brokerMinDateKey = "broker_min_date";
+  static const _brokerMaxDateKey = "broker_max_date";
 
   static Future<void> setBrokerList(List<BrokerModel> brokerList) async {
     // stored the user info to box
@@ -79,5 +81,46 @@ class BrokerSharedPreferences {
       // no data
       return null;
     }
+  }
+
+  static Future<void> setBrokerMinMaxDate(DateTime minDate, DateTime maxDate) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // put the date on the shared preferences
+    LocalBox.putString(_brokerMinDateKey, minDate.toString());
+    LocalBox.putString(_brokerMaxDateKey, maxDate.toString());
+  }
+
+  static DateTime? getBrokerMinDate() {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      return null;
+    }
+
+    // get the data from local box
+    String strMinDate = (LocalBox.getString(_brokerMinDateKey) ?? '');
+    if (strMinDate.isNotEmpty) {
+      return DateTime.parse(strMinDate);
+    }
+
+    return null;
+  }
+
+  static DateTime? getBrokerMaxDate() {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      return null;
+    }
+
+    // get the data from local box
+    String strMaxDate = (LocalBox.getString(_brokerMaxDateKey) ?? '');
+    if (strMaxDate.isNotEmpty) {
+      return DateTime.parse(strMaxDate);
+    }
+
+    return null;
   }
 }

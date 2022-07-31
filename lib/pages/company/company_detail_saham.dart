@@ -21,6 +21,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -389,7 +390,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Volume",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_companyDetail.companyTotalUnit),
                                     textAlign: TextAlign.right,
@@ -398,7 +399,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Frequency",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatIntWithNull(_companyDetail.companyFrequency),
                                     textAlign: TextAlign.right,
@@ -407,7 +408,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Value",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatIntWithNull(_companyDetail.companyValue),
                                     textAlign: TextAlign.right,
@@ -422,7 +423,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Min ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_minPrice!),
                                     textAlign: TextAlign.right,
@@ -431,7 +432,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Max ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_maxPrice!),
                                     textAlign: TextAlign.right,
@@ -440,7 +441,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Avg ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_avgPrice!),
                                     textAlign: TextAlign.right,
@@ -1001,7 +1002,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "Prev Close",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatCurrencyWithNull(_companyDetail.companyPrevClosingPrice),
                     textAlign: TextAlign.right,
@@ -1010,7 +1011,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Adj Close",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatCurrencyWithNull(_companyDetail.companyAdjustedClosingPrice),
                     textAlign: TextAlign.right,
@@ -1019,7 +1020,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Adj Open",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatCurrencyWithNull(_companyDetail.companyAdjustedOpenPrice),
                     textAlign: TextAlign.right,
@@ -1034,7 +1035,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "Adj High",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatCurrencyWithNull(_companyDetail.companyAdjustedHighPrice),
                     textAlign: TextAlign.right,
@@ -1043,7 +1044,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Adj Low",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatCurrencyWithNull(_companyDetail.companyAdjustedLowPrice),
                     textAlign: TextAlign.right,
@@ -1052,7 +1053,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Cptlztion",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_companyDetail.companyMarketCap),
                     textAlign: TextAlign.right,
@@ -1067,7 +1068,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "One Day",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1076,7 +1077,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "One Week",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1085,7 +1086,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "One Month",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1100,7 +1101,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "Three Month",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1109,7 +1110,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Six Month",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1118,7 +1119,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "One Year",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1133,7 +1134,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "Three Years",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1142,7 +1143,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Five Years",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1151,7 +1152,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Ten Years",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1166,7 +1167,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "MTD",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyMtd, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1175,7 +1176,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "YTD",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100, 4)}%",
                     textAlign: TextAlign.right,
@@ -1192,7 +1193,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "PER",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
+                  onTap: (() async {
+                    await ShowInfoDialog(
+                      title: "PER (Price Earning Ratio)",
+                      text: "The price-to-earnings ratio is the ratio for valuing a company that measures its current share price relative to its earnings per share (EPS). The price-to-earnings ratio is also sometimes known as the price multiple or the earnings multiple.",
+                      okayColor: accentColor
+                    ).show(context);
+                  }),
                   child: Text(
                     formatDecimalWithNull(_companyDetail.companyPer, 1, 4),
                     textAlign: TextAlign.right,
@@ -1201,7 +1209,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "PER Annual",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatDecimalWithNull(_companyDetail.companyPerAnnualized, 1, 4),
                     textAlign: TextAlign.right,
@@ -1210,7 +1218,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "Beta 1Y",
-                  headerAlign: TextAlign.right,
+                  onTap: (() async {
+                    await ShowInfoDialog(
+                      title: "Beta 1 Year",
+                      text: "A ratio that measures the risk or volatility of a company's share price in comparison to the market as a whole. Beta (1 Year) is calculated using one year of weekly returns.",
+                      okayColor: accentColor
+                    ).show(context);
+                  }),
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatDecimalWithNull(_companyDetail.companyBetaOneYear, 1, 4),
                     textAlign: TextAlign.right,
@@ -1225,7 +1240,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "PBR",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
+                  onTap: (() async {
+                    await ShowInfoDialog(
+                      title: 'Price-to-Book (P/B) Ratio',
+                      text: "Companies use the price-to-book ratio (P/B ratio) to compare a firm's market capitalization to its book value. It's calculated by dividing the company's stock price per share by its book value per share (BVPS). An asset's book value is equal to its carrying value on the balance sheet, and companies calculate it by netting the asset against its accumulated depreciation.",
+                      okayColor: accentColor,
+                    ).show(context);
+                  }),
                   child: Text(
                     formatDecimalWithNull(_companyDetail.companyPbr, 1, 4),
                     textAlign: TextAlign.right,
@@ -1234,7 +1256,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "PSR Annual",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
+                  onTap: (() async {
+                    await ShowInfoDialog(
+                      title: "Price–sales ratio (Annualized)",
+                      text: "PSR, is a valuation metric for stocks. It is calculated by dividing the company's market capitalization by the revenue in the most recent year; or, equivalently, divide the per-share stock price by the per-share revenue.",
+                      okayColor: accentColor,
+                    ).show(context);
+                  }),
                   child: Text(
                     formatDecimalWithNull(_companyDetail.companyPsrAnnualized, 1, 4),
                     textAlign: TextAlign.right,
@@ -1243,7 +1272,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "PCFR Annual",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
+                  onTap: (() async {
+                    await ShowInfoDialog(
+                      title: "Price-to-Cash Flow (P/CF) Ratio",
+                      text: " The price-to-cash flow (P/CF) ratio is a stock valuation indicator or multiple that measures the value of a stock’s price relative to its operating cash flow per share. The ratio uses operating cash flow (OCF), which adds back non-cash expenses such as depreciation and amortization to net income.\n\nP/CF is especially useful for valuing stocks that have positive cash flow but are not profitable because of large non-cash charges.",
+                      okayColor: accentColor,
+                    ).show(context);
+                  }),
                   child: Text(
                     formatDecimalWithNull(_companyDetail.companyPcfrAnnualized, 1, 4),
                     textAlign: TextAlign.right,
@@ -1258,7 +1294,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "MA5",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa5),
                     textAlign: TextAlign.right,
@@ -1267,7 +1303,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "MA8",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa8),
                     textAlign: TextAlign.right,
@@ -1276,7 +1312,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "MA13",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa13),
                     textAlign: TextAlign.right,
@@ -1291,7 +1327,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               children: <Widget>[
                 CompanyInfoBox(
                   header: "MA20",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa20),
                     textAlign: TextAlign.right,
@@ -1300,7 +1336,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "MA30",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa30),
                     textAlign: TextAlign.right,
@@ -1309,7 +1345,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 CompanyInfoBox(
                   header: "MA50",
-                  headerAlign: TextAlign.right,
+                  headerAlign: MainAxisAlignment.end,
                   child: Text(
                     formatIntWithNull(_priceMA.priceSahamMa.priceSahamMa50),
                     textAlign: TextAlign.right,

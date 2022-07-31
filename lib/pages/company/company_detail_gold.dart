@@ -302,7 +302,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Min ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_minPrice!),
                                     textAlign: TextAlign.right,
@@ -311,7 +311,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Max ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_maxPrice!),
                                     textAlign: TextAlign.right,
@@ -320,7 +320,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Avg ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_avgPrice!),
                                     textAlign: TextAlign.right,
@@ -442,7 +442,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Daily",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -451,7 +451,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Weekly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -460,7 +460,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Monthly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -475,7 +475,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "YTD",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -484,7 +484,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Yearly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
                         textAlign: TextAlign.right,

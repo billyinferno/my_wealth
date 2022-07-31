@@ -207,7 +207,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             children: <Widget>[
                               CompanyInfoBox(
                                 header: "Daily",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexDailyReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -216,7 +216,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Weekly",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexWeeklyReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -225,7 +225,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Monthly",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -240,7 +240,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             children: <Widget>[
                               CompanyInfoBox(
                                 header: "MTD",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexMtdReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -249,7 +249,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Monhtly",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -258,7 +258,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Quarterly",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexQuarterlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -273,7 +273,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             children: <Widget>[
                               CompanyInfoBox(
                                 header: "Semi Annual",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexSemiAnnualReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -282,7 +282,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "YTD",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexYtdReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -291,7 +291,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Yearly",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   "${formatDecimalWithNull(_index.indexYearlyReturn, 100)}%",
                                   textAlign: TextAlign.right,
@@ -306,7 +306,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             children: <Widget>[
                               CompanyInfoBox(
                                 header: "Min ($_numPrice)",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   formatCurrencyWithNull(_minPrice),
                                   textAlign: TextAlign.right,
@@ -315,7 +315,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Max ($_numPrice)",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   formatCurrencyWithNull(_maxPrice),
                                   textAlign: TextAlign.right,
@@ -324,7 +324,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               const SizedBox(width: 10,),
                               CompanyInfoBox(
                                 header: "Avg ($_numPrice)",
-                                headerAlign: TextAlign.right,
+                                headerAlign: MainAxisAlignment.end,
                                 child: Text(
                                   formatCurrencyWithNull(_avgPrice),
                                   textAlign: TextAlign.right,

@@ -1,0 +1,677 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:my_wealth/api/broker_summary_api.dart';
+import 'package:my_wealth/api/insight_api.dart';
+import 'package:my_wealth/model/broker_summary_date_model.dart';
+import 'package:my_wealth/model/insight_accumulation_model.dart';
+import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/number_stepper.dart';
+
+class InsightBandarAccumulationPage extends StatefulWidget {
+  const InsightBandarAccumulationPage({Key? key}) : super(key: key);
+
+  @override
+  State<InsightBandarAccumulationPage> createState() => _InsightBandarAccumulationPageState();
+}
+
+class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulationPage> {
+  final InsightAPI _insightAPI = InsightAPI();
+  final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
+  final DateFormat _df = DateFormat('yyyy-MM-dd');
+  final ScrollController _scrollController = ScrollController();
+
+  late int _oneDayRate;
+  late DateTime _fromDate;
+  late DateTime _toDate;
+  late DateTime _currentDate;
+  late List<InsightAccumulationModel> _listAccumulation;
+  late BrokerSummaryDateModel _brokerSummaryDate;
+
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // initialize the data we will use for query the accumulation
+    _oneDayRate = 8; // 8%
+    _toDate = DateTime.now(); // today date
+    _currentDate = DateTime.now(); // today date
+    _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before today
+    _listAccumulation = []; // empty list accumulation
+
+    // once got then we will try to query the data
+    Future.microtask(() async {
+      showLoaderDialog(context);
+
+      // get the min and max broker summary date
+      await _brokerSummaryAPI.getBrokerSummaryDate().then((resp) {
+        _brokerSummaryDate = resp;
+
+        // check whether the toDate is more than maxDate, and whether fromDate is lesser than minDate
+        if (_brokerSummaryDate.brokerMaxDate.isBefore(_toDate)) {
+          _toDate = _brokerSummaryDate.brokerMaxDate.toLocal();
+          // here todate should be current date, but since maxdate is lesser than today date
+          // we will assume that current date is same as todate
+          _currentDate = _toDate;
+
+          // in case there are changes on the todate, we also need to perform the calculation
+          // of from date, in case the from date is now after the to date.
+          if (_fromDate.isAfter(_toDate)) {
+            _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before to date is the from date is passed the to date
+          }
+        }
+
+        // check if the broker minimum date is after the from date, if so, then change the from date to
+        // broker minimum date.
+        if (_brokerSummaryDate.brokerMinDate.isAfter(_fromDate)) {
+          _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
+        }
+      });
+
+      // get the accumulation list
+      await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) {
+        _listAccumulation = resp;
+      });
+    }).whenComplete(() {
+      // remove the loader
+      Navigator.pop(context);
+
+      // then set the isloading state into false
+      _setLoading(false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // if loading then just show that we are loading the data
+    if (_isLoading) {
+      return const Center(child: Text("Loading data"),);
+    }
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "From",
+                      style: TextStyle(
+                        color: accentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5,),
+                    InkWell(
+                      onTap: (() async {
+                        await _showCalendar();
+                      }),
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid
+                          ),
+                          color: primaryDark,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _df.format(_fromDate),
+                            style: const TextStyle(
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "To",
+                      style: TextStyle(
+                        color: accentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5,),
+                    InkWell(
+                      onTap: (() async {
+                        await _showCalendar();
+                      }),
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid
+                          ),
+                          color: primaryDark,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _df.format(_toDate),
+                            style: const TextStyle(
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "One Day",
+                      style: TextStyle(
+                        color: accentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5,),
+                    NumberStepper(
+                      height: 30,
+                      borderColor: primaryLight,
+                      buttonColor: secondaryColor,
+                      bgColor: primaryDark,
+                      textColor: textPrimary,
+                      initialRate: _oneDayRate,
+                      onTap: ((newRate) {
+                        _oneDayRate = newRate;
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          InkWell(
+            onTap: (() async {
+              // get the accumulation result from the insight API
+              showLoaderDialog(context);
+              await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) {
+                setState(() {
+                  _listAccumulation = resp;
+                });
+              }).onError((error, stackTrace) {
+                debugPrintStack(stackTrace: stackTrace);
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
+              }).whenComplete(() {
+                // remove the loader
+                Navigator.pop(context);
+              });
+            }),
+            child: Container(
+              height: 30,
+              width: double.infinity,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: primaryDark,
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid
+                )
+              ),
+              child: const Center(
+                child: Text(
+                  "Show Result",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ),
+            ),
+          ),
+          const SizedBox(height: 10,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                width: 50,
+                padding: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(
+                  color: secondaryColor,
+                  border: Border(
+                    top: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                    left: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                    bottom: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    "CODE",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: secondaryColor,
+                      border: Border(
+                      top: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      left: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "ONE DAY",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: secondaryColor,
+                      border: Border(
+                      top: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      left: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "PRICE",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: secondaryColor,
+                      border: Border(
+                      top: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      left: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "BUY",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: secondaryColor,
+                      border: Border(
+                      top: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      left: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "SELL",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: secondaryColor,
+                    border: Border.all(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "DIFF",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  ...List.generate(
+                    _listAccumulation.length,
+                    (index) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            width: 50,
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: primaryDark,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
+                                left: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              _listAccumulation[index].code,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: primaryDark,
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                  left: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                '${formatDecimalWithNull(_listAccumulation[index].oneDay, 1, 3)}%',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: primaryDark,
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                    left: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: primaryDark,
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                    left: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                formatIntWithNull(_listAccumulation[index].buyLot, false, false),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: primaryDark,
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                    left: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                formatIntWithNull(_listAccumulation[index].sellLot, false, false),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: primaryDark,
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                    left: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                  right: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                ),
+                              ),
+                              child: Text(
+                                formatIntWithNull(_listAccumulation[index].diff, false, false),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  ),
+                  const SizedBox(height: 10,),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _setLoading(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
+  }
+
+  Future<void> _showCalendar() async {
+    DateTimeRange? result = await showDateRangePicker(
+      context: context,
+      firstDate: _brokerSummaryDate.brokerMinDate.toLocal(),
+      lastDate: _brokerSummaryDate.brokerMaxDate.toLocal(),
+      initialDateRange: DateTimeRange(start: _fromDate.toLocal(), end: _toDate.toLocal()),
+      confirmText: 'Done',
+      currentDate: _currentDate.toLocal(),
+    );
+
+    // check if we got the result or not?
+    if (result != null) {
+      // check whether the result start and end is different date, if different then we need to get new broker summary data.
+      if ((result.start.compareTo(_fromDate) != 0) || (result.end.compareTo(_toDate) != 0)) {                      
+        // set the broker from and to date
+        setState(() {
+          _fromDate = result.start;
+          _toDate = result.end;
+        });
+      }
+    }
+  }
+}

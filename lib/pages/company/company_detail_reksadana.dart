@@ -324,7 +324,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Rating",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -334,7 +334,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Risk",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -344,7 +344,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Type",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     (Globals.reksadanaCompanyTypeEnum[_companyDetail.companyType] ?? "Unknown"),
                                     textAlign: TextAlign.right,
@@ -359,7 +359,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Min ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_minPrice!),
                                     textAlign: TextAlign.right,
@@ -368,7 +368,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Max ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_maxPrice!),
                                     textAlign: TextAlign.right,
@@ -377,7 +377,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Avg ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_avgPrice!),
                                     textAlign: TextAlign.right,
@@ -543,7 +543,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Daily",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -552,7 +552,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Weekly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -561,7 +561,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Monthly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -576,7 +576,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Quarterly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -585,7 +585,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Semi Annual",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -594,7 +594,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Yearly",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -609,7 +609,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "YTD",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
                         textAlign: TextAlign.right,
@@ -618,7 +618,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Total Asset",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         formatCurrency(_companyDetail.companyAssetUnderManagement!),
                         textAlign: TextAlign.right,
@@ -627,7 +627,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Total Unit",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         formatCurrency(_companyDetail.companyTotalUnit!),
                         textAlign: TextAlign.right,

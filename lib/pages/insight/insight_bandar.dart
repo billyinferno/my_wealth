@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
+import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_accumulation_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -15,7 +16,7 @@ class InsightBandarPage extends StatefulWidget {
 
 class _InsightBandarPageState extends State<InsightBandarPage> {
   late InsightBandarInterestModel _bandarInterest;
-  String _selectedBandarPage = "a";
+  String _selectedBandarPage = "atl30";
 
   @override
   void initState() {
@@ -50,18 +51,22 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
                 width: double.infinity,
                 child: CupertinoSegmentedControl(
                   children: const {
-                    "a": Text("ATL30"),
-                    "n": Text("Near-ATL30"),
+                    "atl30": Text("ATL30"),
+                    "nearAtl30": Text("Near-ATL30"),
+                    "topAcq": Text("Accumulation"),
                   },
                   onValueChanged: ((value) {
                     String selectedValue = value.toString();
                         
                     setState(() {
-                      if(selectedValue == "a") {
-                        _selectedBandarPage = "a";
+                      if(selectedValue == "atl30") {
+                        _selectedBandarPage = "atl30";
                       }
-                      else if(selectedValue == "n") {
-                        _selectedBandarPage = "n";
+                      else if(selectedValue == "nearAtl30") {
+                        _selectedBandarPage = "nearAtl30";
+                      }
+                      else if(selectedValue == "topAcq") {
+                        _selectedBandarPage = "topAcq";
                       }
                     });
                   }),
@@ -81,7 +86,7 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
   }
 
   Widget _showPage() {
-    if (_selectedBandarPage == "a") {
+    if (_selectedBandarPage == "atl30") {
       return InsightBandarAtlPage(
         title: "ATL30 Result",
         dialogTitle: "ATL30 Information",
@@ -89,13 +94,16 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
         data: _bandarInterest.atl
       );
     }
-    if (_selectedBandarPage == "n") {
+    if (_selectedBandarPage == "nearAtl30") {
       return InsightBandarAtlPage(
         title: "Near-ATL30 Result",
         dialogTitle: "Near-ATL30 Information",
         dialogDescription: "Near-ATL30 is the list of stock where the current price is the nearly reach the lowest price in the last 30-days of trading date.\n\nThis is curated with stock where the volume of the transaction is active (more than average volume for 20 days)",
         data: _bandarInterest.nonAtl
       );
+    }
+    if (_selectedBandarPage == "topAcq") {
+      return const InsightBandarAccumulationPage();
     }
 
     // default return nothing

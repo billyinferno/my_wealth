@@ -243,7 +243,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Market Cap",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull((_companyDetail.companyMarketCap == null ? null : _companyDetail.companyMarketCap!.toDouble())),
                                     textAlign: TextAlign.right,
@@ -252,7 +252,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Rank",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatIntWithNull(_companyDetail.companyMarketCapRank),
                                     textAlign: TextAlign.right,
@@ -261,7 +261,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Fully Dilluted",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_companyDetail.companyFullyDilutedValuation),
                                     textAlign: TextAlign.right,
@@ -276,7 +276,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                               children: <Widget>[
                                 CompanyInfoBox(
                                   header: "Min ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_minPrice!),
                                     textAlign: TextAlign.right,
@@ -285,7 +285,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Max ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_maxPrice!),
                                     textAlign: TextAlign.right,
@@ -294,7 +294,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 const SizedBox(width: 10,),
                                 CompanyInfoBox(
                                   header: "Avg ($_numPrice)",
-                                  headerAlign: TextAlign.right,
+                                  headerAlign: MainAxisAlignment.end,
                                   child: Text(
                                     formatCurrencyWithNull(_avgPrice!),
                                     textAlign: TextAlign.right,
@@ -409,7 +409,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Total Volume",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         formatCurrencyWithNull(_companyDetail.companyTotalUnit),
                         textAlign: TextAlign.right,
@@ -418,7 +418,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Circulating",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
                         textAlign: TextAlign.right,
@@ -433,7 +433,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Total Supply",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         formatCurrencyWithNull(_companyDetail.companyTotalSupply),
                         textAlign: TextAlign.right,
@@ -442,7 +442,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Max Supply",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         formatCurrencyWithNull(_companyDetail.companyMaxSupply),
                         textAlign: TextAlign.right,
@@ -457,7 +457,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "High 24H",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
                         textAlign: TextAlign.right,
@@ -466,7 +466,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Low 24H",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
                         textAlign: TextAlign.right,
@@ -481,7 +481,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Price Change 24H",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
                         textAlign: TextAlign.right,
@@ -490,7 +490,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "%",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyPriceChangePercentage24H, 100, 4)}%",
                         textAlign: TextAlign.right,
@@ -505,7 +505,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "Market Cap Chg 24H",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "\$ ${formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H)}",
                         textAlign: TextAlign.right,
@@ -514,7 +514,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "%",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyMarketCapChangePercentage24H, 100, 4)}%",
                         textAlign: TextAlign.right,
@@ -529,7 +529,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "ATH",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
                         textAlign: TextAlign.right,
@@ -538,7 +538,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "%",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyAllTimeHighChangePercentage, 1, 4)}%",
                         textAlign: TextAlign.right,
@@ -547,7 +547,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Date",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeHighDate!)),
                         textAlign: TextAlign.right,
@@ -562,7 +562,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   children: <Widget>[
                     CompanyInfoBox(
                       header: "ATL",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
                         textAlign: TextAlign.right,
@@ -571,7 +571,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "%",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         "${formatDecimalWithNull(_companyDetail.companyAllTimeLowChangePercentage, 1, 4)}%",
                         textAlign: TextAlign.right,
@@ -580,7 +580,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     const SizedBox(width: 10,),
                     CompanyInfoBox(
                       header: "Date",
-                      headerAlign: TextAlign.right,
+                      headerAlign: MainAxisAlignment.end,
                       child: Text(
                         (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeLowDate!)),
                         textAlign: TextAlign.right,

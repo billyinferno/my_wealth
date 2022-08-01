@@ -570,7 +570,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                                   ),
                                 ),
                                 child: Text(
-                                  '${formatDecimalWithNull(_listAccumulation[index].oneDay, 1, 3)}%',
+                                  '${formatDecimalWithNull(_listAccumulation[index].oneDay, 100, 3)}%',
                                   style: const TextStyle(
                                     fontSize: 10,
                                   ),

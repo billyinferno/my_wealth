@@ -137,7 +137,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());    
 
           // we will try to get the broker data for 3 month of current date
-          _topBrokerDateTo =  (_companyDetail.companyLastUpdate ?? DateTime.now());
+          _topBrokerDateTo =  (_companyDetail.companyLastUpdate == null ? DateTime.now().toLocal() : _companyDetail.companyLastUpdate!.toLocal());
           _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
       });
 
@@ -1614,7 +1614,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                         lastDate: maxDate.toLocal(),
                         initialDateRange: DateTimeRange(start: _topBrokerDateFrom.toLocal(), end: _topBrokerDateTo.toLocal()),
                         confirmText: 'Done',
-                        currentDate: _companyDetail.companyLastUpdate,
+                        currentDate: _companyDetail.companyLastUpdate!.toLocal(),
                       );
 
                       // check if we got the result or not?

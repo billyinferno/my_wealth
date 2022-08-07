@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
+import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 
@@ -11,6 +12,9 @@ class InsightProvider extends ChangeNotifier {
   Map<String, TopWorseCompanyListModel>? topReksadanaList;
   BrokerTopTransactionModel? brokerTopTransactionList;
   InsightBandarInterestModel? bandarInterestList;
+  DateTime? topAccumToDate;
+  int? topAccumRate;
+  List<InsightAccumulationModel>? topAccumList;
 
   setSectorSummaryList(List<SectorSummaryModel> list) {
     sectorSummaryList = list;
@@ -43,6 +47,14 @@ class InsightProvider extends ChangeNotifier {
 
   setBandarInterestingList(InsightBandarInterestModel data) {
     bandarInterestList = data;
+    notifyListeners();
+  }
+
+  setTopAccumulation(DateTime accumeDate, int accumRate, List<InsightAccumulationModel> accumList) {
+    topAccumToDate = accumeDate;
+    topAccumRate = accumRate;
+    topAccumList = accumList;
+
     notifyListeners();
   }
 }

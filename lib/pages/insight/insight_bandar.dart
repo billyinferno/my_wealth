@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_accumulation_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
+import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_eps_page.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
-import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
+import 'package:my_wealth/widgets/scroll_segmented_control.dart';
 import 'package:provider/provider.dart';
 
 class InsightBandarPage extends StatefulWidget {
@@ -47,34 +48,19 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
-                width: double.infinity,
-                child: CupertinoSegmentedControl(
-                  children: const {
-                    "atl30": Text("ATL30"),
-                    "nearAtl30": Text("Near-ATL30"),
-                    "topAcq": Text("Accumulation"),
-                  },
-                  onValueChanged: ((value) {
-                    String selectedValue = value.toString();
-                        
-                    setState(() {
-                      if(selectedValue == "atl30") {
-                        _selectedBandarPage = "atl30";
-                      }
-                      else if(selectedValue == "nearAtl30") {
-                        _selectedBandarPage = "nearAtl30";
-                      }
-                      else if(selectedValue == "topAcq") {
-                        _selectedBandarPage = "topAcq";
-                      }
-                    });
-                  }),
-                  groupValue: _selectedBandarPage,
-                  selectedColor: secondaryColor,
-                  borderColor: secondaryDark,
-                  pressedColor: primaryDark,
-                ),
+              ScrollSegmentedControl(
+                data: const {
+                  "atl30": "ATL30",
+                  "nearAtl30": "Near-ATL30",
+                  "topAcq": "Accumulation",
+                  "topEps": "EPS",
+                  "sideways": "Sideways",
+                },
+                onPress: ((value) {
+                  setState(() {
+                    _selectedBandarPage = value;
+                  });
+                })
               ),
               const SizedBox(height: 10,),
               _showPage(),
@@ -104,6 +90,12 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
     }
     if (_selectedBandarPage == "topAcq") {
       return const InsightBandarAccumulationPage();
+    }
+    if (_selectedBandarPage == "topEps") {
+      return const InsightBandarEPSPage();
+    }
+    if (_selectedBandarPage == "sideways") {
+      return const Center(child: Text("Sideways Query Coming Soon"),);
     }
 
     // default return nothing

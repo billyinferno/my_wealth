@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
+import 'package:my_wealth/model/insight_eps_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
@@ -16,6 +17,9 @@ class InsightSharedPreferences {
   static const _topAccumToDateKey = "insight_top_accum_to_date";
   static const _topAccumRateKey = "insight_top_accum_rate";
   static const _topAccumResultKey = "insight_top_accum_result";
+  static const _epsMinRateKey = "insight_eps_min_rate";
+  static const _epsMinDiffRateKey = "insight_eps_min_diff_rate";
+  static const _epsResultKey = "insight_eps_result";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -324,5 +328,91 @@ class InsightSharedPreferences {
     LocalBox.delete(_topAccumToDateKey, true);
     LocalBox.delete(_topAccumRateKey, true);
     LocalBox.delete(_topAccumResultKey, true);
+  }
+
+  static Future<void> setEps(int minRate, int diffRate, List<InsightEpsModel> epsList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // store the from and to date
+    LocalBox.putString(_epsMinRateKey, minRate.toString());
+    LocalBox.putString(_epsMinDiffRateKey, diffRate.toString());
+
+    // store the accum list
+    List<String> strEps = [];
+    for (InsightEpsModel data in epsList) {
+      strEps.add(jsonEncode(data.toJson()));
+    }
+    LocalBox.putStringList(_epsResultKey, strEps);
+  }
+
+  static int getEpsMinRate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_epsMinRateKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 0%
+    return 0;
+  }
+
+  static int getEpsMinDiffRate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_epsMinDiffRateKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 5%
+    return 5;
+  }
+
+  static List<InsightEpsModel> getEpsResult() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> epsString = (LocalBox.getStringList(_epsResultKey) ?? []);
+    if (epsString.isNotEmpty) {
+      // loop thru the stringList
+      List<InsightEpsModel> epsResult = [];
+      for (String epsData in epsString) {
+        InsightEpsModel eps = InsightEpsModel.fromJson(jsonDecode(epsData));
+        epsResult.add(eps);
+      }
+
+      return epsResult;
+    }
+
+    // default it as empty array
+    return [];
+  }
+
+  static Future<void> clearEps() async {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      // null no need to clear
+      return;
+    }
+
+    // clear all the key for the eps data
+    LocalBox.delete(_epsMinRateKey, true);
+    LocalBox.delete(_epsMinDiffRateKey, true);
+    LocalBox.delete(_epsResultKey, true);
   }
 }

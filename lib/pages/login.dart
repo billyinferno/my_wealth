@@ -530,6 +530,7 @@ class LoginPageState extends State<LoginPage> {
         debugPrint('🔟1️⃣ Get Saham Sector Name List');
       }),
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
+      InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
     ]).then((_) {
       debugPrint("💯 Finished get additional information");
     });

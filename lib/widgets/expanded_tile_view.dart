@@ -10,12 +10,10 @@ import 'package:my_wealth/widgets/expanded_tile_title.dart';
 
 class ExpandedTileView extends StatefulWidget {
   final bool? showedLot;
-  final bool? isInLot;
   final bool isVisible;
   final UserLoginInfoModel userInfo;
   final WatchlistListModel watchlist;
-  final String? shareTitle;
-  const ExpandedTileView({ Key? key, this.showedLot, this.isInLot, required this.isVisible, required this.userInfo, required this.watchlist, this.shareTitle }) : super(key: key);
+  const ExpandedTileView({ Key? key, this.showedLot, required this.isVisible, required this.userInfo, required this.watchlist }) : super(key: key);
 
   @override
   ExpandedTileViewState createState() => ExpandedTileViewState();
@@ -25,7 +23,6 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   final DateFormat dt = DateFormat("dd/MM/yyyy");
   final DateFormat dtSmall = DateFormat('dd/MM');
   bool _isShowedLots = false;
-  bool _isInLot = false;
   double _totalShare = 0;
   double _totalGain = 0;
   double _totalCost = 0;
@@ -36,7 +33,6 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   @override
   Widget build(BuildContext context) {
     _isShowedLots = (widget.showedLot ?? false);
-    _isInLot = (widget.isInLot ?? false);
     _computeDetail();
 
     return ExpansionTile(
@@ -51,8 +47,7 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
         name: (widget.watchlist.watchlistCompanySymbol!.isNotEmpty ? "(${widget.watchlist.watchlistCompanySymbol}) ${widget.watchlist.watchlistCompanyName}" : widget.watchlist.watchlistCompanyName),
         buy: _totalBuy,
         sell: _totalSell,
-        share: (_isInLot ? _totalShare / 100 : _totalShare),
-        shareTitle: (_isInLot ? "Lot" : (widget.shareTitle ?? "Shares")),
+        share: _totalShare,
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
         gain: (widget.isVisible ? _totalGain : null),
         lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
@@ -64,7 +59,7 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
       children: List<Widget>.generate(widget.watchlist.watchlistDetail.length, (index) {
         return ExpandedTileChildren(
           date: dt.format(widget.watchlist.watchlistDetail[index].watchlistDetailDate),
-          shares: (_isInLot ? (widget.watchlist.watchlistDetail[index].watchlistDetailShare / 100) : widget.watchlist.watchlistDetail[index].watchlistDetailShare),
+          shares: widget.watchlist.watchlistDetail[index].watchlistDetailShare,
           price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
           currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
           averagePrice: _averagePrice,

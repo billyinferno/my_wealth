@@ -8,12 +8,13 @@ class ExpandedTileTitle extends StatelessWidget {
   final int buy;
   final int sell;
   final double share;
+  final String? shareTitle;
   final double price;
   final double? gain;
   final String lastUpdate;
   final Color? riskColor;
 
-  const ExpandedTileTitle({ Key? key, required this.name, required this.buy, required this.sell, required this.share, required this.price, required this.gain, required this.lastUpdate, this.riskColor }) : super(key: key);
+  const ExpandedTileTitle({ Key? key, required this.name, required this.buy, required this.sell, required this.share, this.shareTitle, required this.price, required this.gain, required this.lastUpdate, this.riskColor }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +109,7 @@ class ExpandedTileTitle extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          (share > 0 ? "${formatCurrency(share)} Shares" : "- Shares"),
+                          (share > 0 ? "${formatCurrency(share, true, true, true)} ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
                           style: const TextStyle(
                             fontSize: 12,
                           ),

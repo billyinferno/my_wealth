@@ -200,10 +200,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     child: TabBarView(
                       controller: _tabController,
                       children: <Widget>[
-                        (_watchlistReksadana!.isNotEmpty ? _generateWatchlistItem("reksadana", _watchlistReksadana, _watchlistAll!.totalDayGainReksadana, _watchlistAll!.totalCostReksadana, _watchlistAll!.totalValueReksadana) : const Center(child: Text("No mutual fund watchlists"))),
-                        (_watchlistSaham!.isNotEmpty ? _generateWatchlistItem("saham", _watchlistSaham, _watchlistAll!.totalDayGainSaham, _watchlistAll!.totalCostSaham, _watchlistAll!.totalValueSaham) : const Center(child: Text("No stock watchlists"))),
-                        (_watchlistGold!.isNotEmpty ? _generateWatchlistItem("gold", _watchlistGold, _watchlistAll!.totalDayGainGold, _watchlistAll!.totalCostGold, _watchlistAll!.totalValueGold) : const Center(child: Text("Error while get gold watchlist"))),
-                        (_watchlistCrypto!.isNotEmpty ? _generateWatchlistItem("crypto", _watchlistCrypto, _watchlistAll!.totalDayGainCrypto, _watchlistAll!.totalCostCrypto, _watchlistAll!.totalValueCrypto) : const Center(child: Text("No crypto watchlists"))),
+                        (_watchlistReksadana!.isNotEmpty ? _generateWatchlistItem("reksadana", _watchlistReksadana, _watchlistAll!.totalDayGainReksadana, _watchlistAll!.totalCostReksadana, _watchlistAll!.totalValueReksadana, false, "Share") : const Center(child: Text("No mutual fund watchlists"))),
+                        (_watchlistSaham!.isNotEmpty ? _generateWatchlistItem("saham", _watchlistSaham, _watchlistAll!.totalDayGainSaham, _watchlistAll!.totalCostSaham, _watchlistAll!.totalValueSaham, true, "Lot") : const Center(child: Text("No stock watchlists"))),
+                        (_watchlistGold!.isNotEmpty ? _generateWatchlistItem("gold", _watchlistGold, _watchlistAll!.totalDayGainGold, _watchlistAll!.totalCostGold, _watchlistAll!.totalValueGold, false, "Gram") : const Center(child: Text("Error while get gold watchlist"))),
+                        (_watchlistCrypto!.isNotEmpty ? _generateWatchlistItem("crypto", _watchlistCrypto, _watchlistAll!.totalDayGainCrypto, _watchlistAll!.totalCostCrypto, _watchlistAll!.totalValueCrypto, false, "Coin") : const Center(child: Text("No crypto watchlists"))),
                       ],
                     ),
                   ),
@@ -216,7 +216,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     );
   }
 
-  Widget _generateWatchlistItem(String type, List<WatchlistListModel>? data, double dayGain, double cost, double value) {
+  Widget _generateWatchlistItem(String type, List<WatchlistListModel>? data, double dayGain, double cost, double value, bool isInLot, String shareTitle) {
     return RefreshIndicator(
       onRefresh: (() async {
         await _refreshWatchlist();
@@ -333,8 +333,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       key: Key("expansionTitle$idx"),
                       userInfo: _userInfo!,
                       showedLot: _isShowedLots,
+                      isInLot: isInLot,
                       isVisible: _isSummaryVisible,
                       watchlist: data[idx],
+                      shareTitle: shareTitle,
                     ),
                   ),
                 );

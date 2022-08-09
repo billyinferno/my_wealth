@@ -3,6 +3,7 @@ import 'package:my_wealth/model/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/insight_eps_model.dart';
+import 'package:my_wealth/model/insight_sideway_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
@@ -20,6 +21,10 @@ class InsightSharedPreferences {
   static const _epsMinRateKey = "insight_eps_min_rate";
   static const _epsMinDiffRateKey = "insight_eps_min_diff_rate";
   static const _epsResultKey = "insight_eps_result";
+  static const _sidewayOneDayRateKey = "insight_sideway_one_day_rate";
+  static const _sidewayAvgOneDayKey = "insight_sideway_avg_one_day";
+  static const _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
+  static const _sidewayResultKey = "insight_sideway_result";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -414,5 +419,109 @@ class InsightSharedPreferences {
     LocalBox.delete(_epsMinRateKey, true);
     LocalBox.delete(_epsMinDiffRateKey, true);
     LocalBox.delete(_epsResultKey, true);
+  }
+
+  static Future<void> setSideway(int oneDay, int avgOneDay, int avgOneWeek, List<InsightSidewayModel> sidewayList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // store the from and to date
+    LocalBox.putString(_sidewayOneDayRateKey, oneDay.toString());
+    LocalBox.putString(_sidewayAvgOneDayKey, avgOneDay.toString());
+    LocalBox.putString(_sidewayAvgOneWeekKey, avgOneWeek.toString());
+
+    // store the accum list
+    List<String> strSideway = [];
+    for (InsightSidewayModel data in sidewayList) {
+      strSideway.add(jsonEncode(data.toJson()));
+    }
+    LocalBox.putStringList(_sidewayResultKey, strSideway);
+  }
+
+  static int getSidewayOneDayRate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_sidewayOneDayRateKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 5%
+    return 5;
+  }
+
+  static int getSidewayAvgOneDay() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_sidewayAvgOneDayKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 1%
+    return 1;
+  }
+
+  static int getSidewayAvgOneWeek() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_sidewayAvgOneWeekKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 1%
+    return 1;
+  }
+
+  static List<InsightSidewayModel> getSidewayResult() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> sidewaysString = (LocalBox.getStringList(_sidewayResultKey) ?? []);
+    if (sidewaysString.isNotEmpty) {
+      // loop thru the stringList
+      List<InsightSidewayModel> sidewayResult = [];
+      for (String sidewayData in sidewaysString) {
+        InsightSidewayModel sideway = InsightSidewayModel.fromJson(jsonDecode(sidewayData));
+        sidewayResult.add(sideway);
+      }
+
+      return sidewayResult;
+    }
+
+    // default it as empty array
+    return [];
+  }
+
+  static Future<void> clearSideway() async {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      // null no need to clear
+      return;
+    }
+
+    // clear all the key for the sideway data
+    LocalBox.delete(_sidewayOneDayRateKey, true);
+    LocalBox.delete(_sidewayAvgOneDayKey, true);
+    LocalBox.delete(_sidewayAvgOneWeekKey, true);
+    LocalBox.delete(_sidewayResultKey, true);
   }
 }

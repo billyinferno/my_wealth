@@ -149,8 +149,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
       await _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo).then((resp) {
         _topBroker = resp;
-        _topBrokerDateFrom = resp.brokerMinDate;
-        _topBrokerDateTo = resp.brokerMaxDate;
+        _topBrokerDateFrom = (resp.brokerMinDate ?? DateTime.now());
+        _topBrokerDateTo = (resp.brokerMaxDate ?? DateTime.now());
       });
 
       await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
@@ -1634,7 +1634,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          _df.format(_topBroker.brokerMinDate.toLocal()),
+                          _df.format((_topBroker.brokerMinDate == null ? DateTime.now() : _topBroker.brokerMinDate!.toLocal())),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: secondaryLight,
@@ -1648,7 +1648,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                           ),
                         ),
                         Text(
-                          _df.format(_topBroker.brokerMaxDate.toLocal()),
+                          _df.format((_topBroker.brokerMaxDate == null ? DateTime.now() : _topBroker.brokerMaxDate!.toLocal())),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: secondaryLight,

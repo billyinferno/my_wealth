@@ -15,19 +15,19 @@ class CompanyTopBrokerModel {
         required this.brokerData,
     });
 
-    final DateTime brokerMinDate;
-    final DateTime brokerMaxDate;
+    final DateTime? brokerMinDate;
+    final DateTime? brokerMaxDate;
     final List<BrokerData> brokerData;
 
     factory CompanyTopBrokerModel.fromJson(Map<String, dynamic> json) => CompanyTopBrokerModel(
-        brokerMinDate: DateTime.parse(json["broker_min_date"]),
-        brokerMaxDate: DateTime.parse(json["broker_max_date"]),
+        brokerMinDate: (json["broker_min_date"] == null ? null : DateTime.parse(json["broker_min_date"])),
+        brokerMaxDate: (json["broker_max_date"] == null ? null : DateTime.parse(json["broker_max_date"])),
         brokerData: List<BrokerData>.from(json["broker_data"].map((x) => BrokerData.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
-        "broker_min_date": "${brokerMinDate.year.toString().padLeft(4, '0')}-${brokerMinDate.month.toString().padLeft(2, '0')}-${brokerMinDate.day.toString().padLeft(2, '0')}",
-        "broker_max_date": "${brokerMaxDate.year.toString().padLeft(4, '0')}-${brokerMaxDate.month.toString().padLeft(2, '0')}-${brokerMaxDate.day.toString().padLeft(2, '0')}",
+        "broker_min_date": "${brokerMinDate!.year.toString().padLeft(4, '0')}-${brokerMinDate!.month.toString().padLeft(2, '0')}-${brokerMinDate!.day.toString().padLeft(2, '0')}",
+        "broker_max_date": "${brokerMaxDate!.year.toString().padLeft(4, '0')}-${brokerMaxDate!.month.toString().padLeft(2, '0')}-${brokerMaxDate!.day.toString().padLeft(2, '0')}",
         "broker_data": List<dynamic>.from(brokerData.map((x) => x.toJson())),
     };
 }

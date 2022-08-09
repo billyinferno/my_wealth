@@ -57,15 +57,15 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ..._generateSegment(),
-              const SizedBox(width: 20,)
+              const SizedBox(width: 30,)
             ],
           ),
         ),
         Align(
           alignment: Alignment.centerRight,
           child: Container(
-            width: 20,
-            height: 28,
+            width: 30,
+            height: 30,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,

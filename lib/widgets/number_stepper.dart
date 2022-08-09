@@ -69,7 +69,13 @@ class _NumberStepperState extends State<NumberStepper> {
             child: Container(
               width: (widget.height ?? 30),
               height: (widget.height ?? 30),
-              color: (widget.buttonColor ?? secondaryColor),
+              decoration: BoxDecoration(
+                color: (widget.buttonColor ?? secondaryColor),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(5),
+                  bottomLeft: Radius.circular(5)
+                )
+              ),
               child: Icon(
                 Ionicons.remove,
                 color: (widget.iconColor ?? Colors.white),
@@ -110,7 +116,13 @@ class _NumberStepperState extends State<NumberStepper> {
             child: Container(
               width: (widget.height ?? 30),
               height: (widget.height ?? 30),
-              color: (widget.buttonColor ?? secondaryColor),
+              decoration: BoxDecoration(
+                color: (widget.buttonColor ?? secondaryColor),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(5),
+                  bottomRight: Radius.circular(5)
+                )
+              ),
               child: Icon(
                 Ionicons.add,
                 color: (widget.iconColor ?? Colors.white),

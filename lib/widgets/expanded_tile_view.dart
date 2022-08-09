@@ -64,7 +64,8 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
       children: List<Widget>.generate(widget.watchlist.watchlistDetail.length, (index) {
         return ExpandedTileChildren(
           date: dt.format(widget.watchlist.watchlistDetail[index].watchlistDetailDate),
-          shares: (_isInLot ? (widget.watchlist.watchlistDetail[index].watchlistDetailShare / 100) : widget.watchlist.watchlistDetail[index].watchlistDetailShare),
+          shares: widget.watchlist.watchlistDetail[index].watchlistDetailShare,
+          isInLot: _isInLot,
           price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
           currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
           averagePrice: _averagePrice,

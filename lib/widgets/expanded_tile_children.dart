@@ -6,12 +6,13 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 class ExpandedTileChildren extends StatelessWidget {
   final String date;
   final double shares;
+  final bool isInLot;
   final double price;
   final double currentPrice;
   final double averagePrice;
   final int risk;
 
-  const ExpandedTileChildren({ Key? key, required this.date, required this.shares, required this.price, required this.currentPrice, required this.averagePrice, required this.risk }) : super(key: key);
+  const ExpandedTileChildren({ Key? key, required this.date, required this.shares, required this.isInLot, required this.price, required this.currentPrice, required this.averagePrice, required this.risk }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class ExpandedTileChildren extends StatelessWidget {
                   const SizedBox(width: 10,),
                   Expanded(
                     child: Text(
-                      formatDecimal((shares > 0 ? shares : (shares * -1)), 2),
+                      formatDecimal((shares > 0 ? (isInLot ? shares/100 : shares) : ((isInLot ? shares / 100 : shares) * -1)), 2),
                       style: const TextStyle(
                         fontSize: 12,
                       ),

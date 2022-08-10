@@ -39,7 +39,6 @@ class _NumberStepperState extends State<NumberStepper> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: (widget.height ?? 30),
       decoration: BoxDecoration(
         border: Border.all(
           color: (widget.borderColor ?? secondaryColor),
@@ -90,12 +89,15 @@ class _NumberStepperState extends State<NumberStepper> {
             ),
           ),
           Expanded(
-            child: Center(
-              child: Text(
-                "$_oneDayRate${widget.ratePrefix ?? '%'}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: (widget.textColor ?? secondaryColor),
+            child: SizedBox(
+              height: 30,
+              child: Center(
+                child: Text(
+                  "$_oneDayRate${widget.ratePrefix ?? '%'}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: (widget.textColor ?? secondaryColor),
+                  ),
                 ),
               ),
             ),

@@ -12,8 +12,10 @@ class NumberStepper extends StatefulWidget {
   final Color? textColor;
   final int initialRate;
   final String? ratePrefix;
+  final int? minRate;
+  final int? maxRate;
   final Function(int) onTap;
-  const NumberStepper({Key? key, this.height, this.borderColor, this.buttonColor, this.bgColor, this.iconColor, this.iconSize, this.textColor, required this.initialRate, this.ratePrefix, required this.onTap}) : super(key: key);
+  const NumberStepper({Key? key, this.height, this.borderColor, this.buttonColor, this.bgColor, this.iconColor, this.iconSize, this.textColor, required this.initialRate, this.ratePrefix, this.minRate, this.maxRate, required this.onTap}) : super(key: key);
 
   @override
   State<NumberStepper> createState() => _NumberStepperState();
@@ -21,11 +23,15 @@ class NumberStepper extends StatefulWidget {
 
 class _NumberStepperState extends State<NumberStepper> {
   late int _oneDayRate;
+  late int _minRate;
+  late int _maxRate;
 
   @override
   void initState() {
     // get the one day rate
     _oneDayRate = widget.initialRate;
+    _minRate = (widget.minRate ?? 1);
+    _maxRate = (widget.maxRate ?? 100);
 
     super.initState();
   }
@@ -51,8 +57,8 @@ class _NumberStepperState extends State<NumberStepper> {
             onTap: (() {
               setState(() {
                 _oneDayRate = _oneDayRate - 1;
-                if (_oneDayRate <= 0) {
-                  _oneDayRate = 1;
+                if (_oneDayRate < _minRate) {
+                  _oneDayRate = _minRate;
                 }
               });
               widget.onTap(_oneDayRate);
@@ -60,8 +66,8 @@ class _NumberStepperState extends State<NumberStepper> {
             onDoubleTap: (() {
               setState(() {
                 _oneDayRate = _oneDayRate - 10;
-                if (_oneDayRate <= 0) {
-                  _oneDayRate = 1;
+                if (_oneDayRate < _minRate) {
+                  _oneDayRate = _minRate;
                 }
               });
               widget.onTap(_oneDayRate);
@@ -98,8 +104,8 @@ class _NumberStepperState extends State<NumberStepper> {
             onTap: (() {
               setState(() {
                 _oneDayRate = _oneDayRate + 1;
-                if (_oneDayRate >= 100) {
-                  _oneDayRate = 100;
+                if (_oneDayRate >= _maxRate) {
+                  _oneDayRate = _maxRate;
                 }
               });
               widget.onTap(_oneDayRate);
@@ -107,8 +113,8 @@ class _NumberStepperState extends State<NumberStepper> {
             onDoubleTap: (() {
               setState(() {
                 _oneDayRate = _oneDayRate + 10;
-                if (_oneDayRate >= 100) {
-                  _oneDayRate = 100;
+                if (_oneDayRate >= _maxRate) {
+                  _oneDayRate = _maxRate;
                 }
               });
               widget.onTap(_oneDayRate);

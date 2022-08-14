@@ -10,15 +10,31 @@ class ExpandedTileTitle extends StatelessWidget {
   final double share;
   final String? shareTitle;
   final double price;
+  final double? prevPrice;
   final double? gain;
   final String lastUpdate;
   final Color? riskColor;
+  final bool? checkThousandOnPrice;
 
-  const ExpandedTileTitle({ Key? key, required this.name, required this.buy, required this.sell, required this.share, this.shareTitle, required this.price, required this.gain, required this.lastUpdate, this.riskColor }) : super(key: key);
+  const ExpandedTileTitle({ Key? key, required this.name, required this.buy, required this.sell, required this.share, this.shareTitle, required this.price, this.prevPrice, required this.gain, required this.lastUpdate, this.riskColor, this.checkThousandOnPrice }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final rColor = (riskColor ?? primaryLight);
+    final diffPrice = (price - (prevPrice ?? price));
+    
+    Color trendColor = Colors.white;
+    IconData trendIcon = Ionicons.remove;
+    
+    if (diffPrice > 0) {
+      trendColor = Colors.green;
+      trendIcon = Ionicons.caret_up;
+    }
+    else if(diffPrice < 0) {
+      trendColor = secondaryColor;
+      trendIcon = Ionicons.caret_down;
+    }
+
     return Container(
       color: rColor,
       child: Row(
@@ -30,7 +46,7 @@ class ExpandedTileTitle extends StatelessWidget {
             flex: 1,
             child: Container(
               color: primaryColor,
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -107,7 +123,7 @@ class ExpandedTileTitle extends StatelessWidget {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: Text(
                           (share > 0 ? "${formatCurrency(share, true, true, true)} ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
                           style: const TextStyle(
@@ -119,15 +135,38 @@ class ExpandedTileTitle extends StatelessWidget {
                       const SizedBox(width: 10,),
                       Expanded(
                         flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            formatCurrency(price),
-                            style: const TextStyle(
-                              fontSize: 12,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(
+                              trendIcon,
+                              color: trendColor,
+                              size: 12,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                            const SizedBox(width: 2,),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: trendColor,
+                                    width: 2.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: Text(
+                                formatCurrency(
+                                  price,
+                                  (checkThousandOnPrice ?? false),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ],

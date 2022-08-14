@@ -15,7 +15,8 @@ class ExpandedTileView extends StatefulWidget {
   final UserLoginInfoModel userInfo;
   final WatchlistListModel watchlist;
   final String? shareTitle;
-  const ExpandedTileView({ Key? key, this.showedLot, this.isInLot, required this.isVisible, required this.userInfo, required this.watchlist, this.shareTitle }) : super(key: key);
+  final bool? checkThousandOnPrice;
+  const ExpandedTileView({ Key? key, this.showedLot, this.isInLot, required this.isVisible, required this.userInfo, required this.watchlist, this.shareTitle, this.checkThousandOnPrice }) : super(key: key);
 
   @override
   ExpandedTileViewState createState() => ExpandedTileViewState();
@@ -54,9 +55,11 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
         share: (_isInLot ? _totalShare / 100 : _totalShare),
         shareTitle: (_isInLot ? "Lot" : (widget.shareTitle ?? "Shares")),
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
+        prevPrice: (widget.watchlist.watchlistCompanyPrevPrice),
         gain: (widget.isVisible ? _totalGain : null),
         lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
         riskColor: (widget.isVisible ? riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk) : Colors.white),
+        checkThousandOnPrice: (widget.checkThousandOnPrice ?? false),
       ),
       initiallyExpanded: _isShowedLots,
       collapsedTextColor: textPrimary,

@@ -88,7 +88,7 @@ class ExpandedTileChildren extends StatelessWidget {
                       ),
                     )
                   ),
-                  const SizedBox(width: 45,),
+                  const SizedBox(width: 35,),
                 ],
               ),
             ),

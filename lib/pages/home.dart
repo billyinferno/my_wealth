@@ -102,24 +102,24 @@ class HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(15),
         duration: const Duration(milliseconds: 300),
         color: Colors.white,
-        tabs: [
+        tabs: const [
           GButton(
             icon: Ionicons.analytics_outline,
-            iconActiveColor: Colors.green[300],
+            iconActiveColor: Color.fromRGBO(129, 199, 132, 1),
           ),
           GButton(
             icon: Ionicons.business_outline,
-            iconActiveColor: Colors.purple[300],
+            iconActiveColor: Color.fromRGBO(186, 104, 200, 1),
           ),
-          const GButton(
+          GButton(
             icon: Ionicons.list_circle_outline,
             iconActiveColor: Colors.orange,
           ),
-          const GButton(
+          GButton(
             icon: Ionicons.eye_outline,
             iconActiveColor: secondaryLight,
           ),
-          const GButton(
+          GButton(
             icon: Ionicons.bulb_outline,
             iconActiveColor: extendedLight,
           ),

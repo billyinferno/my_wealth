@@ -229,14 +229,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
       trendIcon = Ionicons.trending_down;
     }
 
-    // if (dayGain > 0) {
-    //   dayGainColor = Colors.green;
-    //   dayGainIcon = Ionicons.add_outline;
-    // }
-    // else if (dayGain < 0) {
-    //   dayGainColor = secondaryColor;
-    // }
-
     return Container(
       color: barColor,
       child: Row(

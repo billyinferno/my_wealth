@@ -290,9 +290,9 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(title: "Price", value: formatCurrency(_sidewayList[index].lastPrice.toDouble(), false, false, false), valueColor: (_sidewayList[index].lastPrice < _sidewayList[index].prevClosingPrice ? secondaryColor : (_sidewayList[index].lastPrice > _sidewayList[index].prevClosingPrice ? Colors.green : textPrimary))),
+                            _columnInfo(title: "Price", value: formatCurrency(_sidewayList[index].lastPrice.toDouble(), false, false, false), valueColor: _getValueColorInt(_sidewayList[index].lastPrice, _sidewayList[index].prevClosingPrice)),
                             _columnInfo(title: "Prev Price", value: formatCurrency(_sidewayList[index].prevClosingPrice.toDouble(), false, false, false)),
-                            _columnInfo(title: "AVG Daily", value: "${formatDecimalWithNull(_sidewayList[index].avgDaily, 100, 2)}%", valueColor: (_sidewayList[index].avgDaily < 0 ? secondaryColor : (_sidewayList[index].avgDaily > 0 ? Colors.green : textPrimary))),
+                            _columnInfo(title: "AVG Daily", value: "${formatDecimalWithNull(_sidewayList[index].avgDaily, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].avgDaily, 0)),
                           ],
                         ),
                         const SizedBox(height: 5,),
@@ -300,9 +300,9 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(title: "One Day", value: "${formatDecimalWithNull(_sidewayList[index].oneDay, 100, 2)}%", valueColor: (_sidewayList[index].avgDaily < 0 ? secondaryColor : (_sidewayList[index].avgDaily > 0 ? Colors.green : textPrimary))),
-                            _columnInfo(title: "One Month", value: "${formatDecimalWithNull(_sidewayList[index].oneWeek, 100, 2)}%", valueColor: (_sidewayList[index].avgDaily < 0 ? secondaryColor : (_sidewayList[index].avgDaily > 0 ? Colors.green : textPrimary))),
-                            _columnInfo(title: "One Year", value: "${formatDecimalWithNull(_sidewayList[index].oneMonth, 100, 2)}%", valueColor: (_sidewayList[index].avgDaily < 0 ? secondaryColor : (_sidewayList[index].avgDaily > 0 ? Colors.green : textPrimary))),
+                            _columnInfo(title: "One Day", value: "${formatDecimalWithNull(_sidewayList[index].oneDay, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneDay, 0)),
+                            _columnInfo(title: "One Week", value: "${formatDecimalWithNull(_sidewayList[index].oneWeek, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneWeek,  0)),
+                            _columnInfo(title: "One Month", value: "${formatDecimalWithNull(_sidewayList[index].oneMonth, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneMonth, 0)),
                           ],
                         ),
                       ],
@@ -315,6 +315,38 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
         ],
       ),
     );
+  }
+
+  Color _getValueColorInt(int? value, int? compare) {
+    if (value == null || compare == null) {
+      return Colors.white70;
+    }
+
+    if (value < compare) {
+      return secondaryColor;
+    }
+    else if (value > compare) {
+      return Colors.green;
+    }
+    else {
+      return textPrimary;
+    }
+  }
+
+  Color _getValueColorDouble(double? value, double? compare) {
+    if (value == null || compare == null) {
+      return Colors.white70;
+    }
+
+    if (value < compare) {
+      return secondaryColor;
+    }
+    else if (value > compare) {
+      return Colors.green;
+    }
+    else {
+      return textPrimary;
+    }
   }
 
   Widget _columnInfo({required String title, Color? titleColor, required String value, Color? valueColor}) {

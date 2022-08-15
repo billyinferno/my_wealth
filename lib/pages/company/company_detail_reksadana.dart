@@ -207,7 +207,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
     if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-      currentIcon = currentIcon;
+      currentIcon = Ionicons.caret_up;
     }
     else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
       currentIcon = Ionicons.caret_down;

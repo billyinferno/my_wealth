@@ -205,6 +205,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   }
 
   Widget _generatePage() {
+    IconData currentIcon = Ionicons.remove;
+    if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
+      currentIcon = currentIcon;
+    }
+    else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
+      currentIcon = Ionicons.caret_down;
+    }
+
     if (_isLoading) {
       return Container(
         color: primaryColor,
@@ -295,7 +303,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 Icon(
-                                  ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                  currentIcon,
                                   color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
                                 ),
                                 const SizedBox(width: 10,),

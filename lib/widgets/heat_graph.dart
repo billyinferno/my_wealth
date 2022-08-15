@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
 
 class GraphData {
   final DateTime date;
@@ -157,19 +156,19 @@ class HeatGraph extends StatelessWidget {
             // check for the foreground color
             if(isEnableDailyComparison) {
               if(currentPrice == dataExpand[i].price) {
-                decorationColor = Colors.transparent;
+                decorationColor = Colors.white;
               }
               else {
                 if(currentPrice > 0 && dataExpand[i].price > 0) {
                   decorationColor = riskColor(currentPrice, dataExpand[i].price, userInfo.risk) ;
                 }
                 else {
-                  decorationColor = Colors.transparent;
+                  decorationColor = boxColor;
                 }
               }
             }
             else {
-              decorationColor = Colors.transparent;
+              decorationColor = boxColor;
             }
 
             boxes[day-1] = _generateBox(boxColor, decorationColor);
@@ -216,11 +215,18 @@ class HeatGraph extends StatelessWidget {
       width: 10,
       height: 10,
       margin: const EdgeInsets.all(5),
-      color: boxColor,
-      foregroundDecoration: RotatedCornerDecoration(
-        color: decorationColor,
-        geometry: const BadgeGeometry(width: 10, height: 10, cornerRadius: 0),
+      decoration: BoxDecoration(
+        color: boxColor,
+        border: Border.all(
+          color: decorationColor,
+          style: BorderStyle.solid,
+          width: 2.0,
+        )
       ),
+      // foregroundDecoration: RotatedCornerDecoration(
+      //   color: decorationColor,
+      //   geometry: const BadgeGeometry(width: 10, height: 10, cornerRadius: 0),
+      // ),
     );
   }
 

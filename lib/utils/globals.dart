@@ -37,9 +37,9 @@ class Globals {
 
   // index name
   static Map<String,String> indexName = {
-    'BISNIS-27' : 'UOB Asset Management Indeks',
-    'IDX-30'    : 'Principal Index Kelas O',
-    'IDXG30'    : 'BNP Paribas Growth 30',
+    'BISNIS-27' : 'Bisnis Indonesia',
+    'IDX-30'    : 'IDX 30 Index',
+    'IDXG30'    : 'IDX Growth 30',
     'IHSG'      : 'IDX Composite',
     'LQ45'      : 'Indeks LQ45',
     'ISSI'      : 'Indonesia Sharia Stock Index',

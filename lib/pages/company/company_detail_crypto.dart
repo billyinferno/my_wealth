@@ -40,7 +40,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
-  late Map<DateTime, WatchlistDetailListModel> _watchlistDetail;
+  late Map<DateTime, double> _watchlistDetail;
   
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
@@ -94,7 +94,12 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         DateTime tempDate;
         for(WatchlistDetailListModel data in resp) {
           tempDate = data.watchlistDetailDate.toLocal();
-          _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data;
+          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+          }
+          else {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+          }
         }
       });
     }).onError((error, stackTrace) {

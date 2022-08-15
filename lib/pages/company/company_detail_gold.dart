@@ -30,7 +30,7 @@ class CompanyDetailGoldPage extends StatefulWidget {
 class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
-  late Map<DateTime, WatchlistDetailListModel> _watchlistDetail;
+  late Map<DateTime, double> _watchlistDetail;
   
   final ScrollController _summaryController = ScrollController();
   final ScrollController _priceController = ScrollController();
@@ -152,7 +152,12 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
         DateTime tempDate;
         for(WatchlistDetailListModel data in resp) {
           tempDate = data.watchlistDetailDate.toLocal();
-          _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data;
+          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+          }
+          else {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+          }
         }
       });
     }).onError((error, stackTrace) {

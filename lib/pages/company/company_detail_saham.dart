@@ -63,7 +63,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late List<InfoFundamentalsModel> _infoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
   late String _brokerSummarySelected;
-  late Map<DateTime, WatchlistDetailListModel> _watchlistDetail;
+  late Map<DateTime, double> _watchlistDetail;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -204,7 +204,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         DateTime tempDate;
         for(WatchlistDetailListModel data in resp) {
           tempDate = data.watchlistDetailDate.toLocal();
-          _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data;
+          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+          }
+          else {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+          }
         }
       });
     }).onError((error, stackTrace) {

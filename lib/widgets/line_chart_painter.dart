@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -7,7 +6,7 @@ import 'package:my_wealth/widgets/heat_graph.dart';
 
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
-  final Map<DateTime, WatchlistDetailListModel>? watchlist;
+  final Map<DateTime, double>? watchlist;
   
   const LineChartPainter({required this.data, this.watchlist});
 
@@ -16,11 +15,11 @@ class LineChartPainter extends CustomPainter {
     // calculate the center
     Offset center = Offset(size.width / 2, size.height / 2);
 
-    // first let's draw the border
-    _drawBorder(canvas, size, center);
-
     // then let's draw the line
     _drawLine(canvas, size, center);
+
+    // first let's draw the border
+    _drawBorder(canvas, size, center);
   }
 
   @override
@@ -72,19 +71,23 @@ class LineChartPainter extends CustomPainter {
     double min = _minData();
 
     // create the rect that we will use as a guide for the graph
-    Rect graphRect = Rect.fromLTWH(70, 10, (size.width - 80), (size.height - 60));
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
     Paint graphRectBorder = Paint()
-      ..color = primaryDark
+      ..color = primaryDark.withOpacity(0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     Paint graphRectBorderWhite = Paint()
-      ..color = primaryLight
+      ..color = primaryLight.withOpacity(0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     Paint watchlistPaintBuy = Paint()
       ..color = accentColor;
     Paint watchlistPaintSell = Paint()
       ..color = extendedLight;
+    Paint watchlistPaintBuySell = Paint()
+      ..color = Colors.white;
+
+    // canvas.drawRect(graphRect, graphRectBorder);
     
     // draw the guides
     // draw vertical lines
@@ -93,15 +96,17 @@ class LineChartPainter extends CustomPainter {
     for(int i = 0; i < data.length; i++) {
       Offset p1 = Offset(xLeft, graphRect.bottom);
       Offset p2 = Offset(xLeft, graphRect.top);
-      xLeft += guideW;
 
-      if(i > 0 && (i%10 == 0)) {
+      if(i%10 == 0 && i > 0) {
         canvas.drawLine(p1, p2, graphRectBorderWhite);
-        _drawText(canvas, Offset(xLeft, graphRect.bottom), 60, formatDate(date: data[i].date, format: "dd-MMM"), 0, 10);
+        _drawText(canvas, Offset(xLeft, graphRect.bottom), 60, formatDate(date: data[i].date, format: "dd/MM"), -15, 5, graphRect.height, graphRect.width);
       }
       else {
         canvas.drawLine(p1, p2, graphRectBorder);
       }
+
+      // next
+      xLeft += guideW;
     }
 
     // draw horizontal line
@@ -112,7 +117,7 @@ class LineChartPainter extends CustomPainter {
       canvas.drawLine(p1, p2, graphRectBorder);
 
       double currVal = min + (((max - min) / 4.0) * i.toDouble());
-      _drawText(canvas, Offset(graphRect.left, graphRect.bottom - (yD * i) - 5), 60, formatCurrency(currVal), 10, 0);
+      _drawText(canvas, Offset(graphRect.left, graphRect.bottom - (yD * i) - 5), 60, formatCurrency(currVal), 0, -5, graphRect.height, graphRect.width);
     }
 
     // once guidelines finished, we can draw the actual graph
@@ -120,6 +125,7 @@ class LineChartPainter extends CustomPainter {
     double ratio = graphRect.height / (max - min);
     Path pUp = Path();
     Path pDown = Path();
+    Path pNoChange = Path();
     double x = graphRect.left;
     double y = 0;
     bool isFirst = true;
@@ -134,8 +140,17 @@ class LineChartPainter extends CustomPainter {
         if (watchlist!.isNotEmpty) {
           // check if this date is on the watchlist or not?
           if (watchlist!.containsKey(value.date)) {
-            // got the date, so now we can just draw the circle in this position
-            canvas.drawCircle(Offset(x, y), 3.0, (watchlist![value.date]!.watchlistDetailShare > 0 ? watchlistPaintBuy : watchlistPaintSell));
+            // got the date, so now we can just draw the circle in this position            
+            // if we doing buy and sell all in one day
+            if (watchlist![value.date]! == 0) {
+              canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuySell);  
+            }
+            else if (watchlist![value.date]! > 0) {
+              canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuy);  
+            }
+            else {
+              canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintSell);
+            }
           }
         }
       }
@@ -144,6 +159,7 @@ class LineChartPainter extends CustomPainter {
       if(isFirst) {
         pUp.moveTo(x, y);
         pDown.moveTo(x, y);
+        pNoChange.moveTo(x, y);
 
         isFirst = false;
       }
@@ -152,10 +168,17 @@ class LineChartPainter extends CustomPainter {
         if(value.price > prevPrice) {
           pUp.lineTo(x, y);
           pDown.moveTo(x, y);
+          pNoChange.moveTo(x, y);
+        }
+        else if(value.price < prevPrice) {
+          pUp.moveTo(x, y);
+          pDown.lineTo(x, y);
+          pNoChange.moveTo(x, y);
         }
         else {
           pUp.moveTo(x, y);
-          pDown.lineTo(x, y);
+          pDown.moveTo(x, y);
+          pNoChange.lineTo(x, y);
         }
       }
 
@@ -176,16 +199,22 @@ class LineChartPainter extends CustomPainter {
       ..color = secondaryColor
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
+    
+    Paint dpNoChange = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
 
     canvas.drawPath(pUp, dpUp);
     canvas.drawPath(pDown, dpDown);
+    canvas.drawPath(pNoChange, dpNoChange);
   }
 
-  void _drawText(Canvas canvas, Offset position, double width, String text, double left, double top) {
+  void _drawText(Canvas canvas, Offset position, double width, String text, double left, double top, double maxHeight, double maxWidth) {
     final TextSpan textSpan = TextSpan(
       text: text,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: Colors.white.withOpacity(0.5),
         fontSize: 10,
       ),
     );
@@ -193,9 +222,14 @@ class LineChartPainter extends CustomPainter {
     final TextPainter textPainter = TextPainter(
       text: textSpan,
       textDirection: TextDirection.ltr,
-      textAlign: TextAlign.right,
+      textAlign: TextAlign.left,
     );
     textPainter.layout(minWidth: 0, maxWidth: width);
-    textPainter.paint(canvas, Offset(position.dx - (textPainter.width + left), (position.dy + top)));
+    double dx = position.dx + left;
+    if (dx > maxWidth) {
+      dx = maxWidth - textPainter.width;
+    }
+
+    textPainter.paint(canvas, Offset(dx, (position.dy + top)));
   }
 }

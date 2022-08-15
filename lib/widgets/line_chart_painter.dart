@@ -69,6 +69,8 @@ class LineChartPainter extends CustomPainter {
     // get the max and min data from the graph
     double max = _maxData();
     double min = _minData();
+    double x;
+    double y;
 
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
@@ -86,6 +88,14 @@ class LineChartPainter extends CustomPainter {
       ..color = extendedLight;
     Paint watchlistPaintBuySell = Paint()
       ..color = Colors.white;
+    Paint avgPricePaint = Paint()
+      ..color = Colors.orange.withOpacity(0.7);
+    Paint ma5PricePaint = Paint()
+      ..color = Colors.green.withOpacity(0.7);
+    Paint ma8PricePaint = Paint()
+      ..color = Colors.pink.withOpacity(0.7);
+    Paint ma13PricePaint = Paint()
+      ..color = Colors.blue.withOpacity(0.7);
 
     // canvas.drawRect(graphRect, graphRectBorder);
     
@@ -93,13 +103,55 @@ class LineChartPainter extends CustomPainter {
     // draw vertical lines
     double xLeft = graphRect.left;
     double guideW = graphRect.size.width / data.length;
+    double avgPrice = 0;
+    int count = data.length;
+    double ma5 = 0;
+    double ma5Count = 0;
+    double ma8 = 0;
+    double ma8Count = 0;
+    double ma13 = 0;
+    double ma13Count = 0;
+
+    // check for the date print offset
+    int datePrintOffset = 10;
+    if (data.length < datePrintOffset) {
+      datePrintOffset = data.length - 1;
+    }
+
     for(int i = 0; i < data.length; i++) {
       Offset p1 = Offset(xLeft, graphRect.bottom);
       Offset p2 = Offset(xLeft, graphRect.top);
 
-      if(i%10 == 0 && i > 0) {
+      avgPrice = avgPrice + data[i].price;
+
+      count = count - 1;
+      if (count < 5) {
+        ma5 = ma5 + data[i].price;
+        ma5Count++;
+      }
+      if (count < 8) {
+        ma8 = ma8 + data[i].price;
+        ma8Count++;
+      }
+      if (count < 13) {
+        ma13 = ma13 + data[i].price;
+        ma13Count++;
+      }
+
+      if(i%datePrintOffset == 0 && i > 0) {
         canvas.drawLine(p1, p2, graphRectBorderWhite);
-        _drawText(canvas, Offset(xLeft, graphRect.bottom), 60, formatDate(date: data[i].date, format: "dd/MM"), -15, 5, graphRect.height, graphRect.width);
+        _drawText(
+          canvas: canvas,
+          position: Offset(xLeft, graphRect.bottom),
+          width: 60,
+          text: formatDate(date: data[i].date, format: "dd/MM"),
+          left: -15,
+          top: 5,
+          minHeight: 0,
+          maxHeight: graphRect.height + 20,
+          minWidth: 0,
+          maxWidth: graphRect.width + 20
+        );
       }
       else {
         canvas.drawLine(p1, p2, graphRectBorder);
@@ -108,6 +160,11 @@ class LineChartPainter extends CustomPainter {
       // next
       xLeft += guideW;
     }
+    avgPrice = avgPrice / data.length;
+    ma5 = ma5 / ma5Count;
+    ma8 = ma8 / ma8Count;
+    ma13 = ma13 / ma13Count;
+    // debugPrint("$ma5 - $ma5Count, $ma8 - $ma8Count, $ma13 - $ma13Count");
 
     // draw horizontal line
     double yD = graphRect.size.height / 4;
@@ -117,8 +174,87 @@ class LineChartPainter extends CustomPainter {
       canvas.drawLine(p1, p2, graphRectBorder);
 
       double currVal = min + (((max - min) / 4.0) * i.toDouble());
-      _drawText(canvas, Offset(graphRect.left, graphRect.bottom - (yD * i) - 5), 60, formatCurrency(currVal), 0, -5, graphRect.height, graphRect.width);
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
+        width: 60,
+        text: formatCurrency(currVal),
+        left: 0,
+        top: -5,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width
+      );
     }
+
+    // draw the average price line
+    yD = ((avgPrice - min) / (max - min)) * graphRect.height;
+    _drawDashedLine(canvas, graphRect, 2, yD, avgPricePaint);
+    _drawText(
+      canvas: canvas,
+      position: Offset(graphRect.right, graphRect.bottom - yD),
+      width: 60,
+      text: formatCurrency(avgPrice),
+      left: 0,
+      top: -10,
+      minHeight: 10,
+      maxHeight: graphRect.height,
+      minWidth: 10,
+      maxWidth: graphRect.width + 8,
+      textColor: Colors.orange[300]!.withOpacity(0.5)
+    );
+
+    // draw the ma5 price line
+    yD = ((ma5 - min) / (max - min)) * graphRect.height;
+    _drawDashedLine(canvas, graphRect, 2, yD, ma5PricePaint);
+    _drawText(
+      canvas: canvas,
+      position: Offset(graphRect.right, graphRect.bottom - yD),
+      width: 60,
+      text: formatCurrency(avgPrice),
+      left: 0,
+      top: -10,
+      minHeight: 10,
+      maxHeight: graphRect.height,
+      minWidth: 10,
+      maxWidth: graphRect.width + 8,
+      textColor: Colors.green[300]!.withOpacity(0.5)
+    );
+
+    // draw the ma8 price line
+    yD = ((ma8 - min) / (max - min)) * graphRect.height;
+    _drawDashedLine(canvas, graphRect, 2, yD, ma8PricePaint);
+    _drawText(
+      canvas: canvas,
+      position: Offset(graphRect.right, graphRect.bottom - yD),
+      width: 60,
+      text: formatCurrency(avgPrice),
+      left: 0,
+      top: -10,
+      minHeight: 10,
+      maxHeight: graphRect.height,
+      minWidth: 10,
+      maxWidth: graphRect.width + 8,
+      textColor: Colors.pink[300]!.withOpacity(0.5)
+    );
+
+    // draw the ma13 price line
+    yD = ((ma13 - min) / (max - min)) * graphRect.height;
+    _drawDashedLine(canvas, graphRect, 2, yD, ma13PricePaint);
+    _drawText(
+      canvas: canvas,
+      position: Offset(graphRect.right, graphRect.bottom - yD),
+      width: 60,
+      text: formatCurrency(avgPrice),
+      left: 0,
+      top: -10,
+      minHeight: 10,
+      maxHeight: graphRect.height,
+      minWidth: 10,
+      maxWidth: graphRect.width + 8,
+      textColor: Colors.blue[300]!.withOpacity(0.5)
+    );
 
     // once guidelines finished, we can draw the actual graph
     double gap = graphRect.width / (data.length.toDouble() - 1);
@@ -126,10 +262,11 @@ class LineChartPainter extends CustomPainter {
     Path pUp = Path();
     Path pDown = Path();
     Path pNoChange = Path();
-    double x = graphRect.left;
-    double y = 0;
     bool isFirst = true;
     double prevPrice = double.minPositive;
+
+    x = graphRect.left;
+    y = 0;
 
     // loop thru data
     for (GraphData value in data) {
@@ -210,11 +347,25 @@ class LineChartPainter extends CustomPainter {
     canvas.drawPath(pNoChange, dpNoChange);
   }
 
-  void _drawText(Canvas canvas, Offset position, double width, String text, double left, double top, double maxHeight, double maxWidth) {
+  void _drawDashedLine(Canvas canvas, Rect graph, double width, double offset, Paint paint) {
+    int j = 0;
+    for (double i = graph.left; i <= graph.right; i = (i + width)) {
+      if (j % 2 == 0) {
+        canvas.drawLine(
+          Offset(i, graph.bottom - offset), Offset((i + width), graph.bottom - offset),
+          paint
+        );
+      }
+      // odd and even to print the line
+      j = j + 1;
+    }
+  }
+
+  void _drawText({required Canvas canvas, required Offset position, required double width, required String text, required double left, required double top, required double minHeight, required double maxHeight, required double minWidth, required double maxWidth, Color? textColor}) {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
-        color: Colors.white.withOpacity(0.5),
+        color: (textColor ?? Colors.white.withOpacity(0.5)),
         fontSize: 10,
       ),
     );
@@ -226,10 +377,21 @@ class LineChartPainter extends CustomPainter {
     );
     textPainter.layout(minWidth: 0, maxWidth: width);
     double dx = position.dx + left;
+    if (dx < minWidth) {
+      dx = minWidth;
+    }
     if (dx > maxWidth) {
       dx = maxWidth - textPainter.width;
     }
 
-    textPainter.paint(canvas, Offset(dx, (position.dy + top)));
+    double dy = position.dy + top;
+    if (dy < minHeight) {
+      dy = minHeight;
+    }
+    if (dy > maxHeight) {
+      dy = maxHeight - textPainter.height;
+    }
+
+    textPainter.paint(canvas, Offset(dx, dy));
   }
 }

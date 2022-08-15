@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart_painter.dart';
 
@@ -11,50 +12,72 @@ class LineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double chartHeight = (height ?? 250);
-    return CustomPaint(
-      painter: LineChartPainter(
-        data: _convertDataToList(),
-        watchlist: watchlist,
-      ),
-      child: Container(
-        height: chartHeight,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: CustomPaint(
+            painter: LineChartPainter(
+              data: _convertDataToList(),
+              watchlist: watchlist,
+            ),
+            child: Container(
+              height: chartHeight,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _legend(color: Colors.orange, text: "Average"),
+              _legend(color: Colors.green, text: "MA5"),
+              _legend(color: Colors.pink, text: "MA8"),
+              _legend(color: Colors.blue, text: "MA13"),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10,),
+      ],
+    );
+  }
+
+  Widget _legend({required Color color, required String text}) {
+    return Expanded(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 10,
+              color: textPrimary,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
 
   List<GraphData> _convertDataToList() {
-    // we need to expand data incase that there are gap on date, because the heat graph
-    // expect to get all the date without skipping. So what we can do is to expand the
-    // date given to exactly 91 days (65/5) * 7.
-
+    // convert the data from map into list
     List<GraphData> dataExpand = [];
     data.forEach((key, value) => dataExpand.add(value));
-
-    // // first get the 1st keys
-    // DateTime firstDate = data.keys.first;
-    // DateTime lastDate = data.keys.last;
-    // // double prevPrice = -1;
-
-    // for(int day=0; day<91; day++) {
-    //   DateTime keys = firstDate.add(Duration(days: day));
-    //   if(keys.compareTo(lastDate) <= 0) {
-    //     // check if this weekend or weekday
-    //     if(keys.weekday <= 5) {
-    //       // check if exists?
-    //       if(data.containsKey(keys)) {
-    //         dataExpand.add(GraphData(date: keys, price: data[keys]!.price));
-    //         // prevPrice = data[keys]!.price;
-    //       }
-    //       // else {
-    //       //   dataExpand.add(GraphData(date: keys, price: prevPrice));
-    //       // }
-    //     }
-    //   }
-    //   else {
-    //     // already end of data, exit from loop
-    //     break;
-    //   }
-    // }
 
     return dataExpand;
   }

@@ -6,7 +6,6 @@ import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company_search_model.dart';
 import 'package:my_wealth/model/user_login.dart';
-import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_add_args.dart';
@@ -35,7 +34,6 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
 
   late WatchlistAddArgs _args;
   late List<CompanySearchModel>? _companySearchResult;
-  late List<WatchlistListModel>? _watchlists;
   late UserLoginInfoModel? _userInfo;
 
   @override
@@ -48,7 +46,6 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
     // set the search result as empty
     _companySearchResult = [];
     _userInfo = UserSharedPreferences.getUserInfo();
-    _watchlists = WatchlistSharedPreferences.getWatchlist(_args.type);
   }
 
   @override
@@ -170,18 +167,8 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 riskColor: riskColor(_companySearchResult![index].companyNetAssetValue!, _companySearchResult![index].companyPrevPrice!, _userInfo!.risk),
                 canAdd: _companySearchResult![index].companyCanAdd,
                 onPress: (() async {
-                  await _addCompanyToWatchlist(index).then((resp) async {
+                  await _addCompanyToWatchlist(index).then((_) async {
                     debugPrint("🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
-
-                    // add the response to watchlist
-                    _watchlists!.add(resp!);
-
-                    // update the shared preferences
-                    await WatchlistSharedPreferences.setWatchlist(_args.type, _watchlists!);
-
-                    // notify the listener for the watchlist
-                    if (!mounted) return;
-                    Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_args.type, _watchlists!);
                   }).onError((error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       createSnackBar(message: error.toString())
@@ -213,36 +200,48 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
     });
   }
 
-  Future<WatchlistListModel?> _addCompanyToWatchlist(int index) async {
-    WatchlistListModel? watchlist;
+  Future<void> _addCompanyToWatchlist(int index) async {
+    showLoaderDialog(context);
+    Future.microtask(() async {
+      // add the company to watchlist
+      await _watchlistAPI.add(_args.type, _companySearchResult![index].companyId).then((_) async {
+        CompanySearchModel ret = CompanySearchModel(
+          companyId: _companySearchResult![index].companyId,
+          companyName: _companySearchResult![index].companyName,
+          companyNetAssetValue: _companySearchResult![index].companyNetAssetValue!,
+          companyPrevPrice: _companySearchResult![index].companyPrevPrice!,
+          companyLastUpdate: _companySearchResult![index].companyLastUpdate,
+          companyCanAdd: false
+        );
 
-    await _watchlistAPI.add(_args.type, _companySearchResult![index].companyId).then((resp) async {
-      watchlist = resp;
-
-      CompanySearchModel ret = CompanySearchModel(
-        companyId: _companySearchResult![index].companyId,
-        companyName: _companySearchResult![index].companyName,
-        companyNetAssetValue: _companySearchResult![index].companyNetAssetValue!,
-        companyPrevPrice: _companySearchResult![index].companyPrevPrice!,
-        companyLastUpdate: _companySearchResult![index].companyLastUpdate,
-        companyCanAdd: false
-      );
-
-      List<CompanySearchModel> response = [];
-      for (CompanySearchModel? company in _companySearchResult!) {
-        if(company!.companyId == ret.companyId) {
-          response.add(ret);
+        List<CompanySearchModel> response = [];
+        for (CompanySearchModel? company in _companySearchResult!) {
+          if(company!.companyId == ret.companyId) {
+            response.add(ret);
+          }
+          else {
+            response.add(company);
+          }
         }
-        else {
-          response.add(company);
-        }
-      }
 
-      _setSearchResult(response);
-    }).onError((error, stackTrace) {
-      throw Exception("Error when add to watchlist");
+        _setSearchResult(response);
+      }).onError((error, stackTrace) {
+        throw Exception("Error when add ${_companySearchResult![index].companyName}");
+      });
+
+      // now refresh the watchlist
+      await _watchlistAPI.getWatchlist(_args.type).then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlist(_args.type, resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_args.type, resp);
+        debugPrint("🔃 Refresh watchlist ${_args.type} after add");
+      }).onError((error, stackTrace) {
+        throw Exception("Error when refresh watchlist ${_args.type} after add");
+      });
+    }).whenComplete(() {
+      // once finished then remove the loader dialog
+      Navigator.pop(context);
     });
-
-    return watchlist!;
   }
 }

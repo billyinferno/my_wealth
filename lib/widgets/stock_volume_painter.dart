@@ -35,7 +35,7 @@ class StockVolumePainter extends CustomPainter {
       return;
     }
 
-    totalData = stockData.length - 1;
+    totalData = stockData.length;
     padding = (padding ?? 20);
 
     _drawVolume(canvas, size);
@@ -49,22 +49,26 @@ class StockVolumePainter extends CustomPainter {
     if (maxVolume == 0) return [];
 
     // calculate maximum width and heigh that we can use per bar
-    final double pixelPerBar = (size.width - padding!) / stockData.length;
+    final double pixelPerBar = (size.width - padding!) / (stockData.length + 1);
     final double pixelPerOrder = size.height / maxVolume;
-    final double barWidth = (size.width - padding!) / (totalData! + 1) - 1.5;
+    final double barWidth = ((size.width - padding!) / (stockData.length + 1)) - 1.5;
 
     List<Bar> bars = [];
-    Paint volumePaint = _neutralPaint;
-    for (int i = 0; i < totalData!; i++) {
+    Paint volumePaint;
+    
+    for (int i = 0; i < stockData.length; i++) {
       // check if current record is the more than the previous one?
       volumePaint = _neutralPaint;
-      if (i < stockData.length - 1) {
-        if (stockData[i].lastPrice > stockData[i + 1].lastPrice) {
-          volumePaint = _gainPaint;
-        }
-        else if (stockData[i].lastPrice < stockData[i + 1].lastPrice) {
-          volumePaint = _lossPaint;
-        }
+
+      // debugPrint("Date: ${stockData[i].date}, Open: ${stockData[i].adjustedOpenPrice}, Last: ${stockData[i].lastPrice}, Closing: ${stockData[i].adjustedClosingPrice}");
+      // instead checking with previous data (as the order is descending)
+      // we can just check what is the open price and the close price?
+      // if close price > open price, then it means that we got some gain
+      if (stockData[i].adjustedOpenPrice < stockData[i].lastPrice) {
+        volumePaint = _gainPaint;
+      }
+      else if (stockData[i].adjustedOpenPrice > stockData[i].lastPrice) {
+        volumePaint = _lossPaint;
       }
 
       bars.add(

@@ -43,7 +43,7 @@ class StockCandleStickPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     padding = (padding ?? 20);
-    totalData = stockData.length - 1;
+    totalData = stockData.length;
 
     // return if no stock data
     if (stockData.isEmpty) {
@@ -128,14 +128,15 @@ class StockCandleStickPainter extends CustomPainter {
       dateText = "";
       samePrice = false;
       candleColor = _neutralPaint;
-      // check if current record is the more than the previous one?
-      if (i < stockData.length - 1) {
-        if (stockData[i].lastPrice > stockData[i + 1].lastPrice) {
-          candleColor = _gainPaint;
-        }
-        else if (stockData[i].lastPrice < stockData[i + 1].lastPrice) {
-          candleColor = _lossPaint;
-        }
+
+      // instead checking with previous data (as the order is descending)
+      // we can just check what is the open price and the close price?
+      // if close price > open price, then it means that we got some gain
+      if (stockData[i].adjustedOpenPrice < stockData[i].lastPrice) {
+        candleColor = _gainPaint;
+      }
+      else if (stockData[i].adjustedOpenPrice > stockData[i].lastPrice) {
+        candleColor = _lossPaint;
       }
 
       if (stockData[i].adjustedOpenPrice > stockData[i].adjustedClosingPrice) {

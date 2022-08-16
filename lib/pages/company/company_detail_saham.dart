@@ -254,7 +254,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
         currentIcon = Ionicons.caret_down;
       }
-      
+
       // generate the actual page
       return WillPopScope(
         onWillPop: (() async {
@@ -2311,6 +2311,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     ),
                   ),
                 ),
+                const SizedBox(height: 15,),
               ],
             ),
           ),

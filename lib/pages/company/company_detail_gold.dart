@@ -187,12 +187,6 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
-    if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-      currentIcon = Ionicons.caret_up;
-    }
-    else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-      currentIcon = Ionicons.caret_down;
-    }
 
     if (_isLoading) {
       return Container(
@@ -200,6 +194,13 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
       );
     }
     else {
+      if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
+        currentIcon = Ionicons.caret_up;
+      }
+      else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
+        currentIcon = Ionicons.caret_down;
+      }
+      
       return WillPopScope(
         onWillPop: (() async {
           return false;

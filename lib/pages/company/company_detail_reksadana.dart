@@ -206,12 +206,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
-    if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-      currentIcon = Ionicons.caret_up;
-    }
-    else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-      currentIcon = Ionicons.caret_down;
-    }
 
     if (_isLoading) {
       return Container(
@@ -221,6 +215,13 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     else {
       int companyRating;
       int companyRisk;
+      
+      if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
+        currentIcon = Ionicons.caret_up;
+      }
+      else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
+        currentIcon = Ionicons.caret_down;
+      }
 
       if(_companyDetail.companyYearlyRating == null) {
         companyRating = 0;

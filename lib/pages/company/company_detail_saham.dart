@@ -243,17 +243,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
-    if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-      currentIcon = Ionicons.caret_up;
-    }
-    else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-      currentIcon = Ionicons.caret_down;
-    }
 
     if (_isLoading) {
       return Container(color: primaryColor,);
     }
     else {
+      if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
+        currentIcon = Ionicons.caret_up;
+      }
+      else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
+        currentIcon = Ionicons.caret_down;
+      }
+      
       // generate the actual page
       return WillPopScope(
         onWillPop: (() async {

@@ -188,6 +188,20 @@ class LineChartPainter extends CustomPainter {
       );
     }
 
+    // put the max price
+    _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.left, graphRect.top),
+        width: 60,
+        text: formatCurrency(max),
+        left: 0,
+        top: -5,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width
+      );
+
     // draw the average price line
     yD = ((avgPrice - min) / (max - min)) * graphRect.height;
     _drawDashedLine(canvas, graphRect, 2, yD, avgPricePaint);

@@ -79,6 +79,18 @@ class _PortofolioPageState extends State<PortofolioPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            _summaryBox(
+              barColor: riskColor(_watchlistAll!.totalValue, _watchlistAll!.totalCost, _userInfo!.risk),
+              backgroundColor: primaryDark,
+              value: _watchlistAll!.totalValue,
+              cost: _watchlistAll!.totalCost,
+              dayGain: _watchlistAll!.totalDayGain,
+            ),
+            const SizedBox(height: 10,),
+            BarChart(
+              data: _barChartData
+            ),
+            const SizedBox(height: 20,),
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
@@ -87,18 +99,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    _summaryBox(
-                      barColor: riskColor(_watchlistAll!.totalValue, _watchlistAll!.totalCost, _userInfo!.risk),
-                      backgroundColor: primaryDark,
-                      value: _watchlistAll!.totalValue,
-                      cost: _watchlistAll!.totalCost,
-                      dayGain: _watchlistAll!.totalDayGain,
-                    ),
-                    const SizedBox(height: 10,),
-                    BarChart(
-                      data: _barChartData
-                    ),
-                    const SizedBox(height: 20,),
                     ProductListItem(
                       bgColor: Colors.green,
                       title: "Reksadana",

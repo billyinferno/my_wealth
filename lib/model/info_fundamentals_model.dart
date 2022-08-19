@@ -11,67 +11,67 @@ String infoFundamentalsModelToJson(InfoFundamentalsModel data) => json.encode(da
 class InfoFundamentalsModel {
     InfoFundamentalsModel({
         required this.code,
-        required this.period,
-        required this.year,
-        required this.lastPrice,
-        required this.shareOut,
-        required this.marketCap,
-        required this.cash,
-        required this.totalAsset,
-        required this.stBorrowing,
-        required this.ltBorrowing,
-        required this.totalEquity,
-        required this.revenue,
-        required this.grossProfit,
-        required this.operatingProfit,
-        required this.netProfit,
-        required this.ebitda,
-        required this.interestExpense,
-        required this.deviden,
-        required this.eps,
-        required this.per,
-        required this.bvps,
-        required this.pbv,
-        required this.roa,
-        required this.roe,
-        required this.evEbitda,
-        required this.debtEquity,
-        required this.debtTotalcap,
-        required this.debtEbitda,
-        required this.ebitdaInterestexpense,
-        required this.createdAt,
-        required this.updatedAt,
+        this.period,
+        this.year,
+        this.lastPrice,
+        this.shareOut,
+        this.marketCap,
+        this.cash,
+        this.totalAsset,
+        this.stBorrowing,
+        this.ltBorrowing,
+        this.totalEquity,
+        this.revenue,
+        this.grossProfit,
+        this.operatingProfit,
+        this.netProfit,
+        this.ebitda,
+        this.interestExpense,
+        this.deviden,
+        this.eps,
+        this.per,
+        this.bvps,
+        this.pbv,
+        this.roa,
+        this.roe,
+        this.evEbitda,
+        this.debtEquity,
+        this.debtTotalcap,
+        this.debtEbitda,
+        this.ebitdaInterestexpense,
+        this.createdAt,
+        this.updatedAt,
     });
 
     final String code;
-    final int period;
-    final int year;
-    final int lastPrice;
-    final int shareOut;
-    final int marketCap;
-    final int cash;
-    final int totalAsset;
-    final int stBorrowing;
-    final int ltBorrowing;
-    final int totalEquity;
-    final int revenue;
-    final int grossProfit;
-    final int operatingProfit;
-    final int netProfit;
-    final int ebitda;
-    final int interestExpense;
-    final double deviden;
-    final double eps;
-    final double per;
-    final double bvps;
-    final double pbv;
-    final double roa;
-    final double roe;
-    final double evEbitda;
-    final double debtEquity;
-    final double debtTotalcap;
-    final double debtEbitda;
-    final double ebitdaInterestexpense;
+    final int? period;
+    final int? year;
+    final int? lastPrice;
+    final int? shareOut;
+    final int? marketCap;
+    final int? cash;
+    final int? totalAsset;
+    final int? stBorrowing;
+    final int? ltBorrowing;
+    final int? totalEquity;
+    final int? revenue;
+    final int? grossProfit;
+    final int? operatingProfit;
+    final int? netProfit;
+    final int? ebitda;
+    final int? interestExpense;
+    final double? deviden;
+    final double? eps;
+    final double? per;
+    final double? bvps;
+    final double? pbv;
+    final double? roa;
+    final double? roe;
+    final double? evEbitda;
+    final double? debtEquity;
+    final double? debtTotalcap;
+    final double? debtEbitda;
+    final double? ebitdaInterestexpense;
     final DateTime? createdAt;
     final DateTime? updatedAt;
 

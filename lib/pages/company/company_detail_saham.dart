@@ -50,10 +50,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final ScrollController _chipController = ScrollController();
   final ScrollController _fundamentalController = ScrollController();
   final ScrollController _fundamentalItemController = ScrollController();
+  final ScrollController _compareController = ScrollController();
   late TabController _tabController;
 
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
+  late CompanyDetailModel _otherCompanyDetail;
   late UserLoginInfoModel? _userInfo;
   late BrokerSummaryModel _brokerSummary;
   late CompanyTopBrokerModel _topBroker;
@@ -61,9 +63,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late BrokerSummaryDateModel _brokerSummaryDate;
   late PriceSahamMovingAverageModel _priceMA;
   late List<InfoFundamentalsModel> _infoFundamental;
+  late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
   late String _brokerSummarySelected;
   late Map<DateTime, double> _watchlistDetail;
+  late String? _otherCompanyCode;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -101,7 +105,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     super.initState();
 
     // initialize the tab controller for summary page
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
 
     // set that this is still loading
     _isLoading = true;
@@ -117,6 +121,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
+
+    // initialize the other company variable that will be used for compare
+    _otherCompanyCode = null;
+    _otherCompanyDetail = CompanyDetailModel(companyId: -1, companySymbol: null, companyName: '', companyType: '', companyIndustry: '', companySharia: false, companyPrices: []);
+    _otherInfoFundamental = InfoFundamentalsModel(code: '');
 
     Future.microtask(() async {
       // show the loader dialog
@@ -234,6 +243,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _brokerController.dispose();
     _fundamentalController.dispose();
     _fundamentalItemController.dispose();
+    _compareController.dispose();
   }
   
   @override
@@ -581,6 +591,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
             Tab(text: 'FUNDAMENTAL',),
+            Tab(text: 'COMPARE'),
           ],
         ),
         const SizedBox(height: 10,),
@@ -590,6 +601,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             children: <Widget>[
               _tabSummaryInfo(),
               _tabFundamentalInfo(),
+              _tabCompareInfo(),
             ],
           ),
         ),
@@ -2317,6 +2329,220 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           ),
         )
       ],
+    );
+  }
+
+  Widget _tabCompareInfo() {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: SingleChildScrollView(
+        controller: _compareController,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Code"),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "One Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Three Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Five Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Ten Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Period", fontWeight: FontWeight.bold),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Balance Sheet", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Cash", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Total Asset", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "S.T.Borrow", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "L.T.Borrow", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Total Equity", fontWeight: FontWeight.bold),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Income Stmt", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Revenue", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Gross Profit", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Opr Profit", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Net Profit", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EBITDA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Int Expense", fontWeight: FontWeight.bold),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Ratio", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EPS", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PER", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PER Annual", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Beta 1Y", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "BVPS", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PBV", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PBR", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PSR Annual", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PCFR Annual", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "ROA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "ROE", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EV/EBITDA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/Equity", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/Total Cap", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/EBITDA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EBITDA/IntExp", fontWeight: FontWeight.bold),
+                ],
+              ),
+            ),
+            _companyCompareInfo(),
+            _otherCompanyCompareInfo(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _companyCompareInfo() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          _compareFields(color: primaryDark, borderColor: accentColor, text: _companyDetail.companySymbol!, textAlign: TextAlign.center),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: "${formatDecimalWithNull(_companyDetail.companyThreeYear, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: "${formatDecimalWithNull(_companyDetail.companyFiveYear, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: "${formatDecimalWithNull(_companyDetail.companyTenYear, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: "${_infoFundamental[0].period}M ${_infoFundamental[0].year}", fontWeight: FontWeight.bold),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].cash, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].totalAsset, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].stBorrowing, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].ltBorrowing, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].totalEquity, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].revenue, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].grossProfit, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].operatingProfit, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].netProfit, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].ebitda, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatIntWithNull(_infoFundamental[0].interestExpense, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].eps), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].per), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_companyDetail.companyPerAnnualized), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: "${formatDecimalWithNull(_companyDetail.companyBetaOneYear, 100, 2)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].bvps), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].pbv), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_companyDetail.companyPbr), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_companyDetail.companyPsrAnnualized), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_companyDetail.companyPcfrAnnualized), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].roa), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].roe), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].evEbitda), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].debtEquity), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].debtTotalcap), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].debtEbitda), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: accentColor, text: formatDecimalWithNull(_infoFundamental[0].ebitdaInterestexpense), fontWeight: FontWeight.bold),
+        ],
+      ),
+    );
+  }
+
+  Widget _otherCompanyCompareInfo() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          InkWell(
+            onTap: (() async {
+              await Navigator.pushNamed(context, '/company/detail/saham/find', arguments: _companyDetail.companySymbol!).then((value) {
+                // check if value is not null?
+                if (value != null) {
+                  // means we already got our other company code, we can call API to find the company
+                  _otherCompanyCode = value as String;
+
+                  Future.microtask(() async {
+                    // show loader dialog
+                    showLoaderDialog(context);
+
+                    // get the company detail information
+                    await _companyApi.getCompanyByCode(_otherCompanyCode!, 'saham').then((resp) {
+                      _otherCompanyDetail = resp;
+                    });
+
+                    // get the fundamental information, but we will only use the 1st index or array
+                    await _infoFundamentalAPI.getInfoFundamental(_otherCompanyCode!).then((resp) {
+                      _otherInfoFundamental = resp[0];
+                    });
+                  }).whenComplete(() {
+                    Navigator.pop(context);
+                    setState(() {
+                      // set state to rebuild the widget
+                    });
+                  });
+                }
+              });
+            }),
+            child: _compareFields(color: primaryDark, borderColor: extendedLight, text: (_otherCompanyCode ?? '+'), textAlign: TextAlign.center)
+          ),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: "${formatDecimalWithNull(_otherCompanyDetail.companyYearlyReturn, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: "${formatDecimalWithNull(_otherCompanyDetail.companyThreeYear, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: "${formatDecimalWithNull(_otherCompanyDetail.companyFiveYear, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: "${formatDecimalWithNull(_otherCompanyDetail.companyTenYear, 100, 4)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: (_otherCompanyCode == null ? '-' : "${_otherInfoFundamental.period}M ${_otherInfoFundamental.year}"), fontWeight: FontWeight.bold),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.cash, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.totalAsset, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.stBorrowing, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.ltBorrowing, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.totalEquity, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.revenue, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.grossProfit, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.operatingProfit, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.netProfit, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.ebitda, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatIntWithNull(_otherInfoFundamental.interestExpense, false, true), fontWeight: FontWeight.bold),
+          _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.eps), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.per), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherCompanyDetail.companyPerAnnualized), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: "${formatDecimalWithNull(_otherCompanyDetail.companyBetaOneYear, 100, 2)}%", fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.bvps), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.pbv), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherCompanyDetail.companyPbr), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherCompanyDetail.companyPsrAnnualized), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherCompanyDetail.companyPcfrAnnualized), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.roa), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.roe), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.evEbitda), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.debtEquity), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.debtTotalcap), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.debtEbitda), fontWeight: FontWeight.bold),
+          _compareFields(color: primaryDark, borderColor: extendedLight, text: formatDecimalWithNull(_otherInfoFundamental.ebitdaInterestexpense), fontWeight: FontWeight.bold),
+        ],
+      ),
+    );
+  }
+
+  Widget _compareFields({required Color color, required Color borderColor, required String text, FontWeight? fontWeight, TextAlign? textAlign}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(5),
+      margin: const EdgeInsets.fromLTRB(2.5, 0, 2.5, 5),
+      decoration: BoxDecoration(
+        color: color,
+        border: Border.all(
+          color: borderColor,
+          width: 1.0,
+          style: BorderStyle.solid,
+        )
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontWeight: (fontWeight ?? FontWeight.normal),
+          fontSize: 12,
+        ),
+        overflow: TextOverflow.ellipsis,
+        textAlign: (textAlign ?? TextAlign.start),
+      ),
     );
   }
 

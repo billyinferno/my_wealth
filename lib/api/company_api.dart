@@ -7,6 +7,7 @@ import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
 import 'package:my_wealth/model/company_search_model.dart';
 import 'package:my_wealth/model/company_top_broker_model.dart';
+import 'package:my_wealth/model/find_other_company_saham_model.dart';
 import 'package:my_wealth/model/sector_name_list_model.dart';
 import 'package:my_wealth/model/sector_per_detail_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
@@ -290,6 +291,38 @@ class CompanyAPI {
         CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
         CompanyTopBrokerModel topBroker = CompanyTopBrokerModel.fromJson(commonModel.data['attributes']);
         return topBroker;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<FindOtherCommpanySahamModel> getOtherCompany(String companyCode) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/company-saham/findother/${companyCode.toUpperCase()}'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        FindOtherCommpanySahamModel company = FindOtherCommpanySahamModel.fromJson(commonModel.data['attributes']);
+        return company;
       }
 
       // status code is not 200, means we got error

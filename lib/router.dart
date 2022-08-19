@@ -4,6 +4,7 @@ import 'package:my_wealth/pages/company/company_detail_crypto.dart';
 import 'package:my_wealth/pages/company/company_detail_gold.dart';
 import 'package:my_wealth/pages/company/company_detail_reksadana.dart';
 import 'package:my_wealth/pages/company/company_detail_saham.dart';
+import 'package:my_wealth/pages/company/company_detail_saham/company_detail_saham_find_other.dart';
 import 'package:my_wealth/pages/favourites/favourite_company_list_crypto.dart';
 import 'package:my_wealth/pages/favourites/favourite_company_list_reksadana.dart';
 import 'package:my_wealth/pages/favourites/favourite_company_list_saham.dart';
@@ -145,6 +146,10 @@ class RouterPageState extends State<RouterPage> {
       case '/company/detail/saham':
       {
         return createAnimationRoute(CompanyDetailSahamPage(companyData: settings.arguments,));
+      }
+      case '/company/detail/saham/find':
+      {
+        return createAnimationRoute(CompanyDetailSahamFindOtherPage(args: settings.arguments,));
       }
       case '/company/detail/crypto':
       {

@@ -2,6 +2,8 @@
 //
 //     final brokerSummaryModel = brokerSummaryModelFromJson(jsonString);
 
+// ignore_for_file: prefer_null_aware_operators
+
 import 'dart:convert';
 
 BrokerSummaryModel brokerSummaryModelFromJson(String str) => BrokerSummaryModel.fromJson(json.decode(str));
@@ -74,13 +76,13 @@ class BrokerSummaryBuySellElement {
 
     final String? brokerSummaryID;
     final int? brokerSummaryLot;
-    final int? brokerSummaryValue;
-    final int? brokerSummaryAverage;
+    final double? brokerSummaryValue;
+    final double? brokerSummaryAverage;
 
     factory BrokerSummaryBuySellElement.fromJson(Map<String, dynamic> json) => BrokerSummaryBuySellElement(
         brokerSummaryID: json["broker_summary_id"],
         brokerSummaryLot: json["broker_summary_lot"],
-        brokerSummaryValue: json["broker_summary_value"],
+        brokerSummaryValue: (json["broker_summary_value"] != null ? json["broker_summary_value"].toDouble() : null),
         brokerSummaryAverage: json["broker_summary_average"],
     );
 

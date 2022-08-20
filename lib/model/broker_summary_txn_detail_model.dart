@@ -2,6 +2,8 @@
 //
 //     final brokerSummaryTxnDetailModel = brokerSummaryTxnDetailModelFromJson(jsonString);
 
+// ignore_for_file: prefer_null_aware_operators
+
 import 'dart:convert';
 
 BrokerSummaryTxnDetailModel brokerSummaryTxnDetailModelFromJson(String str) => BrokerSummaryTxnDetailModel.fromJson(json.decode(str));
@@ -78,14 +80,14 @@ class BrokerSummaryTxnBuySellElement {
 
     final DateTime brokerSummaryDate;
     final int brokerSummaryLot;
-    final int brokerSummaryValue;
-    final int brokerSummaryAverage;
+    final double brokerSummaryValue;
+    final double brokerSummaryAverage;
 
     factory BrokerSummaryTxnBuySellElement.fromJson(Map<String, dynamic> json) => BrokerSummaryTxnBuySellElement(
         brokerSummaryDate: DateTime.parse(json["broker_summary_date"]),
         brokerSummaryLot: json["broker_summary_lot"],
-        brokerSummaryValue: json["broker_summary_value"],
-        brokerSummaryAverage: json["broker_summary_average"],
+        brokerSummaryValue: (json["broker_summary_value"] != null ? json["broker_summary_value"].toDouble() : null),
+        brokerSummaryAverage: (json["broker_summary_average"] != null ? json["broker_summary_average"].toDouble() : null),
     );
 
     Map<String, dynamic> toJson() => {
@@ -98,11 +100,11 @@ class BrokerSummaryTxnBuySellElement {
 
 class BrokerSummaryTxnCombineModel {
   final int brokerSummaryBuyLot;
-  final int brokerSummaryBuyValue;
-  final int brokerSummaryBuyAverage;
+  final double brokerSummaryBuyValue;
+  final double brokerSummaryBuyAverage;
   final int brokerSummarySellLot;
-  final int brokerSummarySellValue;
-  final int brokerSummarySellAverage;
+  final double brokerSummarySellValue;
+  final double brokerSummarySellAverage;
 
   BrokerSummaryTxnCombineModel({
     required this.brokerSummaryBuyLot,

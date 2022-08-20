@@ -2,6 +2,8 @@
 //
 //     final companyTopBrokerModel = companyTopBrokerModelFromJson(jsonString);
 
+// ignore_for_file: prefer_null_aware_operators
+
 import 'dart:convert';
 
 CompanyTopBrokerModel companyTopBrokerModelFromJson(String str) => CompanyTopBrokerModel.fromJson(json.decode(str));
@@ -42,14 +44,14 @@ class BrokerData {
 
     final String brokerSummaryId;
     final int brokerSummaryLot;
-    final int brokerSummaryValue;
+    final double brokerSummaryValue;
     final double brokerSummaryAverage;
 
     factory BrokerData.fromJson(Map<String, dynamic> json) => BrokerData(
         brokerSummaryId: json["broker_summary_id"],
         brokerSummaryLot: json["broker_summary_lot"],
-        brokerSummaryValue: json["broker_summary_value"],
-        brokerSummaryAverage: json["broker_summary_average"].toDouble(),
+        brokerSummaryValue: (json["broker_summary_value"] != null ? json["broker_summary_value"].toDouble() : null),
+        brokerSummaryAverage: (json["broker_summary_average"] != null ? json["broker_summary_average"].toDouble() : null),
     );
 
     Map<String, dynamic> toJson() => {

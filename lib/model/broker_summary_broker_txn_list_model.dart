@@ -2,6 +2,8 @@
 //
 //     final brokerSummaryListModel = brokerSummaryListModelFromJson(jsonString);
 
+// ignore_for_file: prefer_null_aware_operators
+
 import 'dart:convert';
 
 BrokerSummaryBrokerTxnListModel brokerSummaryListModelFromJson(String str) => BrokerSummaryBrokerTxnListModel.fromJson(json.decode(str));
@@ -25,7 +27,7 @@ class BrokerSummaryBrokerTxnListModel {
     final DateTime brokerSummaryToDate;
     final String brokerSummaryFirmName;
     final int brokerSummaryVolume;
-    final int brokerSummaryValue;
+    final double brokerSummaryValue;
     final int brokerSummaryFrequency;
     final List<BrokerSummaryCodeListModel> brokerSummaryCodeList;
 
@@ -35,7 +37,7 @@ class BrokerSummaryBrokerTxnListModel {
         brokerSummaryToDate: DateTime.parse(json["broker_summary_to_date"]),
         brokerSummaryFirmName: json["broker_summary_firm_name"],
         brokerSummaryVolume: json["broker_summary_volume"],
-        brokerSummaryValue: json["broker_summary_value"],
+        brokerSummaryValue: (json["broker_summary_value"] != null ? json["broker_summary_value"].toDouble() : null),
         brokerSummaryFrequency: json["broker_summary_frequency"],
         brokerSummaryCodeList: List<BrokerSummaryCodeListModel>.from(json["broker_summary_code_list"].map((x) => BrokerSummaryCodeListModel.fromJson(x))),
     );
@@ -72,7 +74,7 @@ class BrokerSummaryCodeListModel {
     final int brokerSummaryLastPrice;
     final int brokerSummaryAdjustedClosingPrice;
     final int brokerSummaryLot;
-    final int brokerSummaryValue;
+    final double brokerSummaryValue;
     final String brokerSummaryCount;
 
     factory BrokerSummaryCodeListModel.fromJson(Map<String, dynamic> json) => BrokerSummaryCodeListModel(
@@ -83,7 +85,7 @@ class BrokerSummaryCodeListModel {
         brokerSummaryLastPrice: json["broker_summary_last_price"],
         brokerSummaryAdjustedClosingPrice: json["broker_summary_adjusted_closing_price"],
         brokerSummaryLot: json["broker_summary_lot"],
-        brokerSummaryValue: json["broker_summary_value"],
+        brokerSummaryValue: (json["broker_summary_value"] != null ? json["broker_summary_value"].toDouble() : null),
         brokerSummaryCount: json["broker_summary_count"],
     );
 

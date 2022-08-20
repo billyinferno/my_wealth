@@ -193,7 +193,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(formatIntWithNull(_transactionList.brokerSummaryValue)),
+                            Text(formatCurrencyWithNull(_transactionList.brokerSummaryValue)),
                           ],
                         ),
                       ),
@@ -429,7 +429,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                             ),
                                           ),
                                           Text(
-                                            formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryValue, false, true),
+                                            formatCurrencyWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryValue, false, true),
                                             style: const TextStyle(
                                               fontSize: 10,
                                               color: Colors.white,
@@ -686,11 +686,11 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       result.add(_generateRow(
         _dfs.format(key.toLocal()),
         formatIntWithNull(value.brokerSummaryBuyLot, false, false),
-        formatIntWithNull(value.brokerSummaryBuyValue, true, true),
-        formatIntWithNull(value.brokerSummaryBuyAverage, false, false),
+        formatCurrencyWithNull(value.brokerSummaryBuyValue, true, true),
+        formatCurrencyWithNull(value.brokerSummaryBuyAverage, false, false),
         formatIntWithNull(value.brokerSummarySellLot, false, false),
-        formatIntWithNull(value.brokerSummarySellValue, true, true),
-        formatIntWithNull(value.brokerSummarySellAverage, false, false)
+        formatCurrencyWithNull(value.brokerSummarySellValue, true, true),
+        formatCurrencyWithNull(value.brokerSummarySellAverage, false, false)
       ));
     });
 
@@ -708,12 +708,12 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       return const SizedBox.shrink();
     }
     else {
-      int totalBuyValue = 0;
+      double totalBuyValue = 0;
       int totalBuyLot = 0;
-      int totalBuyAverage = 0;
-      int totalSellValue = 0;
+      double totalBuyAverage = 0;
+      double totalSellValue = 0;
       int totalSellLot = 0;
-      int totalSellAverage = 0;
+      double totalSellAverage = 0;
 
       data.forEach((key, value) {
         totalBuyValue += value.brokerSummaryBuyLot * value.brokerSummaryBuyAverage * 100;
@@ -723,21 +723,21 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       });
 
       if (totalBuyLot > 0) {
-        totalBuyAverage = (totalBuyValue / (totalBuyLot * 100)).round();
+        totalBuyAverage = (totalBuyValue / (totalBuyLot * 100));
       }
 
       if (totalSellLot > 0) {
-        totalSellAverage = (totalSellValue / (totalSellLot * 100)).round();
+        totalSellAverage = (totalSellValue / (totalSellLot * 100));
       }
 
       return _generateRow(
         "Total",
         formatIntWithNull(totalBuyLot, false, false),
-        formatIntWithNull(totalBuyValue, true, true),
-        formatIntWithNull(totalBuyAverage, false, false),
+        formatCurrencyWithNull(totalBuyValue, true, true),
+        formatCurrencyWithNull(totalBuyAverage, false, false),
         formatIntWithNull(totalSellLot, false, false),
-        formatIntWithNull(totalSellValue, true, true),
-        formatIntWithNull(totalSellAverage, false, false),
+        formatCurrencyWithNull(totalSellValue, true, true),
+        formatCurrencyWithNull(totalSellAverage, false, false),
         false,
         true,
         Colors.amber[900]!,

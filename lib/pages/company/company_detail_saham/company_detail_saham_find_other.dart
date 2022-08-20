@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/find_other_company_saham_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 
 class CompanyDetailSahamFindOtherPage extends StatefulWidget {
@@ -19,7 +18,6 @@ class CompanyDetailSahamFindOtherPage extends StatefulWidget {
 class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFindOtherPage> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final DateFormat _dt = DateFormat("dd/MM/yyyy");
 
   final CompanyAPI _companyAPI = CompanyAPI();
 
@@ -27,7 +25,6 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
   late List<OtherCompanyInfo> _similarList;
   late List<OtherCompanyInfo> _filterList;
   late String _currentCode;
-  late String? _codeSelected;
 
   bool _isLoading = true;
 
@@ -195,62 +192,25 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: secondaryColor,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    ),
-                                    child: Text(
-                                      (_filterList[index].sectorName == null ? '' : _filterList[index].sectorName!.replaceAll(RegExp(r'&amp;'), '&')),
-                                      style: const TextStyle(
-                                        color: secondaryColor,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: secondaryColor,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    ),
-                                    child: Text(
-                                      (_filterList[index].sectorName == null ? '' : _filterList[index].subSectorName!.replaceAll(RegExp(r'&amp;'), '&')),
-                                      style: const TextStyle(
-                                        color: secondaryColor,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: secondaryColor,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    ),
-                                    child: Text(
-                                      (_filterList[index].industryName == null ? '' : _filterList[index].industryName!.replaceAll(RegExp(r'&amp;'), '&')),
-                                      style: const TextStyle(
-                                        color: secondaryColor,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
+                                  _companyType(text: (_filterList[index].sectorName == null ? '' : _filterList[index].subSectorName!.replaceAll(RegExp(r'&amp;'), '&'))),
+                                  _companyType(text: (_filterList[index].industryName == null ? '' : _filterList[index].industryName!.replaceAll(RegExp(r'&amp;'), '&'))),
+                                  _companyType(text: (_filterList[index].sectorName == null ? '' : _filterList[index].sectorName!.replaceAll(RegExp(r'&amp;'), '&'))),
                                 ],
                               ),
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                _gainBox(header: "One Year", value: "${formatDecimalWithNull(_filterList[index].oneYear, 100, 2)}%"),
+                                const SizedBox(width: 5,),
+                                _gainBox(header: "Three Year", value: "${formatDecimalWithNull(_filterList[index].threeYear, 100, 2)}%"),
+                                const SizedBox(width: 5,),
+                                _gainBox(header: "Five Year", value: "${formatDecimalWithNull(_filterList[index].fiveYear, 100, 2)}%"),
+                                const SizedBox(width: 5,),
+                                _gainBox(header: "Ten Year", value: "${formatDecimalWithNull(_filterList[index].tenYear, 100, 2)}%"),
+                              ],
                             )
                           ],
                         ),
@@ -264,6 +224,69 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
         ),
       ),
     ); 
+  }
+
+  Widget _companyType({required String text}) {
+    return Container(
+      padding: const EdgeInsets.all(2),
+      margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: secondaryLight,
+          width: 1.0,
+          style: BorderStyle.solid,
+        ),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: secondaryLight,
+          fontSize: 10,
+        ),
+      ),
+    );
+  }
+
+  Widget _gainBox({required String header, required String value}) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: accentColor,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                )
+              )
+            ),
+            child: Text(
+              header,
+              style: const TextStyle(
+                color: accentColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 10,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 5,),
+          Text(
+            value,
+            style: const TextStyle(
+                fontSize: 10,
+              ),
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
+      ),
+    );
   }
 
   void searchList(String find) {

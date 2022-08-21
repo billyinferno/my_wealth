@@ -176,6 +176,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                     count: 'Cnt',
                     backgroundColor: Colors.green[900],
                     textBold: true,
+                    enableTap: false,
                   ),
                   _generateBrokerTopListTable(_brokerTopListBuy),
                   _generateRow(
@@ -187,6 +188,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                     count: 'Cnt',
                     backgroundColor: secondaryDark,
                     textBold: true,
+                    enableTap: false,
                   ),
                   _generateBrokerTopListTable(_brokerTopListSell),
                   const SizedBox(height: 20,),
@@ -364,13 +366,18 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     );
   }
 
-  Widget _generateRow({required String num, required String code, required String lastPrice, required String average, required String lot, required String count, Color? textColor, bool? textBold, Color? backgroundColor}) {
+  Widget _generateRow({required String num, required String code, required String lastPrice, required String average, required String lot, required String count, Color? textColor, bool? textBold, Color? backgroundColor, bool? enableTap}) {
     Color textColorUse = (textColor ?? Colors.white);
     bool textBoldUse = (textBold ?? false);
     Color backgroundColorUse = (backgroundColor ?? Colors.transparent);
+    bool isTapEnabled = (enableTap ?? true);
 
     return InkWell(
       onTap: (() async {
+        if (!isTapEnabled) {
+          return;
+        }
+
         showLoaderDialog(context);
         await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
           CompanyDetailArgs args = CompanyDetailArgs(

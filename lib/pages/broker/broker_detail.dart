@@ -139,25 +139,31 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  RichText(
-                    text: TextSpan(
-                      text: '(${_transactionList.brokerSummaryId}) ',
-                      style: const TextStyle(
-                        color: accentColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        '(${_transactionList.brokerSummaryId}) ',
+                        style: const TextStyle(
+                          color: accentColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        )
                       ),
-                      children: [
-                        TextSpan(
-                          text: _transactionList.brokerSummaryFirmName,
+                      const SizedBox(width: 5,),
+                      Expanded(
+                        child: Text(
+                          _transactionList.brokerSummaryFirmName,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                    )
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10,),
                   Row(
@@ -376,12 +382,15 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                       ),
                                     ),
                                     const SizedBox(width: 5,),
-                                    Text(
-                                      _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
+                                    Expanded(
+                                      child: Text(
+                                        _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                   ],

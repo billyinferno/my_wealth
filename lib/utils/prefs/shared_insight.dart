@@ -4,6 +4,7 @@ import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/insight_eps_model.dart';
 import 'package:my_wealth/model/insight_sideway_model.dart';
+import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
@@ -13,6 +14,7 @@ class InsightSharedPreferences {
   static const _topWorseCompanyListKey = "insight_company_list_";
   static const _topReksadanaListKey = "insight_reksadana_list_";
   static const _brokerTopTransactionKey = "insight_broker_top_txn";
+  static const _brokerMarketToday = "insight_broker_market_today";
   static const _bandarInterestingKey = "insight_bandar_interesting";
   static const _topAccumFromDateKey = "insight_top_accum_from_date";
   static const _topAccumToDateKey = "insight_top_accum_to_date";
@@ -523,5 +525,49 @@ class InsightSharedPreferences {
     LocalBox.delete(_sidewayAvgOneDayKey, true);
     LocalBox.delete(_sidewayAvgOneWeekKey, true);
     LocalBox.delete(_sidewayResultKey, true);
+  }
+
+  static Future<void> setBrokerMarketToday(MarketTodayModel marketToday) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    String marketTodayString = jsonEncode(marketToday.toJson());
+    LocalBox.putString(_brokerMarketToday, marketTodayString);
+  }
+
+  static MarketTodayModel getBrokerMarketToday() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String marketTodayString = (LocalBox.getString(_brokerMarketToday) ?? '');
+
+    // check if the list is empty or not?
+    if (marketTodayString.isNotEmpty) {
+      // string is not empty parse it
+      MarketTodayModel marketToday = MarketTodayModel.fromJson(jsonDecode(marketTodayString));
+      // return the top worse
+      return marketToday;
+    }
+    else {
+      // no data
+      return MarketTodayModel(
+        buy: MarketTodayData(
+          brokerSummaryType: "buy",
+          brokerSummaryTotalLot: -1,
+          brokerSummaryTotalValue: -1,
+        ),
+        sell: MarketTodayData(
+          brokerSummaryType: "sell",
+          brokerSummaryTotalLot: -1,
+          brokerSummaryTotalValue: -1,
+        ),
+      );
+    }
   }
 }

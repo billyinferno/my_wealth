@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
+import 'package:my_wealth/main.dart';
 import 'package:my_wealth/model/broker_summary_top_model.dart';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
+import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -38,6 +40,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   late List<BrokerSummaryBuyElement> _brokerTopListSell;
   late BrokerTopTransactionModel _brokerTopTransaction;
   late BuySell _brokerTopTransactionBuySell;
+  late MarketTodayModel _marketToday;
 
   String _brokerSummarySelected = 'a';
   String _brokerTopTransactionSelected = 'a';
@@ -46,6 +49,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   void initState() {
     _brokerTopList = BrokerSharedPreferences.getBrokerTopList();
     _brokerTopTransaction = InsightSharedPreferences.getBrokerTopTxn();
+    _marketToday = InsightSharedPreferences.getBrokerMarketToday();
 
     _brokerSummarySelected = 'a';    
     _brokerTopListBuy = _brokerTopList!.brokerSummaryAll.brokerSummaryBuy;
@@ -70,6 +74,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       builder: ((context, brokerProvider, insightProvider, child) {
         _brokerTopList = brokerProvider.brokerTopList;
         _brokerTopTransaction = insightProvider.brokerTopTransactionList!;
+        _marketToday = insightProvider.brokerMarketToday!;
 
         return RefreshIndicator(
           onRefresh: (() async {
@@ -97,8 +102,23 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to get broker top transaction"));
                 debugPrintStack(stackTrace: stackTrace);
               });
+
+              await _insightAPI.getMarketToday().then((resp) async {
+                debugPrint("🔃 Refresh Broker Market Today");
+                await InsightSharedPreferences.setBrokerMarketToday(resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
+              }).onError((error, stackTrace) {
+                // show the snack bar
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to get broker top transaction"));
+                debugPrintStack(stackTrace: stackTrace);
+              });
             }).whenComplete(() {
               Navigator.pop(context);
+
+              setState(() {
+                // rebuild to refresh the widget
+              });
             });
           }),
           color: accentColor,
@@ -111,6 +131,151 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
+                  const Center(
+                    child: Text(
+                      "Market Today",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.green[900],
+                            border: Border.all(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Buy",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Expanded(
+                                    child: Text(
+                                      "Lot",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      formatIntWithNull(_marketToday.buy.brokerSummaryTotalLot, false, true),
+                                    )
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Expanded(
+                                    child: Text(
+                                      "Value",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      formatIntWithNull(_marketToday.buy.brokerSummaryTotalValue, false, true),
+                                    )
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: secondaryDark,
+                            border: Border.all(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Sell",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Expanded(
+                                    child: Text(
+                                      "Lot",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      formatIntWithNull(_marketToday.sell.brokerSummaryTotalLot, false, true),
+                                    )
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Expanded(
+                                    child: Text(
+                                      "Value",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      formatIntWithNull(_marketToday.sell.brokerSummaryTotalValue, false, true),
+                                    )
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20,),
                   const Center(
                     child: Text(
                       "Broker Top Traded Stock",

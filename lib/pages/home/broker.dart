@@ -135,7 +135,7 @@ class _BrokerPageState extends State<BrokerPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                _informationText(flex: 2, text: "Date", value: _df.format(_filterBrokerList[index].brokerDate)),
+                                _informationText(flex: 2, text: "Date", value: _df.format(_filterBrokerList[index].brokerDate.toLocal())),
                                 _informationText(text: "Volume", value: formatIntWithNull(_filterBrokerList[index].brokerVolume, true, true)),
                                 _informationText(text: "Value", value: formatIntWithNull(_filterBrokerList[index].brokerValue, true, true)),
                                 _informationText(text: "Frequency", value: formatIntWithNull(_filterBrokerList[index].brokerFrequency, false, false)),
@@ -161,6 +161,10 @@ class _BrokerPageState extends State<BrokerPage> {
       await BrokerSharedPreferences.setBrokerList(resp);
       if (!mounted) return;
       Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
+
+      setState(() {
+        // just set state to rebuild
+      });
     }).onError((error, stackTrace) {
       throw Exception(error.toString());
     });

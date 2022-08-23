@@ -1555,7 +1555,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                child: _tableRow(brokerCode: "BY", lot: "B.lot", value: "B.val", average: "B.avg", isBold: true, backgroundColor: secondaryDark)
+                                child: _tableRow(brokerCode: "BY", lot: "B.lot", value: "B.val", average: "B.avg", isBold: true, backgroundColor: secondaryDark, enableTab: false)
                               ),
                               ...List<Widget>.generate(10, (index) {
                                 if (_brokerSummaryBuySell.brokerSummaryBuy.length > index) {
@@ -1571,7 +1571,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                     brokerCode: "-",
                                     lot: "-",
                                     value: "-",
-                                    average: "-"
+                                    average: "-",
+                                    enableTab: false,
                                   );
                                 }
                               },),
@@ -1584,7 +1585,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                child: _tableRow(brokerCode: "SY", lot: "S.lot", value: "S.val", average: "S.avg", isBold: true, backgroundColor: Colors.green[900])
+                                child: _tableRow(brokerCode: "SY", lot: "S.lot", value: "S.val", average: "S.avg", isBold: true, backgroundColor: Colors.green[900], enableTab: false)
                               ),
                               ...List<Widget>.generate(10, (index) {
                                 if (_brokerSummaryBuySell.brokerSummarySell.length > index) {
@@ -1600,7 +1601,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                     brokerCode: "-",
                                     lot: "-",
                                     value: "-",
-                                    average: "-"
+                                    average: "-",
+                                    enableTab: false,
                                   );
                                 }
                               },),
@@ -1851,21 +1853,25 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     );
   }
 
-  Widget _tableRow({required String brokerCode, required String lot, required String value, required String average, Color? textColor, bool? isBold, Color? backgroundColor, double? fontSize}) {
+  Widget _tableRow({required String brokerCode, required String lot, required String value, required String average, Color? textColor, bool? isBold, Color? backgroundColor, double? fontSize, bool? enableTab}) {
     Color textColorUse = (textColor ?? Colors.white);
     Color backgroundColorUse = (backgroundColor ?? Colors.transparent);
     bool isBoldUse = (isBold ?? false);
     double fontSizeUse = (fontSize ?? 10);
+    bool isTapEnabled = (enableTab ?? true);
 
     return InkWell(
       onTap: (() {
-        // only open detail page if the broker code is not '-' (means empty)
-        if (brokerCode != '-') {
-          BrokerDetailArgs args = BrokerDetailArgs(
-            brokerFirmID: brokerCode
-          );
-          Navigator.pushNamed(context, '/broker/detail', arguments: args);
+        // if tap is not enabled then just return
+        if (!isTapEnabled) {
+          return;
         }
+
+        // otherwise then open the broker detail page
+        BrokerDetailArgs args = BrokerDetailArgs(
+          brokerFirmID: brokerCode
+        );
+        Navigator.pushNamed(context, '/broker/detail', arguments: args);
       }),
       child: Container(
         color: backgroundColorUse,

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
@@ -10,6 +9,7 @@ import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/insight_eps_model.dart';
 import 'package:my_wealth/model/insight_sideway_model.dart';
+import 'package:my_wealth/model/market_cap_model.dart';
 import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
@@ -403,6 +403,42 @@ class InsightAPI {
         CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
         MarketTodayModel marketToday = MarketTodayModel.fromJson(commonModel.data['attributes']);
         return marketToday;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<MarketCapModel>> getMarketCap() async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/insight/marketcap'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<MarketCapModel> marketCapList = [];
+        for (var data in commonModel.data) {
+          MarketCapModel marketCap = MarketCapModel.fromJson(data['attributes']);
+          marketCapList.add(marketCap);
+        }
+        return marketCapList;
       }
 
       // status code is not 200, means we got error

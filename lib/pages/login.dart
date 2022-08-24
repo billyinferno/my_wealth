@@ -481,6 +481,12 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
         debugPrint('8️⃣ Get Broker Market Today');
       }),
+      _insightAPI.getMarketCap().then((resp) async {
+        await InsightSharedPreferences.setMarketCap(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
+        debugPrint('8️⃣ Get Broker Market Cap');
+      }),
       _insightAPI.getSectorSummary().then((resp) async {
         await InsightSharedPreferences.setSectorSummaryList(resp);
         if (!mounted) return;

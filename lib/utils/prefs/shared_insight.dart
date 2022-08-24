@@ -4,6 +4,7 @@ import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/insight_eps_model.dart';
 import 'package:my_wealth/model/insight_sideway_model.dart';
+import 'package:my_wealth/model/market_cap_model.dart';
 import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
@@ -27,6 +28,8 @@ class InsightSharedPreferences {
   static const _sidewayAvgOneDayKey = "insight_sideway_avg_one_day";
   static const _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
   static const _sidewayResultKey = "insight_sideway_result";
+  static const _marketCapKey = "insight_market_cap";
+
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -568,6 +571,47 @@ class InsightSharedPreferences {
           brokerSummaryTotalValue: -1,
         ),
       );
+    }
+  }
+
+  static Future<void> setMarketCap(List<MarketCapModel> marketCapList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    List<String> marketCapListResp = [];
+    for (MarketCapModel sector in marketCapList) {
+      marketCapListResp.add(jsonEncode(sector.toJson()));
+    }
+    LocalBox.putStringList(_marketCapKey, marketCapListResp);
+  }
+
+  static List<MarketCapModel> getMarketCap() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> marketCapList = (LocalBox.getStringList(_marketCapKey) ?? []);
+
+    // check if the list is empty or not?
+    if (marketCapList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<MarketCapModel> ret = [];
+      for (String marketCapString in marketCapList) {
+        MarketCapModel marketCap = MarketCapModel.fromJson(jsonDecode(marketCapString));
+        ret.add(marketCap);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
     }
   }
 }

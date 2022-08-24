@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
+import 'package:my_wealth/model/market_cap_model.dart';
 import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
@@ -17,6 +18,7 @@ class InsightProvider extends ChangeNotifier {
   int? topAccumRate;
   List<InsightAccumulationModel>? topAccumList;
   MarketTodayModel? brokerMarketToday;
+  List<MarketCapModel>? marketCap;
 
   setSectorSummaryList(List<SectorSummaryModel> list) {
     sectorSummaryList = list;
@@ -62,6 +64,11 @@ class InsightProvider extends ChangeNotifier {
 
   setBrokerMarketToday(MarketTodayModel data) {
     brokerMarketToday = data;
+    notifyListeners();
+  }
+
+  setMarketCap(List<MarketCapModel> data) {
+    marketCap = data;
     notifyListeners();
   }
 }

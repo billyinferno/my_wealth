@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
@@ -54,6 +55,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _watchlistCrypto = WatchlistSharedPreferences.getWatchlist("crypto");
     _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
 
+    // sort the watchlist
+    _watchlistReksadana = _sortWatchlist(_watchlistReksadana!);
+    _watchlistSaham = _sortWatchlist(_watchlistSaham!);
+    _watchlistCrypto = _sortWatchlist(_watchlistCrypto!);
+
     // initialize also in the initial state
     _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
 
@@ -79,6 +85,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         _watchlistSaham = watchlistProvider.watchlistSaham;
         _watchlistCrypto = watchlistProvider.watchlistCrypto;
         _watchlistGold = watchlistProvider.watchlistGold;
+
+        // sort the watchlist
+        _watchlistReksadana = _sortWatchlist(_watchlistReksadana!);
+        _watchlistSaham = _sortWatchlist(_watchlistSaham!);
+        _watchlistCrypto = _sortWatchlist(_watchlistCrypto!);
 
         // compute all the watchlist first
         _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
@@ -398,6 +409,45 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     })).whenComplete(() {
       Navigator.pop(context);
     });
+  }
+
+  List<WatchlistListModel> _sortWatchlist(List<WatchlistListModel> watchlist) {
+    // sort the watch list based on whether it have stock left or not?
+    List<WatchlistListModel> gotShareList = [];
+    List<WatchlistListModel> emptyShareList = [];
+
+    for(WatchlistListModel data in watchlist) {
+      if(_isGotShare(data)) {
+        gotShareList.add(data);
+      }
+      else {
+        emptyShareList.add(data);
+      }
+    }
+
+    List<WatchlistListModel> newList = [...gotShareList, ...emptyShareList];
+    return newList; 
+  }
+
+  bool _isGotShare(WatchlistListModel data) {
+    // loop thru the watchlist details and calculate the total share and total gain
+    double totalShareBuy = 0;
+    double totalShareSell = 0;
+    
+    for (WatchlistDetailListModel detail in data.watchlistDetail) {
+      if (detail.watchlistDetailShare > 0) {
+        totalShareBuy += detail.watchlistDetailShare;
+      }
+      else {
+        totalShareSell += detail.watchlistDetailShare;
+      }
+    }
+
+    // check we still have share left or not?
+    if ((totalShareBuy + totalShareSell) > 0) {
+      return true;
+    }
+    return false;
   }
 
   Future<void> _deleteWatchlist(String type, int watchlistId) async {

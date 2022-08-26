@@ -16,6 +16,7 @@ class ScrollSegmentedControl extends StatefulWidget {
 }
 
 class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
+  final ScrollController _scrollController = ScrollController();
   late Color _borderColor;
   late Color _bgColor;
   late Color _textColor;
@@ -50,15 +51,34 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
     return Stack(
       children: <Widget>[
         SingleChildScrollView(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(width: 30,),
               ..._generateSegment(),
               const SizedBox(width: 30,)
             ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: <Color>[
+                  primaryColor,
+                  primaryColor.withOpacity(0),
+                ]
+              )
+            ),
           ),
         ),
         Align(

@@ -544,6 +544,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           )
         ),
         Container(
@@ -556,6 +557,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           )
         ),
         Container(
@@ -568,6 +570,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           )
         ),
         Expanded(
@@ -580,6 +583,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             )
           ),
         ),
@@ -593,6 +597,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             )
           ),
         ),

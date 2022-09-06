@@ -4,6 +4,7 @@ import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/widgets/expanded_tile_children.dart';
 import 'package:my_wealth/widgets/expanded_tile_title.dart';
@@ -16,7 +17,16 @@ class ExpandedTileView extends StatefulWidget {
   final WatchlistListModel watchlist;
   final String? shareTitle;
   final bool? checkThousandOnPrice;
-  const ExpandedTileView({ Key? key, this.showedLot, this.isInLot, required this.isVisible, required this.userInfo, required this.watchlist, this.shareTitle, this.checkThousandOnPrice }) : super(key: key);
+  const ExpandedTileView(
+      {Key? key,
+      this.showedLot,
+      this.isInLot,
+      required this.isVisible,
+      required this.userInfo,
+      required this.watchlist,
+      this.shareTitle,
+      this.checkThousandOnPrice})
+      : super(key: key);
 
   @override
   ExpandedTileViewState createState() => ExpandedTileViewState();
@@ -29,7 +39,9 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   bool _isInLot = false;
   double _totalShare = 0;
   double _totalGain = 0;
+  double _totalDayGain = 0;
   double _totalCost = 0;
+  double _totalValue = 0;
   double _averagePrice = 0;
   int _totalBuy = 0;
   int _totalSell = 0;
@@ -39,17 +51,30 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
     _isShowedLots = (widget.showedLot ?? false);
     _isInLot = (widget.isInLot ?? false);
     _computeDetail();
+    Color headerRiskColor = (widget.isVisible
+        ? riskColor(
+            (_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!),
+            _totalCost,
+            widget.userInfo.risk)
+        : Colors.white);
+
+    Color subHeaderRiskColor = (widget.isVisible
+        ? riskColor(
+            (_totalDayGain + _totalCost), _totalCost, widget.userInfo.risk)
+        : Colors.white);
 
     return ExpansionTile(
       key: Key(widget.key.toString() + _isShowedLots.toString()),
-      tilePadding: EdgeInsets.zero,
-      childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+      tilePadding: const EdgeInsets.all(0),
+      childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
       backgroundColor: primaryColor,
       collapsedBackgroundColor: primaryColor,
       iconColor: primaryLight,
       collapsedIconColor: primaryLight,
       title: ExpandedTileTitle(
-        name: (widget.watchlist.watchlistCompanySymbol!.isNotEmpty ? "(${widget.watchlist.watchlistCompanySymbol}) ${widget.watchlist.watchlistCompanyName}" : widget.watchlist.watchlistCompanyName),
+        name: (widget.watchlist.watchlistCompanySymbol!.isNotEmpty
+            ? "(${widget.watchlist.watchlistCompanySymbol}) ${widget.watchlist.watchlistCompanyName}"
+            : widget.watchlist.watchlistCompanyName),
         buy: _totalBuy,
         sell: _totalSell,
         share: (_isInLot ? _totalShare / 100 : _totalShare),
@@ -57,24 +82,163 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
         price: (widget.watchlist.watchlistCompanyNetAssetValue ?? 0),
         prevPrice: (widget.watchlist.watchlistCompanyPrevPrice),
         gain: (widget.isVisible ? _totalGain : null),
-        lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
-        riskColor: (widget.isVisible ? riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk) : Colors.white),
+        lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null
+            ? "-"
+            : dtSmall.format(
+                widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
+        riskColor: headerRiskColor,
         checkThousandOnPrice: (widget.checkThousandOnPrice ?? false),
       ),
       initiallyExpanded: _isShowedLots,
       collapsedTextColor: textPrimary,
       textColor: textPrimary,
-      children: List<Widget>.generate(widget.watchlist.watchlistDetail.length, (index) {
-        return ExpandedTileChildren(
-          date: dt.format(widget.watchlist.watchlistDetail[index].watchlistDetailDate),
-          shares: widget.watchlist.watchlistDetail[index].watchlistDetailShare,
-          isInLot: _isInLot,
-          price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
-          currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
-          averagePrice: _averagePrice,
-          risk: widget.userInfo.risk,
-        );
-      }),
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+          width: double.infinity,
+          color: subHeaderRiskColor,
+          child: Container(
+            color: primaryColor,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  width: 10,
+                ),
+                _subHeaderInformation(
+                  header: "DAY GAIN",
+                  value: formatCurrency(_totalDayGain),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                _subHeaderInformation(
+                  header: "VALUE",
+                  value: formatCurrency(_totalValue),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                _subHeaderInformation(
+                  header: "COST",
+                  value: formatCurrency(_totalCost),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: const <Widget>[
+            SizedBox(
+              width: 15,
+            ),
+            Expanded(
+              child: Text(
+                "DATE",
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Text(
+                "SHARE",
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Text(
+                "PRICE",
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.right,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Text(
+                "GAIN",
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.right,
+              ),
+            ),
+            SizedBox(
+              width: 35,
+            ),
+          ],
+        ),
+        ...List<Widget>.generate(widget.watchlist.watchlistDetail.length,
+            (index) {
+          return ExpandedTileChildren(
+            date: dt.format(
+                widget.watchlist.watchlistDetail[index].watchlistDetailDate),
+            shares:
+                widget.watchlist.watchlistDetail[index].watchlistDetailShare,
+            isInLot: _isInLot,
+            price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
+            currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
+            averagePrice: _averagePrice,
+            risk: widget.userInfo.risk,
+          );
+        })
+      ],
+    );
+  }
+
+  Widget _subHeaderInformation(
+      {required String header, required String value}) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+        decoration: const BoxDecoration(
+            border: Border(
+          top: BorderSide(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          ),
+        )),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              header,
+              style: const TextStyle(
+                fontSize: 10,
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -85,6 +249,8 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
     _totalCost = 0;
     _totalBuy = 0;
     _totalSell = 0;
+    _totalDayGain = 0;
+    _totalValue = 0;
 
     // for the calculation of the sell share's to avoid any average cost problem
     // we need to see how much is the average cost for each share that we buy
@@ -96,10 +262,10 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
     for (WatchlistDetailListModel detail in widget.watchlist.watchlistDetail) {
       if (detail.watchlistDetailShare > 0) {
         totalShareBuy += detail.watchlistDetailShare;
-        totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        totalCostBuy +=
+            (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         _totalBuy++;
-      }
-      else {
+      } else {
         totalShareSell += detail.watchlistDetailShare;
         _totalSell++;
       }
@@ -118,11 +284,19 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
       // set the result
       // total share should be buy subtract by sell (remember here sell already negative)
       _totalShare = totalShareBuy + totalShareSell;
-      _totalGain = (widget.watchlist.watchlistCompanyNetAssetValue! * (totalShareBuy + totalShareSell)) - (averageBuyPrice * (totalShareBuy + totalShareSell));
+
+      _totalValue = (widget.watchlist.watchlistCompanyNetAssetValue! *
+          (totalShareBuy + totalShareSell));
+
+      _totalGain =
+          _totalValue - (averageBuyPrice * (totalShareBuy + totalShareSell));
+
+      _totalDayGain = ((widget.watchlist.watchlistCompanyNetAssetValue! -
+              widget.watchlist.watchlistCompanyPrevPrice!) *
+          (totalShareBuy + totalShareSell));
       _totalCost = totalCostBuy + totalCostSell;
+
       _averagePrice = averageBuyPrice;
     }
-    
-    // debugPrint("Name: ${widget.watchlist.watchlistCompanyName}, Total: ${_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!}, Gain:$_totalGain, Total Share Buy:$totalShareBuy, Total Share Sell:$totalShareSell,  Cost Buy:$totalCostBuy, Cost Sell:$totalCostSell,  Cost:$_totalCost, Average Price:$_averagePrice");
   }
 }

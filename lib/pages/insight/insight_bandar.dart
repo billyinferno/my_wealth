@@ -3,6 +3,7 @@ import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_accumulation_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_eps_page.dart';
+import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_index_beater_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_sideway_page.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
@@ -56,6 +57,7 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
                   "topAcq": "Accumulation",
                   "topEps": "EPS",
                   "sideways": "Sideways",
+                  "indexBeater": "Index Beater",
                 },
                 onPress: ((value) {
                   setState(() {
@@ -97,6 +99,9 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
     }
     if (_selectedBandarPage == "sideways") {
       return const InsightBandarSidewayPage();
+    }
+    if (_selectedBandarPage == "indexBeater") {
+      return const InsightBandarIndexBeaterPage();
     }
 
     // default return nothing

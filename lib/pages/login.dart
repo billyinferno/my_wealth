@@ -543,7 +543,8 @@ class LoginPageState extends State<LoginPage> {
       }),
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
-      InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry whene user visit the screen
+      InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen
+      InsightSharedPreferences.clearIndexBeater(), // clear index beater result as we will inquiry when user visit the screen
     ]).then((_) {
       debugPrint("💯 Finished get additional information");
     });

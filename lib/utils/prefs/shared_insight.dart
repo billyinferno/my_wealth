@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:my_wealth/model/broker_top_transaction_model.dart';
+import 'package:my_wealth/model/index_beater_model.dart';
 import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/insight_eps_model.dart';
@@ -29,6 +30,7 @@ class InsightSharedPreferences {
   static const _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
   static const _sidewayResultKey = "insight_sideway_result";
   static const _marketCapKey = "insight_market_cap";
+  static const _indexBeaterKey = "insight_index_beater";
 
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
@@ -613,5 +615,57 @@ class InsightSharedPreferences {
       // no data
       return [];
     }
+  }
+
+  static Future<void> setIndexBeater(List<IndexBeaterModel> indexBeaterList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    List<String> indexBeaterListResp = [];
+    for (IndexBeaterModel indexBeater in indexBeaterList) {
+      indexBeaterListResp.add(jsonEncode(indexBeater.toJson()));
+    }
+    LocalBox.putStringList(_indexBeaterKey, indexBeaterListResp);
+  }
+
+  static List<IndexBeaterModel> getIndexBeater() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> indexBeaterList = (LocalBox.getStringList(_indexBeaterKey) ?? []);
+
+    // check if the list is empty or not?
+    if (indexBeaterList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<IndexBeaterModel> ret = [];
+      for (String indexBeaterString in indexBeaterList) {
+        IndexBeaterModel indexBeater = IndexBeaterModel.fromJson(jsonDecode(indexBeaterString));
+        ret.add(indexBeater);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
+    }
+  }
+
+  static Future<void> clearIndexBeater() async {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      // null no need to clear
+      return;
+    }
+
+    // clear all the key for the index beaterdata
+    LocalBox.delete(_indexBeaterKey, true);
   }
 }

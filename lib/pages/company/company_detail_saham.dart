@@ -58,6 +58,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late CompanyDetailModel _otherCompanyDetail;
   late UserLoginInfoModel? _userInfo;
   late BrokerSummaryModel _brokerSummary;
+  late BrokerSummaryModel _brokerSummaryGross;
+  late BrokerSummaryModel _brokerSummaryNet;
   late CompanyTopBrokerModel _topBroker;
   late BrokerSummaryBuySellModel _brokerSummaryBuySell;
   late BrokerSummaryDateModel _brokerSummaryDate;
@@ -86,6 +88,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   
   bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
+  bool _showNet = true;
   Map<DateTime, GraphData>? _graphData;
   
   int _numPrice = 0;
@@ -151,7 +154,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       });
 
       await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+        _brokerSummaryGross = resp;
+      });
+
+      await _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
         _brokerSummary = resp;
+        _brokerSummaryNet = resp;
         _brokerSummaryBuySell = resp.brokerSummaryAll;
         _brokerSummarySelected = "a";
       });
@@ -1470,8 +1478,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     }),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        const SizedBox(width: 20,),
                         Text(
                           _df.format(_brokerSummary.brokerSummaryFromDate.toLocal()),
                           style: const TextStyle(
@@ -1498,7 +1507,33 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                           Ionicons.calendar_outline,
                           size: 15,
                           color: secondaryLight,
-                        )
+                        ),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              width: 50,
+                              height: 25,
+                              child: FittedBox(
+                                child: CupertinoSwitch(
+                                  value: _showNet,
+                                  activeColor: accentColor,
+                                  onChanged: ((value) {
+                                    _showNet = value;
+                                                          
+                                    if (_showNet) {
+                                      _setBrokerSummary(_brokerSummaryNet);
+                                    }
+                                    else {
+                                      _setBrokerSummary(_brokerSummaryGross);
+                                    }
+                                  }),
+                                ),
+                              ),
+                            ),
+                          )
+                        ),
+                        const SizedBox(width: 20,),
                       ],
                     ),
                   ),
@@ -1562,7 +1597,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                   return _tableRow(
                                     brokerCode: _brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryID!,
                                     lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryLot, true, false),
-                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, false),
+                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, true, true, 1),
                                     average: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryAverage, false, false),
                                   );
                                 }
@@ -1592,7 +1627,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                   return _tableRow(
                                     brokerCode: _brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryID!,
                                     lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryLot, true, false),
-                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, false),
+                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, true, true, 1),
                                     average: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryAverage, false, false),
                                   );
                                 }
@@ -1902,6 +1937,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     fontSize: fontSizeUse,
                     color: textColorUse,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -1916,6 +1952,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     fontSize: fontSizeUse,
                     color: textColorUse,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -1930,6 +1967,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     fontSize: fontSizeUse,
                     color: textColorUse,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -2669,13 +2707,25 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     showLoaderDialog(context);
 
     // get the broker summary
-    await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
-      _setBrokerSummary(resp);
+    Future.microtask(() async {
+      await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+        _brokerSummaryGross = resp;
+      });
+
+      await _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+        _brokerSummaryNet = resp;
+      });
+
+      if (_showNet) {
+        _setBrokerSummary(_brokerSummaryNet);
+      }
+      else {
+        _setBrokerSummary(_brokerSummaryGross);
+      }
+    }).whenComplete(() {
       // remove the loader dialog
       Navigator.pop(context);
     }).onError((error, stackTrace) {
-      // remove the loader dialog
-      Navigator.pop(context);
       // show snack bar
       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get broker data from server'));
       // show error

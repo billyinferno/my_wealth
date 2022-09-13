@@ -63,6 +63,44 @@ class BrokerSummaryAPI {
     }
   }
 
+  Future<BrokerSummaryModel> getBrokerSummaryNet(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      // check if we got date or not?
+      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+      String dateFromString = _df.format(currentDateFrom);
+      String dateToString = _df.format(currentDateTo);
+
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/broker-summaries/net/code/$stockCode/from/$dateFromString/to/$dateToString'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(commonModel.data['attributes']);
+        return brokerSummary;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
   Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList(String brokerCode, int start, int limit, [DateTime? dateFrom, DateTime? dateTo]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {

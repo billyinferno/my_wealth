@@ -1,13 +1,25 @@
 import 'package:intl/intl.dart';
 
-String formatCurrency(double amount, [bool? checkThousand, bool? showDecimal, bool? shorten]) {
+String formatCurrency(double amount, [bool? checkThousand, bool? showDecimal, bool? shorten, int? decimalNum]) {
   NumberFormat ccy = NumberFormat("#,##0.00", "en_US");
   bool isCheckThousand = checkThousand ?? false;
   bool isShowDecimal = showDecimal ?? true;
   bool isShorten = shorten ?? true;
+  int currentDecimalNum = (isShowDecimal ? (decimalNum ?? 2) : 0);
 
   if (!isShowDecimal) {
     ccy = NumberFormat("#,##0", "en_US");
+  }
+  else {
+    // if current decimal num more than 0, then set the correct decimal num
+    if (currentDecimalNum > 0) {
+      String dec = "0" * currentDecimalNum;
+      ccy = NumberFormat("#,##0." + dec, "en_US");
+    }
+    else {
+      // decimal set as 0
+      ccy = NumberFormat("#,##0", "en_US");
+    }
   }
 
   String prefix = "";
@@ -43,7 +55,7 @@ String formatCurrency(double amount, [bool? checkThousand, bool? showDecimal, bo
   return result;
 }
 
-String formatCurrencyWithNull(double? amount, [bool? checkThousand, bool? showDecimal, bool? shorten]) {
+String formatCurrencyWithNull(double? amount, [bool? checkThousand, bool? showDecimal, bool? shorten, int? decimalNum]) {
   bool isCheckThousand = checkThousand ?? false;
   bool isShowDecimal = showDecimal ?? true;
   bool isShorten = shorten ?? true;
@@ -52,7 +64,7 @@ String formatCurrencyWithNull(double? amount, [bool? checkThousand, bool? showDe
     return "-";
   }
   else {
-    return formatCurrency(amount, isCheckThousand, isShowDecimal, isShorten);
+    return formatCurrency(amount, isCheckThousand, isShowDecimal, isShorten, decimalNum);
   }
 }
 
@@ -75,11 +87,11 @@ String formatDecimalWithNull(double? value, [double? times, int? decimal]) {
   return dec.format(value * timesMult);
 }
 
-String formatIntWithNull(int? value, [bool? checkThousand, bool? showDecimal]) {
+String formatIntWithNull(int? value, [bool? checkThousand, bool? showDecimal, int? decimalNum]) {
   bool isCheckThousand = checkThousand ?? false;
   bool isShowDecimal = showDecimal ?? true;
   if (value == null) {
     return "-";
   }
-  return formatCurrency(value.toDouble(), isCheckThousand, isShowDecimal);
+  return formatCurrency(value.toDouble(), isCheckThousand, isShowDecimal, true, decimalNum);
 }

@@ -1508,32 +1508,35 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                           size: 15,
                           color: secondaryLight,
                         ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: SizedBox(
-                              width: 50,
-                              height: 25,
-                              child: FittedBox(
-                                child: CupertinoSwitch(
-                                  value: _showNet,
-                                  activeColor: accentColor,
-                                  onChanged: ((value) {
-                                    _showNet = value;
-                                                          
-                                    if (_showNet) {
-                                      _setBrokerSummary(_brokerSummaryNet);
-                                    }
-                                    else {
-                                      _setBrokerSummary(_brokerSummaryGross);
-                                    }
-                                  }),
-                                ),
-                              ),
-                            ),
-                          )
+                        Expanded(child: Container()),
+                        const Text(
+                          "Net",
+                          style: TextStyle(
+                            color: textPrimary,
+                            fontSize: 12,
+                          ),
                         ),
-                        const SizedBox(width: 20,),
+                        SizedBox(
+                          width: 50,
+                          height: 25,
+                          child: FittedBox(
+                            child: CupertinoSwitch(
+                              value: _showNet,
+                              activeColor: accentColor,
+                              onChanged: ((value) {
+                                _showNet = value;
+                                                      
+                                if (_showNet) {
+                                  _setBrokerSummary(_brokerSummaryNet);
+                                }
+                                else {
+                                  _setBrokerSummary(_brokerSummaryGross);
+                                }
+                              }),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5,),
                       ],
                     ),
                   ),
@@ -1597,7 +1600,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                   return _tableRow(
                                     brokerCode: _brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryID!,
                                     lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryLot, true, false),
-                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, true, true, 1),
+                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryValue, true, false),
                                     average: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryAverage, false, false),
                                   );
                                 }
@@ -1627,7 +1630,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                   return _tableRow(
                                     brokerCode: _brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryID!,
                                     lot: formatIntWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryLot, true, false),
-                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, true, true, 1),
+                                    value: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryValue, true, false),
                                     average: formatCurrencyWithNull(_brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryAverage, false, false),
                                   );
                                 }

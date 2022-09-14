@@ -14,7 +14,7 @@ String formatCurrency(double amount, [bool? checkThousand, bool? showDecimal, bo
     // if current decimal num more than 0, then set the correct decimal num
     if (currentDecimalNum > 0) {
       String dec = "0" * currentDecimalNum;
-      ccy = NumberFormat("#,##0." + dec, "en_US");
+      ccy = NumberFormat("#,##0.$dec", "en_US");
     }
     else {
       // decimal set as 0

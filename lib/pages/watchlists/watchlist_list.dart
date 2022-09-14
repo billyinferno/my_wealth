@@ -47,10 +47,13 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   double _priceDiff = 0;
   double _totalCost = 0;
   double _totalGain = 0;
-  double _totalSellAmount = 0;
+  double _totalRealisedGain = 0;
   double _totalValue = 0;
   double _totalCurrentShares = 0;
+  double _totalSharesBuy = 0;
   double _totalSharesSell = 0;
+  double _totalBuyAmount = 0;
+  double _totalSellAmount = 0;
   Color _riskColor = Colors.green;
 
   @override
@@ -301,12 +304,12 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
                                     title: "SHARES",
-                                    text: formatDecimal(_totalCurrentShares, 2)
+                                    text: formatDecimal(_totalSharesBuy, 2)
                                   ),
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
-                                    title: "GAIN",
-                                    text: formatCurrency(_totalGain)
+                                    title: "BUY AMOUNT",
+                                    text: formatCurrency(_totalBuyAmount)
                                   ),
                                 ],
                               ),
@@ -328,6 +331,27 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   WatchlistDetailSummaryBox(
                                     title: "SELL AMOUNT",
                                     text: formatCurrency(_totalSellAmount)
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  WatchlistDetailSummaryBox(
+                                    title: "CURRENT",
+                                    text: formatDecimal(_totalCurrentShares, 2)
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "UNREALISED",
+                                    text: formatCurrency(_totalGain)
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  WatchlistDetailSummaryBox(
+                                    title: "REALISED",
+                                    text: formatCurrency(_totalRealisedGain)
                                   ),
                                 ],
                               ),
@@ -651,10 +675,13 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // compute all necessary data for the summary, such as cost, gain
     _totalCost = 0;
     _totalGain = 0;
+    _totalRealisedGain = 0;
     _totalCurrentShares = 0;
+    _totalSharesBuy = 0;
     _totalSharesSell = 0;
     _totalBuy = 0;
     _totalSell = 0;
+    _totalBuyAmount = 0;
     _totalSellAmount = 0;
 
     // compute the price diff
@@ -662,39 +689,43 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
     // for the calculation of the sell share's to avoid any average cost problem
     // we need to see how much is the average cost for each share that we buy
-    double totalShareBuy = 0;
-    double totalCostBuy = 0;
     double totalCostSell = 0;
     double averageBuyPrice = 0;
     for (WatchlistDetailListModel detail in _watchlist.watchlistDetail) {
       if (detail.watchlistDetailShare > 0) {
-        totalShareBuy += detail.watchlistDetailShare;
-        totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        _totalSharesBuy += detail.watchlistDetailShare;
+        _totalBuyAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         _totalBuy++;
       }
       else {
         _totalSharesSell += detail.watchlistDetailShare;
         _totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        _totalRealisedGain += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
         _totalSell++;
       }
     }
     // get what is the average buy price that we have
-    if (totalShareBuy > 0 && totalCostBuy > 0) {
-      averageBuyPrice = totalCostBuy / totalShareBuy;
+    if (_totalSharesBuy > 0 && _totalBuyAmount > 0) {
+      averageBuyPrice = _totalBuyAmount / _totalSharesBuy;
     }
 
     // total sell is negative, make it a positive
-    _totalSharesSell *= -1;
-    _totalSellAmount *= -1;
+    if (_totalSharesSell < 0) {
+      _totalSharesSell *= -1;
+    }
+    if (_totalSellAmount < 0) {
+      _totalSellAmount *= -1;
+    }
 
     // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
     totalCostSell = _totalSharesSell * averageBuyPrice;
 
     // set the result
     // total share should be buy subtract by sell
-    _totalCurrentShares = totalShareBuy - _totalSharesSell;
-    _totalGain = (_watchlist.watchlistCompanyNetAssetValue! * (totalShareBuy - _totalSharesSell)) - (averageBuyPrice * (totalShareBuy - _totalSharesSell));
-    _totalCost = totalCostBuy - totalCostSell;
+    _totalCurrentShares = _totalSharesBuy - _totalSharesSell;
+    _totalGain = (_watchlist.watchlistCompanyNetAssetValue! * (_totalSharesBuy - _totalSharesSell)) - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
+    _totalRealisedGain = _totalRealisedGain - (_totalSharesSell * averageBuyPrice);
+    _totalCost = _totalBuyAmount - totalCostSell;
     _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
   }

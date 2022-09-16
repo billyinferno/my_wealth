@@ -111,7 +111,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
           totalRealisedReksadana += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
 
           // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare);
+          totalShareGain -= (detail.watchlistDetailShare * -1);
           totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
         }
       }
@@ -174,12 +174,14 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
           // calculate the total sell and gain for this sell
           totalShareSell += detail.watchlistDetailShare;
           totalRealisedSaham += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
+          // print((detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1));
 
           // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare);
+          totalShareGain -= (detail.watchlistDetailShare * -1);
           totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
         }
       }
+      // print("${watchlist.watchlistCompanyName} - $totalRealisedSaham");
 
       // check if we still have share left
       if ((totalShareBuy + totalShareSell) > 0) {
@@ -243,7 +245,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
           totalRealisedCrypto += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
 
           // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare);
+          totalShareGain -= (detail.watchlistDetailShare * -1);
           totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
         }
       }
@@ -310,7 +312,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
           totalRealisedGold += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
 
           // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare);
+          totalShareGain -= (detail.watchlistDetailShare * -1);
           totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
         }
       }

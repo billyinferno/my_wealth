@@ -690,20 +690,36 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // for the calculation of the sell share's to avoid any average cost problem
     // we need to see how much is the average cost for each share that we buy
     double totalCostSell = 0;
+    double totalShareBuyGain = 0;
+    double totalBuyAmountGain = 0;
     double averageBuyPrice = 0;
-    for (WatchlistDetailListModel detail in _watchlist.watchlistDetail) {
+    double averageGainPrice = 0;
+    for (WatchlistDetailListModel detail in _watchlist.watchlistDetail.reversed) {
       if (detail.watchlistDetailShare > 0) {
         _totalSharesBuy += detail.watchlistDetailShare;
         _totalBuyAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         _totalBuy++;
+
+        totalShareBuyGain += _totalSharesBuy;
+        totalBuyAmountGain += _totalBuyAmount;
       }
       else {
+        // get the current gain price that we can use to calculate the actual realised gain we got at that time
+        if (totalShareBuyGain > 0 && totalBuyAmountGain > 0) {
+          averageGainPrice = totalBuyAmountGain / totalShareBuyGain;
+        }
+
         _totalSharesSell += detail.watchlistDetailShare;
         _totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        _totalRealisedGain += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
+        _totalRealisedGain += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
         _totalSell++;
+
+        // recalculate the totalShareBuyGain and totalBuyAmountGain
+        totalShareBuyGain -= (detail.watchlistDetailShare * -1);
+        totalBuyAmountGain -= ((detail.watchlistDetailShare * detail.watchlistDetailPrice) * -1);
       }
     }
+    
     // get what is the average buy price that we have
     if (_totalSharesBuy > 0 && _totalBuyAmount > 0) {
       averageBuyPrice = _totalBuyAmount / _totalSharesBuy;
@@ -724,7 +740,6 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // total share should be buy subtract by sell
     _totalCurrentShares = _totalSharesBuy - _totalSharesSell;
     _totalGain = (_watchlist.watchlistCompanyNetAssetValue! * (_totalSharesBuy - _totalSharesSell)) - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
-    _totalRealisedGain = _totalRealisedGain - (_totalSharesSell * averageBuyPrice);
     _totalCost = _totalBuyAmount - totalCostSell;
     _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);

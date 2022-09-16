@@ -84,6 +84,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
               backgroundColor: primaryDark,
               value: _watchlistAll!.totalValue,
               cost: _watchlistAll!.totalCost,
+              realised: _watchlistAll!.totalRealised,
               dayGain: _watchlistAll!.totalDayGain,
             ),
             const SizedBox(height: 10,),
@@ -105,6 +106,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       value: _watchlistAll!.totalValueReksadana,
                       cost: _watchlistAll!.totalCostReksadana,
                       total: _watchlistAll!.totalValue,
+                      realised: _watchlistAll!.totalRealisedReksadana,
                       onTap: (() {
                         PortofolioListArgs args = PortofolioListArgs(
                           title: "Reksadana",
@@ -121,6 +123,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       value: _watchlistAll!.totalValueSaham,
                       cost: _watchlistAll!.totalCostSaham,
                       total: _watchlistAll!.totalValue,
+                      realised: _watchlistAll!.totalRealisedSaham,
                       onTap: (() {
                         PortofolioListArgs args = PortofolioListArgs(
                           title: "Stock",
@@ -137,6 +140,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       value: _watchlistAll!.totalValueCrypto,
                       cost: _watchlistAll!.totalCostCrypto,
                       total: _watchlistAll!.totalValue,
+                      realised: _watchlistAll!.totalRealisedCrypto,
                       onTap: (() {
                         // do nothing, we just want to showed the chevron icon here
                       })
@@ -147,6 +151,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       value: _watchlistAll!.totalValueGold,
                       cost: _watchlistAll!.totalCostGold,
                       total: _watchlistAll!.totalValue,
+                      realised: _watchlistAll!.totalRealisedGold,
                       onTap: (() {
                         // do nothing, we just want to showed the chevron icon here
                       })
@@ -209,13 +214,12 @@ class _PortofolioPageState extends State<PortofolioPage> {
     _barChartData.add(BarChartData(title: "Gold", value: _watchlistAll!.totalValueGold, total: _watchlistAll!.totalValue, color: Colors.amber));
   }
 
-  Widget _summaryBox({required Color barColor, required double value, required double cost, required double dayGain, Color? backgroundColor, String? title, double? fontSize}) {
+  Widget _summaryBox({required Color barColor, required double value, required double cost, required double dayGain, required double realised, Color? backgroundColor, double? fontSize}) {
     Color bgColor = backgroundColor ?? primaryColor;
-    bool gotTitle = title == null ? false : true;
-    String titleText = title ?? '';
     double summarySize = fontSize ?? 20;
     double gain = value - cost;
     Color trendColor = Colors.white;
+    Color realisedColor = Colors.white;
     IconData trendIcon = Ionicons.remove;
     // Color dayGainColor = Colors.white;
     // IconData dayGainIcon = Ionicons.remove;
@@ -226,6 +230,15 @@ class _PortofolioPageState extends State<PortofolioPage> {
     }
     else if(gain < 0) {
       trendColor = secondaryColor;
+      trendIcon = Ionicons.trending_down;
+    }
+
+    if (realised > 0) {
+      realisedColor = Colors.green;
+      trendIcon = Ionicons.trending_up;
+    }
+    else if(realised < 0) {
+      realisedColor = secondaryColor;
       trendIcon = Ionicons.trending_down;
     }
 
@@ -240,74 +253,82 @@ class _PortofolioPageState extends State<PortofolioPage> {
             child: Container(
               color: bgColor,
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Visibility(
-                    visible: gotTitle,
-                    child: Text(
-                      titleText,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    )
-                  ),
-                  Visibility(visible: gotTitle, child: const SizedBox(height: 10,)),
-                  _smallText("Total Value"),
-                  _largeText(formatCurrency(value, false, true, false), summarySize),
-                  const SizedBox(height: 5,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _smallText("Total Cost"),
-                          const SizedBox(height: 5,),
-                          Text(
-                            formatCurrency(cost, false, true, false),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        _smallText("Total Value"),
+                        _largeText(formatCurrency(value, false, true, false), summarySize),
+                        const SizedBox(height: 5,),
+                        _smallText("Total Cost"),
+                        const SizedBox(height: 5,),
+                        Text(
+                          formatCurrency(cost, false, true, false),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                      const SizedBox(width: 5,),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _smallText("Total Gain"),
-                            const SizedBox(height: 5,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Icon(
-                                  trendIcon,
-                                  color: trendColor,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 5,),
-                                Text(
-                                  formatCurrency(gain, false, true, false),
-                                  style: TextStyle(
-                                    color: trendColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        _smallText("Total Unrealised"),
+                        const SizedBox(height: 5,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(
+                              trendIcon,
+                              color: trendColor,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrency(gain, false, true, false),
+                              style: TextStyle(
+                                color: trendColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  )
+                        const SizedBox(height: 5,),
+                        _smallText("Total Realised"),
+                        const SizedBox(height: 5,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(
+                              Ionicons.wallet_outline,
+                              color: realisedColor,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrency(realised, false, true, false),
+                              style: TextStyle(
+                                color: realisedColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

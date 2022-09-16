@@ -10,15 +10,17 @@ class ProductListItem extends StatelessWidget {
   final double value;
   final double cost;
   final double total;
+  final double? realised;
   final VoidCallback? onTap;
 
-  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.onTap}) : super(key: key);
+  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double? itemPercentage;
     double gain = value - cost;
     Color trendColor = Colors.white;
+    Color realisedColor = Colors.white;
     IconData trendIcon = Ionicons.remove;
 
     // if we got total then we can compute the percentage, otherwise we should avoid divisio by zero
@@ -34,6 +36,15 @@ class ProductListItem extends StatelessWidget {
     else if(gain < 0) {
       trendColor = secondaryColor;
       trendIcon = Ionicons.trending_down;
+    }
+
+    if (realised != null) {
+      if (realised! < 0) {
+        realisedColor = secondaryColor;
+      }
+      else if (realised! > 0) {
+        realisedColor = Colors.green;
+      }
     }
     
     return InkWell(
@@ -142,6 +153,32 @@ class ProductListItem extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ),
+                          Visibility(
+                            visible: (realised == null ? false : true),
+                            child: const SizedBox(height: 5,)
+                          ),
+                          Visibility(
+                            visible: (realised == null ? false : true),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Icon(
+                                  Ionicons.wallet_outline,
+                                  color: realisedColor,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 5,),
+                                Text(
+                                  formatCurrencyWithNull(realised, false, false, false),
+                                  style: TextStyle(
+                                    color: realisedColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

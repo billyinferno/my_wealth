@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/portofolio_api.dart';
+import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/portofolio_detail_model.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
+import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -23,7 +23,7 @@ class PortofolioDetailPage extends StatefulWidget {
 class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   final ScrollController _scrollController = ScrollController();
   final PortofolioAPI _portofolioAPI = PortofolioAPI();
-  final CompanyAPI _companyAPI = CompanyAPI();
+  final WatchlistAPI _watchlistAPI = WatchlistAPI();
   
   late PortofolioListArgs _args;
   
@@ -216,21 +216,17 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                         total: _portofolioTotalValue,
                         onTap: (() async {
                           showLoaderDialog(context);
-                          await _companyAPI.getCompanyByCode(_portofolioList[index].companyCode, _args.type).then((resp) {
-                            CompanyDetailArgs companyArgs = CompanyDetailArgs(
-                              companyId: resp.companyId,
-                              companyName: resp.companyName,
-                              companyCode: (resp.companySymbol ?? ''),
-                              companyFavourite: (resp.companyFavourites ?? false),
-                              favouritesId: (resp.companyFavouritesId ?? -1),
+                          await _watchlistAPI.findSpecific(_args.type, _portofolioList[index].watchlistId).then((resp) {
+                            WatchlistListArgs watchlistArgs = WatchlistListArgs(
                               type: _args.type,
+                              watchList: resp
                             );
-                            
+
                             // remove the loader dialog
                             Navigator.pop(context);
 
-                            // go to the company page
-                            Navigator.pushNamed(context, '/company/detail/${_args.type}', arguments: companyArgs);
+                            // go to the watchlist list page
+                            Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
                           }).onError((error, stackTrace) {
                             // remove the loader dialog
                             Navigator.pop(context);

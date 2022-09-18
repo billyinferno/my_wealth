@@ -395,13 +395,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       // loop on the resp and put it on the graph
       List<GraphData> tempData = [];
       int totalData = 0;
-      
-      // move the last update to friday
-      int addDay = 5 - _index.indexLastUpdate.toLocal().weekday;
-      DateTime endDate = _index.indexLastUpdate.add(Duration(days: addDay));
-
-      // then go 14 weeks before so we knew the start date
-      DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
       // initialize the minimum, maximum, and total price
       double totalPrice = 0;

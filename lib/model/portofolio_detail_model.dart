@@ -10,6 +10,7 @@ String portofolioDetailModelToJson(PortofolioDetailModel data) => json.encode(da
 
 class PortofolioDetailModel {
     PortofolioDetailModel({
+        required this.watchlistId,
         required this.companyName,
         required this.companyCode,
         required this.companyType,
@@ -18,6 +19,7 @@ class PortofolioDetailModel {
         required this.watchlistSubTotalValue,
     });
 
+    final int watchlistId;
     final String companyName;
     final String companyCode;
     final String companyType;
@@ -26,6 +28,7 @@ class PortofolioDetailModel {
     final double watchlistSubTotalValue;
 
     factory PortofolioDetailModel.fromJson(Map<String, dynamic> json) => PortofolioDetailModel(
+        watchlistId: json["watchlist_id"],
         companyName: json["company_name"],
         companyCode: json["company_code"],
         companyType: json["company_type"],
@@ -35,6 +38,7 @@ class PortofolioDetailModel {
     );
 
     Map<String, dynamic> toJson() => {
+        "watchlist_id": watchlistId,
         "company_name": companyName,
         "company_code": companyCode,
         "company_type": companyType,

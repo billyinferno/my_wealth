@@ -15,8 +15,12 @@ class LineChartPainter extends CustomPainter {
     // calculate the center
     Offset center = Offset(size.width / 2, size.height / 2);
 
-    // then let's draw the line
-    _drawLine(canvas, size, center);
+    // ensure that we at least have more than 1 data, because if only 1 data
+    // then the min or max probably will be the same.
+    if (data.length > 1) {
+      // then let's draw the line
+      _drawLine(canvas, size, center);
+    }
 
     // first let's draw the border
     _drawBorder(canvas, size, center);
@@ -203,7 +207,13 @@ class LineChartPainter extends CustomPainter {
       );
 
     // draw the average price line
-    yD = ((avgPrice - min) / (max - min)) * graphRect.height;
+    // ensure that (max-min is not 0)
+    if ((max-min) == 0) {
+      yD = ((avgPrice - min) / (min)) * graphRect.height;
+    }
+    else {
+      yD = ((avgPrice - min) / (max - min)) * graphRect.height;
+    }
     _drawDashedLine(canvas, graphRect, 2, yD, avgPricePaint);
     _drawText(
       canvas: canvas,
@@ -220,7 +230,12 @@ class LineChartPainter extends CustomPainter {
     );
 
     // draw the ma5 price line
-    yD = ((ma5 - min) / (max - min)) * graphRect.height;
+    if ((max-min) == 0) {
+      yD = ((ma5 - min) / (min)) * graphRect.height;
+    }
+    else {
+      yD = ((ma5 - min) / (max - min)) * graphRect.height;
+    }
     _drawDashedLine(canvas, graphRect, 2, yD, ma5PricePaint);
     _drawText(
       canvas: canvas,
@@ -237,7 +252,12 @@ class LineChartPainter extends CustomPainter {
     );
 
     // draw the ma8 price line
-    yD = ((ma8 - min) / (max - min)) * graphRect.height;
+    if ((max-min) == 0) {
+      yD = ((ma8 - min) / (min)) * graphRect.height;
+    }
+    else {
+      yD = ((ma8 - min) / (max - min)) * graphRect.height;
+    }
     _drawDashedLine(canvas, graphRect, 2, yD, ma8PricePaint);
     _drawText(
       canvas: canvas,
@@ -254,7 +274,12 @@ class LineChartPainter extends CustomPainter {
     );
 
     // draw the ma13 price line
-    yD = ((ma13 - min) / (max - min)) * graphRect.height;
+    if ((max-min) == 0) {
+      yD = ((ma13 - min) / (min)) * graphRect.height;
+    }
+    else {
+      yD = ((ma13 - min) / (max - min)) * graphRect.height;
+    }
     _drawDashedLine(canvas, graphRect, 2, yD, ma13PricePaint);
     _drawText(
       canvas: canvas,
@@ -272,7 +297,14 @@ class LineChartPainter extends CustomPainter {
 
     // once guidelines finished, we can draw the actual graph
     double gap = graphRect.width / (data.length.toDouble() - 1);
-    double ratio = graphRect.height / (max - min);
+    double ratio;
+    if ((max-min) == 0) {
+      ratio = graphRect.height / min;      
+    }
+    else {
+      ratio = graphRect.height / (max - min);
+    }
+    
     Path pUp = Path();
     Path pDown = Path();
     Path pNoChange = Path();

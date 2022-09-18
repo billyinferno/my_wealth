@@ -389,7 +389,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   }
 
   Future<void> _getIndexPriceDetail() async {
-    _indexApi.getIndexPrice(_index.indexId).then((resp) {
+    await _indexApi.getIndexPrice(_index.indexId).then((resp) {
       _indexPrice = resp;
 
       // loop on the resp and put it on the graph
@@ -407,26 +407,26 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       double totalPrice = 0;
       _minPrice = double.maxFinite;
       _maxPrice = double.minPositive;
-      for (IndexPriceModel price in resp) {
-        // ensure that this date is at least bigger than start date
-        if(price.indexPriceDate.compareTo(startDate) >= 0) {
-          tempData.add(GraphData(date: price.indexPriceDate.toLocal(), price: price.indexPriceValue));
 
-          // add total data, and if already 64 break the list
-          totalData += 1;
-        }
+      // just loop the last 64 data of the index, no need to care about the date
+      // as it should be handle by the API call to select the data from the last date backward.
+      for (int i = 0; i < resp.length; i++) {
+        // add current index price to the temporary data
+        tempData.add(GraphData(date: resp[i].indexPriceDate.toLocal(), price: resp[i].indexPriceValue));
 
         if(_numPrice < 29) {
-          if(_minPrice! > price.indexPriceValue) {
-            _minPrice = price.indexPriceValue;
+          if(_minPrice! > resp[i].indexPriceValue) {
+            _minPrice = resp[i].indexPriceValue;
           }
-          if(_maxPrice! < price.indexPriceValue) {
-            _maxPrice = price.indexPriceValue;
+          if(_maxPrice! < resp[i].indexPriceValue) {
+            _maxPrice = resp[i].indexPriceValue;
           }
-          totalPrice += price.indexPriceValue;
+          totalPrice += resp[i].indexPriceValue;
           _numPrice++;
         }
 
+        // add total data, and if already 64 break the list
+        totalData += 1;
         // check total data now
         if(totalData >= 64) {
           break;

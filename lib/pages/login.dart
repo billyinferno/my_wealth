@@ -17,6 +17,7 @@ import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
+import 'package:my_wealth/storage/local_box.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -61,7 +62,7 @@ class LoginPageState extends State<LoginPage> {
 
     // once all page already loaded, then we can try to perform check login
     Future.microtask(() async {
-      _checkLogin().then((isLogin) async {
+      await _checkLogin().then((isLogin) async {
         if(isLogin) {
           debugPrint("🔓 Already login");
           await _getAdditionalInfo().then((_) {
@@ -296,10 +297,10 @@ class LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 15,),
                     MaterialButton(
                       height: 50,
-                      onPressed: (() {
+                      onPressed: (() async {
                         if (_formKey.currentState!.validate()) {
                           showLoaderDialog(context);
-                          _login(_usernameController.text, _passwordController.text).then((res) async {
+                          await _login(_usernameController.text, _passwordController.text).then((res) async {
                             Navigator.pop(context);
                             if(res) {
                               debugPrint("🏠 Login success, redirect to home");
@@ -382,6 +383,11 @@ class LoginPageState extends State<LoginPage> {
       // login success, check and ensure that user is confirmed and not blocked
       if(resp.user.confirmed == true && resp.user.blocked == false) {
         ret = true;
+
+        // clear the local box as we will refresh everything when we perform check login
+        await LocalBox.clear().then((_) {
+          debugPrint("🧹 Cleaning local storage before login");
+        });
 
         // as we already got the model here, we can store the JWT to the secured box here
         await UserSharedPreferences.setUserJWT(resp.jwt).then((_) {

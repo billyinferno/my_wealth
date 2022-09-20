@@ -9,12 +9,9 @@ class LocalBox {
   static Future<void> init() async {
     if(keyBox == null) {
       debugPrint("📦 Initialize Box");
-      keyBox = await Hive.openBox('storage');
-    }
-    else {
-      // already have keyBox, compact the keyBox
-      debugPrint("🗜️ Compact Box");
-      await keyBox!.compact();
+      keyBox = await Hive.openBox('storage', compactionStrategy: ((entries, deletedEntries) {
+        return deletedEntries > 50;
+      }));
     }
 
     List<int> key = [];
@@ -35,11 +32,9 @@ class LocalBox {
     // open the encrypted box based on the key we have
     if (encryptedBox == null) {
       debugPrint("🔐 Initialized Secured Box");
-      encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(keyInt));
-    }
-    else {
-      debugPrint("🗜️ Compact Secured Box");
-      await encryptedBox!.compact();
+      encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(keyInt), compactionStrategy: (entries, deletedEntries) {
+        return deletedEntries > 10;
+      },);
     }
   }
 

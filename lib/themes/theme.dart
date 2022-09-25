@@ -13,24 +13,24 @@ ThemeData themeData = ThemeData(
   iconTheme: const IconThemeData().copyWith(color: textPrimary),
   // fontFamily: 'Roboto',
   textTheme: const TextTheme(
-    headline2: TextStyle(
+    displayMedium: TextStyle(
       color: textPrimary,
       fontSize: 32.0,
       fontWeight: FontWeight.bold,
     ),
-    headline4: TextStyle(
+    headlineMedium: TextStyle(
       color: textPrimary,
       fontSize: 12.0,
       fontWeight: FontWeight.w500,
       letterSpacing: 2.0,
     ),
-    bodyText1: TextStyle(
+    bodyLarge: TextStyle(
       color: textPrimary,
       fontSize: 14.0,
       fontWeight: FontWeight.w600,
       letterSpacing: 1.0,
     ),
-    bodyText2: TextStyle(
+    bodyMedium: TextStyle(
       color: textPrimary,
       letterSpacing: 1.0,
     ),

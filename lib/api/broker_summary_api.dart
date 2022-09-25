@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:my_wealth/model/broker_summary_accumulation_model.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker_summary_broker_txn_list_model.dart';
 import 'package:my_wealth/model/broker_summary_model.dart';
@@ -306,6 +307,46 @@ class BrokerSummaryAPI {
         CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
         BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
         return brokerSummaryDate;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String stockCode, DateTime currentDate) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      // check if we got date or not?
+      String currentDateString = '';
+      try {
+        currentDateString = _df.format(currentDate);
+      } catch(e) {
+        throw Exception(e.toString());
+      }
+
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/broker-summaries/accum/code/$stockCode/date/$currentDateString'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        BrokerSummaryAccumulationModel brokerSummary = BrokerSummaryAccumulationModel.fromJson(commonModel.data['attributes']);
+        return brokerSummary;
       }
 
       // status code is not 200, means we got error

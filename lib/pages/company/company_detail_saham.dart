@@ -8,6 +8,7 @@ import 'package:my_wealth/api/info_fundamental_api.dart';
 import 'package:my_wealth/api/info_sahams_api.dart';
 import 'package:my_wealth/api/price_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
+import 'package:my_wealth/model/broker_summary_accumulation_model.dart';
 import 'package:my_wealth/model/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker_summary_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
@@ -63,6 +64,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late CompanyTopBrokerModel _topBroker;
   late BrokerSummaryBuySellModel _brokerSummaryBuySell;
   late BrokerSummaryDateModel _brokerSummaryDate;
+  late BrokerSummaryAccumulationModel _brokerSummaryAccumulation;
   late PriceSahamMovingAverageModel _priceMA;
   late List<InfoFundamentalsModel> _infoFundamental;
   late InfoFundamentalsModel _otherInfoFundamental;
@@ -70,6 +72,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late String _brokerSummarySelected;
   late Map<DateTime, double> _watchlistDetail;
   late String? _otherCompanyCode;
+  late int _brokerAccumulationLeft;
+  late int _brokerAccumulationRight;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -162,6 +166,72 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _brokerSummaryNet = resp;
         _brokerSummaryBuySell = resp.brokerSummaryAll;
         _brokerSummarySelected = "a";
+      });
+
+      await _brokerSummaryAPI.getBrokerSummaryAccumulation(_companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
+        _brokerSummaryAccumulation = resp;
+
+        // check if _brokerSummaryAccumulation.brokerSummaryAvgLot == 0, if so then let left and right as 1
+        if (_brokerSummaryAccumulation.brokerSummaryAvgLot == 0) {
+          _brokerAccumulationLeft = 1;
+          _brokerAccumulationRight = 1;
+        }
+        else {
+          // check whether the brokerSummaryAvgLot is < 0 or > 0
+          if (_brokerSummaryAccumulation.brokerSummaryAvgLot < 0) {
+            // means that the average 7 days before this mostly sell
+            // so, we check whether in 3 days also sell? If so then we knew that it's a distribution
+            if (_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot == 0) {
+              // it's a distribution continuation that probably will lead to positive (side ways usually)
+              // for this we just need to use the current summary average as vector
+              _brokerAccumulationLeft = 100;
+              _brokerAccumulationRight = 100 + (_brokerSummaryAccumulation.brokerSummaryAvgLot * 100).abs().toInt();
+            }
+            else if (_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot < 0) {
+              // this is a distribution.
+              // for this we can just check how much distribution did it have by just divide the current and the average
+              // and use that as add vector to the right side. We need to be a bit harsh on the distribution where all the value of
+              // current and summary average is below 0, because it means that all people want to offload their share.
+              // so we need to see how much is the left vector.
+              _brokerAccumulationLeft = ((_brokerSummaryAccumulation.brokerSummaryAvgLot / _brokerSummaryAccumulation.brokerSummaryAvgCurrentLot) * 100).abs().toInt();
+              _brokerAccumulationRight = 100 + ((_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot / _brokerSummaryAccumulation.brokerSummaryAvgLot) * 100).abs().toInt();
+            }
+            else {
+              // this is an accumulation after distribution
+              // for this we can calculate how times increment needed to get current average from the summary and add that as vector
+              // to the left side
+              _brokerAccumulationLeft = 100 + (((_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot + _brokerSummaryAccumulation.brokerSummaryAvgLot.abs()) / _brokerSummaryAccumulation.brokerSummaryAvgLot.abs()) * 100).toInt();
+              _brokerAccumulationRight = 100;
+            }
+          }
+          else {
+            // means the average 7 days before this mostly buy
+            // now check if in 3 days also buy or sell?
+            if (_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot == 0) {
+              // seems like people try to offload the share as suddenly the buy is declined
+              // it means that probably the distribution will be happen soon, or the price already not that sexy
+              // so people tends to choose other stock.
+              // for this we can just assume that distribution will occurs soon, so use the summary average as vector to add on the right side.
+              _brokerAccumulationLeft = 100;
+              _brokerAccumulationRight = 100 + (_brokerSummaryAccumulation.brokerSummaryAvgLot * 100).toInt();
+            }
+            else if (_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot < 0) {
+              // this is a distribution.
+              // for this we can just check how much distribution did it have by just divide the current and the average
+              // and use that as add vector to the right side
+              _brokerAccumulationLeft = 100;
+              _brokerAccumulationRight = 100 + (((_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot - _brokerSummaryAccumulation.brokerSummaryAvgLot).abs() / _brokerSummaryAccumulation.brokerSummaryAvgLot) * 100).toInt();
+            }
+            else {
+              // this is an ongoing accumulation, means that for 7 days all the average is mostly buy
+              // if like this we can just see how much difference the accumulation compare to the previous one, if lesser by a lot it will make
+              // it as if there are distribution going on soon, if it still goes strong as per the average, then probably it was a long
+              // run of accumulation due the stock price is still good enough
+              _brokerAccumulationLeft = 100 + ((_brokerSummaryAccumulation.brokerSummaryAvgCurrentLot / _brokerSummaryAccumulation.brokerSummaryAvgLot) * 100).toInt();
+              _brokerAccumulationRight = ((_brokerSummaryAccumulation.brokerSummaryAvgLot / _brokerSummaryAccumulation.brokerSummaryAvgCurrentLot) * 100).toInt();
+            }
+          }
+        }
       });
 
       await _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo).then((resp) {
@@ -1435,6 +1505,146 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
+                  InkWell(
+                    onTap: (() async {
+                      await ShowInfoDialog(
+                        title: "Broker Accumulation",
+                        text: "This will compare the last 3 days of NET broker accumulation, compare to the 7 days average summary period (after the 3 days, so in total we use 10-days of broker data) to see the accumulation trends.\n\nIt will use the company last update date as the current date.",
+                        okayColor: accentColor
+                      ).show(context);
+                    }),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const <Widget>[
+                        Text(
+                          "Broker Accumulation",
+                          style: TextStyle(
+                            color: secondaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 5,),
+                        Icon(
+                          Ionicons.information_circle,
+                          color: accentLight,
+                          size: 15,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: double.infinity,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: <Color>[
+                                      secondaryColor,
+                                      Colors.green,
+                                    ]
+                                  ),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Expanded(child: SizedBox(),),
+                                  Container(
+                                    width: 2,
+                                    height: 5,
+                                    color: primaryColor,
+                                  ),
+                                  const Expanded(child: SizedBox(),),
+                                  Container(
+                                    width: 2,
+                                    height: 5,
+                                    color: primaryColor,
+                                  ),
+                                  const Expanded(child: SizedBox(),),
+                                  Container(
+                                    width: 2,
+                                    height: 5,
+                                    color: primaryColor,
+                                  ),
+                                  const Expanded(child: SizedBox(),),
+                                  Container(
+                                    width: 2,
+                                    height: 5,
+                                    color: primaryColor,
+                                  ),
+                                  const Expanded(child: SizedBox(),),
+                                  Container(
+                                    width: 2,
+                                    height: 5,
+                                    color: primaryColor,
+                                  ),
+                                  const Expanded(child: SizedBox(),),
+                                ],
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: _brokerAccumulationLeft,
+                                    child: const SizedBox()
+                                  ),
+                                  Container(
+                                    height: 15,
+                                    width: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5)
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: _brokerAccumulationRight,
+                                    child: const SizedBox()
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const <Widget>[
+                            Text(
+                              "Dist",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: secondaryColor,
+                              ),
+                            ),
+                            Text(
+                              "Accum",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
                   const Center(
                     child: Text(
                       "Broker Summary",

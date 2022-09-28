@@ -317,7 +317,7 @@ class BrokerSummaryAPI {
     }
   }
 
-  Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String stockCode, DateTime currentDate) async {
+  Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String version, String stockCode, DateTime currentDate) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -334,7 +334,7 @@ class BrokerSummaryAPI {
       }
 
       final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/accum/code/$stockCode/date/$currentDateString'),
+        Uri.parse('${Globals.apiURL}api/broker-summaries/accum/$version/code/$stockCode/date/$currentDateString'),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',

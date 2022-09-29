@@ -1460,6 +1460,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 children: <Widget>[
                   Container(
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    color: primaryColor,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -1526,129 +1527,135 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                           ),
                         ),
                         const SizedBox(height: 10,),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Stack(
-                            alignment: Alignment.center,
+                        InkWell(
+                          onTap: (() {
+                            setState(() {
+                              _showBrokerAccumulationList = !_showBrokerAccumulationList;
+                            });
+                          }),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Container(
+                              SizedBox(
                                 width: double.infinity,
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: <Color>[
-                                      secondaryColor,
-                                      Colors.green,
-                                    ]
-                                  ),
-                                  borderRadius: BorderRadius.circular(5),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                      width: double.infinity,
+                                      height: 5,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: <Color>[
+                                            secondaryColor,
+                                            Colors.green,
+                                          ]
+                                        ),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        const Expanded(child: SizedBox(),),
+                                        Container(
+                                          width: 2,
+                                          height: 5,
+                                          color: primaryColor,
+                                        ),
+                                        const Expanded(child: SizedBox(),),
+                                        Container(
+                                          width: 2,
+                                          height: 5,
+                                          color: primaryColor,
+                                        ),
+                                        const Expanded(child: SizedBox(),),
+                                        Container(
+                                          width: 2,
+                                          height: 5,
+                                          color: primaryColor,
+                                        ),
+                                        const Expanded(child: SizedBox(),),
+                                        Container(
+                                          width: 2,
+                                          height: 5,
+                                          color: primaryColor,
+                                        ),
+                                        const Expanded(child: SizedBox(),),
+                                        Container(
+                                          width: 2,
+                                          height: 5,
+                                          color: primaryColor,
+                                        ),
+                                        const Expanded(child: SizedBox(),),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: _brokerAccumulationLeft,
+                                          child: const SizedBox()
+                                        ),
+                                        Container(
+                                          height: 15,
+                                          width: 5,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(5)
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: _brokerAccumulationRight,
+                                          child: const SizedBox()
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
+                              const SizedBox(height: 2,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  const Expanded(child: SizedBox(),),
-                                  Container(
-                                    width: 2,
-                                    height: 5,
-                                    color: primaryColor,
-                                  ),
-                                  const Expanded(child: SizedBox(),),
-                                  Container(
-                                    width: 2,
-                                    height: 5,
-                                    color: primaryColor,
-                                  ),
-                                  const Expanded(child: SizedBox(),),
-                                  Container(
-                                    width: 2,
-                                    height: 5,
-                                    color: primaryColor,
-                                  ),
-                                  const Expanded(child: SizedBox(),),
-                                  Container(
-                                    width: 2,
-                                    height: 5,
-                                    color: primaryColor,
-                                  ),
-                                  const Expanded(child: SizedBox(),),
-                                  Container(
-                                    width: 2,
-                                    height: 5,
-                                    color: primaryColor,
-                                  ),
-                                  const Expanded(child: SizedBox(),),
-                                ],
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: _brokerAccumulationLeft,
-                                    child: const SizedBox()
-                                  ),
-                                  Container(
-                                    height: 15,
-                                    width: 5,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(5)
+                                  const SizedBox(
+                                    width: 75,
+                                    child: Text(
+                                      "Dist",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: secondaryColor,
+                                      ),
                                     ),
                                   ),
                                   Expanded(
-                                    flex: _brokerAccumulationRight,
-                                    child: const SizedBox()
+                                    child: SizedBox(
+                                      child: Icon(
+                                        (_showBrokerAccumulationList ? Ionicons.chevron_up : Ionicons.chevron_down),
+                                        color: Colors.white,
+                                        size: 10,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 75,
+                                    child: Text(
+                                      "Accum",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.green,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 2,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            const SizedBox(
-                              width: 75,
-                              child: Text(
-                                "Dist",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: secondaryColor,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: InkWell(
-                                onTap: (() {
-                                  setState(() {
-                                    _showBrokerAccumulationList = !_showBrokerAccumulationList;
-                                  });
-                                }),
-                                child: SizedBox(
-                                  child: Icon(
-                                    (_showBrokerAccumulationList ? Ionicons.chevron_up : Ionicons.chevron_down),
-                                    color: Colors.white,
-                                    size: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 75,
-                              child: Text(
-                                "Accum",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.green,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -1661,7 +1668,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: primaryLight,
-                          width: (_showBrokerAccumulationList ? 1.0 : 0.0),
+                          width: 1.0,
                           style: BorderStyle.solid,
                         )
                       ),

@@ -28,6 +28,7 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
+import 'package:my_wealth/widgets/expanded_section.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/stock_candlestick_painter.dart';
@@ -93,6 +94,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
   bool _showNet = true;
+  bool _showBrokerAccumulationList = false;
   int _accumVersion = 0;
   Map<DateTime, GraphData>? _graphData;
   
@@ -1619,15 +1621,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                 ),
                               ),
                             ),
-                            InkWell(
-                              onTap: (() {
-                                //TODO: to showed the detail of the broker summary
-                                debugPrint("Showed the detail of the broker summary");
-                              }),
-                              child: const Icon(
-                                Ionicons.chevron_down,
-                                color: Colors.white,
-                                size: 10,
+                            Expanded(
+                              child: InkWell(
+                                onTap: (() {
+                                  setState(() {
+                                    _showBrokerAccumulationList = !_showBrokerAccumulationList;
+                                  });
+                                }),
+                                child: SizedBox(
+                                  child: Icon(
+                                    (_showBrokerAccumulationList ? Ionicons.chevron_up : Ionicons.chevron_down),
+                                    color: Colors.white,
+                                    size: 10,
+                                  ),
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -1645,6 +1652,151 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                         ),
                       ],
                     ),
+                  ),
+                  ExpandedSection(
+                    expand: _showBrokerAccumulationList,
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                width: 80,
+                                color: primaryDark,
+                                padding: const EdgeInsets.all(2.5),
+                                child: const Text(
+                                  "DATE",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: accentColor,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: primaryDark,
+                                  padding: const EdgeInsets.all(2.5),
+                                  child: const Text(
+                                    "BUY LOT",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: accentColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: primaryDark,
+                                  padding: const EdgeInsets.all(2.5),
+                                  child: const Text(
+                                    "SELL LOT",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: accentColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: primaryDark,
+                                  padding: const EdgeInsets.all(2.5),
+                                  child: const Text(
+                                    "DIFF",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: accentColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          ...List<Widget>.generate(_brokerSummaryAccumulation.length > 1 ? _brokerSummaryAccumulation[1].brokerSummaryData.length : 0, (index) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  width: 80,
+                                  padding: const EdgeInsets.all(2.5),
+                                  child: Text(
+                                    _df.format(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryDate),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: Text(
+                                      formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryBuyLot, false, true, 2),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: Text(
+                                      formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummarySellLot, false, true, 2),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: Text(
+                                      formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot, false, true, 2),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: (_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot == 0 ? textPrimary : (_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot < 0) ? secondaryColor : Colors.green),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ],
+                      ),
+                    )
                   ),
                   const SizedBox(height: 20,),
                   const Center(

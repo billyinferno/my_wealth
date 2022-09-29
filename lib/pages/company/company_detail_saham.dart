@@ -1661,7 +1661,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: primaryLight,
-                          width: 1.0,
+                          width: (_showBrokerAccumulationList ? 1.0 : 0.0),
                           style: BorderStyle.solid,
                         )
                       ),

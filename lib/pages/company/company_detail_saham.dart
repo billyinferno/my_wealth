@@ -1660,150 +1660,153 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       ],
                     ),
                   ),
-                  ExpandedSection(
-                    expand: _showBrokerAccumulationList,
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                width: 80,
-                                color: primaryDark,
-                                padding: const EdgeInsets.all(2.5),
-                                child: const Text(
-                                  "DATE",
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: accentColor,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  color: primaryDark,
-                                  padding: const EdgeInsets.all(2.5),
-                                  child: const Text(
-                                    "BUY LOT",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: accentColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  color: primaryDark,
-                                  padding: const EdgeInsets.all(2.5),
-                                  child: const Text(
-                                    "SELL LOT",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: accentColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  color: primaryDark,
-                                  padding: const EdgeInsets.all(2.5),
-                                  child: const Text(
-                                    "DIFF",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: accentColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          ...List<Widget>.generate(_brokerSummaryAccumulation.length > 1 ? _brokerSummaryAccumulation[1].brokerSummaryData.length : 0, (index) {
-                            return Row(
+                  Visibility(
+                    visible: _showBrokerAccumulationList,
+                    child: ExpandedSection(
+                      expand: _showBrokerAccumulationList,
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          )
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 Container(
                                   width: 80,
+                                  color: primaryDark,
                                   padding: const EdgeInsets.all(2.5),
-                                  child: Text(
-                                    _df.format(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryDate),
-                                    style: const TextStyle(
+                                  child: const Text(
+                                    "DATE",
+                                    style: TextStyle(
                                       fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: accentColor,
                                     ),
                                     textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 Expanded(
                                   child: Container(
+                                    color: primaryDark,
                                     padding: const EdgeInsets.all(2.5),
-                                    child: Text(
-                                      formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryBuyLot, false, true, 2),
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2.5),
-                                    child: Text(
-                                      formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummarySellLot, false, true, 2),
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2.5),
-                                    child: Text(
-                                      formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot, false, true, 2),
+                                    child: const Text(
+                                      "BUY LOT",
                                       style: TextStyle(
                                         fontSize: 10,
-                                        color: (_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot == 0 ? textPrimary : (_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot < 0) ? secondaryColor : Colors.green),
+                                        fontWeight: FontWeight.bold,
+                                        color: accentColor,
                                       ),
                                       textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    color: primaryDark,
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: const Text(
+                                      "SELL LOT",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: accentColor,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    color: primaryDark,
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: const Text(
+                                      "DIFF",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: accentColor,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
                               ],
-                            );
-                          }),
-                        ],
-                      ),
-                    )
+                            ),
+                            ...List<Widget>.generate(_brokerSummaryAccumulation.length > 1 ? _brokerSummaryAccumulation[1].brokerSummaryData.length : 0, (index) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width: 80,
+                                    padding: const EdgeInsets.all(2.5),
+                                    child: Text(
+                                      _df.format(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryDate),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2.5),
+                                      child: Text(
+                                        formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryBuyLot, false, true, 2),
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2.5),
+                                      child: Text(
+                                        formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummarySellLot, false, true, 2),
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2.5),
+                                      child: Text(
+                                        formatIntWithNull(_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot, false, true, 2),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: (_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot == 0 ? textPrimary : (_brokerSummaryAccumulation[1].brokerSummaryData[index].brokerSummaryLot < 0) ? secondaryColor : Colors.green),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                          ],
+                        ),
+                      )
+                    ),
                   ),
                   const SizedBox(height: 20,),
                   const Center(

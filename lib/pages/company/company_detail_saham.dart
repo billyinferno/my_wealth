@@ -1663,7 +1663,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                   ExpandedSection(
                     expand: _showBrokerAccumulationList,
                     child: Container(
-                      margin: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                      margin: const EdgeInsets.fromLTRB(15, 5, 15, 0),
                       width: double.infinity,
                       decoration: BoxDecoration(
                         border: Border.all(

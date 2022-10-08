@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 
@@ -27,22 +26,21 @@ class ExpandedTileChildren extends StatelessWidget {
   Widget build(BuildContext context) {
     final rColor = riskColor((shares * currentPrice), (shares * price), risk);
 
-    return Container(
-      color: (shares > 0 ? rColor : Colors.blue),
+    return IntrinsicHeight(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const SizedBox(
+          Container(
             width: 5,
+            color: (shares > 0 ? rColor : Colors.blue),
           ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              color: primaryColor,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Expanded(
                       child: Text(

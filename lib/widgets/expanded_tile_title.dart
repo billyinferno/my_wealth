@@ -35,21 +35,21 @@ class ExpandedTileTitle extends StatelessWidget {
       trendIcon = Ionicons.caret_down;
     }
 
-    return Container(
-      color: rColor,
+    return IntrinsicHeight(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const SizedBox(width: 5,),
+          Container(
+            width: 5,
+            color: rColor,
+          ),
           Expanded(
-            flex: 1,
             child: Container(
-              color: primaryColor,
               padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +174,7 @@ class ExpandedTileTitle extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

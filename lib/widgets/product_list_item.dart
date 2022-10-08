@@ -46,158 +46,160 @@ class ProductListItem extends StatelessWidget {
         realisedColor = Colors.green;
       }
     }
-    
+
     return InkWell(
       onTap: (() {
-        // check if we can tap the widget or not?
         if (onTap != null) {
           onTap!();
         }
       }),
       child: Container(
-        decoration: BoxDecoration(
-          color: bgColor,
-          border: const Border(
+        decoration: const BoxDecoration(
+          border: Border(
             bottom: BorderSide(
               color: primaryLight,
-              style: BorderStyle.solid,
               width: 1.0,
+              style: BorderStyle.solid,
             )
-          ),
+          )
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(width: 10,),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                color: primaryColor,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+        child: IntrinsicHeight(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                color: bgColor,
+                width: 10,
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(width: 5,),
-                              Visibility(
-                                visible: (subTitle == null ? false : true),
-                                child: const Icon(
-                                  Ionicons.ellipse,
-                                  size: 5,
-                                )
-                              ),
-                              const SizedBox(width: 5,),
-                              Visibility(
-                                visible: (subTitle == null ? false : true),
-                                child: Text(
-                                  subTitle ?? '',
+                            const SizedBox(height: 5,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 5,),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            formatCurrencyWithNull(value, false, false, false),
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Icon(
-                                trendIcon,
-                                color: trendColor,
-                                size: 15,
-                              ),
-                              const SizedBox(width: 5,),
-                              Text(
-                                formatCurrencyWithNull(gain, false, false, false),
-                                style: TextStyle(
-                                  color: trendColor,
-                                  fontSize: 12,
+                                const SizedBox(width: 5,),
+                                Visibility(
+                                  visible: (subTitle == null ? false : true),
+                                  child: const Icon(
+                                    Ionicons.ellipse,
+                                    size: 5,
+                                  )
                                 ),
-                              ),
-                            ],
-                          ),
-                          Visibility(
-                            visible: (realised == null ? false : true),
-                            child: const SizedBox(height: 5,)
-                          ),
-                          Visibility(
-                            visible: (realised == null ? false : true),
-                            child: Row(
+                                const SizedBox(width: 5,),
+                                Visibility(
+                                  visible: (subTitle == null ? false : true),
+                                  child: Text(
+                                    subTitle ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              formatCurrencyWithNull(value, false, false, false),
+                            ),
+                            const SizedBox(height: 5,),
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
                                 Icon(
-                                  Ionicons.wallet_outline,
-                                  color: realisedColor,
+                                  trendIcon,
+                                  color: trendColor,
                                   size: 15,
                                 ),
                                 const SizedBox(width: 5,),
                                 Text(
-                                  formatCurrencyWithNull(realised, false, false, false),
+                                  formatCurrencyWithNull(gain, false, false, false),
                                   style: TextStyle(
-                                    color: realisedColor,
+                                    color: trendColor,
                                     fontSize: 12,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible: (onTap != null),
-                      child: const SizedBox(
-                        width: 20,
-                        child: Icon(
-                          Ionicons.chevron_forward,
-                          color: primaryLight,
+                            Visibility(
+                              visible: (realised == null ? false : true),
+                              child: const SizedBox(height: 5,)
+                            ),
+                            Visibility(
+                              visible: (realised == null ? false : true),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Icon(
+                                    Ionicons.wallet_outline,
+                                    color: realisedColor,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    formatCurrencyWithNull(realised, false, false, false),
+                                    style: TextStyle(
+                                      color: realisedColor,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    )
-                  ],
-                ),
+                      Visibility(
+                        visible: (onTap != null),
+                        child: const SizedBox(
+                          width: 20,
+                          child: Icon(
+                            Ionicons.chevron_forward,
+                            color: primaryLight,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

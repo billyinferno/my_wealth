@@ -5,7 +5,6 @@ import 'package:my_wealth/themes/colors.dart';
 ThemeData themeData = ThemeData(
   fontFamily: '--apple-system',
   brightness: Brightness.dark,
-  backgroundColor: primaryColor,
   appBarTheme: const AppBarTheme(backgroundColor: primaryDark),
   scaffoldBackgroundColor: primaryColor,
   primaryColor: primaryColor,
@@ -34,6 +33,18 @@ ThemeData themeData = ThemeData(
       color: textPrimary,
       letterSpacing: 1.0,
     ),
+  ), colorScheme: const ColorScheme(
+    background: primaryColor,
+    brightness: Brightness.dark,
+    error: secondaryColor,
+    onBackground: textPrimary,
+    onError: textPrimary,
+    onPrimary: textPrimary,
+    onSecondary: textPrimary,
+    onSurface: textPrimary,
+    primary: primaryColor,
+    secondary: secondaryColor,
+    surface: primaryColor,
   ),
 );
 

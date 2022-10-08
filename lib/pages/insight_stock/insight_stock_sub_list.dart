@@ -164,9 +164,13 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                                             ),
                                           ),
                                           const SizedBox(width: 5,),
-                                          Text(
-                                            _companyList[index].companyName,
-                                            overflow: TextOverflow.ellipsis,
+                                          Expanded(
+                                            child: SizedBox(
+                                              child: Text(
+                                                _companyList[index].companyName,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       )

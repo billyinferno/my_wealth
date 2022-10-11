@@ -4,7 +4,6 @@ import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/widgets/expanded_tile_children.dart';
 import 'package:my_wealth/widgets/expanded_tile_title.dart';
@@ -65,114 +64,16 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
         lastUpdate: (widget.watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(widget.watchlist.watchlistCompanyLastUpdate!.toLocal())),
         riskColor: headerRiskColor,
         checkThousandOnPrice: (widget.checkThousandOnPrice ?? false),
+        subHeaderRiskColor: subHeaderRiskColor,
+        totalDayGain: _totalDayGain,
+        totalValue: _totalValue,
+        totalCost: _totalCost,
+        averagePrice: _averagePrice,
       ),
       initiallyExpanded: _isShowedLots,
       collapsedTextColor: textPrimary,
       textColor: textPrimary,
       children: [
-        Container(
-          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-          width: double.infinity,
-          color: subHeaderRiskColor,
-          child: Container(
-            color: primaryColor,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  width: 10,
-                ),
-                _subHeaderInformation(
-                  header: "DAY GAIN",
-                  value: formatCurrency(_totalDayGain),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                _subHeaderInformation(
-                  header: "VALUE",
-                  value: formatCurrency(_totalValue),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                _subHeaderInformation(
-                  header: "COST",
-                  value: formatCurrency(_totalCost),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                _subHeaderInformation(
-                  header: "AVERAGE",
-                  value: formatCurrency(_averagePrice),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
-            SizedBox(
-              width: 15,
-            ),
-            Expanded(
-              child: Text(
-                "DATE",
-                style: TextStyle(
-                  fontSize: 10,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Text(
-                "SHARE",
-                style: TextStyle(
-                  fontSize: 10,
-                ),
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Text(
-                "PRICE",
-                style: TextStyle(
-                  fontSize: 10,
-                ),
-                textAlign: TextAlign.right,
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Text(
-                "GAIN",
-                style: TextStyle(
-                  fontSize: 10,
-                ),
-                textAlign: TextAlign.right,
-              ),
-            ),
-            SizedBox(
-              width: 35,
-            ),
-          ],
-        ),
         ...List<Widget>.generate(widget.watchlist.watchlistDetail.length,
             (index) {
           return ExpandedTileChildren(
@@ -186,41 +87,6 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
           );
         })
       ],
-    );
-  }
-
-  Widget _subHeaderInformation(
-      {required String header, required String value}) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-        decoration: const BoxDecoration(
-            border: Border(
-          top: BorderSide(
-            color: primaryLight,
-            width: 1.0,
-            style: BorderStyle.solid,
-          ),
-        )),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              header,
-              style: const TextStyle(
-                fontSize: 10,
-              ),
-            ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            )
-          ],
-        ),
-      ),
     );
   }
 

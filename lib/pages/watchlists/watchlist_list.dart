@@ -739,9 +739,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // set the result
     // total share should be buy subtract by sell
     _totalCurrentShares = _totalSharesBuy - _totalSharesSell;
-    _totalGain = (_watchlist.watchlistCompanyNetAssetValue! * (_totalSharesBuy - _totalSharesSell)) - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
     _totalCost = _totalBuyAmount - totalCostSell;
     _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
+    _totalGain = _totalValue - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
   }
 }

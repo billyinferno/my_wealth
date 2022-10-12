@@ -713,12 +713,19 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
         _totalSharesSell += detail.watchlistDetailShare;
         _totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        _totalRealisedGain += (_totalSellAmount * -1) - (detail.watchlistDetailShare * averageRealisedPrice * -1);
+        _totalRealisedGain += ((detail.watchlistDetailShare * detail.watchlistDetailPrice) * -1) - (detail.watchlistDetailShare * averageRealisedPrice * -1);
+        // debugPrint("Share Buy Realised : $totalShareBuyRealised");
+        // debugPrint("Share Buy Amount Realised : $totalBuyAmountRealised");
+        // debugPrint("Average Price Realised : $averageRealisedPrice");
+        // debugPrint("Realised Gain : $_totalRealisedGain");
         _totalSell++;
 
         // recalculate the totalShareBuyRealised and totalBuyAmountRealised
-        totalShareBuyRealised += _totalSharesSell;
+        totalShareBuyRealised += detail.watchlistDetailShare;
         totalBuyAmountRealised += (detail.watchlistDetailShare * averageRealisedPrice);
+        // debugPrint("Share Buy Realised : $totalShareBuyRealised");
+        // debugPrint("Share Buy Amount Realised : $totalBuyAmountRealised");
+        // debugPrint("------");
       }
     }
     

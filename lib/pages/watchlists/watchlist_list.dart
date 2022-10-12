@@ -46,7 +46,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   int _totalSell = 0;
   double _priceDiff = 0;
   double _totalCost = 0;
-  double _totalGain = 0;
+  double _totalUnrealisedGain = 0;
   double _totalRealisedGain = 0;
   double _totalValue = 0;
   double _totalCurrentShares = 0;
@@ -346,7 +346,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
                                     title: "UNREALISED",
-                                    text: formatCurrency(_totalGain)
+                                    text: formatCurrency(_totalUnrealisedGain)
                                   ),
                                   const SizedBox(width: 10,),
                                   WatchlistDetailSummaryBox(
@@ -674,7 +674,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   void _compute() {
     // compute all necessary data for the summary, such as cost, gain
     _totalCost = 0;
-    _totalGain = 0;
+    _totalUnrealisedGain = 0;
     _totalRealisedGain = 0;
     _totalCurrentShares = 0;
     _totalSharesBuy = 0;
@@ -690,33 +690,35 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // for the calculation of the sell share's to avoid any average cost problem
     // we need to see how much is the average cost for each share that we buy
     double totalCostSell = 0;
-    double totalShareBuyGain = 0;
-    double totalBuyAmountGain = 0;
     double averageBuyPrice = 0;
-    double averageGainPrice = 0;
+
+    // this variable is being used to calculate the realised gain
+    double totalShareBuyRealised = 0;
+    double totalBuyAmountRealised = 0;
+    double averageRealisedPrice = 0;
     for (WatchlistDetailListModel detail in _watchlist.watchlistDetail.reversed) {
       if (detail.watchlistDetailShare > 0) {
         _totalSharesBuy += detail.watchlistDetailShare;
         _totalBuyAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         _totalBuy++;
 
-        totalShareBuyGain += _totalSharesBuy;
-        totalBuyAmountGain += _totalBuyAmount;
+        totalShareBuyRealised += _totalSharesBuy;
+        totalBuyAmountRealised += _totalBuyAmount;
       }
       else {
         // get the current gain price that we can use to calculate the actual realised gain we got at that time
-        if (totalShareBuyGain > 0 && totalBuyAmountGain > 0) {
-          averageGainPrice = totalBuyAmountGain / totalShareBuyGain;
+        if (totalShareBuyRealised > 0 && totalBuyAmountRealised > 0) {
+          averageRealisedPrice = totalBuyAmountRealised / totalShareBuyRealised;
         }
 
         _totalSharesSell += detail.watchlistDetailShare;
         _totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        _totalRealisedGain += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
+        _totalRealisedGain += (_totalSellAmount * -1) - (detail.watchlistDetailShare * averageRealisedPrice * -1);
         _totalSell++;
 
-        // recalculate the totalShareBuyGain and totalBuyAmountGain
-        totalShareBuyGain -= (detail.watchlistDetailShare * -1);
-        totalBuyAmountGain -= ((detail.watchlistDetailShare * detail.watchlistDetailPrice) * -1);
+        // recalculate the totalShareBuyRealised and totalBuyAmountRealised
+        totalShareBuyRealised += _totalSharesSell;
+        totalBuyAmountRealised += (detail.watchlistDetailShare * averageRealisedPrice);
       }
     }
     
@@ -741,7 +743,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     _totalCurrentShares = _totalSharesBuy - _totalSharesSell;
     _totalCost = _totalBuyAmount - totalCostSell;
     _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
-    _totalGain = _totalValue - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
+    _totalUnrealisedGain = _totalValue - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
     _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
   }
 }

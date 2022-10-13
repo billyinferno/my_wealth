@@ -42,8 +42,8 @@ ThemeData themeData = ThemeData(
     onPrimary: textPrimary,
     onSecondary: textPrimary,
     onSurface: textPrimary,
-    primary: primaryColor,
-    secondary: secondaryColor,
+    primary: secondaryColor,
+    secondary: accentColor,
     surface: primaryColor,
   ),
 );

@@ -15,8 +15,9 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/common_error_page.dart';
+import 'package:my_wealth/widgets/common_loading_page.dart';
 import 'package:my_wealth/widgets/company_detail_price_list.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
@@ -41,12 +42,12 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
   late Map<DateTime, double> _watchlistDetail;
+  late Future<bool> _getData;
   
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
 
-  bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
   Map<DateTime, GraphData>? _graphData;
   
@@ -61,9 +62,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   void initState() {
     super.initState();
 
-    // set that this is still loading
-    _isLoading = true;
-
     // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
 
@@ -76,41 +74,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
 
-    Future.microtask(() async {
-      // show the loader dialog
-      showLoaderDialog(context);
-      // perform the get company detail information here
-      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
-        // copy the response to company detail data
-        _companyDetail = resp;
-        
-        // generate map data
-        _generateGraphData(resp);        
-      });
-
-      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
-        // if we got response then map it to the map, so later we can sent it
-        // to the graph for rendering the time when we buy the share
-        DateTime tempDate;
-        for(WatchlistDetailListModel data in resp) {
-          tempDate = data.watchlistDetailDate.toLocal();
-          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
-          }
-          else {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
-          }
-        }
-      });
-    }).onError((error, stackTrace) {
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
-      debugPrint(error.toString());
-      debugPrintStack(stackTrace: stackTrace);
-    }).whenComplete(() {
-      // once finished then remove the loader dialog
-      Navigator.pop(context);
-      _setIsLoading(false);
-    });
+    // get initial data
+    _getData = _getInitData();    
   }
 
   @override
@@ -124,268 +89,276 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   
   @override
   Widget build(BuildContext context) {
-    return _generatePage();
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading crypto data');
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      })
+    );
   }
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
-    
-    if (_isLoading) {
-      return Container(color: primaryColor,);
+
+    if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
+      currentIcon = Ionicons.caret_up;
     }
-    else {
-      if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-        currentIcon = Ionicons.caret_up;
-      }
-      else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-        currentIcon = Ionicons.caret_down;
-      }
-      // generate the actual page
-      return WillPopScope(
-        onWillPop: (() async {
-          return false;
-        }),
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Center(
-              child: Text(
-                "Crypto Detail",
-                style: TextStyle(
-                  color: secondaryColor,
-                ),
+    else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
+      currentIcon = Ionicons.caret_down;
+    }
+    // generate the actual page
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Center(
+            child: Text(
+              "Crypto Detail",
+              style: TextStyle(
+                color: secondaryColor,
               ),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: (() async {
-                Navigator.pop(context);
-              }),
-            ),
-            actions: <Widget>[
-              Icon(
-                (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
-                color: accentColor,
-              ),
-              const SizedBox(width: 20,),
-            ],
           ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        color: primaryColor,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              (_companyDetail.companySymbol == null ? "" : "(${_companyDetail.companySymbol!.toUpperCase()}) ") + _companyData.companyName,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  formatCurrency(_companyDetail.companyNetAssetValue!),
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                Text(
-                                  "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  currentIcon,
-                                  color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                                ),
-                                const SizedBox(width: 10,),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                                        width: 2.0,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    )
-                                  ),
-                                  child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
-                                ),
-                                Expanded(child: Container(),),
-                                const Icon(
-                                  Ionicons.time_outline,
-                                  color: primaryLight,
-                                ),
-                                const SizedBox(width: 10,),
-                                // ignore: unnecessary_null_comparison
-                                Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
-                              ],
-                            ),
-                            const SizedBox(height: 20,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Market Cap",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull((_companyDetail.companyMarketCap == null ? null : _companyDetail.companyMarketCap!.toDouble())),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Rank",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatIntWithNull(_companyDetail.companyMarketCapRank),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Fully Dilluted",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_companyDetail.companyFullyDilutedValuation),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Min ($_numPrice)",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_minPrice!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Max ($_numPrice)",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_maxPrice!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Avg ($_numPrice)",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_avgPrice!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10,),
-              Row(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: (() async {
+              Navigator.pop(context);
+            }),
+          ),
+          actions: <Widget>[
+            Icon(
+              (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+              color: accentColor,
+            ),
+            const SizedBox(width: 20,),
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Info",
-                    icon: Ionicons.speedometer_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 0;
-                      });
-                    }),
-                    active: (_bodyPage == 0),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Table",
-                    icon: Ionicons.list_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 1;
-                      });
-                    }),
-                    active: (_bodyPage == 1),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Map",
-                    icon: Ionicons.calendar_clear_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 2;
-                      });
-                    }),
-                    active: (_bodyPage == 2),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Graph",
-                    icon: Ionicons.stats_chart_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 3;
-                      });
-                    }),
-                    active: (_bodyPage == 3),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      color: primaryColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            (_companyDetail.companySymbol == null ? "" : "(${_companyDetail.companySymbol!.toUpperCase()}) ") + _companyData.companyName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                formatCurrency(_companyDetail.companyNetAssetValue!),
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Text(
+                                "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(
+                                currentIcon,
+                                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                              ),
+                              const SizedBox(width: 10,),
+                              Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                      width: 2.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                  )
+                                ),
+                                child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
+                              ),
+                              Expanded(child: Container(),),
+                              const Icon(
+                                Ionicons.time_outline,
+                                color: primaryLight,
+                              ),
+                              const SizedBox(width: 10,),
+                              // ignore: unnecessary_null_comparison
+                              Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
+                            ],
+                          ),
+                          const SizedBox(height: 20,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              CompanyInfoBox(
+                                header: "Market Cap",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull((_companyDetail.companyMarketCap == null ? null : _companyDetail.companyMarketCap!.toDouble())),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Rank",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatIntWithNull(_companyDetail.companyMarketCapRank),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Fully Dilluted",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_companyDetail.companyFullyDilutedValuation),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              CompanyInfoBox(
+                                header: "Min ($_numPrice)",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_minPrice!),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Max ($_numPrice)",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_maxPrice!),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Avg ($_numPrice)",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_avgPrice!),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
-              const SizedBox(height: 10,),
-              ..._detail(),
-              const SizedBox(height: 30,),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Info",
+                  icon: Ionicons.speedometer_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 0;
+                    });
+                  }),
+                  active: (_bodyPage == 0),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Table",
+                  icon: Ionicons.list_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 1;
+                    });
+                  }),
+                  active: (_bodyPage == 1),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Map",
+                  icon: Ionicons.calendar_clear_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 2;
+                    });
+                  }),
+                  active: (_bodyPage == 2),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Graph",
+                  icon: Ionicons.stats_chart_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 3;
+                    });
+                  }),
+                  active: (_bodyPage == 3),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            ..._detail(),
+            const SizedBox(height: 30,),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
 
   List<Widget> _detail() {
@@ -819,12 +792,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     return graph;
   }
 
-  void _setIsLoading(bool val) {
-    setState(() {
-      _isLoading = val;
-    });
-  }
-
   void _generateGraphData(CompanyDetailModel data) {
     // map the price date on company
     List<GraphData> tempData = [];
@@ -898,5 +865,39 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     for (GraphData data in tempData) {
       _graphData![data.date] = data;
     }
+  }
+
+  Future<bool> _getInitData() async {
+    try {
+      // perform the get company detail information here
+      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+        // copy the response to company detail data
+        _companyDetail = resp;
+        
+        // generate map data
+        _generateGraphData(resp);        
+      });
+
+      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+        // if we got response then map it to the map, so later we can sent it
+        // to the graph for rendering the time when we buy the share
+        DateTime tempDate;
+        for(WatchlistDetailListModel data in resp) {
+          tempDate = data.watchlistDetailDate.toLocal();
+          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+          }
+          else {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+          }
+        }
+      });
+    }
+    catch(error) {
+      debugPrint(error.toString());
+      throw 'Error when try to get the data from server';
+    }
+
+    return true;
   }
 }

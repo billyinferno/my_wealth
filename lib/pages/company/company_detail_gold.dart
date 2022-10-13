@@ -12,8 +12,9 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/common_error_page.dart';
+import 'package:my_wealth/widgets/common_loading_page.dart';
 import 'package:my_wealth/widgets/company_detail_price_list.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
@@ -31,6 +32,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
   late Map<DateTime, double> _watchlistDetail;
+  late Future<bool> _getData;
   
   final ScrollController _summaryController = ScrollController();
   final ScrollController _priceController = ScrollController();
@@ -41,7 +43,6 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   
-  bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
   Map<DateTime, GraphData>? _graphData;
@@ -53,7 +54,6 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     _showCurrentPriceComparison = false;
 
     _bodyPage = 0;
@@ -67,108 +67,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
 
-    Future.microtask(() async {
-      // show the loader dialog
-      showLoaderDialog(context);
-      // perform the get company detail information here
-      await _companyApi.getCompanyDetail(-1, "gold").then((resp) {
-        _companyDetail = resp;
-
-        // map the price date on company
-        List<GraphData> tempData = [];
-        int totalData = 0;
-        double totalPrice = 0;
-        int totalPriceData = 0;
-        _minPrice = double.maxFinite;
-        _maxPrice = double.minPositive;
-
-        // move the last update to friday
-        int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
-        DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
-
-        // then go 14 weeks before so we knew the start date
-        DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
-        // only get the 1st 64 data, since we will want to get the latest data
-        for (PriceModel price in _companyDetail.companyPrices) {
-          // ensure that all the data we will put is more than or equal with startdate
-          if(price.priceDate.compareTo(startDate) >= 0) {
-            tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
-            totalData += 1;
-          }
-
-          // count for minimum, maximum, and average
-          if(totalPriceData < 29) {
-            if(_minPrice! > price.priceValue) {
-              _minPrice = price.priceValue;
-            }
-
-            if(_maxPrice! < price.priceValue) {
-              _maxPrice = price.priceValue;
-            }
-
-            totalPrice += price.priceValue;
-            totalPriceData++;
-          }
-
-          // if total data already more than 64 break  the data, as heat map only will display 65 data
-          if(totalData >= 64) {
-            break;
-          }
-        }
-
-        // add the current price which only in company
-        tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
-
-        // check current price for minimum, maximum, and average
-        if(_minPrice! > _companyDetail.companyNetAssetValue!) {
-          _minPrice = _companyDetail.companyNetAssetValue!;
-        }
-
-        if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
-          _maxPrice = _companyDetail.companyNetAssetValue!;
-        }
-
-        totalPrice += _companyDetail.companyNetAssetValue!;
-        totalPriceData++;
-        // compute average
-        _avgPrice = totalPrice / totalPriceData;
-        _numPrice = totalPriceData;
-
-        // sort the temporary data
-        tempData.sort((a, b) {
-          return a.date.compareTo(b.date);
-        });
-
-        // once sorted, then we can put it on map
-        for (GraphData data in tempData) {
-          _graphData![data.date] = data;
-        }
-      });
-
-      await _watchlistAPI.findDetail(-1).then((resp) {
-        // if we got response then map it to the map, so later we can sent it
-        // to the graph for rendering the time when we buy the share
-        DateTime tempDate;
-        for(WatchlistDetailListModel data in resp) {
-          tempDate = data.watchlistDetailDate.toLocal();
-          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
-          }
-          else {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
-          }
-        }
-      });
-    }).onError((error, stackTrace) {
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the data from server'));
-      debugPrint(error.toString());
-      debugPrintStack(stackTrace: stackTrace);
-    }).whenComplete(() {
-      // once finished then remove the loader dialog
-      Navigator.pop(context);
-      setIsLoading(false);
-    });
+    _getData = _getInitData();
   }
 
   @override
@@ -182,243 +81,243 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _generatePage();
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading gold data');
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      })
+    );
   }
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
 
-    if (_isLoading) {
-      return Container(
-        color: primaryColor,
-      );
+    if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
+      currentIcon = Ionicons.caret_up;
     }
-    else {
-      if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-        currentIcon = Ionicons.caret_up;
-      }
-      else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-        currentIcon = Ionicons.caret_down;
-      }
-      
-      return WillPopScope(
-        onWillPop: (() async {
-          return false;
-        }),
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Center(
-              child: Text(
-                "Gold Detail",
-                style: TextStyle(
-                  color: secondaryColor,
-                ),
+    else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
+      currentIcon = Ionicons.caret_down;
+    }
+    
+    return WillPopScope(
+      onWillPop: (() async {
+        return false;
+      }),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Center(
+            child: Text(
+              "Gold Detail",
+              style: TextStyle(
+                color: secondaryColor,
               ),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: (() async {
-                Navigator.pop(context);
-              }),
-            ),
-            actions: const <Widget>[
-              Icon(
-                Ionicons.star,
-                color: accentColor,
-              ),
-              SizedBox(width: 20,),
-            ],
           ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        color: primaryColor,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const Text(
-                              "(XAU) Gold",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  formatCurrency(_companyDetail.companyNetAssetValue!),
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                Text(
-                                  "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  currentIcon,
-                                  color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                                ),
-                                const SizedBox(width: 10,),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
-                                        width: 2.0,
-                                        style: BorderStyle.solid,
-                                      ),
-                                    )
-                                  ),
-                                  child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
-                                ),
-                                Expanded(child: Container(),),
-                                const Icon(
-                                  Ionicons.time_outline,
-                                  color: primaryLight,
-                                ),
-                                const SizedBox(width: 10,),
-                                // ignore: unnecessary_null_comparison
-                                Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
-                              ],
-                            ),
-                            const SizedBox(height: 10,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CompanyInfoBox(
-                                  header: "Min ($_numPrice)",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_minPrice!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Max ($_numPrice)",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_maxPrice!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: 10,),
-                                CompanyInfoBox(
-                                  header: "Avg ($_numPrice)",
-                                  headerAlign: MainAxisAlignment.end,
-                                  child: Text(
-                                    formatCurrencyWithNull(_avgPrice!),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10,),
-              Row(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: (() async {
+              Navigator.pop(context);
+            }),
+          ),
+          actions: const <Widget>[
+            Icon(
+              Ionicons.star,
+              color: accentColor,
+            ),
+            SizedBox(width: 20,),
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Info",
-                    icon: Ionicons.speedometer_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 0;
-                      });
-                    }),
-                    active: (_bodyPage == 0),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Table",
-                    icon: Ionicons.list_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 1;
-                      });
-                    }),
-                    active: (_bodyPage == 1),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Map",
-                    icon: Ionicons.calendar_clear_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 2;
-                      });
-                    }),
-                    active: (_bodyPage == 2),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
-                  TransparentButton(
-                    text: "Graph",
-                    icon: Ionicons.stats_chart_outline,
-                    callback: (() {
-                      setState(() {
-                        _bodyPage = 3;
-                      });
-                    }),
-                    active: (_bodyPage == 3),
-                    vertical: true,
-                  ),
-                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      color: primaryColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "(XAU) Gold",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                formatCurrency(_companyDetail.companyNetAssetValue!),
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Text(
+                                "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(
+                                currentIcon,
+                                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                              ),
+                              const SizedBox(width: 10,),
+                              Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                      width: 2.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                  )
+                                ),
+                                child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
+                              ),
+                              Expanded(child: Container(),),
+                              const Icon(
+                                Ionicons.time_outline,
+                                color: primaryLight,
+                              ),
+                              const SizedBox(width: 10,),
+                              // ignore: unnecessary_null_comparison
+                              Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              CompanyInfoBox(
+                                header: "Min ($_numPrice)",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_minPrice!),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Max ($_numPrice)",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_maxPrice!),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CompanyInfoBox(
+                                header: "Avg ($_numPrice)",
+                                headerAlign: MainAxisAlignment.end,
+                                child: Text(
+                                  formatCurrencyWithNull(_avgPrice!),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
-              const SizedBox(height: 5,),
-              ..._detail(),
-              const SizedBox(height: 30,),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Info",
+                  icon: Ionicons.speedometer_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 0;
+                    });
+                  }),
+                  active: (_bodyPage == 0),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Table",
+                  icon: Ionicons.list_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 1;
+                    });
+                  }),
+                  active: (_bodyPage == 1),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Map",
+                  icon: Ionicons.calendar_clear_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 2;
+                    });
+                  }),
+                  active: (_bodyPage == 2),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Graph",
+                  icon: Ionicons.stats_chart_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 3;
+                    });
+                  }),
+                  active: (_bodyPage == 3),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            const SizedBox(height: 5,),
+            ..._detail(),
+            const SizedBox(height: 30,),
+          ],
         ),
-      );
-    }
-  }
-
-  void setIsLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
-    });
+      ),
+    );
   }
 
   List<Widget> _detail() {
@@ -723,5 +622,105 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     ));
 
     return graph;
+  }
+
+  Future<bool> _getInitData() async {
+    try {
+      // perform the get company detail information here
+      await _companyApi.getCompanyDetail(-1, "gold").then((resp) {
+        _companyDetail = resp;
+
+        // map the price date on company
+        List<GraphData> tempData = [];
+        int totalData = 0;
+        double totalPrice = 0;
+        int totalPriceData = 0;
+        _minPrice = double.maxFinite;
+        _maxPrice = double.minPositive;
+
+        // move the last update to friday
+        int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
+        DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
+
+        // then go 14 weeks before so we knew the start date
+        DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+
+        // only get the 1st 64 data, since we will want to get the latest data
+        for (PriceModel price in _companyDetail.companyPrices) {
+          // ensure that all the data we will put is more than or equal with startdate
+          if(price.priceDate.compareTo(startDate) >= 0) {
+            tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+            totalData += 1;
+          }
+
+          // count for minimum, maximum, and average
+          if(totalPriceData < 29) {
+            if(_minPrice! > price.priceValue) {
+              _minPrice = price.priceValue;
+            }
+
+            if(_maxPrice! < price.priceValue) {
+              _maxPrice = price.priceValue;
+            }
+
+            totalPrice += price.priceValue;
+            totalPriceData++;
+          }
+
+          // if total data already more than 64 break  the data, as heat map only will display 65 data
+          if(totalData >= 64) {
+            break;
+          }
+        }
+
+        // add the current price which only in company
+        tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+
+        // check current price for minimum, maximum, and average
+        if(_minPrice! > _companyDetail.companyNetAssetValue!) {
+          _minPrice = _companyDetail.companyNetAssetValue!;
+        }
+
+        if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
+          _maxPrice = _companyDetail.companyNetAssetValue!;
+        }
+
+        totalPrice += _companyDetail.companyNetAssetValue!;
+        totalPriceData++;
+        // compute average
+        _avgPrice = totalPrice / totalPriceData;
+        _numPrice = totalPriceData;
+
+        // sort the temporary data
+        tempData.sort((a, b) {
+          return a.date.compareTo(b.date);
+        });
+
+        // once sorted, then we can put it on map
+        for (GraphData data in tempData) {
+          _graphData![data.date] = data;
+        }
+      });
+
+      await _watchlistAPI.findDetail(-1).then((resp) {
+        // if we got response then map it to the map, so later we can sent it
+        // to the graph for rendering the time when we buy the share
+        DateTime tempDate;
+        for(WatchlistDetailListModel data in resp) {
+          tempDate = data.watchlistDetailDate.toLocal();
+          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+          }
+          else {
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+          }
+        }
+      });
+    }
+    catch(error) {
+      throw 'Error when try to get the data from server';
+    }
+
+    return true;
   }
 }

@@ -14,6 +14,8 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/common_error_page.dart';
+import 'package:my_wealth/widgets/common_loading_page.dart';
 
 class BrokerDetailPage extends StatefulWidget {
   final Object? args;
@@ -33,8 +35,8 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   late BrokerSummaryBrokerTxnListModel _transactionList;
   late List<bool> _isExpanded;
   late Map<int, BrokerSummaryTxnDetailModel> _transactionDetail;
+  late Future<bool> _getData;
 
-  bool _isLoading = true;
   DateTime _fromDateMax = DateTime.now();
   DateTime _toDateMax = DateTime.now();
   DateTime _fromDateCurrent = DateTime.now();
@@ -55,35 +57,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     _start = 0;
     _limit = 20;
 
-    Future.microtask(() async {
-      showLoaderDialog(context);
-
-      // first let's get the min and max date
-      await _brokerSummaryAPI.getBrokerSummaryBrokerDate(_args.brokerFirmID).then((resp) {
-        _fromDateMax = resp.brokerMinDate;
-        _toDateMax = resp.brokerMaxDate;
-        _fromDateCurrent = _toDateMax;
-        _toDateCurrent = _toDateMax;
-      });
-
-      // we will use the max date when we query the data
-      await _brokerSummaryAPI.getBrokerTransactionList(_args.brokerFirmID, _start, _limit, _fromDateCurrent, _toDateCurrent).then((resp) {
-        // set the current transaction list
-        _transactionList = resp;
-
-        // add start with limit
-        _start = _start + _limit;
-
-        // assume that all is not expanded
-        _isExpanded = List<bool>.generate(_transactionList.brokerSummaryCodeList.length, (index) {
-          return false;
-        });
-      });
-    }).whenComplete(() {
-      Navigator.pop(context);
-      // once finished then set the loading into false
-      setLoading(false);
-    });
+    _getData = _getInitData();
   }
 
   @override
@@ -94,11 +68,20 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Container(color: primaryColor,);
-    }
-    // if not loading return the main page
-    return _generatePage();
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Unable to load broker detail data');
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      })
+    );
   }
 
   Widget _generatePage() {
@@ -909,9 +892,34 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     }
   }
 
-  void setLoading(bool value) {
-    setState(() {
-      _isLoading = value;
-    });
+  Future<bool> _getInitData() async {
+    try {
+      // first let's get the min and max date
+      await _brokerSummaryAPI.getBrokerSummaryBrokerDate(_args.brokerFirmID).then((resp) {
+        _fromDateMax = resp.brokerMinDate;
+        _toDateMax = resp.brokerMaxDate;
+        _fromDateCurrent = _toDateMax;
+        _toDateCurrent = _toDateMax;
+      });
+
+      // we will use the max date when we query the data
+      await _brokerSummaryAPI.getBrokerTransactionList(_args.brokerFirmID, _start, _limit, _fromDateCurrent, _toDateCurrent).then((resp) {
+        // set the current transaction list
+        _transactionList = resp;
+
+        // add start with limit
+        _start = _start + _limit;
+
+        // assume that all is not expanded
+        _isExpanded = List<bool>.generate(_transactionList.brokerSummaryCodeList.length, (index) {
+          return false;
+        });
+      });
+    } catch(error) {
+      debugPrint(error.toString());
+      throw 'Error when get broker detail data';
+    }
+
+    return true;
   }
 }

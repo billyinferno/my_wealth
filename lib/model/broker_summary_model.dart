@@ -83,7 +83,7 @@ class BrokerSummaryBuySellElement {
         brokerSummaryID: json["broker_summary_id"],
         brokerSummaryLot: json["broker_summary_lot"],
         brokerSummaryValue: (json["broker_summary_value"] != null ? json["broker_summary_value"].toDouble() : null),
-        brokerSummaryAverage: json["broker_summary_average"],
+        brokerSummaryAverage: (json["broker_summary_average"] != null ? json["broker_summary_average"].toDouble() : null),
     );
 
     Map<String, dynamic> toJson() => {

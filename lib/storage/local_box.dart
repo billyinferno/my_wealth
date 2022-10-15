@@ -9,6 +9,7 @@ class LocalBox {
   static Future<void> init() async {
     if(keyBox == null) {
       debugPrint("📦 Initialize Box");
+      await Hive.initFlutter();
       keyBox = await Hive.openBox('storage', compactionStrategy: ((entries, deletedEntries) {
         return deletedEntries > 50;
       }));

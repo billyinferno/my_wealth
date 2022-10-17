@@ -49,6 +49,7 @@ class CompanyInfoBox extends StatelessWidget {
                         color: currentHeaderColor,
                         fontWeight: FontWeight.bold,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Visibility(

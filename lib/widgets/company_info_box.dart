@@ -42,11 +42,13 @@ class CompanyInfoBox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: currentHeaderAlign,
                 children: [
-                  Text(
-                    header,
-                    style: TextStyle(
-                      color: currentHeaderColor,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      header,
+                      style: TextStyle(
+                        color: currentHeaderColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Visibility(

@@ -5,6 +5,7 @@ import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
+import 'package:my_wealth/model/watchlist_performance_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
@@ -288,6 +289,42 @@ class WatchlistAPI {
           watchlistDetail.add(detail);
         }
         return watchlistDetail;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<WatchlistPerformanceModel>> getWatchlistPerformance(String type, int id) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      _getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/watchlists/performance/$type/$id'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<WatchlistPerformanceModel> listWatchlistPerformance = [];
+        for (var data in commonModel.data) {
+          WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
+          listWatchlistPerformance.add(watchlist);
+        }
+        return listWatchlistPerformance;
       }
 
       // status code is not 200, means we got error

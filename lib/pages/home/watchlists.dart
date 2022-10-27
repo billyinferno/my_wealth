@@ -280,7 +280,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 return Slidable(
                   endActionPane: ActionPane(
                     motion: const ScrollMotion(),
-                    extentRatio: 0.7,
+                    extentRatio: 0.875,
                     children: <Widget>[
                       SlidableAction(
                         onPressed: ((BuildContext context) {
@@ -303,6 +303,17 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         icon: Ionicons.ellipsis_horizontal,
                         backgroundColor: primaryColor,
                         foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
+                      ),
+                      SlidableAction(
+                        onPressed: ((BuildContext context) {
+                          if(data[idx].watchlistDetail.isNotEmpty) {
+                            // only do when the list is not empty, otherwise there are nothing that need to be edited
+                            Navigator.pushNamed(context, '/watchlist/performance', arguments: watchlistArgs);
+                          }
+                        }),
+                        icon: Ionicons.pulse_outline,
+                        backgroundColor: primaryColor,
+                        foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
                       ),
                       SlidableAction(
                         onPressed: ((BuildContext context) {
@@ -465,7 +476,6 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
               newWatchlist.add(watch);
             }
           }
-
         }
         else if (type == "saham") {
           for (WatchlistListModel watch in _watchlistSaham!) {

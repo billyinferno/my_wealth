@@ -45,4 +45,34 @@ class WatchlistSharedPreferences {
       return [];
     }
   }
+
+  static WatchlistListModel? getWatchlistId(String type, int id) {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> watchlistList = (LocalBox.getStringList("${_watchlistKey}_$type") ?? []);
+
+    // check if the list is empty or not?
+    if (watchlistList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      for (String watchlistString in watchlistList) {
+        WatchlistListModel watchlist = WatchlistListModel.fromJson(jsonDecode(watchlistString));
+        // check if the current watchlist is the same ID as the one we request
+        if (watchlist.watchlistId == id) {
+          // if same return the watchlist
+          return watchlist;
+        }
+      }
+
+      // return null if not found
+      return null;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
 }

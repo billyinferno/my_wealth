@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
+import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -672,85 +673,21 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   }
 
   void _compute() {
-    // compute all necessary data for the summary, such as cost, gain
-    _totalCost = 0;
-    _totalUnrealisedGain = 0;
-    _totalRealisedGain = 0;
-    _totalCurrentShares = 0;
-    _totalSharesBuy = 0;
-    _totalSharesSell = 0;
-    _totalBuy = 0;
-    _totalSell = 0;
-    _totalBuyAmount = 0;
-    _totalSellAmount = 0;
-
-    // compute the price diff
-    _priceDiff = (_watchlist.watchlistCompanyNetAssetValue! - _watchlist.watchlistCompanyPrevPrice!) ;
-
-    // for the calculation of the sell share's to avoid any average cost problem
-    // we need to see how much is the average cost for each share that we buy
-    double totalCostSell = 0;
-    double averageBuyPrice = 0;
-
-    // this variable is being used to calculate the realised gain
-    double totalShareBuyRealised = 0;
-    double totalBuyAmountRealised = 0;
-    double averageRealisedPrice = 0;
-    for (WatchlistDetailListModel detail in _watchlist.watchlistDetail.reversed) {
-      if (detail.watchlistDetailShare > 0) {
-        _totalSharesBuy += detail.watchlistDetailShare;
-        _totalBuyAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        _totalBuy++;
-
-        totalShareBuyRealised += _totalSharesBuy;
-        totalBuyAmountRealised += _totalBuyAmount;
-      }
-      else {
-        // get the current gain price that we can use to calculate the actual realised gain we got at that time
-        if (totalShareBuyRealised > 0 && totalBuyAmountRealised > 0) {
-          averageRealisedPrice = totalBuyAmountRealised / totalShareBuyRealised;
-        }
-
-        _totalSharesSell += detail.watchlistDetailShare;
-        _totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        _totalRealisedGain += ((detail.watchlistDetailShare * detail.watchlistDetailPrice) * -1) - (detail.watchlistDetailShare * averageRealisedPrice * -1);
-        // debugPrint("Share Buy Realised : $totalShareBuyRealised");
-        // debugPrint("Share Buy Amount Realised : $totalBuyAmountRealised");
-        // debugPrint("Average Price Realised : $averageRealisedPrice");
-        // debugPrint("Realised Gain : $_totalRealisedGain");
-        _totalSell++;
-
-        // recalculate the totalShareBuyRealised and totalBuyAmountRealised
-        totalShareBuyRealised += detail.watchlistDetailShare;
-        totalBuyAmountRealised += (detail.watchlistDetailShare * averageRealisedPrice);
-        // debugPrint("Share Buy Realised : $totalShareBuyRealised");
-        // debugPrint("Share Buy Amount Realised : $totalBuyAmountRealised");
-        // debugPrint("------");
-      }
-    }
+    WatchlistComputationResult computeResult = detailWatchlistComputation(watchlist: _watchlist, riskFactor: _userInfo!.risk);
     
-    // get what is the average buy price that we have
-    if (_totalSharesBuy > 0 && _totalBuyAmount > 0) {
-      averageBuyPrice = _totalBuyAmount / _totalSharesBuy;
-    }
-
-    // total sell is negative, make it a positive
-    if (_totalSharesSell < 0) {
-      _totalSharesSell *= -1;
-    }
-    if (_totalSellAmount < 0) {
-      _totalSellAmount *= -1;
-    }
-
-    // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
-    totalCostSell = _totalSharesSell * averageBuyPrice;
-
-    // set the result
-    // total share should be buy subtract by sell
-    _totalCurrentShares = _totalSharesBuy - _totalSharesSell;
-    _totalCost = _totalBuyAmount - totalCostSell;
-    _totalValue = _totalCurrentShares * _watchlist.watchlistCompanyNetAssetValue!;
-    _totalUnrealisedGain = _totalValue - (averageBuyPrice * (_totalSharesBuy - _totalSharesSell));
-    _riskColor = riskColor(_totalValue, _totalCost, _userInfo!.risk);
+    // compute all necessary data for the summary, such as cost, gain
+    _totalCost = computeResult.totalCost;
+    _totalUnrealisedGain = computeResult.totalUnrealisedGain;
+    _totalRealisedGain = computeResult.totalRealisedGain;
+    _totalCurrentShares = computeResult.totalCurrentShares;
+    _totalSharesBuy = computeResult.totalSharesBuy;
+    _totalSharesSell = computeResult.totalSharesSell;
+    _totalBuy = computeResult.totalBuy;
+    _totalSell = computeResult.totalSell;
+    _totalBuyAmount = computeResult.totalBuyAmount;
+    _totalSellAmount = computeResult.totalSellAmount;
+    _priceDiff = computeResult.priceDiff;
+    _riskColor = computeResult.riskColor;
+    _totalValue = computeResult.totalValue;
   }
 }

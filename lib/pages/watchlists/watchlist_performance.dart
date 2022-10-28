@@ -5,6 +5,7 @@ import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_performance_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -31,6 +32,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late WatchlistComputationResult _watchlistComputation;
   late Future<bool> _getData;
   late List<WatchlistPerformanceModel> _watchlistPerformance;
+  late CompanyDetailArgs _companyArgs;
 
   @override
   void initState() {
@@ -42,11 +44,21 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     // convert the args to watchlist args
     _watchlistArgs = widget.args as WatchlistListArgs;
 
+    // set the company args so we can navigate to company detail page
+    _companyArgs = CompanyDetailArgs(
+      companyId: _watchlistArgs.watchList.watchlistCompanyId,
+      companyName: _watchlistArgs.watchList.watchlistCompanyName,
+      companyCode: _watchlistArgs.watchList.watchlistCompanySymbol ?? '',
+      companyFavourite: (_watchlistArgs.watchList.watchlistFavouriteId > 0 ? true : false),
+      favouritesId: _watchlistArgs.watchList.watchlistFavouriteId,
+      type: _watchlistArgs.type
+    );
+
     // get the computation for the watchlist
     _watchlistComputation = detailWatchlistComputation(watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk);
 
     // get initial data
-    _getData = _getInitData();   
+    _getData = _getInitData();
   }
 
   @override
@@ -83,6 +95,16 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
               Ionicons.arrow_back,
             )
           ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: (() {
+                Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
+              }),
+              icon: const Icon(
+                Ionicons.business_outline
+              ),
+            )
+          ],
           title: const Center(
             child: Text(
               "Performance",
@@ -195,7 +217,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _rowChild(headerText: "CURRENT", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
+                              _rowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
                               const SizedBox(width: 10,),
                               _rowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain)),
                               const SizedBox(width: 10,),

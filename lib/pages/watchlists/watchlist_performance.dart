@@ -25,6 +25,7 @@ class WatchlistPerformancePage extends StatefulWidget {
 class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
   final DateFormat _df = DateFormat('dd/MM/yyyy');
+  final DateFormat _dfMMDD = DateFormat('MM/yy');
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
   late WatchlistListArgs _watchlistArgs;
@@ -240,6 +241,159 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 ),
               ),
             ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
+                      color: primaryDark,
+                      border: Border(
+                          bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ))),
+                  width: 60,
+                  child: const Text(
+                    "DATE",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                            bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ))),
+                    child: const Text(
+                      "SHARES",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                            bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ))),
+                    child: const Text(
+                      "AVG",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                            bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Text(
+                      "PRICE",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                            bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Text(
+                      "P/L",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _watchlistPerformance.length,
+                itemBuilder: ((context, index) {
+                  double pl = (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].currentPrice) - (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].buyAvg);
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        width: 60,
+                        child: Text(
+                          _dfMMDD.format(_watchlistPerformance[index].buyDate),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            formatDecimal(_watchlistPerformance[index].buyTotal, 2),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            formatCurrency(_watchlistPerformance[index].buyAvg, false, false, true, 0),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            formatCurrency(_watchlistPerformance[index].currentPrice, false, false, true, 0),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            formatCurrency(pl, false, false, true, 0),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+            ),
+            const SizedBox(height: 25,), // safe area
           ],
         ),
       ),

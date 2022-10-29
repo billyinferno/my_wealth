@@ -25,7 +25,7 @@ class WatchlistPerformancePage extends StatefulWidget {
 class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
   final DateFormat _df = DateFormat('dd/MM/yyyy');
-  final DateFormat _dfMMDD = DateFormat('MM/yy');
+  final DateFormat _dfMMDD = DateFormat('dd/MM');
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
   late WatchlistListArgs _watchlistArgs;
@@ -256,7 +256,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             SizedBox(
               width: double.infinity,
               child: CustomPaint(
-                painter: PerformanceChartPainter(data: _watchlistPerformance),
+                painter: PerformanceChartPainter(
+                  data: _watchlistPerformance,
+                  watchlist: _watchlistArgs.watchList.watchlistDetail
+                ),
                 child: const SizedBox(
                   height: 250,
                 ),

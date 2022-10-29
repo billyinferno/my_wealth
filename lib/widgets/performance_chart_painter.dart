@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_performance_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
@@ -13,8 +14,9 @@ class PerformanceData {
 
 class PerformanceChartPainter extends CustomPainter {
   final List<WatchlistPerformanceModel> data;
+  final List<WatchlistDetailListModel>? watchlist;
 
-  PerformanceChartPainter({required this.data});
+  PerformanceChartPainter({required this.data, this.watchlist});
 
   // draw the path
   final Paint dpUp = Paint()
@@ -41,8 +43,18 @@ class PerformanceChartPainter extends CustomPainter {
     ..color = primaryLight.withOpacity(0.5)
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
+  
+  final Paint watchlistPaintBuy = Paint()
+    ..color = accentColor;
+
+  final Paint watchlistPaintSell = Paint()
+    ..color = extendedLight;
+
+  final Paint watchlistPaintBuySell = Paint()
+    ..color = Colors.white;
 
   late List<PerformanceData> _data;
+  late Map<DateTime, double> _watchlist;
 
   double _min = double.infinity;
   double _max = 0;
@@ -53,6 +65,7 @@ class PerformanceChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // normalize the watchlist performance data, and calculate the gain
     _data = [];
+    _watchlist = {};
     _compute();
 
     // draw the line if we have data
@@ -188,6 +201,24 @@ class PerformanceChartPainter extends CustomPainter {
         }
       }
 
+      // check if watchlist is not null
+      if (_watchlist.isNotEmpty) {
+        // check if this date is on the watchlist or not?
+        if (_watchlist.containsKey(value.date.toLocal())) {
+          // got the date, so now we can just draw the circle in this position            
+          // if we doing buy and sell all in one day
+          if (_watchlist[value.date.toLocal()] == 3) {
+            canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuySell);  
+          }
+          else if (_watchlist[value.date.toLocal()] == 1) {
+            canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuy);  
+          }
+          else if (_watchlist[value.date.toLocal()] == 2) {
+            canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintSell);
+          }
+        }
+      }
+
       // next column
       x += w;
     }
@@ -257,10 +288,33 @@ class PerformanceChartPainter extends CustomPainter {
     // calculate the normalize value
     _norm = _gap - _max;
 
-    // loop thru the _data
-    // for (PerformanceData dt in _data) {
-    //   print("${dt.date} - ${dt.gain} - ${dt.gain + _norm}");
-    // }
+    // loop thru the watchlist if available
+    if (watchlist != null) {
+      DateTime tempDate;
+      for(WatchlistDetailListModel dt in watchlist!) {
+        tempDate = dt.watchlistDetailDate.toLocal();
+        if (_watchlist.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+          if (dt.watchlistDetailShare > 0) {
+            // this is buy
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + 1;
+          }
+          if (dt.watchlistDetailShare < 0) {
+            // this is sell
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + 2;
+          }
+        }
+        else {
+          if (dt.watchlistDetailShare > 0) {
+            // this is buy
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+          }
+          if (dt.watchlistDetailShare < 0) {
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+          }
+        }
+      }
+      
+    }
   }
 
   void _drawText(

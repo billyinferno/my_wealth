@@ -34,6 +34,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late Future<bool> _getData;
   late List<WatchlistPerformanceModel> _watchlistPerformance;
   late CompanyDetailArgs _companyArgs;
+  late double? _max;
+  late double? _min;
+  late double? _avg;
+  late int _totalData;
 
   @override
   void initState() {
@@ -58,6 +62,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     // get the computation for the watchlist
     _watchlistComputation = detailWatchlistComputation(watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk);
 
+    // assume max, min, and average is null
+    _max = null;
+    _min = null;
+    _avg = null;
+    
     // get initial data
     _getData = _getInitData();
   }
@@ -225,6 +234,18 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                               _rowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain)),
                             ],
                           ),
+                          const SizedBox(height: 10,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _rowChild(headerText: "MAX", valueText: formatCurrencyWithNull(_max)),
+                              const SizedBox(width: 10,),
+                              _rowChild(headerText: "MIN", valueText: formatCurrencyWithNull(_min)),
+                              const SizedBox(width: 10,),
+                              _rowChild(headerText: "AVERAGE", valueText: formatCurrencyWithNull(_avg)),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -340,6 +361,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 itemCount: _watchlistPerformance.length,
                 itemBuilder: ((context, index) {
                   double pl = (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].currentPrice) - (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].buyAvg);
+                  Color plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryColor : Colors.green));
+
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -385,6 +408,9 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           child: Text(
                             formatCurrency(pl, false, false, true, 0),
                             textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: plColor,
+                            ),
                           ),
                         ),
                       ),
@@ -428,6 +454,43 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       await _watchlistAPI.getWatchlistPerformance(_watchlistArgs.type, _watchlistArgs.watchList.watchlistId).then((resp) {
         // copy the response to watchlist performance
         _watchlistPerformance = resp; 
+
+        // get the maximum and minimum
+        _totalData = 0;
+        
+        double max = double.infinity * (-1);
+        double min = double.infinity;
+        double avg = 0;
+        double pl = 0;
+
+        for(WatchlistPerformanceModel dt in _watchlistPerformance) {
+          // check if we got the data or not?
+          if (dt.buyTotal > 0) {
+
+            // got data, so now check if this is max or not
+            _totalData++;
+
+            pl = (dt.buyTotal * dt.currentPrice) - (dt.buyTotal * dt.buyAvg);
+
+            // check if this is min or max?
+            if (pl > max) {
+              max = pl;
+            }
+
+            if (pl < min) {
+              min = pl;
+            }
+
+            // add for the average
+            avg = avg + pl;
+          }
+        }
+
+        if (_totalData > 0) {
+          _max = max;
+          _min = min;
+          _avg = avg / _totalData;
+        }
       });
     }
     catch(error) {

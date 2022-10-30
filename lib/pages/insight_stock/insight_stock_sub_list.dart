@@ -23,9 +23,15 @@ class InsightStockSubListPage extends StatefulWidget {
 class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
   final ScrollController _scrollController = ScrollController();
+  final TextStyle _filterTypeSelected = const TextStyle(fontSize: 10, color: accentColor, fontWeight: FontWeight.bold);
+  final TextStyle _filterTypeUnselected = const TextStyle(fontSize: 10, color: primaryLight, fontWeight: FontWeight.normal);
 
   late InsightStockSubListArgs _args;
   late List<CompanyDetailModel> _companyList;
+  late List<CompanyDetailModel> _companyFilter;
+  late String _filterMode;
+  late String _filterType;
+  final Map<String, String> _filterList = {};
   late UserLoginInfoModel? _userInfo;
   bool _isLoading = true;
   
@@ -34,12 +40,26 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     _args = widget.args as InsightStockSubListArgs;
     _userInfo = UserSharedPreferences.getUserInfo();
 
+    // generate the filter list
+    _filterList["AB"] = "Code";
+    _filterList["1d"] = "One Day";
+    _filterList["1w"] = "One Week";
+    _filterList["1m"] = "One Month";
+    _filterList["3m"] = "Three Month";
+    _filterList["6m"] = "Six Month";
+    _filterList["1y"] = "One Year";
+    _filterList["3y"] = "Three Year";
+    _filterList["5y"] = "Five Year";
+
     // once got the arguments then we can try to call the api to get the list of company
     Future.microtask(() async {
       showLoaderDialog(context);
       
       await _companyAPI.getCompanySectorAndSubSector(_args.type, _args.sectorName, _args.subName).then((resp) {
         _companyList = resp;
+        _companyFilter = List<CompanyDetailModel>.generate(_companyList.length, (index) => _companyList[index]);
+        _filterMode = "AB";
+        _filterType = "ASC";
       });
     }).whenComplete(() {
       // remove the loader
@@ -88,23 +108,200 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
+          Container(
+            padding: const EdgeInsets.all(5),
+            color: primaryDark,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  "FILTER",
+                  style: TextStyle(
+                    color: primaryLight,
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(width: 5,),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: (() {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        isDismissible: true,
+                        builder:(context) {
+                          return Container(
+                            height: 410,
+                            margin: const EdgeInsets.fromLTRB(10, 10, 10, 25),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                const Center(
+                                  child: Text("Select Filter"),
+                                ),
+                                ..._filterList.entries.map((e) => GestureDetector(
+                                  onTap: (() {
+                                    setState(() {
+                                      _filterMode = e.key;
+                                      _sortedCompanyList();
+                                    });
+                                    // remove the modal sheet
+                                    Navigator.pop(context);
+                                  }),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: primaryLight,
+                                          width: 1.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            color: (_filterMode == e.key ? accentDark : Colors.transparent),
+                                            borderRadius: BorderRadius.circular(2),
+                                            border: Border.all(
+                                              color: accentDark,
+                                              width: 1.0,
+                                              style: BorderStyle.solid,
+                                            )
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              e.key,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: (_filterMode == e.key ? textPrimary : accentColor),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10,),
+                                        Text(
+                                          e.value,
+                                          style: TextStyle(
+                                            color: (_filterMode == e.key ? accentColor : textPrimary),
+                                            fontWeight: (_filterMode == e.key ? FontWeight.bold : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )).toList(),
+                              ],
+                            )
+                          );
+                        },
+                      );
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(_filterList[_filterMode] ?? 'Code'),
+                          ),
+                          const SizedBox(width: 5,),
+                          const Icon(
+                            Ionicons.caret_down,
+                            color: accentColor,
+                            size: 15,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5,),
+                GestureDetector(
+                  onTap: (() {
+                    if (_filterType != "ASC") {
+                      // set state
+                      setState(() {
+                        _filterType = "ASC";
+                        _sortedCompanyList();
+                      });
+                    }
+                  }),
+                  child: SizedBox(
+                    width: 35,
+                    child: Center(
+                      child: Text(
+                        "ASC",
+                        style: (_filterType == "ASC" ? _filterTypeSelected : _filterTypeUnselected),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 2,),
+                GestureDetector(
+                  onTap: (() {
+                    if (_filterType != "DESC") {
+                      // set state
+                      setState(() {
+                        _filterType = "DESC";
+                        _sortedCompanyList();
+                      });
+                    }
+                  }),
+                  child: SizedBox(
+                    width: 35,
+                    child: Center(
+                      child: Text(
+                        "DESC",
+                        style: (_filterType == "DESC" ? _filterTypeSelected : _filterTypeUnselected),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: _companyList.length,
+              itemCount: _companyFilter.length,
               itemBuilder: ((context, index) {
-                double currentPrice = (_companyList[index].companyNetAssetValue ?? 0);
-                double prevPrice = (_companyList[index].companyPrevPrice ?? 0);
+                double currentPrice = (_companyFilter[index].companyNetAssetValue ?? 0);
+                double prevPrice = (_companyFilter[index].companyPrevPrice ?? 0);
                 Color color = riskColor(currentPrice, prevPrice, _userInfo!.risk);
                 
                 return InkWell(
                   onTap: (() async {
                     showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_companyList[index].companySymbol!, 'saham').then((resp) {
+                    await _companyAPI.getCompanyByCode(_companyFilter[index].companySymbol!, 'saham').then((resp) {
                       CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: resp.companyId,
                         companyName: resp.companyName,
-                        companyCode: _companyList[index].companySymbol!,
+                        companyCode: _companyFilter[index].companySymbol!,
                         companyFavourite: (resp.companyFavourites ?? false),
                         favouritesId: (resp.companyFavouritesId ?? -1),
                         type: "saham",
@@ -157,7 +354,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            '(${_companyList[index].companySymbol})',
+                                            '(${_companyFilter[index].companySymbol})',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: accentColor,
@@ -167,7 +364,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                                           Expanded(
                                             child: SizedBox(
                                               child: Text(
-                                                _companyList[index].companyName,
+                                                _companyFilter[index].companyName,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
@@ -204,14 +401,14 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
-                                      _periodBox(title: "1d", value: (_companyList[index].companyDailyReturn ?? 0)),
-                                      _periodBox(title: "1w", value: (_companyList[index].companyWeeklyReturn ?? 0)),
-                                      _periodBox(title: "1m", value: (_companyList[index].companyMonthlyReturn ?? 0)),
-                                      _periodBox(title: "3m", value: (_companyList[index].companyQuarterlyReturn ?? 0)),
-                                      _periodBox(title: "6m", value: (_companyList[index].companySemiAnnualReturn ?? 0)),
-                                      _periodBox(title: "1y", value: (_companyList[index].companyYearlyReturn ?? 0)),
-                                      _periodBox(title: "3y", value: (_companyList[index].companyThreeYear ?? 0)),
-                                      _periodBox(title: "5y", value: (_companyList[index].companyFiveYear ?? 0)),
+                                      _periodBox(title: "1d", value: (_companyFilter[index].companyDailyReturn ?? 0)),
+                                      _periodBox(title: "1w", value: (_companyFilter[index].companyWeeklyReturn ?? 0)),
+                                      _periodBox(title: "1m", value: (_companyFilter[index].companyMonthlyReturn ?? 0)),
+                                      _periodBox(title: "3m", value: (_companyFilter[index].companyQuarterlyReturn ?? 0)),
+                                      _periodBox(title: "6m", value: (_companyFilter[index].companySemiAnnualReturn ?? 0)),
+                                      _periodBox(title: "1y", value: (_companyFilter[index].companyYearlyReturn ?? 0)),
+                                      _periodBox(title: "3y", value: (_companyFilter[index].companyThreeYear ?? 0)),
+                                      _periodBox(title: "5y", value: (_companyFilter[index].companyFiveYear ?? 0)),
                                     ],
                                   ),
                                 ),
@@ -278,5 +475,62 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
         ),
       ),
     );
+  }
+
+  // here we will sorted the company list based on the filter type and filter mode
+  void _sortedCompanyList() {
+    // clear the company filter first
+    _companyFilter.clear();
+
+    // if the filter mode is "AB" which is code, then just copy from the _companyList
+    if (_filterMode == "AB") {
+      // check the sort methode?
+      if (_filterType == "ASC") {
+        _companyFilter = List<CompanyDetailModel>.from(_companyList);
+      }
+      else {
+        _companyFilter = List<CompanyDetailModel>.from(_companyList.reversed);
+      }
+    }
+    else {
+      List<CompanyDetailModel> tempFilter = List<CompanyDetailModel>.from(_companyList);
+      switch(_filterMode) {
+        case "1d":
+          tempFilter.sort(((a, b) => (a.companyDailyReturn ?? 0).compareTo((b.companyDailyReturn ?? 0))));
+          break;
+        case "1w":
+          tempFilter.sort(((a, b) => (a.companyWeeklyReturn ?? 0).compareTo((b.companyWeeklyReturn ?? 0))));
+          break;
+        case "1m":
+          tempFilter.sort(((a, b) => (a.companyMonthlyReturn ?? 0).compareTo((b.companyMonthlyReturn ?? 0))));
+          break;
+        case "3m":
+          tempFilter.sort(((a, b) => (a.companyQuarterlyReturn ?? 0).compareTo((b.companyQuarterlyReturn ?? 0))));
+          break;
+        case "6m":
+          tempFilter.sort(((a, b) => (a.companySemiAnnualReturn ?? 0).compareTo((b.companySemiAnnualReturn ?? 0))));
+          break;
+        case "1y":
+          tempFilter.sort(((a, b) => (a.companyYearlyReturn ?? 0).compareTo((b.companyYearlyReturn ?? 0))));
+          break;
+        case "3y":
+          tempFilter.sort(((a, b) => (a.companyThreeYear ?? 0).compareTo((b.companyThreeYear ?? 0))));
+          break;
+        case "5y":
+          tempFilter.sort(((a, b) => (a.companyFiveYear ?? 0).compareTo((b.companyFiveYear ?? 0))));
+          break;
+        default:
+          tempFilter.sort(((a, b) => (a.companyDailyReturn ?? 0).compareTo((b.companyDailyReturn ?? 0))));
+          break;
+      }
+
+      // check the filter type
+      if (_filterType == "ASC") {
+        _companyFilter = List<CompanyDetailModel>.from(tempFilter);
+      }
+      else {
+        _companyFilter = List<CompanyDetailModel>.from(tempFilter.reversed);
+      }
+    }
   }
 }

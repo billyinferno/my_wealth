@@ -118,10 +118,6 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                       setFilterList(_faveList);
                     }
                   }),
-                  suffixIcon: const Icon(
-                    Ionicons.trash_bin_outline,
-                    color: secondaryColor,
-                  ),
                   suffixMode: OverlayVisibilityMode.editing,
                   style: const TextStyle(
                     color: textPrimary,

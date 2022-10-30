@@ -306,10 +306,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         width: 1.0,
                         style: BorderStyle.solid,
                       ))),
-                  width: 60,
-                  child: const Text(
+                  width: 50,
+                  child: Text(
                     "DATE",
                     textAlign: TextAlign.center,
+                    style: _smallFont,
                   ),
                 ),
                 Expanded(
@@ -323,9 +324,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           width: 1.0,
                           style: BorderStyle.solid,
                         ))),
-                    child: const Text(
+                    child: Text(
                       "SHARES",
                       textAlign: TextAlign.center,
+                      style: _smallFont,
                     ),
                   ),
                 ),
@@ -340,9 +342,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           width: 1.0,
                           style: BorderStyle.solid,
                         ))),
-                    child: const Text(
+                    child: Text(
                       "AVG",
                       textAlign: TextAlign.center,
+                      style: _smallFont,
                     ),
                   ),
                 ),
@@ -359,9 +362,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         )
                       )
                     ),
-                    child: const Text(
+                    child: Text(
                       "PRICE",
                       textAlign: TextAlign.center,
+                      style: _smallFont,
                     ),
                   ),
                 ),
@@ -378,9 +382,30 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         )
                       )
                     ),
-                    child: const Text(
+                    child: Text(
                       "P/L",
                       textAlign: TextAlign.center,
+                      style: _smallFont,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                            bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: Text(
+                      "+/-",
+                      textAlign: TextAlign.center,
+                      style: _smallFont,
                     ),
                   ),
                 ),
@@ -395,7 +420,29 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                   }
 
                   double pl = (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].currentPrice) - (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].buyAvg);
+                  
+                  double? plDiff;
+                  Color plDiffColor = textPrimary;
+                  if (index > 0) {
+                    // get the pl diff with pl before and now
+                    plDiff = (_watchlistPerformance[index - 1].buyTotal * _watchlistPerformance[index - 1].currentPrice) - (_watchlistPerformance[index - 1].buyTotal * _watchlistPerformance[index - 1].buyAvg);
+                    plDiff = pl - plDiff;
+
+                    // set the correct plDiffColor
+                    if (plDiff > 0) plDiffColor = Colors.green;
+                    if (plDiff < 0) plDiffColor = secondaryColor;
+                  }
+
+                  // check if this data is the same as _max or _min?
                   Color plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryColor : Colors.green));
+                  
+                  bool isMinMax = false;
+                  if (pl == _max || pl == _min) {
+                    // means for this we will need to put color on the container instead of the text
+                    isMinMax = true;
+                    plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryDark : Colors.green[900]!));
+                  }
+
 
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,10 +450,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     children: <Widget>[
                       Container(
                         padding: const EdgeInsets.all(5),
-                        width: 60,
+                        width: 50,
                         child: Text(
                           _dfMMDD.format(_watchlistPerformance[index].buyDate),
                           textAlign: TextAlign.center,
+                          style: _smallFont,
                         ),
                       ),
                       Expanded(
@@ -415,6 +463,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           child: Text(
                             formatDecimal(_watchlistPerformance[index].buyTotal, 2),
                             textAlign: TextAlign.center,
+                            style: _smallFont,
                           ),
                         ),
                       ),
@@ -424,6 +473,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           child: Text(
                             formatCurrency(_watchlistPerformance[index].buyAvg, false, false, true, 0),
                             textAlign: TextAlign.center,
+                            style: _smallFont,
                           ),
                         ),
                       ),
@@ -433,6 +483,20 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           child: Text(
                             formatCurrency(_watchlistPerformance[index].currentPrice, false, false, true, 0),
                             textAlign: TextAlign.center,
+                            style: _smallFont,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          color: (isMinMax ? plColor : Colors.transparent),
+                          child: Text(
+                            formatCurrency(pl, false, false, true, 0),
+                            textAlign: TextAlign.center,
+                            style: _smallFont.copyWith(
+                              color: (isMinMax ? Colors.white : plColor),
+                            ),
                           ),
                         ),
                       ),
@@ -440,10 +504,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         child: Container(
                           padding: const EdgeInsets.all(5),
                           child: Text(
-                            formatCurrency(pl, false, false, true, 0),
+                            formatCurrencyWithNull(plDiff, false, false, true, 0),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: plColor,
+                            style: _smallFont.copyWith(
+                              color: plDiffColor,
                             ),
                           ),
                         ),

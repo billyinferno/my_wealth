@@ -31,12 +31,17 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late WatchlistListArgs _watchlistArgs;
   late UserLoginInfoModel _userInfo;
   late WatchlistComputationResult _watchlistComputation;
+  late Color _unrealisedColor;
+  late Color _realisedColor;
   late Future<bool> _getData;
   late List<WatchlistPerformanceModel> _watchlistPerformance;
   late CompanyDetailArgs _companyArgs;
   late double? _max;
+  late Color _maxColor;
   late double? _min;
+  late Color _minColor;
   late double? _avg;
+  late Color _avgColor;
   late int _totalData;
 
   @override
@@ -59,13 +64,35 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       type: _watchlistArgs.type
     );
 
+    // set the unrealised and realised default color
+    _unrealisedColor = textPrimary;
+    _realisedColor = textPrimary;
+
     // get the computation for the watchlist
     _watchlistComputation = detailWatchlistComputation(watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk);
 
+    // check the unrealised and realised after computation to showed the correct color
+    if (_watchlistComputation.totalUnrealisedGain > 0) {
+      _unrealisedColor = Colors.green;
+    }
+    else if (_watchlistComputation.totalUnrealisedGain < 0) {
+      _unrealisedColor = secondaryColor;
+    }
+
+    if (_watchlistComputation.totalRealisedGain > 0) {
+      _realisedColor = Colors.green;
+    }
+    else if (_watchlistComputation.totalRealisedGain < 0) {
+      _realisedColor = secondaryColor;
+    }
+
     // assume max, min, and average is null
     _max = null;
+    _maxColor = textPrimary;
     _min = null;
+    _minColor = textPrimary;
     _avg = null;
+    _avgColor = textPrimary;
     
     // get initial data
     _getData = _getInitData();
@@ -229,9 +256,9 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             children: <Widget>[
                               _rowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain)),
+                              _rowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain), valueColor: _unrealisedColor),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain)),
+                              _rowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
                             ],
                           ),
                           const SizedBox(height: 10,),
@@ -239,11 +266,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _rowChild(headerText: "MAX", valueText: formatCurrencyWithNull(_max)),
+                              _rowChild(headerText: "MAX", valueText: formatCurrencyWithNull(_max), valueColor: _maxColor),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "MIN", valueText: formatCurrencyWithNull(_min)),
+                              _rowChild(headerText: "MIN", valueText: formatCurrencyWithNull(_min), valueColor: _minColor),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "AVERAGE", valueText: formatCurrencyWithNull(_avg)),
+                              _rowChild(headerText: "AVERAGE", valueText: formatCurrencyWithNull(_avg), valueColor: _avgColor),
                             ],
                           ),
                         ],
@@ -363,6 +390,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
               child: ListView.builder(
                 itemCount: _watchlistPerformance.length,
                 itemBuilder: ((context, index) {
+                  if (_watchlistPerformance[index].buyTotal == 0) {
+                    return const SizedBox.shrink();
+                  }
+
                   double pl = (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].currentPrice) - (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].buyAvg);
                   Color plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryColor : Colors.green));
 
@@ -429,7 +460,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     );
   }
 
-  Widget _rowChild({required String headerText, required String valueText}) {
+  Widget _rowChild({required String headerText, Color? headerColor, required String valueText, Color? valueColor}) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,12 +470,17 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             width: double.infinity,
             child: Text(
               headerText,
-              style: _smallFont,
+              style: _smallFont.copyWith(
+                color: (headerColor ?? textPrimary)
+              ),
             ),
           ),
           const SizedBox(height: 2,),
           Text(
             valueText,
+            style: TextStyle(
+              color: (valueColor ?? textPrimary),
+            ),
           ),
         ],
       ),
@@ -491,8 +527,28 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
         if (_totalData > 0) {
           _max = max;
+          if (_max! > 0) {
+            _maxColor = Colors.green;
+          }
+          else if (_max! < 0) {
+            _maxColor = secondaryColor;
+          }
+
           _min = min;
+          if (_min! > 0) {
+            _minColor = Colors.green;
+          }
+          else if (_min! < 0) {
+            _minColor = secondaryColor;
+          }
+
           _avg = avg / _totalData;
+          if (_avg! > 0) {
+            _avgColor = Colors.green;
+          }
+          else if (_avg! < 0) {
+            _avgColor = secondaryColor;
+          }
         }
       });
     }

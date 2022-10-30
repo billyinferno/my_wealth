@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_performance_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 
@@ -54,7 +55,7 @@ class PerformanceChartPainter extends CustomPainter {
     ..color = Colors.white;
 
   late List<PerformanceData> _data;
-  late Map<DateTime, double> _watchlist;
+  late Map<DateTime, int> _watchlist;
 
   double _min = double.infinity;
   double _max = 0;
@@ -296,11 +297,11 @@ class PerformanceChartPainter extends CustomPainter {
         if (_watchlist.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
           if (dt.watchlistDetailShare > 0) {
             // this is buy
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + 1;
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = bit(data: _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!, pos: 15, value: 1);
           }
           if (dt.watchlistDetailShare < 0) {
             // this is sell
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + 2;
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = bit(data: _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!, pos: 14, value: 1);
           }
         }
         else {

@@ -307,7 +307,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       SlidableAction(
                         onPressed: ((BuildContext context) {
                           if(data[idx].watchlistDetail.isNotEmpty) {
-                            // only do when the list is not empty, otherwise there are nothing that need to be edited
+                            // only do when the list is not empty, otherwise there are nothing that need to be showed as performance
                             Navigator.pushNamed(context, '/watchlist/performance', arguments: watchlistArgs);
                           }
                         }),

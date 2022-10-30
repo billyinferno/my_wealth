@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/favourites_api.dart';
 import 'package:my_wealth/model/favourites_list_model.dart';
 import 'package:my_wealth/provider/favourites_provider.dart';

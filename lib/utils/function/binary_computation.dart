@@ -11,12 +11,12 @@ class Bit {
     });
   }
 
-  int operator [](int index) {
+  bool operator [](int index) {
     if (index < 0 || index > 15) {
       throw Exception("Bit position should be between 0-15");
     }
 
-    return int.tryParse(_binArr[index])!;
+    return (int.tryParse(_binArr[index])! == 0 ? false : true);
   }
 
   operator []=(int index, int value) {

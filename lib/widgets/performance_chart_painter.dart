@@ -54,6 +54,8 @@ class PerformanceChartPainter extends CustomPainter {
   final Paint watchlistPaintBuySell = Paint()
     ..color = Colors.white;
 
+  final Bit _bitData = Bit();
+
   late List<PerformanceData> _data;
   late Map<DateTime, int> _watchlist;
 
@@ -292,16 +294,24 @@ class PerformanceChartPainter extends CustomPainter {
     // loop thru the watchlist if available
     if (watchlist != null) {
       DateTime tempDate;
+
+      // loop thru all the watchlist
       for(WatchlistDetailListModel dt in watchlist!) {
         tempDate = dt.watchlistDetailDate.toLocal();
         if (_watchlist.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+          // set the bit data value as current value on this date
+          _bitData.set(_watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+
+          // check the type of transaction
           if (dt.watchlistDetailShare > 0) {
             // this is buy
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = bit(data: _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!, pos: 15, value: 1);
+            _bitData[15] = 1;
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] =  _bitData.toInt();
           }
           if (dt.watchlistDetailShare < 0) {
             // this is sell
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = bit(data: _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!, pos: 14, value: 1);
+            _bitData[14] = 1;
+            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
           }
         }
         else {
@@ -314,7 +324,6 @@ class PerformanceChartPainter extends CustomPainter {
           }
         }
       }
-      
     }
   }
 

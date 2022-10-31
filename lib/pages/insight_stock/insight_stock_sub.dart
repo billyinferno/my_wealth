@@ -202,7 +202,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                 style: BorderStyle.solid,
                 width: 1.0
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               color: (_currentPeriod == title ? bgColor : primaryLight),
             ),
             child: Center(

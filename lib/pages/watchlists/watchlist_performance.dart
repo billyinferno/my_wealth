@@ -12,7 +12,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/common_error_page.dart';
 import 'package:my_wealth/widgets/common_loading_page.dart';
-import 'package:my_wealth/widgets/performance_chart_painter.dart';
+import 'package:my_wealth/widgets/performance_chart.dart';
 
 class WatchlistPerformancePage extends StatefulWidget {
   final Object? args;
@@ -282,14 +282,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             ),
             SizedBox(
               width: double.infinity,
-              child: CustomPaint(
-                painter: PerformanceChartPainter(
-                  data: _watchlistPerformance,
-                  watchlist: _watchlistArgs.watchList.watchlistDetail
-                ),
-                child: const SizedBox(
-                  height: 250,
-                ),
+              child: PerformanceChart(
+                data: _watchlistPerformance,
+                watchlist: _watchlistArgs.watchList.watchlistDetail,
+                height: 250,
               ),
             ),
             Row(

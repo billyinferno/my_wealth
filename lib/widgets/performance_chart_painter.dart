@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/watchlist_detail_list_model.dart';
-import 'package:my_wealth/model/watchlist_performance_model.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 
@@ -14,10 +11,14 @@ class PerformanceData {
 }
 
 class PerformanceChartPainter extends CustomPainter {
-  final List<WatchlistPerformanceModel> data;
-  final List<WatchlistDetailListModel>? watchlist;
+  final List<PerformanceData> data;
+  final Map<DateTime, int>? watchlist;
+  final double min;
+  final double max;
+  final double gap;
+  final double norm;
 
-  PerformanceChartPainter({required this.data, this.watchlist});
+  PerformanceChartPainter({required this.data, this.watchlist, required this.min, required this.max, required this.gap, required this.norm});
 
   // draw the path
   final Paint dpUp = Paint()
@@ -54,25 +55,10 @@ class PerformanceChartPainter extends CustomPainter {
   final Paint watchlistPaintBuySell = Paint()
     ..color = Colors.white;
 
-  final Bit _bitData = Bit();
-
-  late List<PerformanceData> _data;
-  late Map<DateTime, int> _watchlist;
-
-  double _min = double.infinity;
-  double _max = 0;
-  double _gap = 0;
-  double _norm = 0;
-
   @override
   void paint(Canvas canvas, Size size) {
-    // normalize the watchlist performance data, and calculate the gain
-    _data = [];
-    _watchlist = {};
-    _compute();
-
     // draw the line if we have data
-    if (_data.isNotEmpty) {
+    if (data.isNotEmpty) {
       _drawLine(canvas, size);
     }
 
@@ -94,7 +80,7 @@ class PerformanceChartPainter extends CustomPainter {
 
     // calculate the xLeft and the width guide that will be used to move between
     // one point to another point in the graph.
-    int count = _data.length;
+    int count = data.length;
     double xLeft = graphRect.left;
     double guideW = graphRect.size.width / count;
 
@@ -114,7 +100,7 @@ class PerformanceChartPainter extends CustomPainter {
             canvas: canvas,
             position: Offset(xLeft, graphRect.bottom),
             width: 60,
-            text: formatDate(date: _data[i].date, format: "dd/MM"),
+            text: formatDate(date: data[i].date, format: "dd/MM"),
             left: -15,
             top: 5,
             minHeight: 0,
@@ -136,7 +122,7 @@ class PerformanceChartPainter extends CustomPainter {
       Offset p2 = Offset(graphRect.right, graphRect.bottom - (yD * i));
       canvas.drawLine(p1, p2, graphRectBorder);
 
-      double currVal = _min + (((_max - _min) / 4.0) * i.toDouble());
+      double currVal = min + (((max - min) / 4.0) * i.toDouble());
       _drawText(
           canvas: canvas,
           position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
@@ -155,7 +141,7 @@ class PerformanceChartPainter extends CustomPainter {
         canvas: canvas,
         position: Offset(graphRect.left, graphRect.top),
         width: 60,
-        text: formatCurrency(_max),
+        text: formatCurrency(max),
         left: 0,
         top: -5,
         minHeight: 10,
@@ -170,16 +156,16 @@ class PerformanceChartPainter extends CustomPainter {
     double ratio = 0;
     double w = graphRect.width / (data.length.toDouble() - 1);
 
-    if (_gap > 0) {
-      ratio = graphRect.height / _gap;
+    if (gap > 0) {
+      ratio = graphRect.height / gap;
     }
 
     x = graphRect.left;
     y = 0;
 
     // loop thru data
-    for (PerformanceData value in _data) {
-      y = 10 + graphRect.height - ((value.gain + _norm) * ratio);
+    for (PerformanceData value in data) {
+      y = 10 + graphRect.height - ((value.gain + norm) * ratio);
 
       // check whether this is the first data?
       if (isFirst) {
@@ -205,18 +191,18 @@ class PerformanceChartPainter extends CustomPainter {
       }
 
       // check if watchlist is not null
-      if (_watchlist.isNotEmpty) {
+      if (watchlist!.isNotEmpty) {
         // check if this date is on the watchlist or not?
-        if (_watchlist.containsKey(value.date.toLocal())) {
+        if (watchlist!.containsKey(value.date.toLocal())) {
           // got the date, so now we can just draw the circle in this position            
           // if we doing buy and sell all in one day
-          if (_watchlist[value.date.toLocal()] == 3) {
+          if (watchlist![value.date.toLocal()] == 3) {
             canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuySell);  
           }
-          else if (_watchlist[value.date.toLocal()] == 1) {
+          else if (watchlist![value.date.toLocal()] == 1) {
             canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuy);  
           }
-          else if (_watchlist[value.date.toLocal()] == 2) {
+          else if (watchlist![value.date.toLocal()] == 2) {
             canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintSell);
           }
         }
@@ -250,81 +236,6 @@ class PerformanceChartPainter extends CustomPainter {
 
     // draw the rectangle
     canvas.drawRect(rect, border);
-  }
-
-  void _compute() {
-    double gain;
-
-    // loop thru all the performance model data
-    for (WatchlistPerformanceModel perf in data) {
-      // calculate the gain
-      gain =
-          (perf.buyTotal * perf.currentPrice) - (perf.buyTotal * perf.buyAvg);
-
-      // check the gain with _min and _max
-      if (gain < _min) {
-        _min = gain;
-      }
-
-      if (gain > _max) {
-        _max = gain;
-      }
-
-      // create the performance data
-      PerformanceData dt = PerformanceData(date: perf.buyDate, gain: gain);
-
-      // add the perfoemance data to the list
-      _data.add(dt);
-    }
-
-    // check the gap between _min and _max
-    // print("$_max - $_min");
-    _gap = _max - _min;
-
-    // check if _gap is less than 0, if less than 0 it means that this watchlist
-    // never even go to the green even once. thus we will need to make the gap
-    // value into positive.
-    if (_gap < 0) {
-      _gap = _gap * (-1);
-    }
-
-    // calculate the normalize value
-    _norm = _gap - _max;
-
-    // loop thru the watchlist if available
-    if (watchlist != null) {
-      DateTime tempDate;
-
-      // loop thru all the watchlist
-      for(WatchlistDetailListModel dt in watchlist!) {
-        tempDate = dt.watchlistDetailDate.toLocal();
-        if (_watchlist.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-          // set the bit data value as current value on this date
-          _bitData.set(_watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
-
-          // check the type of transaction
-          if (dt.watchlistDetailShare > 0) {
-            // this is buy
-            _bitData[15] = 1;
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] =  _bitData.toInt();
-          }
-          if (dt.watchlistDetailShare < 0) {
-            // this is sell
-            _bitData[14] = 1;
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
-          }
-        }
-        else {
-          if (dt.watchlistDetailShare > 0) {
-            // this is buy
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
-          }
-          if (dt.watchlistDetailShare < 0) {
-            _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
-          }
-        }
-      }
-    }
   }
 
   void _drawText(

@@ -62,9 +62,11 @@ class Globals {
     'PIUFI'     : 'Indeks Unitlink Pendapatan Tetap',
     'PIUS'      : 'Indeks Unitlink Saham',
     'PIRPU'     : 'Index Reksadana Pasar Uang',
+    'PIRPU-S'   : 'Index Reksadana Pasar Uang - Syariah',
     'PSCMBI'    : 'Sharia Bond Index',
     'PSCBI'     : 'Sharia Corporate Bond Index',
     'PSGBI'     : 'Sharia Government Bond Index',
+    'SRI-KEHATI': 'Sustainable and Responsible Investment',
   };
 
   // icon list for sector

@@ -1,6 +1,10 @@
 class Bit {
   int _value = 0;
 
+  // create a constructor where we can assign a value if needed
+  // and if not assigned, it will be defaulted  to 0.
+  Bit({int? value}): _value = (value ?? 0);
+
   void set(int value) {
     _value = value;
   }

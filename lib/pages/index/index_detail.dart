@@ -522,6 +522,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                   const SizedBox(width: 10,),
                   CupertinoSwitch(
                     value: _showCurrentPriceComparison,
+                    activeColor: accentColor,
                     onChanged: ((val) {
                       setState(() {
                         _showCurrentPriceComparison = val;

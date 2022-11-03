@@ -113,7 +113,6 @@ class HeatGraph extends StatelessWidget {
     // history data
     double prevPrice = -1;
     Color boxColor;
-    Color decorationColor;
 
     // before we do, let's expand the data first
     List<GraphData> dataExpand = _expandData();
@@ -154,24 +153,18 @@ class HeatGraph extends StatelessWidget {
             }
             
             // check for the foreground color
-            if(isEnableDailyComparison) {
+            if (isEnableDailyComparison) {
               if(currentPrice == dataExpand[i].price) {
-                decorationColor = Colors.white;
+                boxColor = Colors.white;
               }
               else {
                 if(currentPrice > 0 && dataExpand[i].price > 0) {
-                  decorationColor = riskColor(currentPrice, dataExpand[i].price, userInfo.risk) ;
-                }
-                else {
-                  decorationColor = boxColor;
+                  boxColor = riskColor(currentPrice, dataExpand[i].price, userInfo.risk) ;
                 }
               }
             }
-            else {
-              decorationColor = boxColor;
-            }
 
-            boxes[day-1] = _generateBox(boxColor, decorationColor);
+            boxes[day-1] = _generateBox(boxColor, Colors.transparent);
             endDate = dataExpand[i].date;
           }
           // debugPrint("--- END OF WEEK ---");
@@ -212,21 +205,11 @@ class HeatGraph extends StatelessWidget {
 
   Widget _generateBox(Color boxColor, Color decorationColor) {
     return Container(
-      width: 10,
-      height: 10,
-      margin: const EdgeInsets.all(5),
+      width: 20,
+      height: 20,
       decoration: BoxDecoration(
         color: boxColor,
-        border: Border.all(
-          color: decorationColor,
-          style: BorderStyle.solid,
-          width: 2.0,
-        )
       ),
-      // foregroundDecoration: RotatedCornerDecoration(
-      //   color: decorationColor,
-      //   geometry: const BadgeGeometry(width: 10, height: 10, cornerRadius: 0),
-      // ),
     );
   }
 

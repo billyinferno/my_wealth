@@ -2220,6 +2220,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       const SizedBox(width: 10,),
                       CupertinoSwitch(
                         value: _showCurrentPriceComparison,
+                        activeColor: accentColor,
                         onChanged: ((val) {
                           setState(() {
                             _showCurrentPriceComparison = val;

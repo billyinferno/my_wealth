@@ -68,7 +68,7 @@ class PerformanceChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 
   void _drawLine(Canvas canvas, Size size) {

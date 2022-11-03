@@ -86,7 +86,7 @@ class StockVolumePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 
   void _drawVolume(Canvas canvas, Size size) {

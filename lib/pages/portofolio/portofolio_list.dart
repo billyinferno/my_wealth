@@ -241,6 +241,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                         subTitle: "${_portofolioList[index].portofolioTotalProduct} product${int.tryParse(_portofolioList[index].portofolioTotalProduct)! > 1 ? "s" : ""}",
                         value: _portofolioList[index].portofolioTotalValue,
                         cost: _portofolioList[index].portofolioTotalCost,
+                        realised: _portofolioList[index].portofolioTotalRealised,
                         total: _portofolioTotalValue,
                       );
                     })),

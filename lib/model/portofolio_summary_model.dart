@@ -22,7 +22,7 @@ class PortofolioSummaryModel {
 
     final String portofolioCompanyDescription;
     final String portofolioCompanyType;
-    final String portofolioTotalProduct;
+    final int portofolioTotalProduct;
     final double portofolioTotalShare;
     final double portofolioTotalCost;
     final double portofolioTotalValue;

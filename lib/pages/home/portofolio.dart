@@ -112,6 +112,8 @@ class _PortofolioPageState extends State<PortofolioPage> {
                           title: "Reksadana",
                           value: _watchlistAll!.totalValueReksadana,
                           cost: _watchlistAll!.totalCostReksadana,
+                          realised: _watchlistAll!.totalRealisedReksadana,
+                          unrealised: (_watchlistAll!.totalValueReksadana - _watchlistAll!.totalCostReksadana),
                           type: "reksadana"
                         );
                         Navigator.pushNamed(context, '/portofolio/list', arguments: args);
@@ -129,6 +131,8 @@ class _PortofolioPageState extends State<PortofolioPage> {
                           title: "Stock",
                           value: _watchlistAll!.totalValueSaham,
                           cost: _watchlistAll!.totalCostSaham,
+                          realised: _watchlistAll!.totalRealisedSaham,
+                          unrealised: (_watchlistAll!.totalValueSaham - _watchlistAll!.totalCostSaham),
                           type: "saham"
                         );
                         Navigator.pushNamed(context, '/portofolio/list', arguments: args);
@@ -142,7 +146,21 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       total: _watchlistAll!.totalValue,
                       realised: _watchlistAll!.totalRealisedCrypto,
                       onTap: (() {
-                        // do nothing, we just want to showed the chevron icon here
+                        // check whether we can navigate to detail page, or just do nothing
+                        if (_watchlistCrypto!.isNotEmpty) {
+                          // got product means we can display the details here 
+                          PortofolioListArgs args = PortofolioListArgs(
+                            title: 'Crypto',
+                            value: _watchlistAll!.totalValueCrypto,
+                            cost: _watchlistAll!.totalCostCrypto,
+                            realised: _watchlistAll!.totalRealisedCrypto,
+                            unrealised: (_watchlistAll!.totalValueCrypto - _watchlistAll!.totalCostCrypto),
+                            type: 'crypto',
+                            subType: '-1'
+                          );
+        
+                          Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
+                        }
                       })
                     ),
                     ProductListItem(

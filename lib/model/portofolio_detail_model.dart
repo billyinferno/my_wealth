@@ -17,6 +17,8 @@ class PortofolioDetailModel {
         required this.watchlistSubTotalShare,
         required this.watchlistSubTotalCost,
         required this.watchlistSubTotalValue,
+        required this.watchlistSubTotalRealised,
+        required this.watchlistSubTotalUnrealised,
     });
 
     final int watchlistId;
@@ -26,6 +28,8 @@ class PortofolioDetailModel {
     final double watchlistSubTotalShare;
     final double watchlistSubTotalCost;
     final double watchlistSubTotalValue;
+    final double watchlistSubTotalRealised;
+    final double watchlistSubTotalUnrealised;
 
     factory PortofolioDetailModel.fromJson(Map<String, dynamic> json) => PortofolioDetailModel(
         watchlistId: json["watchlist_id"],
@@ -35,6 +39,8 @@ class PortofolioDetailModel {
         watchlistSubTotalShare: json["watchlist_sub_total_share"].toDouble(),
         watchlistSubTotalCost: json["watchlist_sub_total_cost"].toDouble(),
         watchlistSubTotalValue: json["watchlist_sub_total_value"].toDouble(),
+        watchlistSubTotalRealised: json["watchlist_sub_total_realised"].toDouble(),
+        watchlistSubTotalUnrealised: json["watchlist_sub_total_unrealised"].toDouble(),
     );
 
     Map<String, dynamic> toJson() => {
@@ -45,5 +51,7 @@ class PortofolioDetailModel {
         "watchlist_sub_total_share": watchlistSubTotalShare,
         "watchlist_sub_total_cost": watchlistSubTotalCost,
         "watchlist_sub_total_value": watchlistSubTotalValue,
+        "watchlist_sub_total_realised": watchlistSubTotalRealised,
+        "watchlist_sub_total_unrealised": watchlistSubTotalUnrealised,
     };
 }

@@ -11,19 +11,19 @@ class ProductListItem extends StatelessWidget {
   final double cost;
   final double total;
   final double? realised;
+  final double? unrealised;
   final VoidCallback? onTap;
 
-  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.onTap}) : super(key: key);
+  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double? itemPercentage;
-    double gain = value - cost;
+    double gain = (unrealised ?? value - cost);
     Color trendColor = Colors.white;
     Color realisedColor = Colors.white;
     IconData trendIcon = Ionicons.remove;
     double gainPercentage = 0;
-    double? realisedPercentage;
 
     // if we got total then we can compute the percentage, otherwise we should avoid divisio by zero
     if (total > 0) {
@@ -47,16 +47,6 @@ class ProductListItem extends StatelessWidget {
     }
 
     if (realised != null) {
-      // when calculate the realised percentage, check if we have cost or not?
-      if (cost > 0) {
-        realisedPercentage = realised! / cost;
-      }
-      else {
-        // means we don't have this product anymore
-        // so just set the realised as 100%
-        realisedPercentage = null;
-      }
-
       if (realised! < 0) {
         realisedColor = secondaryColor;
       }
@@ -92,90 +82,100 @@ class ProductListItem extends StatelessWidget {
               ),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  padding: const EdgeInsets.fromLTRB(10, 10, 5, 10),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       // main container
                       Expanded(
-                        child: Column(
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            // this is the title
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
                                     title,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 5,),
-                                Text(
-                                  formatCurrencyWithNull(value, false, false, false),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5,),
-                            // this is the percentage
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(width: 5,),
-                                Visibility(
-                                  visible: (subTitle == null ? false : true),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                                  const SizedBox(width: 5,),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      const Icon(
-                                        Ionicons.ellipse,
-                                        size: 5,
-                                      ),
-                                      const SizedBox(width: 5,),
                                       Text(
-                                        subTitle ?? '',
+                                        "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
                                         style: const TextStyle(
                                           fontSize: 12,
                                         ),
                                       ),
+                                      const SizedBox(width: 5,),
+                                      Visibility(
+                                        visible: (subTitle == null ? false : true),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: <Widget>[
+                                            const Icon(
+                                              Ionicons.ellipse,
+                                              size: 5,
+                                            ),
+                                            const SizedBox(width: 5,),
+                                            Text(
+                                              subTitle ?? '',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 5,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  formatCurrencyWithNull(value, false, false, false),
                                 ),
-                                const SizedBox(width: 5,),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      _productItem(
-                                        icon: trendIcon,
-                                        iconColor: trendColor,
-                                        text: "${formatCurrencyWithNull(gain, false, false, false)} (${formatDecimalWithNull(gainPercentage, 100, 2)}%)",
-                                        textColor: trendColor
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    _productItem(
+                                      icon: trendIcon,
+                                      iconColor: trendColor,
+                                      text: formatCurrencyWithNull(gain, false, false, false),
+                                      textColor: trendColor
+                                    ),
+                                    const SizedBox(width: 2,),
+                                    Text(
+                                      "(${formatDecimalWithNull(gainPercentage, 100, 0)}%)",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: trendColor,
                                       ),
-                                      const SizedBox(height: 5,),
-                                      _productItem(
-                                        icon: Ionicons.wallet_outline,
-                                        iconColor: realisedColor,
-                                        text: "${formatCurrencyWithNull((realised ?? 0), false, false, false)} (${formatDecimalWithNull(realisedPercentage, 100, 2)}%)",
-                                        textColor: realisedColor
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                _productItem(
+                                  icon: Ionicons.wallet_outline,
+                                  iconColor: realisedColor,
+                                  text: formatCurrencyWithNull((realised ?? 0), false, false, false),
+                                  textColor: realisedColor
                                 ),
                               ],
                             ),

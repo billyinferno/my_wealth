@@ -93,7 +93,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
             IconButton(
               onPressed: (() {
                 if (args != null) {
-                  debugPrint("Show company");
+                  // debugPrint("Show company");
                   Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
                 }
               }),

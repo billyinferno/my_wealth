@@ -29,8 +29,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   
   late List<PortofolioDetailModel> _portofolioList;
 
-  double _gain = 0;
   Color trendColor = Colors.white;
+  Color realisedColor = Colors.white;
   IconData trendIcon = Ionicons.remove;
   bool _isLoading = true;
   double _portofolioTotalValue = 0;
@@ -42,17 +42,24 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
 
     // convert the arguments into portofilio list args
     _args = widget.args as PortofolioListArgs;
-    _gain = _args.value - _args.cost;
 
-    // check gain to determine the trend color and icon
-    if(_gain > 0) {
+    // check unrealised and realised to determine the trend color and icon
+    if((_args.unrealised ?? 0) > 0) {
       trendColor = Colors.green;
       trendIcon = Ionicons.trending_up;
     }
-    else if(_gain < 0) {
+    else if((_args.unrealised ?? 0) < 0) {
       trendColor = secondaryColor;
       trendIcon = Ionicons.trending_down;
     }
+
+    if((_args.realised ?? 0) > 0) {
+      realisedColor = Colors.green;
+    }
+    else if((_args.unrealised ?? 0) < 0) {
+      realisedColor = secondaryColor;
+    }
+
 
     Future.microtask(() async {
       showLoaderDialog(context);
@@ -136,7 +143,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               const Text(
-                                "Total",
+                                "Total Value",
                                 style: TextStyle(
                                   fontSize: 12,
                                 ),
@@ -147,6 +154,21 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 22,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              const Text(
+                                "Total Cost",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              Text(
+                                formatCurrency(_args.cost, false, false, false),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],
@@ -161,7 +183,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               const Text(
-                                "Gain",
+                                "Total Unrealised",
                                 style: TextStyle(
                                   fontSize: 12,
                                 ),
@@ -173,27 +195,56 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                                 children: [
                                   Icon(
                                     trendIcon,
-                                    size: 15,
+                                    size: 12,
                                     color: trendColor,
                                   ),
                                   const SizedBox(width: 5,),
                                   Text(
-                                    formatCurrency(_gain, false, false, false),
+                                    formatCurrencyWithNull(_args.unrealised, false, false, false),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 15,
+                                      fontSize: 12,
                                       color: trendColor
                                     ),
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 5,),
                               Text(
-                                "${_gain > 0 ? '+' : ''}${formatDecimalWithNull((_gain / _args.value), 100, 2)}%",
+                                "${(_args.unrealised ?? 0) > 0 ? '+' : ''}${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 2)}%",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 10,
                                   color: trendColor
                                 ),
+                              ),
+                              const SizedBox(height: 5,),
+                              const Text(
+                                "Total Realised",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    Ionicons.wallet_outline,
+                                    size: 12,
+                                    color: realisedColor,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    formatCurrencyWithNull(_args.realised, false, false, false),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: realisedColor
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -213,6 +264,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                         subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} shares",
                         value: _portofolioList[index].watchlistSubTotalValue,
                         cost: _portofolioList[index].watchlistSubTotalCost,
+                        realised: _portofolioList[index].watchlistSubTotalRealised,
+                        unrealised: _portofolioList[index].watchlistSubTotalUnrealised,
                         total: _portofolioTotalValue,
                         onTap: (() async {
                           showLoaderDialog(context);

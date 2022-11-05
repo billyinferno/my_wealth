@@ -72,6 +72,12 @@ String formatDecimal(double value, [int? decimal]) {
   int dec = (decimal ?? 6);
   String decimalFormat = "0" * dec;
   NumberFormat decFormat = NumberFormat("##0.$decimalFormat");
+  if (dec > 0) {
+    decFormat = NumberFormat("##0.$decimalFormat");
+  }
+  else {
+    decFormat = NumberFormat("##0");
+  }
   return decFormat.format(value);
 }
 
@@ -80,7 +86,13 @@ String formatDecimalWithNull(double? value, [double? times, int? decimal]) {
   int decimalNum = (decimal ?? 6);
   String decimalFormat = "0" * decimalNum;
 
-  NumberFormat dec = NumberFormat("##0.$decimalFormat");
+  NumberFormat dec;
+  if (decimalNum > 0) {
+    dec = NumberFormat("##0.$decimalFormat");
+  }
+  else {
+    dec = NumberFormat("##0");
+  }
   if (value == null) {
     return "-";
   }

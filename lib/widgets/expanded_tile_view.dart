@@ -99,50 +99,120 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
     _totalSell = 0;
     _totalDayGain = 0;
     _totalValue = 0;
+    _averagePrice = 0;
 
     // for the calculation of the sell share's to avoid any average cost problem
     // we need to see how much is the average cost for each share that we buy
-    double totalShareBuy = 0;
-    double totalShareSell = 0;
-    double totalCostBuy = 0;
-    double totalCostSell = 0;
-    double averageBuyPrice = 0;
-    for (WatchlistDetailListModel detail in widget.watchlist.watchlistDetail) {
+    for (WatchlistDetailListModel detail in widget.watchlist.watchlistDetail.reversed) {
+      // check whether buy or sell
       if (detail.watchlistDetailShare > 0) {
-        totalShareBuy += detail.watchlistDetailShare;
-        totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        // if buy we add the total share
+        _totalShare += detail.watchlistDetailShare;
+        // get the total cost
+        _totalCost += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        // calculate the average price
+        _averagePrice = _totalCost / _totalShare;
+        // and add _totalBuy
         _totalBuy++;
       } else {
-        totalShareSell += detail.watchlistDetailShare;
+        // if sell we add the total share (since sell will always minus)
+        _totalShare += detail.watchlistDetailShare;
+        // calculate the total cost based on the share sell multiply by average price
+        _totalCost += (detail.watchlistDetailShare * _averagePrice);
+        // and add _totalSell
         _totalSell++;
       }
     }
 
-    // check we still have share left or not?
-    if ((totalShareBuy + totalShareSell) > 0) {
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
+    // if we still have totalShare, just recalculate the average price
+    // just to ensure, even though that by right this value shouldn't change
+    if (_totalShare > 0) {
+      _averagePrice = _totalCost / _totalShare;
+
+      // now we can calculate the other total
+      _totalValue = (_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!); 
+      _totalGain = _totalValue - _totalCost;
+      
+      // for total day gain, we need to ensure that the previous price is more than 0
+      if (widget.watchlist.watchlistCompanyPrevPrice! > 0) {
+          _totalDayGain = (widget.watchlist.watchlistCompanyNetAssetValue! - widget.watchlist.watchlistCompanyPrevPrice!) * _totalShare;
       }
-
-      // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
-      totalCostSell = totalShareSell * averageBuyPrice;
-
-      // set the result
-      // total share should be buy subtract by sell (remember here sell already negative)
-      _totalShare = totalShareBuy + totalShareSell;
-
-      _totalValue = (widget.watchlist.watchlistCompanyNetAssetValue! *
-          (totalShareBuy + totalShareSell));
-
-      _totalGain = _totalValue - (averageBuyPrice * (totalShareBuy + totalShareSell));
-
-      _totalDayGain = ((widget.watchlist.watchlistCompanyNetAssetValue! -
-              widget.watchlist.watchlistCompanyPrevPrice!) *
-          (totalShareBuy + totalShareSell));
-      _totalCost = totalCostBuy + totalCostSell;
-
-      _averagePrice = averageBuyPrice;
+      else {
+        // we don't have previous price yet, so we can just compute the day gain
+        // based on the value - cost
+        _totalDayGain = _totalValue - _totalCost;
+      }
     }
+    else {
+      // if we don't have share left, then we can assume that we don't have
+      // any cost or value.
+      _averagePrice = 0;
+      _totalCost = 0;
+      _totalValue = 0;
+      _totalGain = 0;
+      _totalDayGain = 0;
+    }
+
+
+    // double totalShareBuy = 0;
+    // double totalShareSell = 0;
+    // double totalCostBuy = 0;
+    // double totalCostSell = 0;
+    // double averageBuyPrice = 0;
+    // for (WatchlistDetailListModel detail in widget.watchlist.watchlistDetail) {
+    //   // check whether buy or sell
+    //   if (detail.watchlistDetailShare > 0) {
+    //     // this is buy
+    //     totalShareBuy += detail.watchlistDetailShare;
+    //     totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+    //     _totalBuy++;
+
+    //     // once got buy we can determine the average price here, so we knew how much
+    //     // do we need to subtract on the cost buy when we sell the share
+    //     averageBuyPrice = totalCostBuy / totalShareBuy;
+    //   } else {
+    //     // this is sell, we can remove the total share we being sell, and subtract
+    //     // the totalCostBuy with the share buy we sell multiply by the averageBuyPrice
+    //     totalShareSell += detail.watchlistDetailShare;
+    //     totalCostSell += (totalShareSell * averageBuyPrice);
+    //     totalCostBuy += totalCostSell;
+    //     _totalSell++;
+    //   }
+    // }
+
+    // // check we still have share left or not?
+    // if ((totalShareBuy + totalShareSell) > 0) {
+    //   // get what is the average buy price that we have
+    //   if (totalShareBuy > 0 && totalCostBuy > 0) {
+    //     averageBuyPrice = totalCostBuy / totalShareBuy;
+    //   }
+
+    //   // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
+    //   // totalCostSell = totalShareSell * averageBuyPrice;
+
+    //   // set the result
+    //   // total share should be buy subtract by sell (remember here sell already negative)
+    //   _totalShare = totalShareBuy + totalShareSell;
+
+    //   _totalValue = (widget.watchlist.watchlistCompanyNetAssetValue! *
+    //       (totalShareBuy + totalShareSell));
+
+    //   _totalGain = _totalValue - (averageBuyPrice * (totalShareBuy + totalShareSell));
+
+    //   _totalCost = totalCostBuy + totalCostSell;
+
+    //   if (widget.watchlist.watchlistCompanyPrevPrice! > 0) {
+    //     _totalDayGain = ((widget.watchlist.watchlistCompanyNetAssetValue! -
+    //             widget.watchlist.watchlistCompanyPrevPrice!) *
+    //         (totalShareBuy + totalShareSell));
+    //   }
+    //   else {
+    //     // we don't have previous price yet, so we can just compute the day gain
+    //     // based on the value - cost
+    //     _totalDayGain = _totalValue - _totalCost;
+    //   }
+
+    //   _averagePrice = averageBuyPrice;
+    // }
   }
 }

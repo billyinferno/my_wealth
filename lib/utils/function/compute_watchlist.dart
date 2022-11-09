@@ -63,284 +63,187 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
     double totalCostGold = 0;
     double totalRealisedGold = 0;
 
-    double dayGain = 0;
+    double tShare = 0;
+    double tCost = 0;
+    double tValue = 0;
+    double tAvgPrice = 0;
+    double tRealised = 0;
+    double tDayGain = 0;
 
-    // loop thru all the mutual fund to get the total computation
-    double totalShareBuy = 0;
-    double totalShareSell = 0;
-    double totalShareCurrent = 0;
-    double totalCostBuy = 0;
-    double totalCostCurrent = 0;
-    double totalValueCurrent = 0;
-    double averageBuyPrice = 0;
-    double averageGainPrice = 0;
-    double totalCostGain = 0;
-    double totalShareGain = 0;
-    
+    // loop for reksadana
     for (WatchlistListModel watchlist in watchlistsMutualfund) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-      averageGainPrice = 0;
-      totalCostGain = 0;
-      totalShareGain = 0;
-
+      // initialize the computation variable
+      tShare = 0;
+      tCost = 0;
+      tValue = 0;
+      tAvgPrice = 0;
+      tRealised = 0;
+      tDayGain = 0;
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
+        // check whether this is buy or sell?
         if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-
-          totalShareGain += totalShareBuy;
-          totalCostGain += totalCostBuy;
+          // this is buy
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
+          tAvgPrice = tCost / tShare;
         }
         else {
-          // if you sell by right you should already have the current totalShareBuy and totalCostBuy
-          // but since we don't have that kind of protection when we insert data, we still need to perform
-          // the check here as we perform divide and it can cause error
-          if (totalShareGain > 0 && totalCostGain > 0) {
-            averageGainPrice = totalCostGain / totalShareGain;
-          }
-
-          // calculate the total sell and gain for this sell
-          totalShareSell += detail.watchlistDetailShare;
-          totalRealisedReksadana += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
-
-          // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare * -1);
-          totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
+          // this is sell, calculate the realised pl
+          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * tAvgPrice);
+          // recalculate the share and cost
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * tAvgPrice;
         }
+    
+      }
+      // check if we still have share at the end?
+      if (tShare > 0) {
+        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
+        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
+      }
+      else {
+        tCost = 0;
+        tValue = 0;
+        tDayGain = 0;
       }
 
-      // get what is the average buy price that we have
-      if (totalShareBuy > 0 && totalCostBuy > 0) {
-        averageBuyPrice = totalCostBuy / totalShareBuy;
-      }
-
-
-      // total sell is negative, make it a positive
-      totalShareSell *= -1;
-
-      // get the total of current share we have
-      totalShareCurrent = totalShareBuy - totalShareSell;
-
-      // get the day gain
-      dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-      totalDayGainReksadana += dayGain;
-
-      // get the cost of the share
-      totalCostCurrent = totalShareCurrent * averageBuyPrice;
-      totalCostReksadana += totalCostCurrent;
-
-      // get the value of the share now
-      totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-      totalValueReksadana += totalValueCurrent;
+      // once all finished then we can add this to the main variable container
+      totalDayGainReksadana += tDayGain;
+      totalValueReksadana += tValue;
+      totalCostReksadana += tCost;
+      totalRealisedReksadana += tRealised;
     }
 
-    // loop thru all the stock to get the total computation
+    // loop for stock
     for (WatchlistListModel watchlist in watchlistsStock) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-      averageGainPrice = 0;
-      totalCostGain = 0;
-      totalShareGain = 0;
-
+      // initialize the computation variable
+      tShare = 0;
+      tCost = 0;
+      tValue = 0;
+      tAvgPrice = 0;
+      tRealised = 0;
+      tDayGain = 0;
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
+        // check whether this is buy or sell?
         if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-          
-          totalShareGain += totalShareBuy;
-          totalCostGain += totalCostBuy;
+          // this is buy
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
+          tAvgPrice = tCost / tShare;
         }
         else {
-          // if you sell by right you should already have the current totalShareBuy and totalCostBuy
-          // but since we don't have that kind of protection when we insert data, we still need to perform
-          // the check here as we perform divide and it can cause error
-          if (totalShareGain > 0 && totalCostGain > 0) {
-            averageGainPrice = totalCostGain / totalShareGain;
-          }
-
-          // calculate the total sell and gain for this sell
-          totalShareSell += detail.watchlistDetailShare;
-          totalRealisedSaham += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
-          // print((detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1));
-
-          // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare * -1);
-          totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
+          // this is sell, calculate the realised pl
+          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * tAvgPrice);
+          // recalculate the share and cost
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * tAvgPrice;
         }
+    
       }
-      // print("${watchlist.watchlistCompanyName} - $totalRealisedSaham");
-
-      // check if we still have share left
-      if ((totalShareBuy + totalShareSell) > 0) {
-        // get what is the average buy price that we have
-        if (totalShareBuy > 0 && totalCostBuy > 0) {
-          averageBuyPrice = totalCostBuy / totalShareBuy;
-        }
-
-        // total sell is negative, make it a positive
-        totalShareSell *= -1;
-
-        // get the total of current share we have
-        totalShareCurrent = totalShareBuy - totalShareSell;
-
-        // get the day gain
-        dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-        totalDayGainSaham += dayGain;
-
-        // get the cost of the share
-        totalCostCurrent = totalShareCurrent * averageBuyPrice;
-        totalCostSaham += totalCostCurrent;
-
-        // get the value of the share now
-        totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-        totalValueSaham += totalValueCurrent;
+      // check if we still have share at the end?
+      if (tShare > 0) {
+        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
+        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
       }
+      else {
+        tCost = 0;
+        tValue = 0;
+        tDayGain = 0;
+      }
+
+      // once all finished then we can add this to the main variable container
+      totalDayGainSaham += tDayGain;
+      totalValueSaham += tValue;
+      totalCostSaham += tCost;
+      totalRealisedSaham += tRealised;
     }
 
-    // loop thru all the crypto to get the total computation
+    // loop for crypto
     for (WatchlistListModel watchlist in watchlistsCrypto) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-      averageGainPrice = 0;
-      totalCostGain = 0;
-      totalShareGain = 0;
-
+      // initialize the computation variable
+      tShare = 0;
+      tCost = 0;
+      tValue = 0;
+      tAvgPrice = 0;
+      tRealised = 0;
+      tDayGain = 0;
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
+        // check whether this is buy or sell?
         if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-
-          totalShareGain += totalShareBuy;
-          totalCostGain += totalCostBuy;
+          // this is buy
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
+          tAvgPrice = tCost / tShare;
         }
         else {
-          // if you sell by right you should already have the current totalShareBuy and totalCostBuy
-          // but since we don't have that kind of protection when we insert data, we still need to perform
-          // the check here as we perform divide and it can cause error
-          if (totalShareGain > 0 && totalCostGain > 0) {
-            averageGainPrice = totalCostGain / totalShareGain;
-          }
-
-          // calculate the total sell and gain for this sell
-          totalShareSell += detail.watchlistDetailShare;
-          totalRealisedCrypto += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
-
-          // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare * -1);
-          totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
+          // this is sell, calculate the realised pl
+          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
+          // recalculate the share and cost
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * tAvgPrice;
         }
+    
+      }
+      // check if we still have share at the end?
+      if (tShare > 0) {
+        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
+        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
+      }
+      else {
+        tCost = 0;
+        tValue = 0;
+        tDayGain = 0;
       }
 
-      // check if we still have share left or not?
-      if ((totalShareBuy + totalShareSell) > 0) {
-        // get what is the average buy price that we have
-        if (totalShareBuy > 0 && totalCostBuy > 0) {
-          averageBuyPrice = totalCostBuy / totalShareBuy;
-        }
-
-        // total sell is negative, make it a positive
-        totalShareSell *= -1;
-
-        // get the total of current share we have
-        totalShareCurrent = totalShareBuy - totalShareSell;
-        
-        // get the day gain
-        dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-        totalDayGainCrypto += dayGain;
-
-        // get the cost of the share
-        totalCostCurrent = totalShareCurrent * averageBuyPrice;
-        totalCostCrypto += totalCostCurrent;
-
-        // get the value of the share now
-        totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-        totalValueCrypto += totalValueCurrent;
-      }
+      // once all finished then we can add this to the main variable container
+      totalDayGainCrypto += tDayGain;
+      totalValueCrypto += tValue;
+      totalCostCrypto += tCost;
+      totalRealisedCrypto += tRealised;
     }
 
-    // loop thru all the gold to get the total computation
+    // loop for gold
     for (WatchlistListModel watchlist in watchlistsGold) {
-      // initialize the variable needed for the calculation for each mutual fund
-      totalShareBuy = 0;
-      totalShareSell = 0;
-      totalShareCurrent = 0;
-      totalCostBuy = 0;
-      totalCostCurrent = 0;
-      totalValueCurrent = 0;
-      averageBuyPrice = 0;
-      averageGainPrice = 0;
-      totalCostGain = 0;
-      totalShareGain = 0;
-
+      // initialize the computation variable
+      tShare = 0;
+      tCost = 0;
+      tValue = 0;
+      tAvgPrice = 0;
+      tRealised = 0;
+      tDayGain = 0;
       for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
+        // check whether this is buy or sell?
         if (detail.watchlistDetailShare > 0) {
-          totalShareBuy += detail.watchlistDetailShare;
-          totalCostBuy += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-
-          totalShareGain += totalShareBuy;
-          totalCostGain += totalCostBuy;
+          // this is buy
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
+          tAvgPrice = tCost / tShare;
         }
         else {
-          // if you sell by right you should already have the current totalShareBuy and totalCostBuy
-          // but since we don't have that kind of protection when we insert data, we still need to perform
-          // the check here as we perform divide and it can cause error
-          if (totalShareGain > 0 && totalCostGain > 0) {
-            averageGainPrice = totalCostGain / totalShareGain;
-          }
-
-          // calculate the total sell and gain for this sell
-          totalShareSell += detail.watchlistDetailShare;
-          totalRealisedGold += (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1) - (detail.watchlistDetailShare * averageGainPrice * -1);
-
-          // recalculate the totalShareGain and totalCostGain, as we already sell few of our stock
-          totalShareGain -= (detail.watchlistDetailShare * -1);
-          totalCostGain -= (detail.watchlistDetailShare * detail.watchlistDetailPrice * -1);
+          // this is sell, calculate the realised pl
+          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * tAvgPrice);
+          // recalculate the share and cost
+          tShare += detail.watchlistDetailShare;
+          tCost += detail.watchlistDetailShare * tAvgPrice;
         }
+    
+      }
+      // check if we still have share at the end?
+      if (tShare > 0) {
+        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
+        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
+      }
+      else {
+        tCost = 0;
+        tValue = 0;
+        tDayGain = 0;
       }
 
-      if ((totalShareBuy + totalShareSell) > 0) {
-        // get what is the average buy price that we have
-        if (totalShareBuy > 0 && totalCostBuy > 0) {
-          averageBuyPrice = totalCostBuy / totalShareBuy;
-        }
-
-        // total sell is negative, make it a positive
-        totalShareSell *= -1;
-
-        // get the total of current share we have
-        totalShareCurrent = totalShareBuy - totalShareSell;
-        
-        // get the day gain
-        dayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShareCurrent;
-        totalDayGainGold += dayGain;
-
-        // get the cost of the share
-        totalCostCurrent = totalShareCurrent * averageBuyPrice;
-        totalCostGold += totalCostCurrent;
-
-        // get the value of the share now
-        totalValueCurrent = totalShareCurrent * watchlist.watchlistCompanyNetAssetValue!;
-        totalValueGold += totalValueCurrent;
-      }
+      // once all finished then we can add this to the main variable container
+      totalDayGainGold += tDayGain;
+      totalValueGold += tValue;
+      totalCostGold += tCost;
+      totalRealisedGold += tRealised;
     }
 
     totalDayGain = totalDayGainReksadana + totalDayGainSaham + totalDayGainCrypto + totalDayGainGold;

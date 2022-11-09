@@ -53,63 +53,45 @@ WatchlistComputationResult detailWatchlistComputation({required WatchlistListMod
     // compute the price diff
     priceDiff = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) ;
 
-    // for the calculation of the sell share's to avoid any average cost problem
-    // we need to see how much is the average cost for each share that we buy
-    double totalCostSell = 0;
-    double averageBuyPrice = 0;
-
-    // this variable is being used to calculate the realised gain
-    double totalShareBuyRealised = 0;
-    double totalBuyAmountRealised = 0;
-    double averageRealisedPrice = 0;
+    double avgPrice = 0;
     for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
+      // check if this is buy or sell?
       if (detail.watchlistDetailShare > 0) {
+        // this is buy, so add totalShare and totalCost
+        totalCurrentShares += detail.watchlistDetailShare;
+        totalCost += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        // calculate the average price
+        avgPrice = totalCost / totalCurrentShares;
+        // add total buy
         totalSharesBuy += detail.watchlistDetailShare;
         totalBuyAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
         totalBuy++;
-
-        totalShareBuyRealised += totalSharesBuy;
-        totalBuyAmountRealised += totalBuyAmount;
       }
       else {
-        // get the current gain price that we can use to calculate the actual realised gain we got at that time
-        if (totalShareBuyRealised > 0 && totalBuyAmountRealised > 0) {
-          averageRealisedPrice = totalBuyAmountRealised / totalShareBuyRealised;
-        }
-
-        totalSharesSell += detail.watchlistDetailShare;
-        totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
-        totalRealisedGain += ((detail.watchlistDetailShare * detail.watchlistDetailPrice) * -1) - (detail.watchlistDetailShare * averageRealisedPrice * -1);
+        // this is sell
+        // compute the realised gain
+        totalRealisedGain += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * avgPrice * (-1));
+        // then subtract the totalShare and recompute the totalCost
+        totalCurrentShares += detail.watchlistDetailShare;
+        totalCost += (detail.watchlistDetailShare * avgPrice);
+        // add total sell
+        totalSharesSell += (detail.watchlistDetailShare * (-1));
+        totalSellAmount += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1));
         totalSell++;
-
-        // recalculate the totalShareBuyRealised and totalBuyAmountRealised
-        totalShareBuyRealised += detail.watchlistDetailShare;
-        totalBuyAmountRealised += (detail.watchlistDetailShare * averageRealisedPrice);
       }
     }
-    
-    // get what is the average buy price that we have
-    if (totalSharesBuy > 0 && totalBuyAmount > 0) {
-      averageBuyPrice = totalBuyAmount / totalSharesBuy;
-    }
 
-    // total sell is negative, make it a positive
-    if (totalSharesSell < 0) {
-      totalSharesSell *= -1;
+    // once finished check whether we have share left or not?
+    if (totalCurrentShares > 0) {
+      totalValue = totalCurrentShares * watchlist.watchlistCompanyNetAssetValue!;
+      totalUnrealisedGain = totalValue - totalCost;
     }
-    if (totalSellAmount < 0) {
-      totalSellAmount *= -1;
+    else {
+      // zerorise
+      totalCost = 0;
+      totalValue = 0;
+      totalUnrealisedGain = 0;
     }
-
-    // calculate the total cost sell, this is should be the total shares we sell times the averageBuyPrice
-    totalCostSell = totalSharesSell * averageBuyPrice;
-
-    // set the result
-    // total share should be buy subtract by sell
-    totalCurrentShares = totalSharesBuy - totalSharesSell;
-    totalCost = totalBuyAmount - totalCostSell;
-    totalValue = totalCurrentShares * watchlist.watchlistCompanyNetAssetValue!;
-    totalUnrealisedGain = totalValue - (averageBuyPrice * (totalSharesBuy - totalSharesSell));
 
     return WatchlistComputationResult(
       totalBuy: totalBuy,

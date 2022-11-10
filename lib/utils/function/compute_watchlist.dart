@@ -89,7 +89,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
         else {
           // this is sell, calculate the realised pl
-          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * tAvgPrice);
+          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
           // recalculate the share and cost
           tShare += detail.watchlistDetailShare;
           tCost += detail.watchlistDetailShare * tAvgPrice;
@@ -133,7 +133,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
         else {
           // this is sell, calculate the realised pl
-          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * tAvgPrice);
+          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
           // recalculate the share and cost
           tShare += detail.watchlistDetailShare;
           tCost += detail.watchlistDetailShare * tAvgPrice;
@@ -177,7 +177,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
         else {
           // this is sell, calculate the realised pl
-          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
+          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
           // recalculate the share and cost
           tShare += detail.watchlistDetailShare;
           tCost += detail.watchlistDetailShare * tAvgPrice;
@@ -221,7 +221,7 @@ ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutua
         }
         else {
           // this is sell, calculate the realised pl
-          tRealised = (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) - (detail.watchlistDetailShare * tAvgPrice);
+          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
           // recalculate the share and cost
           tShare += detail.watchlistDetailShare;
           tCost += detail.watchlistDetailShare * tAvgPrice;

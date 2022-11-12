@@ -142,44 +142,51 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
     // since it sell we need to make it a negative
     double shares = (double.tryParse(_sharesController.text) ?? 0) * -1;
     double price = (double.tryParse(_priceController.text) ?? 0);
-
-    // since sell shares should be lesser than 0, but the price should be still positive
-    // as this will be used to calculate the total value we have later on on the summary
-    // watchlist page.
-    if(shares < 0 && price > 0) {
-      await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
-        // change the watchlist detail for this one
-        List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
-        List<WatchlistListModel> newWatchList = [];
-        for (WatchlistListModel data in currentWatchList) {
-          // check if this watchlist is the one that we add
-          if(_watchlist.watchlistId == data.watchlistId) {
-            WatchlistListModel updateWatchList = WatchlistListModel(
-              watchlistId: _watchlist.watchlistId,
-              watchlistCompanyId: _watchlist.watchlistCompanyId,
-              watchlistCompanyName: _watchlist.watchlistCompanyName,
-              watchlistCompanySymbol: _watchlist.watchlistCompanySymbol,
-              watchlistDetail: watchlistDetail,
-              watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
-              watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
-              watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
-              watchlistFavouriteId: _watchlist.watchlistFavouriteId,
-            );
-            newWatchList.add(updateWatchList);
+    
+    // first check if the total current shares we have is at least the same or lesser
+    // than the share we want to sell or not?
+    if (_watchlistArgs.currentShare! >= (shares * (-1))) {
+      // since sell shares should be lesser than 0, but the price should be still positive
+      // as this will be used to calculate the total value we have later on on the summary
+      // watchlist page.
+      if(shares < 0 && price > 0) {
+        await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
+          // change the watchlist deta  il for this one
+          List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
+          List<WatchlistListModel> newWatchList = [];
+          for (WatchlistListModel data in currentWatchList) {
+            // check if this watchlist is the one that we add
+            if(_watchlist.watchlistId == data.watchlistId) {
+              WatchlistListModel updateWatchList = WatchlistListModel(
+                watchlistId: _watchlist.watchlistId,
+                watchlistCompanyId: _watchlist.watchlistCompanyId,
+                watchlistCompanyName: _watchlist.watchlistCompanyName,
+                watchlistCompanySymbol: _watchlist.watchlistCompanySymbol,
+                watchlistDetail: watchlistDetail,
+                watchlistCompanyNetAssetValue: _watchlist.watchlistCompanyNetAssetValue,
+                watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
+                watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
+                watchlistFavouriteId: _watchlist.watchlistFavouriteId,
+              );
+              newWatchList.add(updateWatchList);
+            }
+            else {
+              newWatchList.add(data);
+            }
           }
-          else {
-            newWatchList.add(data);
-          }
-        }
 
-        // once got the new one then we can update the shared preferences and provider
-        await WatchlistSharedPreferences.setWatchlist(_type, newWatchList);
-        if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
-      });
+          // once got the new one then we can update the shared preferences and provider
+          await WatchlistSharedPreferences.setWatchlist(_type, newWatchList);
+          if (!mounted) return;
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
+        });
+      }
+      else {
+        throw Exception("Invalid quantity or amount for share or price");
+      }
     }
     else {
-      throw Exception("Invalid quantity or amount for share or price");
+      throw Exception("Max share to sell is ${_watchlistArgs.currentShare ?? 0}");
     }
   }
 

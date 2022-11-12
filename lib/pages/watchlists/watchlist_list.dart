@@ -382,7 +382,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                         text: "Sell",
                         icon: Ionicons.remove,
                         callback: (() {
-                          WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist);
+                          WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist, currentShare: _totalCurrentShares);
                           Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
                         })
                       ),

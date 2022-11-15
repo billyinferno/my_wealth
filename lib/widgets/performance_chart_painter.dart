@@ -18,7 +18,13 @@ class PerformanceChartPainter extends CustomPainter {
   final double gap;
   final double norm;
 
-  PerformanceChartPainter({required this.data, this.watchlist, required this.min, required this.max, required this.gap, required this.norm});
+  PerformanceChartPainter(
+      {required this.data,
+      this.watchlist,
+      required this.min,
+      required this.max,
+      required this.gap,
+      required this.norm});
 
   // draw the path
   final Paint dpUp = Paint()
@@ -45,15 +51,12 @@ class PerformanceChartPainter extends CustomPainter {
     ..color = primaryLight.withOpacity(0.5)
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
-  
-  final Paint watchlistPaintBuy = Paint()
-    ..color = accentColor;
 
-  final Paint watchlistPaintSell = Paint()
-    ..color = extendedLight;
+  final Paint watchlistPaintBuy = Paint()..color = accentColor;
 
-  final Paint watchlistPaintBuySell = Paint()
-    ..color = Colors.white;
+  final Paint watchlistPaintSell = Paint()..color = extendedLight;
+
+  final Paint watchlistPaintBuySell = Paint()..color = Colors.white;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -155,6 +158,8 @@ class PerformanceChartPainter extends CustomPainter {
     bool isFirst = true;
     double ratio = 0;
     double w = graphRect.width / (data.length.toDouble() - 1);
+    double xi = 0;
+    double yi = 0;
 
     if (gap > 0) {
       ratio = graphRect.height / gap;
@@ -194,16 +199,40 @@ class PerformanceChartPainter extends CustomPainter {
       if (watchlist!.isNotEmpty) {
         // check if this date is on the watchlist or not?
         if (watchlist!.containsKey(value.date.toLocal())) {
-          // got the date, so now we can just draw the circle in this position            
+          // got the date, so now we can just draw the circle in this position
           // if we doing buy and sell all in one day
-          if (watchlist![value.date.toLocal()] == 3) {
-            canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuySell);  
-          }
-          else if (watchlist![value.date.toLocal()] == 1) {
-            canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuy);  
-          }
-          else if (watchlist![value.date.toLocal()] == 2) {
-            canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintSell);
+          if (watchlist![value.date.toLocal()] == 1 || watchlist![value.date.toLocal()] == 3) {
+            Path triAnglePath = Path();
+            
+            xi = x - 3;
+            yi = y - 6;
+            triAnglePath.moveTo(xi, yi);
+            
+            xi = x + 3;
+            triAnglePath.lineTo(xi, yi);
+
+            yi = y;
+            xi = x;
+            triAnglePath.lineTo(xi, yi);
+
+            triAnglePath.close();
+            canvas.drawPath(triAnglePath, watchlistPaintBuy);
+          } else if (watchlist![value.date.toLocal()] == 2 || watchlist![value.date.toLocal()] == 3) {
+            Path triAnglePath = Path();
+            
+            xi = x + 3;
+            yi = y + 6;
+            triAnglePath.moveTo(xi, yi);
+            
+            xi = x - 3;
+            triAnglePath.lineTo(xi, yi);
+
+            yi = y;
+            xi = x;
+            triAnglePath.lineTo(xi, yi);
+
+            triAnglePath.close();
+            canvas.drawPath(triAnglePath, watchlistPaintSell);
           }
         }
       }

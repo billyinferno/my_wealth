@@ -6,7 +6,7 @@ import 'package:my_wealth/widgets/heat_graph.dart';
 
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
-  final Map<DateTime, double>? watchlist;
+  final Map<DateTime, int>? watchlist;
   
   const LineChartPainter({required this.data, this.watchlist});
 
@@ -90,8 +90,6 @@ class LineChartPainter extends CustomPainter {
       ..color = accentColor;
     Paint watchlistPaintSell = Paint()
       ..color = extendedLight;
-    Paint watchlistPaintBuySell = Paint()
-      ..color = Colors.white;
     Paint avgPricePaint = Paint()
       ..color = Colors.orange.withOpacity(0.7);
     Paint ma5PricePaint = Paint()
@@ -310,6 +308,8 @@ class LineChartPainter extends CustomPainter {
     Path pNoChange = Path();
     bool isFirst = true;
     double prevPrice = double.minPositive;
+    double xi = 0;
+    double yi = 0;
 
     x = graphRect.left;
     y = 0;
@@ -323,16 +323,40 @@ class LineChartPainter extends CustomPainter {
         if (watchlist!.isNotEmpty) {
           // check if this date is on the watchlist or not?
           if (watchlist!.containsKey(value.date)) {
-            // got the date, so now we can just draw the circle in this position            
-            // if we doing buy and sell all in one day
-            if (watchlist![value.date]! == 0) {
-              canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuySell);  
-            }
-            else if (watchlist![value.date]! > 0) {
-              canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintBuy);  
-            }
-            else {
-              canvas.drawCircle(Offset(x, y), 3.0, watchlistPaintSell);
+            // check whether this is buy, sell, or both
+            // we will draw a different triangle for buy, and sell
+            if (watchlist![value.date.toLocal()] == 1 || watchlist![value.date.toLocal()] == 3) {
+              Path triAnglePath = Path();
+              
+              xi = x - 3;
+              yi = y - 6;
+              triAnglePath.moveTo(xi, yi);
+              
+              xi = x + 3;
+              triAnglePath.lineTo(xi, yi);
+
+              yi = y;
+              xi = x;
+              triAnglePath.lineTo(xi, yi);
+
+              triAnglePath.close();
+              canvas.drawPath(triAnglePath, watchlistPaintBuy);
+            } else if (watchlist![value.date.toLocal()] == 2 || watchlist![value.date.toLocal()] == 3) {
+              Path triAnglePath = Path();
+              
+              xi = x + 3;
+              yi = y + 6;
+              triAnglePath.moveTo(xi, yi);
+              
+              xi = x - 3;
+              triAnglePath.lineTo(xi, yi);
+
+              yi = y;
+              xi = x;
+              triAnglePath.lineTo(xi, yi);
+
+              triAnglePath.close();
+              canvas.drawPath(triAnglePath, watchlistPaintSell);
             }
           }
         }

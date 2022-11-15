@@ -102,7 +102,7 @@ class _PerformanceChartState extends State<PerformanceChart> {
           _bitData.set(_watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
 
           // check the type of transaction
-          if (dt.watchlistDetailShare > 0) {
+          if (dt.watchlistDetailShare >= 0) {
             // this is buy
             _bitData[15] = 1;
             _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] =  _bitData.toInt();
@@ -114,7 +114,7 @@ class _PerformanceChartState extends State<PerformanceChart> {
           }
         }
         else {
-          if (dt.watchlistDetailShare > 0) {
+          if (dt.watchlistDetailShare >= 0) {
             // this is buy
             _watchlist[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
           }

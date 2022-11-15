@@ -10,6 +10,7 @@ import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -34,7 +35,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
-  late Map<DateTime, double> _watchlistDetail;
+  late Map<DateTime, int> _watchlistDetail;
   late Future<bool> _getData;
   
   final ScrollController _summaryController = ScrollController();
@@ -44,8 +45,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
-
   final DateFormat _df = DateFormat("dd/MM/yyyy");
+  final Bit _bitData = Bit();
   
   bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
@@ -848,10 +849,24 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         for(WatchlistDetailListModel data in resp) {
           tempDate = data.watchlistDetailDate.toLocal();
           if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+            // if exists get the current value of the _watchlistDetails and put into _bitData
+            _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+            // check whether this is buy or sell
+            if (data.watchlistDetailShare >= 0) {
+              _bitData[15] = 1;
+            }
+            else {
+              _bitData[14] = 1;
+            }
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
           }
           else {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+            if (data.watchlistDetailShare >= 0) {
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+            }
+            else {
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+            }
           }
         }
       });

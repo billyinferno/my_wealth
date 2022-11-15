@@ -23,6 +23,7 @@ import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
+import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -73,7 +74,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
   late String _brokerSummarySelected;
-  late Map<DateTime, double> _watchlistDetail;
+  late Map<DateTime, int> _watchlistDetail;
   late String? _otherCompanyCode;
 
   final CompanyAPI _companyApi = CompanyAPI();
@@ -85,6 +86,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   final TextStyle _topBrokerHeader = const TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 10,);
   final TextStyle _topBrokerRow = const TextStyle(fontSize: 10,);
+  final Bit _bitData = Bit();
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
@@ -2788,10 +2790,24 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         for(WatchlistDetailListModel data in resp) {
           tempDate = data.watchlistDetailDate.toLocal();
           if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]! + data.watchlistDetailShare;
+            // if exists get the current value of the _watchlistDetails and put into _bitData
+            _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+            // check whether this is buy or sell
+            if (data.watchlistDetailShare >= 0) {
+              _bitData[15] = 1;
+            }
+            else {
+              _bitData[14] = 1;
+            }
+            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
           }
           else {
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = data.watchlistDetailShare;
+            if (data.watchlistDetailShare >= 0) {
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+            }
+            else {
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+            }
           }
         }
       });

@@ -5,7 +5,7 @@ import 'package:my_wealth/widgets/line_chart_painter.dart';
 
 class LineChart extends StatelessWidget {
   final Map<DateTime, GraphData> data;
-  final Map<DateTime, double>? watchlist;
+  final Map<DateTime, int>? watchlist;
   final double? height;
   const LineChart({ Key? key, required this.data, this.height, this.watchlist }) : super(key: key);
 

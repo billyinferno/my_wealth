@@ -46,7 +46,7 @@ class ExpandedTileChildren extends StatelessWidget {
                       child: Text(
                     date,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                     ),
                   )),
                   const SizedBox(
@@ -60,7 +60,7 @@ class ExpandedTileChildren extends StatelessWidget {
                             : ((isInLot ? shares / 100 : shares) * -1)),
                         2),
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                     ),
                     overflow: TextOverflow.ellipsis,
                   )),
@@ -73,7 +73,7 @@ class ExpandedTileChildren extends StatelessWidget {
                     child: Text(
                       formatCurrency(price),
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 10,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -97,7 +97,7 @@ class ExpandedTileChildren extends StatelessWidget {
                             ? formatCurrency((currentPrice - price) * shares)
                             : formatCurrency(averagePrice * (shares * -1))),
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

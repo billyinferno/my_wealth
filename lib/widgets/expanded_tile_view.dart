@@ -23,7 +23,7 @@ class ExpandedTileView extends StatefulWidget {
 }
 
 class ExpandedTileViewState extends State<ExpandedTileView> {
-  final DateFormat dt = DateFormat("dd/MM/yyyy");
+  final DateFormat dt = DateFormat("dd/MM/yy");
   final DateFormat dtSmall = DateFormat('dd/MM');
   bool _isShowedLots = false;
   bool _isInLot = false;

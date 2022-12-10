@@ -321,6 +321,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     value: value,
                     riskFactor: _userInfo!.risk,
                     isVisible: _isSummaryVisible,
+                    type: type,
+                    totalData: data.length,
+                    compResult: _watchlistAll,
                   );
                 }
                 

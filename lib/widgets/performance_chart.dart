@@ -5,11 +5,12 @@ import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/widgets/performance_chart_painter.dart';
 
 class PerformanceChart extends StatefulWidget {
-  final List<WatchlistPerformanceModel> data;
+  final List<WatchlistPerformanceModel>? data;
+  final List<PerformanceData>? perfData;
   final List<WatchlistDetailListModel>? watchlist;
   final double? height;
 
-  const PerformanceChart({Key? key, required this.data, this.watchlist, this.height}) : super(key: key);
+  const PerformanceChart({Key? key, this.data, this.perfData, this.watchlist, this.height}) : super(key: key);
 
   @override
   State<PerformanceChart> createState() => _PerformanceChartState();
@@ -17,7 +18,8 @@ class PerformanceChart extends StatefulWidget {
 
 class _PerformanceChartState extends State<PerformanceChart> {
   final Bit _bitData = Bit();
-  final List<PerformanceData> _data = [];
+  late List<WatchlistPerformanceModel> _watchlistData;
+  late List<PerformanceData> _data;
   final Map<DateTime, int> _watchlist = {};
 
   double _min = double.infinity;
@@ -28,6 +30,19 @@ class _PerformanceChartState extends State<PerformanceChart> {
 
   @override
   void initState() {
+    // check if we already got performance data or not?
+    // if got, then we can just put the performance data there
+    _data = (widget.perfData ?? []);
+
+    // put the watchlist performance data into watchlistData
+    _watchlistData = (widget.data ?? []);
+
+    // ensure that at least _data or _watchlistData is not empty
+    if (_data.isEmpty && _watchlistData.isEmpty) {
+      throw Exception('There are not data to be displayed on the performance data');
+    }
+
+    // perform computation
     _compute();
     super.initState();
   }
@@ -54,26 +69,39 @@ class _PerformanceChartState extends State<PerformanceChart> {
   void _compute() {
     double gain;
 
-    // loop thru all the performance model data
-    for (WatchlistPerformanceModel perf in widget.data) {
-      // calculate the gain
-      gain =
-          (perf.buyTotal * perf.currentPrice) - (perf.buyTotal * perf.buyAvg);
+    // check if we already got performance data or not?
+    if (_data.isEmpty) {
+      // loop thru all the performance model data
+      for (WatchlistPerformanceModel perf in widget.data!) {
+        // calculate the gain
+        gain = (perf.buyTotal * perf.currentPrice) - (perf.buyTotal * perf.buyAvg);
 
-      // check the gain with _min and _max
-      if (gain < _min) {
-        _min = gain;
+        // check the gain with _min and _max
+        if (gain < _min) {
+          _min = gain;
+        }
+
+        if (gain > _max) {
+          _max = gain;
+        }
+
+        // create the performance data
+        PerformanceData dt = PerformanceData(date: perf.buyDate, gain: gain);
+
+        // add the performance data to the list
+        _data.add(dt);
       }
-
-      if (gain > _max) {
-        _max = gain;
+    }
+    else {
+      // loop thru _data to get the _min and _max
+      for (PerformanceData perf in _data) {
+        if (perf.gain < _min) {
+          _min = perf.gain;
+        }
+        if (perf.gain > _max) {
+          _max = perf.gain;
+        }
       }
-
-      // create the performance data
-      PerformanceData dt = PerformanceData(date: perf.buyDate, gain: gain);
-
-      // add the performance data to the list
-      _data.add(dt);
     }
 
     // check the gap between _min and _max

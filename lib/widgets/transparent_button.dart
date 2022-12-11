@@ -28,20 +28,20 @@ class TransparentButton extends StatelessWidget {
     Color currentBorderColor = (borderColor ?? primaryLight);
 
     return Expanded(
-      child: MaterialButton(
-        onPressed: (() {
+      child: InkWell(
+        onTap: (() {
           callback();
         }),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: currentBorderColor,
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-        ),
-        color: (isActive ? currentActiveColor : currentBgColor),
         child: Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+          decoration: BoxDecoration(
+            color: (isActive ? currentActiveColor : currentBgColor),
+            border: Border.all(
+              color: currentBorderColor,
+              style: BorderStyle.solid,
+              width: 1.0,
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

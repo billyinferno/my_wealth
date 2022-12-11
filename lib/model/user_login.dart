@@ -27,8 +27,9 @@ class UserLoginInfoModel {
   final bool visibility;
   final bool showLots;
   final String bot;
+  final bool showEmptyWatchlist;
 
-  UserLoginInfoModel({required this.id, required this.username, required this.email, required this.confirmed, required this.blocked, required this.risk, required this.visibility, required this.showLots, required this.bot});
+  UserLoginInfoModel({required this.id, required this.username, required this.email, required this.confirmed, required this.blocked, required this.risk, required this.visibility, required this.showLots, required this.bot, required this.showEmptyWatchlist});
 
   factory UserLoginInfoModel.fromJson(Map<String, dynamic> json) {
     return UserLoginInfoModel(
@@ -40,7 +41,8 @@ class UserLoginInfoModel {
       risk: json['risk'],
       visibility: (json['visibility'] ?? false),
       showLots: (json['show_lots'] ?? false),
-      bot: (json['bot'] ?? '')
+      bot: (json['bot'] ?? ''),
+      showEmptyWatchlist: (json['show_empty_watchlist'] ?? true),
     );
   }
 
@@ -54,7 +56,8 @@ class UserLoginInfoModel {
       'risk': risk,
       'visibility': visibility,
       'show_lots': showLots,
-      'bot': bot
+      'bot': bot,
+      'show_empty_watchlist': showEmptyWatchlist
     };
   }
 }

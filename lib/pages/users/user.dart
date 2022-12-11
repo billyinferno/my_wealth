@@ -24,6 +24,7 @@ class _UserPageState extends State<UserPage> {
   late UserLoginInfoModel? _userInfo;
   bool _isVisible = false;
   bool _showLots = false;
+  bool _showEmptyWatchlist = true;
   
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _UserPageState extends State<UserPage> {
     _userInfo = UserSharedPreferences.getUserInfo();
     _isVisible = _userInfo!.visibility;
     _showLots = _userInfo!.showLots;
+    _showEmptyWatchlist = _userInfo!.showEmptyWatchlist;
   }
 
   @override
@@ -278,6 +280,72 @@ class _UserPageState extends State<UserPage> {
                 ],
               )
             ),
+            Container(
+              height: 60,
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: primaryLight,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                )
+              ),
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const <Widget>[
+                            Icon(
+                              Ionicons.list_outline,
+                              color: secondaryColor,
+                              size: 20,
+                            ),
+                            SizedBox(width: 10,),
+                            Text(
+                              "Show Empty Watchlist",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Text(
+                          "Affects after restart",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: primaryLight,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  CupertinoSwitch(
+                    value: _showEmptyWatchlist,
+                    onChanged: ((value) async {
+                      _showEmptyWatchlist = !_showEmptyWatchlist;
+                      await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
+                        debugPrint("🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
+                        setShowEmptywatchlist(_showEmptyWatchlist);
+                      }).onError((error, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      });
+                    }),
+                  ),
+                ],
+              )
+            ),
             InkWell(
               onTap: (() {
                 Navigator.pushNamed(context, '/user/bot');
@@ -418,6 +486,40 @@ class _UserPageState extends State<UserPage> {
 
     showLoaderDialog(context);
     await _userApi.updateShowLots(showLots).then((resp) async {
+      // set the return value as true
+      ret = true;
+
+      // update the user info and the user provider so it will affect all the listener
+      await UserSharedPreferences.setUserInfo(resp);
+
+      // update the provider to notify the user page
+      if (!mounted) return;
+      Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+
+      // remove the loader
+      Navigator.pop(context);
+    }).onError((error, stackTrace) {
+      // remove the loader
+      Navigator.pop(context);
+
+      // throw the exception
+      throw Exception(error.toString());
+    });
+
+    return ret;
+  }
+
+  void setShowEmptywatchlist(showEmptyWatchlist) {
+    setState(() {
+      _showEmptyWatchlist = showEmptyWatchlist;
+    });
+  }
+
+  Future<bool> _updateShowEmptyWatchlist(bool showEmptyWatchlist) async {
+    bool ret = false;
+
+    showLoaderDialog(context);
+    await _userApi.updateShowEmptyWatchlist(showEmptyWatchlist).then((resp) async {
       // set the return value as true
       ret = true;
 

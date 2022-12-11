@@ -45,6 +45,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   
   bool _isShowedLots = false;
   bool _isSummaryVisible = false;
+  bool _isShowEmptyWatchlist = true;
 
   @override
   void initState() {
@@ -65,6 +66,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
 
     _isSummaryVisible = _userInfo!.visibility;
     _isShowedLots = _userInfo!.showLots;
+    _isShowEmptyWatchlist = _userInfo!.showEmptyWatchlist;
+
     _tabController = TabController(length: 4, vsync: this);
   }
 
@@ -177,9 +180,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     );
                   }),
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(width: 5,),
                 TransparentButton(
-                  text: "Hide Lots",
+                  text: "${_isShowedLots ? 'Show' : 'Hide'} Lots",
                   icon: (_isShowedLots ? Ionicons.eye_outline : Ionicons.eye_off_outline),
                   callback: (() {
                     setState(() {
@@ -187,6 +190,17 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     });
                   }),
                   active: _isShowedLots,
+                ),
+                const SizedBox(width: 5,),
+                TransparentButton(
+                  text: "${_isShowEmptyWatchlist ? 'Show' : 'Hide'} Empty",
+                  icon: (_isShowEmptyWatchlist ? Ionicons.eye_outline : Ionicons.eye_off_outline),
+                  callback: (() {
+                    setState(() {
+                      _isShowEmptyWatchlist = !_isShowEmptyWatchlist;
+                    });
+                  }),
+                  active: _isShowEmptyWatchlist,
                 ),
                 const SizedBox(width: 10,),
               ],
@@ -427,6 +441,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       watchlist: data[idx],
                       shareTitle: shareTitle,
                       checkThousandOnPrice: checkThousandOnPrice,
+                      showEmptyWatchlist: _isShowEmptyWatchlist,
                     ),
                   ),
                 );

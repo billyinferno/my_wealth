@@ -16,7 +16,8 @@ class ExpandedTileView extends StatefulWidget {
   final WatchlistListModel watchlist;
   final String? shareTitle;
   final bool? checkThousandOnPrice;
-  const ExpandedTileView({Key? key, this.showedLot, this.isInLot, required this.isVisible, required this.userInfo, required this.watchlist, this.shareTitle, this.checkThousandOnPrice}) : super(key: key);
+  final bool showEmptyWatchlist;
+  const ExpandedTileView({Key? key, this.showedLot, this.isInLot, required this.isVisible, required this.userInfo, required this.watchlist, this.shareTitle, this.checkThousandOnPrice, required this.showEmptyWatchlist}) : super(key: key);
 
   @override
   ExpandedTileViewState createState() => ExpandedTileViewState();
@@ -40,7 +41,22 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   Widget build(BuildContext context) {
     _isShowedLots = (widget.showedLot ?? false);
     _isInLot = (widget.isInLot ?? false);
+
+    // perform computation to knew all the information we need to put on the expansion tile
     _computeDetail();
+    
+    // after that check if the showEmptyWatchlist is set as false?
+    // if so ensure that if txn > 0 but totalShare is 0, just return SizedBox instead of expansion tile
+    if (!widget.showEmptyWatchlist) {
+      // check if we already have transaction here or not?
+      if ((_totalBuy + _totalSell) > 0) {
+        // already have transaction, ensure we still have share, if not then just hide this
+        if (_totalShare <= 0) {
+          return const SizedBox.shrink();
+        }
+      }
+    }
+
     Color headerRiskColor = (widget.isVisible ? riskColor((_totalShare * widget.watchlist.watchlistCompanyNetAssetValue!), _totalCost, widget.userInfo.risk) : Colors.white);
     Color subHeaderRiskColor = (widget.isVisible ? riskColor((_totalDayGain + _totalCost), _totalCost, widget.userInfo.risk) : Colors.white);
 

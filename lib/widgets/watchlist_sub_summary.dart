@@ -32,7 +32,7 @@ class WatchlistSubSummary extends StatelessWidget {
             onPressed: ((BuildContext context) {
               if (totalData! > 0) {
                 WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: type, computeResult: compResult!);
-                debugPrint("Show performance summary for $type");
+                // debugPrint("Show performance summary for $type");
                 Navigator.pushNamed(context, '/watchlist/summary/performance', arguments: args);
               }
             }),

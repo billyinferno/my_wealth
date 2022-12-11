@@ -44,7 +44,7 @@ class WatchlistSubSummary extends StatelessWidget {
       ),
       child: Container(
         width: double.infinity,
-        height: 85,
+        height: 86,
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

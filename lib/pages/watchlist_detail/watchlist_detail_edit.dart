@@ -130,6 +130,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Update ${_txn == "b" ? "Buy" : "Sell"}",
+                  bgColor: primaryDark,
                   icon: Ionicons.save,
                   callback: (() async {
                     showLoaderDialog(context);
@@ -153,6 +154,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Cancel",
+                  bgColor: secondaryDark,
                   icon: Ionicons.close,
                   callback: (() async {
                     await _checkForm().then((value) {

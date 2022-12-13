@@ -408,6 +408,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Info",
+                  bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.speedometer_outline,
                   callback: (() {
@@ -421,6 +422,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Broker",
+                  bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.business_outline,
                   callback: (() {
@@ -434,6 +436,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Table",
+                  bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.list_outline,
                   callback: (() {
@@ -447,6 +450,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Map",
+                  bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.calendar_clear_outline,
                   callback: (() {
@@ -460,6 +464,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Stat",
+                  bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.stats_chart_outline,
                   callback: (() {

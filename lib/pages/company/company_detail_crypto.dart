@@ -303,6 +303,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Info",
+                  bgColor: primaryDark,
                   icon: Ionicons.speedometer_outline,
                   callback: (() {
                     setState(() {
@@ -315,6 +316,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Table",
+                  bgColor: primaryDark,
                   icon: Ionicons.list_outline,
                   callback: (() {
                     setState(() {
@@ -327,6 +329,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Map",
+                  bgColor: primaryDark,
                   icon: Ionicons.calendar_clear_outline,
                   callback: (() {
                     setState(() {
@@ -339,6 +342,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Graph",
+                  bgColor: primaryDark,
                   icon: Ionicons.stats_chart_outline,
                   callback: (() {
                     setState(() {

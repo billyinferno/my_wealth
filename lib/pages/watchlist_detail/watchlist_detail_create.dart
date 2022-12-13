@@ -141,7 +141,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
     double shares = (double.tryParse(_sharesController.text) ?? 0);
     double price = (double.tryParse(_priceController.text) ?? 0);
 
-    if(shares > 0 && price > 0) {
+    if(shares > 0 && price >= 0) {
       await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
         // change the watchlist detail for this one
         List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
@@ -174,7 +174,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
       });
     }
     else {
-      throw Exception("Shares or Price cannot be zero");
+      throw Exception("Shares cannot be zero, and price minimum is zero");
     }
   }
 

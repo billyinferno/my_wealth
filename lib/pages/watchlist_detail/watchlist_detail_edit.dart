@@ -177,7 +177,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     double price = (double.tryParse(_priceController.text) ?? 0);
 
     // ensure that shares should be more than 0 when update
-    if(shares > 0) {
+    if(shares > 0 && price >= 0) {
       // once we reach here, we need to check whether the transaction is "b"(uy) or "s"(ell), so we can send the correct
       // share amount to the API
       if (_txn == "s") {
@@ -244,7 +244,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
       });
     }
     else {
-      throw Exception("Shares cannot be zero");
+      throw Exception("Shares cannot be zero, and price minimum is zero");
     }
 
     return ret;

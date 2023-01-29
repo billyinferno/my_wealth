@@ -30,7 +30,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
   late List<CompanyDetailModel> _companyList;
   late List<CompanyDetailModel> _companyFilter;
   late String _filterMode;
-  late String _filterType;
+  late String _filterSort;
   final Map<String, String> _filterList = {};
   late UserLoginInfoModel? _userInfo;
   bool _isLoading = true;
@@ -59,7 +59,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
         _companyList = resp;
         _companyFilter = List<CompanyDetailModel>.generate(_companyList.length, (index) => _companyList[index]);
         _filterMode = "AB";
-        _filterType = "ASC";
+        _filterSort = "ASC";
       });
     }).whenComplete(() {
       // remove the loader
@@ -242,10 +242,10 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                 const SizedBox(width: 5,),
                 GestureDetector(
                   onTap: (() {
-                    if (_filterType != "ASC") {
+                    if (_filterSort != "ASC") {
                       // set state
                       setState(() {
-                        _filterType = "ASC";
+                        _filterSort = "ASC";
                         _sortedCompanyList();
                       });
                     }
@@ -255,7 +255,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                     child: Center(
                       child: Text(
                         "ASC",
-                        style: (_filterType == "ASC" ? _filterTypeSelected : _filterTypeUnselected),
+                        style: (_filterSort == "ASC" ? _filterTypeSelected : _filterTypeUnselected),
                       ),
                     ),
                   ),
@@ -263,10 +263,10 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                 const SizedBox(width: 2,),
                 GestureDetector(
                   onTap: (() {
-                    if (_filterType != "DESC") {
+                    if (_filterSort != "DESC") {
                       // set state
                       setState(() {
-                        _filterType = "DESC";
+                        _filterSort = "DESC";
                         _sortedCompanyList();
                       });
                     }
@@ -276,7 +276,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                     child: Center(
                       child: Text(
                         "DESC",
-                        style: (_filterType == "DESC" ? _filterTypeSelected : _filterTypeUnselected),
+                        style: (_filterSort == "DESC" ? _filterTypeSelected : _filterTypeUnselected),
                       ),
                     ),
                   ),
@@ -485,7 +485,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     // if the filter mode is "AB" which is code, then just copy from the _companyList
     if (_filterMode == "AB") {
       // check the sort methode?
-      if (_filterType == "ASC") {
+      if (_filterSort == "ASC") {
         _companyFilter = List<CompanyDetailModel>.from(_companyList);
       }
       else {
@@ -525,7 +525,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
       }
 
       // check the filter type
-      if (_filterType == "ASC") {
+      if (_filterSort == "ASC") {
         _companyFilter = List<CompanyDetailModel>.from(tempFilter);
       }
       else {

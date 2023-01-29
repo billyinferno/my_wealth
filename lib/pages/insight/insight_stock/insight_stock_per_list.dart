@@ -540,9 +540,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
 
   void _sortedCompanyList() {
     // clear the current code list as we will rebuild t his
-    debugPrint("Before clear ${_codeList.length}");
     _codeList.clear();
-    debugPrint("After clear ${_codeList.length}");
 
     // if the filter mode is "AB" which is code, then just copy from the _companyList
     if (_filterMode == "AB") {
@@ -579,7 +577,5 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
         _codeList = List<CodeList>.from(tempFilter.reversed);
       }
     }
-
-    debugPrint("After sorted ${_codeList.length}");
   }
 }

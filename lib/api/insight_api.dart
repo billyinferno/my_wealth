@@ -207,7 +207,7 @@ class InsightAPI {
     }
   }
 
-  Future<TopWorseCompanyListModel> getTopReksadana(String type) async {
+  Future<TopWorseCompanyListModel> getTopWorseReksadana(String type, String topWorse) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       _getJwt();
@@ -216,7 +216,7 @@ class InsightAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/reksadana/top/type/$type'),
+        Uri.parse('${Globals.apiURL}api/insight/reksadana/$topWorse/type/$type'),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',

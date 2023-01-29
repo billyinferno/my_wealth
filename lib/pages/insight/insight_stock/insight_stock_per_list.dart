@@ -27,13 +27,33 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
 
   late InsightStockSubListArgs _args;
   late SectorPerDetailModel _data;
+  late List<CodeList> _codeList;
   late UserLoginInfoModel? _userInfo;
+  
+  late String _filterMode;
+  late String _filterSort;
+  final Map<String, String> _filterList = {};
+  final TextStyle _filterTypeSelected = const TextStyle(fontSize: 10, color: accentColor, fontWeight: FontWeight.bold);
+  final TextStyle _filterTypeUnselected = const TextStyle(fontSize: 10, color: primaryLight, fontWeight: FontWeight.normal);
+  
   bool _isLoading = true;
 
   @override
   void initState() {
     _args = widget.args as InsightStockSubListArgs;
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // list all the filter that we want to put here
+    _filterList["AB"] = "Code";
+    _filterList["DL"] = "Daily";
+    _filterList["PR"] = "Periodic";
+    _filterList["AN"] = "Annualized";
+
+    // default filter mode to Code and ASC
+    _filterMode = "AB";
+    _filterSort = "ASC";
+
+    // get the sector PER from API
     _getSectorPER();
 
     super.initState();
@@ -77,11 +97,187 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
+          Container(
+            padding: const EdgeInsets.all(5),
+            color: primaryDark,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  "FILTER",
+                  style: TextStyle(
+                    color: primaryLight,
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(width: 5,),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: (() {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        isDismissible: true,
+                        builder:(context) {
+                          return Container(
+                            height: 210,
+                            margin: const EdgeInsets.fromLTRB(10, 10, 10, 25),
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                const Center(
+                                  child: Text("Select Filter"),
+                                ),
+                                ..._filterList.entries.map((e) => GestureDetector(
+                                  onTap: (() {
+                                    setState(() {
+                                      _filterMode = e.key;
+                                      _sortedCompanyList();
+                                    });
+                                    // remove the modal sheet
+                                    Navigator.pop(context);
+                                  }),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: primaryLight,
+                                          width: 1.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            color: (_filterMode == e.key ? accentDark : Colors.transparent),
+                                            borderRadius: BorderRadius.circular(2),
+                                            border: Border.all(
+                                              color: accentDark,
+                                              width: 1.0,
+                                              style: BorderStyle.solid,
+                                            )
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              e.key,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: (_filterMode == e.key ? textPrimary : accentColor),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10,),
+                                        Text(
+                                          e.value,
+                                          style: TextStyle(
+                                            color: (_filterMode == e.key ? accentColor : textPrimary),
+                                            fontWeight: (_filterMode == e.key ? FontWeight.bold : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )).toList(),
+                              ],
+                            )
+                          );
+                        },
+                      );
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(_filterList[_filterMode] ?? 'Code'),
+                          ),
+                          const SizedBox(width: 5,),
+                          const Icon(
+                            Ionicons.caret_down,
+                            color: accentColor,
+                            size: 15,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5,),
+                GestureDetector(
+                  onTap: (() {
+                    if (_filterSort != "ASC") {
+                      // set state
+                      setState(() {
+                        _filterSort = "ASC";
+                        _sortedCompanyList();
+                      });
+                    }
+                  }),
+                  child: SizedBox(
+                    width: 35,
+                    child: Center(
+                      child: Text(
+                        "ASC",
+                        style: (_filterSort == "ASC" ? _filterTypeSelected : _filterTypeUnselected),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 2,),
+                GestureDetector(
+                  onTap: (() {
+                    if (_filterSort != "DESC") {
+                      // set state
+                      setState(() {
+                        _filterSort = "DESC";
+                        _sortedCompanyList();
+                      });
+                    }
+                  }),
+                  child: SizedBox(
+                    width: 35,
+                    child: Center(
+                      child: Text(
+                        "DESC",
+                        style: (_filterSort == "DESC" ? _filterTypeSelected : _filterTypeUnselected),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           _listItem(
             indicatorColor: Colors.white,
             bgColor: primaryDark,
             code: '',
-            title: "Average",
+            title: "Average ${_data.averagePerYear}",
             per: formatDecimalWithNull(_data.averagePerDaily, 1, 2),
             periodic: formatDecimalWithNull(_data.averagePerPeriodatic, 1, 2),
             annual: formatDecimalWithNull(_data.averagePerAnnualized, 1, 2),
@@ -89,10 +285,10 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: _data.codeList.length,
+              itemCount: _codeList.length,
               itemBuilder: ((context, index) {
                 Color indicatorColor = Colors.white;
-                if (_data.codeList[index].perDaily! < 0 || _data.codeList[index].perAnnualized! < 0 || _data.codeList[index].perPeriodatic! < 0) {
+                if (_codeList[index].perDaily! < 0 || _codeList[index].perAnnualized! < 0 || _codeList[index].perPeriodatic! < 0) {
                   indicatorColor = const Color.fromARGB(255, 51, 3, 0);
                 }
                 else {
@@ -117,17 +313,17 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                     addAvgPerPeriod = avgPerPeriod;
                   }
 
-                  indicatorColor = riskColor(avgPer + avgPerAnnul + avgPerPeriod, (_data.codeList[index].perDaily! + addAvgPer) + (_data.codeList[index].perAnnualized! + addAvgPerAnnul) + (_data.codeList[index].perPeriodatic! + addAvgPerPeriod), _userInfo!.risk);
+                  indicatorColor = riskColor(avgPer + avgPerAnnul + avgPerPeriod, (_codeList[index].perDaily! + addAvgPer) + (_codeList[index].perAnnualized! + addAvgPerAnnul) + (_codeList[index].perPeriodatic! + addAvgPerPeriod), _userInfo!.risk);
                 }
           
                 return InkWell(
                   onTap: (() async {
                     showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_data.codeList[index].code, 'saham').then((resp) {
+                    await _companyAPI.getCompanyByCode(_codeList[index].code, 'saham').then((resp) {
                       CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: resp.companyId,
                         companyName: resp.companyName,
-                        companyCode: _data.codeList[index].code,
+                        companyCode: _codeList[index].code,
                         companyFavourite: (resp.companyFavourites ?? false),
                         favouritesId: (resp.companyFavouritesId ?? -1),
                         type: "saham",
@@ -148,15 +344,15 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                   }),
                   child: _listItem(
                     indicatorColor: indicatorColor,
-                    code: "(${_data.codeList[index].code})",
+                    code: "(${_codeList[index].code})",
                     codeTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: accentColor),
-                    title: _data.codeList[index].name,
+                    title: _codeList[index].name,
                     titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: textPrimary),
-                    per: formatDecimalWithNull(_data.codeList[index].perDaily, 1, 2),
-                    period: _data.codeList[index].period,
-                    year: _data.codeList[index].year,
-                    periodic: formatDecimalWithNull(_data.codeList[index].perPeriodatic, 1, 2),
-                    annual: formatDecimalWithNull(_data.codeList[index].perAnnualized, 1, 2)
+                    per: formatDecimalWithNull(_codeList[index].perDaily, 1, 2),
+                    period: _codeList[index].period,
+                    year: _codeList[index].year,
+                    periodic: formatDecimalWithNull(_codeList[index].perPeriodatic, 1, 2),
+                    annual: formatDecimalWithNull(_codeList[index].perAnnualized, 1, 2)
                   ),
                 );
               })
@@ -173,6 +369,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
       showLoaderDialog(context); 
       await _companyAPI.getCompanySectorPER(_args.sectorName).then((resp) {
         _data = resp;
+        _codeList = List<CodeList>.from(_data.codeList);
       });
     }).whenComplete(() {
       // remove loader
@@ -339,5 +536,50 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
         ],
       ),
     );
+  }
+
+  void _sortedCompanyList() {
+    // clear the current code list as we will rebuild t his
+    debugPrint("Before clear ${_codeList.length}");
+    _codeList.clear();
+    debugPrint("After clear ${_codeList.length}");
+
+    // if the filter mode is "AB" which is code, then just copy from the _companyList
+    if (_filterMode == "AB") {
+      // check the sort methode?
+      if (_filterSort == "ASC") {
+        _codeList = List<CodeList>.from(_data.codeList);
+      }
+      else {
+        _codeList = List<CodeList>.from(_data.codeList.reversed);
+      }
+    }
+    else {
+      List<CodeList> tempFilter = List<CodeList>.from(_data.codeList);
+      switch(_filterMode) {
+        case "DL":
+          tempFilter.sort(((a, b) => (a.perDaily ?? 0).compareTo((b.perDaily ?? 0))));
+          break;
+        case "PR":
+          tempFilter.sort(((a, b) => (a.perPeriodatic ?? 0).compareTo((b.perPeriodatic ?? 0))));
+          break;
+        case "AN":
+          tempFilter.sort(((a, b) => (a.perAnnualized ?? 0).compareTo((b.perAnnualized ?? 0))));
+          break;
+        default:
+          tempFilter.sort(((a, b) => (a.perPeriodatic ?? 0).compareTo((b.perPeriodatic ?? 0))));
+          break;
+      }
+
+      // check the filter type
+      if (_filterSort == "ASC") {
+        _codeList = List<CodeList>.from(tempFilter);
+      }
+      else {
+        _codeList = List<CodeList>.from(tempFilter.reversed);
+      }
+    }
+
+    debugPrint("After sorted ${_codeList.length}");
   }
 }

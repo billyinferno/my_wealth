@@ -10,25 +10,29 @@ String sectorPerDetailModelToJson(SectorPerDetailModel data) => json.encode(data
 
 class SectorPerDetailModel {
     SectorPerDetailModel({
+        required this.averagePerYear,
         required this.averagePerDaily,
         required this.averagePerPeriodatic,
         required this.averagePerAnnualized,
         required this.codeList,
     });
 
+    final int averagePerYear;
     final double averagePerDaily;
     final double averagePerPeriodatic;
     final double averagePerAnnualized;
     final List<CodeList> codeList;
 
     factory SectorPerDetailModel.fromJson(Map<String, dynamic> json) => SectorPerDetailModel(
-        averagePerDaily: json["average_per_daily"].toDouble(),
-        averagePerPeriodatic: json["average_per_periodatic"].toDouble(),
-        averagePerAnnualized: json["average_per_annualized"].toDouble(),
+        averagePerYear: (json["average_per_year"]),
+        averagePerDaily: (json["average_per_daily"] != null ? json["average_per_daily"].toDouble() : 0),
+        averagePerPeriodatic: (json["average_per_periodatic"] != null ? json["average_per_periodatic"].toDouble() : 0),
+        averagePerAnnualized: (json["average_per_annualized"] != null ? json["average_per_annualized"].toDouble() : 0),
         codeList: List<CodeList>.from(json["code_list"].map((x) => CodeList.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
+        "average_per_year": averagePerYear,
         "average_per_daily": averagePerDaily,
         "average_per_periodatic": averagePerPeriodatic,
         "average_per_annualized": averagePerAnnualized,

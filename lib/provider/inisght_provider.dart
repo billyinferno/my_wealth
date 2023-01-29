@@ -12,6 +12,7 @@ class InsightProvider extends ChangeNotifier {
   TopWorseCompanyListModel? topCompanyList;
   TopWorseCompanyListModel? worseCompanyList;
   Map<String, TopWorseCompanyListModel>? topReksadanaList;
+  Map<String, TopWorseCompanyListModel>? worseReksadanaList;
   BrokerTopTransactionModel? brokerTopTransactionList;
   InsightBandarInterestModel? bandarInterestList;
   DateTime? topAccumToDate;
@@ -46,6 +47,15 @@ class InsightProvider extends ChangeNotifier {
 
     // check if the key already there or not?
     topReksadanaList![type] = data;
+    notifyListeners();
+  }
+
+  setWorseReksadanaList(String type, TopWorseCompanyListModel data) {
+    // check if null? if so initialze it
+    worseReksadanaList ??= {};
+
+    // check if the key already there or not?
+    worseReksadanaList![type] = data;
     notifyListeners();
   }
 

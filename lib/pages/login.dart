@@ -511,28 +511,52 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
         debugPrint('🔟 Get Worse Company Summary List');
       }),
-      _insightAPI.getTopReksadana('saham').then((resp) async {
+      _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('saham', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
         debugPrint('🔟 Get Top Reksadana Saham Summary List');
       }),
-      _insightAPI.getTopReksadana('campuran').then((resp) async {
+      _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
         debugPrint('🔟 Get Top Reksadana Campuran Summary List');
       }),
-      _insightAPI.getTopReksadana('pasaruang').then((resp) async {
+      _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
         debugPrint('🔟 Get Top Reksadana Pasar Uang Summary List');
       }),
-      _insightAPI.getTopReksadana('pendapatantetap').then((resp) async {
+      _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
+        debugPrint('🔟 Get Top Reksadana Pendapatan Tetap Summary List');
+      }),
+      _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
+        await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
+        debugPrint('🔟 Get Top Reksadana Saham Summary List');
+      }),
+      _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
+        await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
+        debugPrint('🔟 Get Top Reksadana Campuran Summary List');
+      }),
+      _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
+        await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
+        debugPrint('🔟 Get Top Reksadana Pasar Uang Summary List');
+      }),
+      _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
+        await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
         debugPrint('🔟 Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getBandarInteresting().then((resp) async {

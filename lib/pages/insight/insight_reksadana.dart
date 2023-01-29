@@ -25,22 +25,35 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
 
   late Map<String, TopWorseCompanyListModel> _topReksadanaList;
+  late Map<String, TopWorseCompanyListModel> _worseReksadanaList;
 
-  String _sahamPeriodSelected = '1d';
-  String _campuranPeriodSelected = '1d';
-  String _pasaruangPeriodSelected = '1d';
-  String _pendapatantetapPeriodSelected = '1d';
+  String _topSahamPeriodSelected = '1d';
+  String _topCampuranPeriodSelected = '1d';
+  String _topPasaruangPeriodSelected = '1d';
+  String _topPendapatantetapPeriodSelected = '1d';
+
+  String _worseSahamPeriodSelected = '1d';
+  String _worseCampuranPeriodSelected = '1d';
+  String _worsePasaruangPeriodSelected = '1d';
+  String _worsePendapatantetapPeriodSelected = '1d';
 
   @override
   void initState() {
     // initialize top reksadana list with empty map
     _topReksadanaList = {};
+    _worseReksadanaList = {};
 
     // now get all the information from the shared preferences and put it on the topReksadanaList
     _topReksadanaList['saham'] = InsightSharedPreferences.getTopReksadanaList('saham');
     _topReksadanaList['campuran'] = InsightSharedPreferences.getTopReksadanaList('campuran');
     _topReksadanaList['pasaruang'] = InsightSharedPreferences.getTopReksadanaList('pasaruang');
     _topReksadanaList['pendapatantetap'] = InsightSharedPreferences.getTopReksadanaList('pendapatantetap');
+
+    // then get the worse lit and put it on the worseReksadanaList
+    _worseReksadanaList['saham'] = InsightSharedPreferences.getWorseReksadanaList('saham');
+    _worseReksadanaList['campuran'] = InsightSharedPreferences.getWorseReksadanaList('campuran');
+    _worseReksadanaList['pasaruang'] = InsightSharedPreferences.getWorseReksadanaList('pasaruang');
+    _worseReksadanaList['pendapatantetap'] = InsightSharedPreferences.getWorseReksadanaList('pendapatantetap');
 
     super.initState();
   }
@@ -61,34 +74,65 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         _topReksadanaList['pasaruang'] = insightProvider.topReksadanaList!['pasaruang'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
         _topReksadanaList['pendapatantetap'] = insightProvider.topReksadanaList!['pendapatantetap'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
 
+        _worseReksadanaList['saham'] = insightProvider.worseReksadanaList!['saham'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
+        _worseReksadanaList['campuran'] = insightProvider.worseReksadanaList!['campuran'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
+        _worseReksadanaList['pasaruang'] = insightProvider.worseReksadanaList!['pasaruang'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
+        _worseReksadanaList['pendapatantetap'] = insightProvider.worseReksadanaList!['pendapatantetap'] ?? TopWorseCompanyListModel(companyList: CompanyList(the1D: [], the1M: [], the1W: [], the1Y: [], the3M: [], the3Y: [], the5Y: [], the6M: [], theYTD: [], theMTD: []));
+
         return RefreshIndicator(
           color: accentColor,
           onRefresh: (() async {
             await Future.microtask(() async {
               showLoaderDialog(context);
-              await _insightAPI.getTopReksadana('saham').then((resp) async {
+              // get top list
+              await _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksdana Saham");
                 await InsightSharedPreferences.setTopReksadanaList('saham', resp);
                 if (!mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
               });
-              await _insightAPI.getTopReksadana('campuran').then((resp) async {
+              await _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Campuran");
                 await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
                 if (!mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
               });
-              await _insightAPI.getTopReksadana('pasaruang').then((resp) async {
+              await _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Pasar Uang");
                 await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
                 if (!mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
               });
-              await _insightAPI.getTopReksadana('pendapatantetap').then((resp) async {
+              await _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
                 await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
                 if (!mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
+              });
+              // get worse list
+              await _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
+                debugPrint("🔃 Refresh Reksdana Saham");
+                await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
+              });
+              await _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
+                debugPrint("🔃 Refresh Reksadana Campuran");
+                await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
+              });
+              await _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
+                debugPrint("🔃 Refresh Reksadana Pasar Uang");
+                await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
+              });
+              await _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
+                debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
+                await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
+                if (!mounted) return;
+                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
               });
             }).onError((error, stackTrace) {
               debugPrintStack(stackTrace: stackTrace);
@@ -126,58 +170,127 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   children: <Widget>[
                     SelectableButton(
                       text: "1d",
-                      selected: (_sahamPeriodSelected == "1d"),
+                      selected: (_topSahamPeriodSelected == "1d"),
                       onPress: (() {
-                        _setSahamPeriodSelected('1d');
+                        _setTopSahamPeriodSelected('1d');
                       })
                     ),
                     SelectableButton(
                       text: "1w",
-                      selected: (_sahamPeriodSelected == "1w"),
+                      selected: (_topSahamPeriodSelected == "1w"),
                       onPress: (() {
-                        _setSahamPeriodSelected('1w');
+                        _setTopSahamPeriodSelected('1w');
                       })
                     ),
                     SelectableButton(
                       text: "1m",
-                      selected: (_sahamPeriodSelected == "1m"),
+                      selected: (_topSahamPeriodSelected == "1m"),
                       onPress: (() {
-                        _setSahamPeriodSelected('1m');
+                        _setTopSahamPeriodSelected('1m');
                       })
                     ),
                     SelectableButton(
                       text: "3m",
-                      selected: (_sahamPeriodSelected == "3m"),
+                      selected: (_topSahamPeriodSelected == "3m"),
                       onPress: (() {
-                        _setSahamPeriodSelected('3m');
+                        _setTopSahamPeriodSelected('3m');
                       })
                     ),
                     SelectableButton(
                       text: "6m",
-                      selected: (_sahamPeriodSelected == "6m"),
+                      selected: (_topSahamPeriodSelected == "6m"),
                       onPress: (() {
-                        _setSahamPeriodSelected('6m');
+                        _setTopSahamPeriodSelected('6m');
                       })
                     ),
                     SelectableButton(
                       text: "ytd",
-                      selected: (_sahamPeriodSelected == "ytd"),
+                      selected: (_topSahamPeriodSelected == "ytd"),
                       onPress: (() {
-                        _setSahamPeriodSelected('ytd');
+                        _setTopSahamPeriodSelected('ytd');
                       })
                     ),
                     SelectableButton(
                       text: "1y",
-                      selected: (_sahamPeriodSelected == "1y"),
+                      selected: (_topSahamPeriodSelected == "1y"),
                       onPress: (() {
-                        _setSahamPeriodSelected('1y');
+                        _setTopSahamPeriodSelected('1y');
                       })
                     ),
                   ],
                 ),
                 const SizedBox(height: 10,),
-                _generateTopWorseList(type: 'saham', period: _sahamPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
+                _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'saham', period: _topSahamPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
                 const SizedBox(height: 20,),
+                ///
+                const Center(
+                  child: Text(
+                    "Top Loser Saham",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SelectableButton(
+                      text: "1d",
+                      selected: (_worseSahamPeriodSelected == "1d"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('1d');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1w",
+                      selected: (_worseSahamPeriodSelected == "1w"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('1w');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1m",
+                      selected: (_worseSahamPeriodSelected == "1m"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('1m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "3m",
+                      selected: (_worseSahamPeriodSelected == "3m"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('3m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "6m",
+                      selected: (_worseSahamPeriodSelected == "6m"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('6m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "ytd",
+                      selected: (_worseSahamPeriodSelected == "ytd"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('ytd');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1y",
+                      selected: (_worseSahamPeriodSelected == "1y"),
+                      onPress: (() {
+                        _setWorseSahamPeriodSelected('1y');
+                      })
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'saham', period: _worseSahamPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
+                const SizedBox(height: 20,),
+                ///
                 const Center(
                   child: Text(
                     "Top Gain Campuran",
@@ -193,58 +306,127 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   children: <Widget>[
                     SelectableButton(
                       text: "1d",
-                      selected: (_campuranPeriodSelected == "1d"),
+                      selected: (_topCampuranPeriodSelected == "1d"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('1d');
+                        _setTopCampuranPeriodSelected('1d');
                       })
                     ),
                     SelectableButton(
                       text: "1w",
-                      selected: (_campuranPeriodSelected == "1w"),
+                      selected: (_topCampuranPeriodSelected == "1w"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('1w');
+                        _setTopCampuranPeriodSelected('1w');
                       })
                     ),
                     SelectableButton(
                       text: "1m",
-                      selected: (_campuranPeriodSelected == "1m"),
+                      selected: (_topCampuranPeriodSelected == "1m"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('1m');
+                        _setTopCampuranPeriodSelected('1m');
                       })
                     ),
                     SelectableButton(
                       text: "3m",
-                      selected: (_campuranPeriodSelected == "3m"),
+                      selected: (_topCampuranPeriodSelected == "3m"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('3m');
+                        _setTopCampuranPeriodSelected('3m');
                       })
                     ),
                     SelectableButton(
                       text: "6m",
-                      selected: (_campuranPeriodSelected == "6m"),
+                      selected: (_topCampuranPeriodSelected == "6m"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('6m');
+                        _setTopCampuranPeriodSelected('6m');
                       })
                     ),
                     SelectableButton(
                       text: "ytd",
-                      selected: (_campuranPeriodSelected == "ytd"),
+                      selected: (_topCampuranPeriodSelected == "ytd"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('ytd');
+                        _setTopCampuranPeriodSelected('ytd');
                       })
                     ),
                     SelectableButton(
                       text: "1y",
-                      selected: (_campuranPeriodSelected == "1y"),
+                      selected: (_topCampuranPeriodSelected == "1y"),
                       onPress: (() {
-                        _setCampuranPeriodSelected('1y');
+                        _setTopCampuranPeriodSelected('1y');
                       })
                     ),
                   ],
                 ),
                 const SizedBox(height: 10,),
-                _generateTopWorseList(type: 'campuran', period: _campuranPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
+                _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'campuran', period: _topCampuranPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
                 const SizedBox(height: 20,),
+                ///
+                const Center(
+                  child: Text(
+                    "Top Loser Campuran",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SelectableButton(
+                      text: "1d",
+                      selected: (_worseCampuranPeriodSelected == "1d"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('1d');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1w",
+                      selected: (_worseCampuranPeriodSelected == "1w"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('1w');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1m",
+                      selected: (_worseCampuranPeriodSelected == "1m"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('1m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "3m",
+                      selected: (_worseCampuranPeriodSelected == "3m"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('3m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "6m",
+                      selected: (_worseCampuranPeriodSelected == "6m"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('6m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "ytd",
+                      selected: (_worseCampuranPeriodSelected == "ytd"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('ytd');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1y",
+                      selected: (_worseCampuranPeriodSelected == "1y"),
+                      onPress: (() {
+                        _setWorseCampuranPeriodSelected('1y');
+                      })
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'campuran', period: _worseCampuranPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
+                const SizedBox(height: 20,),
+                ///
                 const Center(
                   child: Text(
                     "Top Gain Pasar Uang",
@@ -260,58 +442,127 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   children: <Widget>[
                     SelectableButton(
                       text: "1d",
-                      selected: (_pasaruangPeriodSelected == "1d"),
+                      selected: (_topPasaruangPeriodSelected == "1d"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('1d');
+                        _setTopPasaruangPeriodSelected('1d');
                       })
                     ),
                     SelectableButton(
                       text: "1w",
-                      selected: (_pasaruangPeriodSelected == "1w"),
+                      selected: (_topPasaruangPeriodSelected == "1w"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('1w');
+                        _setTopPasaruangPeriodSelected('1w');
                       })
                     ),
                     SelectableButton(
                       text: "1m",
-                      selected: (_pasaruangPeriodSelected == "1m"),
+                      selected: (_topPasaruangPeriodSelected == "1m"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('1m');
+                        _setTopPasaruangPeriodSelected('1m');
                       })
                     ),
                     SelectableButton(
                       text: "3m",
-                      selected: (_pasaruangPeriodSelected == "3m"),
+                      selected: (_topPasaruangPeriodSelected == "3m"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('3m');
+                        _setTopPasaruangPeriodSelected('3m');
                       })
                     ),
                     SelectableButton(
                       text: "6m",
-                      selected: (_pasaruangPeriodSelected == "6m"),
+                      selected: (_topPasaruangPeriodSelected == "6m"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('6m');
+                        _setTopPasaruangPeriodSelected('6m');
                       })
                     ),
                     SelectableButton(
                       text: "ytd",
-                      selected: (_pasaruangPeriodSelected == "ytd"),
+                      selected: (_topPasaruangPeriodSelected == "ytd"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('ytd');
+                        _setTopPasaruangPeriodSelected('ytd');
                       })
                     ),
                     SelectableButton(
                       text: "1y",
-                      selected: (_pasaruangPeriodSelected == "1y"),
+                      selected: (_topPasaruangPeriodSelected == "1y"),
                       onPress: (() {
-                        _setPasaruangPeriodSelected('1y');
+                        _setTopPasaruangPeriodSelected('1y');
                       })
                     ),
                   ],
                 ),
                 const SizedBox(height: 10,),
-                _generateTopWorseList(type: 'pasaruang', period: _pasaruangPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
+                _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'pasaruang', period: _topPasaruangPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
                 const SizedBox(height: 20,),
+                ///
+                const Center(
+                  child: Text(
+                    "Top Loser Pasar Uang",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SelectableButton(
+                      text: "1d",
+                      selected: (_worsePasaruangPeriodSelected == "1d"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('1d');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1w",
+                      selected: (_worsePasaruangPeriodSelected == "1w"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('1w');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1m",
+                      selected: (_worsePasaruangPeriodSelected == "1m"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('1m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "3m",
+                      selected: (_worsePasaruangPeriodSelected == "3m"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('3m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "6m",
+                      selected: (_worsePasaruangPeriodSelected == "6m"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('6m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "ytd",
+                      selected: (_worsePasaruangPeriodSelected == "ytd"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('ytd');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1y",
+                      selected: (_worsePasaruangPeriodSelected == "1y"),
+                      onPress: (() {
+                        _setWorsePasaruangPeriodSelected('1y');
+                      })
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'pasaruang', period: _worsePasaruangPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
+                const SizedBox(height: 20,),
+                ///
                 const Center(
                   child: Text(
                     "Top Gain Pendapatan Tetap",
@@ -327,57 +578,126 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   children: <Widget>[
                     SelectableButton(
                       text: "1d",
-                      selected: (_pendapatantetapPeriodSelected == "1d"),
+                      selected: (_topPendapatantetapPeriodSelected == "1d"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('1d');
+                        _setTopPendapatanTetapPeriodSelected('1d');
                       })
                     ),
                     SelectableButton(
                       text: "1w",
-                      selected: (_pendapatantetapPeriodSelected == "1w"),
+                      selected: (_topPendapatantetapPeriodSelected == "1w"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('1w');
+                        _setTopPendapatanTetapPeriodSelected('1w');
                       })
                     ),
                     SelectableButton(
                       text: "1m",
-                      selected: (_pendapatantetapPeriodSelected == "1m"),
+                      selected: (_topPendapatantetapPeriodSelected == "1m"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('1m');
+                        _setTopPendapatanTetapPeriodSelected('1m');
                       })
                     ),
                     SelectableButton(
                       text: "3m",
-                      selected: (_pendapatantetapPeriodSelected == "3m"),
+                      selected: (_topPendapatantetapPeriodSelected == "3m"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('3m');
+                        _setTopPendapatanTetapPeriodSelected('3m');
                       })
                     ),
                     SelectableButton(
                       text: "6m",
-                      selected: (_pendapatantetapPeriodSelected == "6m"),
+                      selected: (_topPendapatantetapPeriodSelected == "6m"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('6m');
+                        _setTopPendapatanTetapPeriodSelected('6m');
                       })
                     ),
                     SelectableButton(
                       text: "ytd",
-                      selected: (_pendapatantetapPeriodSelected == "ytd"),
+                      selected: (_topPendapatantetapPeriodSelected == "ytd"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('ytd');
+                        _setTopPendapatanTetapPeriodSelected('ytd');
                       })
                     ),
                     SelectableButton(
                       text: "1y",
-                      selected: (_pendapatantetapPeriodSelected == "1y"),
+                      selected: (_topPendapatantetapPeriodSelected == "1y"),
                       onPress: (() {
-                        _setPendapatanTetapPeriodSelected('1y');
+                        _setTopPendapatanTetapPeriodSelected('1y');
                       })
                     ),
                   ],
                 ),
                 const SizedBox(height: 10,),
-                _generateTopWorseList(type: 'pendapatantetap', period: _pendapatantetapPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
+                _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'pendapatantetap', period: _topPendapatantetapPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
+                const SizedBox(height: 20,),
+                ///
+                const Center(
+                  child: Text(
+                    "Top Loser Pendapatan Tetap",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SelectableButton(
+                      text: "1d",
+                      selected: (_worsePendapatantetapPeriodSelected == "1d"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('1d');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1w",
+                      selected: (_worsePendapatantetapPeriodSelected == "1w"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('1w');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1m",
+                      selected: (_worsePendapatantetapPeriodSelected == "1m"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('1m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "3m",
+                      selected: (_worsePendapatantetapPeriodSelected == "3m"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('3m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "6m",
+                      selected: (_worsePendapatantetapPeriodSelected == "6m"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('6m');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "ytd",
+                      selected: (_worsePendapatantetapPeriodSelected == "ytd"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('ytd');
+                      })
+                    ),
+                    SelectableButton(
+                      text: "1y",
+                      selected: (_worsePendapatantetapPeriodSelected == "1y"),
+                      onPress: (() {
+                        _setWorsePendapatanTetapPeriodSelected('1y');
+                      })
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'pendapatantetap', period: _worsePendapatantetapPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
+                ///
               ],
             ),
           ),
@@ -386,40 +706,40 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     );
   }
 
-  Widget _generateTopWorseList({required String type, required String period, required Color codeColor, required Color gainColor}) {
+  Widget _generateTopWorseList({required Map<String, TopWorseCompanyListModel> reksadanaList, required String type, required String period, required Color codeColor, required Color gainColor}) {
     List<CompanyInfo> info = [];
   
     // select which info we will display based on the _topPeriod
     switch(period) {
       case '1d':
-        info = _topReksadanaList[type]!.companyList.the1D;
+        info = reksadanaList[type]!.companyList.the1D;
         break;
       case '1w':
-        info = _topReksadanaList[type]!.companyList.the1W;
+        info = reksadanaList[type]!.companyList.the1W;
         break;
       case '1m':
-        info = _topReksadanaList[type]!.companyList.the1M;
+        info = reksadanaList[type]!.companyList.the1M;
         break;
       case '3m':
-        info = _topReksadanaList[type]!.companyList.the3M;
+        info = reksadanaList[type]!.companyList.the3M;
         break;
       case '6m':
-        info = _topReksadanaList[type]!.companyList.the6M;
+        info = reksadanaList[type]!.companyList.the6M;
         break;
       case 'ytd':
-        info = _topReksadanaList[type]!.companyList.theYTD;
+        info = reksadanaList[type]!.companyList.theYTD;
         break;
       case '1y':
-        info = _topReksadanaList[type]!.companyList.the1Y;
+        info = reksadanaList[type]!.companyList.the1Y;
         break;
       case '3y':
-        info = _topReksadanaList[type]!.companyList.the3Y;
+        info = reksadanaList[type]!.companyList.the3Y;
         break;
       case '5y':
-        info = _topReksadanaList[type]!.companyList.the5Y;
+        info = reksadanaList[type]!.companyList.the5Y;
         break;
       default:
-        info = _topReksadanaList[type]!.companyList.the1D;
+        info = reksadanaList[type]!.companyList.the1D;
         break;
     }
 
@@ -497,27 +817,51 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     );
   }
 
-  void _setSahamPeriodSelected(String value) {
+  void _setTopSahamPeriodSelected(String value) {
     setState(() {
-      _sahamPeriodSelected = value;
+      _topSahamPeriodSelected = value;
     });
   }
 
-  void _setCampuranPeriodSelected(String value) {
+  void _setTopCampuranPeriodSelected(String value) {
     setState(() {
-      _campuranPeriodSelected = value;
+      _topCampuranPeriodSelected = value;
     });
   }
   
-  void _setPasaruangPeriodSelected(String value) {
+  void _setTopPasaruangPeriodSelected(String value) {
     setState(() {
-      _pasaruangPeriodSelected = value;
+      _topPasaruangPeriodSelected = value;
     });
   }
   
-  void _setPendapatanTetapPeriodSelected(String value) {
+  void _setTopPendapatanTetapPeriodSelected(String value) {
     setState(() {
-      _pendapatantetapPeriodSelected = value;
+      _topPendapatantetapPeriodSelected = value;
+    });
+  }
+
+  void _setWorseSahamPeriodSelected(String value) {
+    setState(() {
+      _worseSahamPeriodSelected = value;
+    });
+  }
+
+  void _setWorseCampuranPeriodSelected(String value) {
+    setState(() {
+      _worseCampuranPeriodSelected = value;
+    });
+  }
+  
+  void _setWorsePasaruangPeriodSelected(String value) {
+    setState(() {
+      _worsePasaruangPeriodSelected = value;
+    });
+  }
+  
+  void _setWorsePendapatanTetapPeriodSelected(String value) {
+    setState(() {
+      _worsePendapatantetapPeriodSelected = value;
     });
   }
 }

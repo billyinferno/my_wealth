@@ -15,6 +15,7 @@ class InsightSharedPreferences {
   static const _sectorSummaryKey = "sector_summary";
   static const _topWorseCompanyListKey = "insight_company_list_";
   static const _topReksadanaListKey = "insight_reksadana_list_";
+  static const _worseReksadanaListKey = "insight_reksadana_worse_list_";
   static const _brokerTopTransactionKey = "insight_broker_top_txn";
   static const _brokerMarketToday = "insight_broker_market_today";
   static const _bandarInterestingKey = "insight_bandar_interesting";
@@ -183,6 +184,51 @@ class InsightSharedPreferences {
       TopWorseCompanyListModel topReksadana = TopWorseCompanyListModel.fromJson(jsonDecode(topReksadanaString));
       // return the top worse
       return topReksadana;
+    }
+    else {
+      // no data
+      return TopWorseCompanyListModel(
+        companyList: CompanyList(
+          the1D: [],
+          the1M: [],
+          the1W: [],
+          the1Y: [],
+          the3M: [],
+          the3Y: [],
+          the5Y: [],
+          the6M: [],
+          theYTD: [],
+          theMTD: [])
+        );
+    }
+  }
+
+  static Future<void> setWorseReksadanaList(String type, TopWorseCompanyListModel worseReksadanaList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    String worseReksadanaString = jsonEncode(worseReksadanaList.toJson());
+    LocalBox.putString(_worseReksadanaListKey + type, worseReksadanaString);
+  }
+
+  static TopWorseCompanyListModel getWorseReksadanaList(String type) {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String worseReksadanaString = (LocalBox.getString(_worseReksadanaListKey + type) ?? '');
+
+    // check if the list is empty or not?
+    if (worseReksadanaString.isNotEmpty) {
+      // string is not empty parse it
+      TopWorseCompanyListModel worseReksadana = TopWorseCompanyListModel.fromJson(jsonDecode(worseReksadanaString));
+      // return the top worse
+      return worseReksadana;
     }
     else {
       // no data

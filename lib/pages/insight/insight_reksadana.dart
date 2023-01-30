@@ -9,7 +9,6 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
-import 'package:my_wealth/widgets/selectable_button.dart';
 import 'package:my_wealth/widgets/selectable_list.dart';
 import 'package:provider/provider.dart';
 

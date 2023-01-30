@@ -16,17 +16,17 @@ class WatchlistAPI {
 
   WatchlistAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  void _getJwt() {
+  void getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
   Future<List<WatchlistListModel>> getWatchlist(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -62,7 +62,7 @@ class WatchlistAPI {
   Future<WatchlistListModel> findSpecific(String type, int id) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -93,7 +93,7 @@ class WatchlistAPI {
   Future<WatchlistListModel> add(String type, int companyId) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -126,7 +126,7 @@ class WatchlistAPI {
   Future<bool> delete(int watchlistId) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -157,7 +157,7 @@ class WatchlistAPI {
   Future<List<WatchlistDetailListModel>> addDetail(int id, DateTime date, double shares, double price) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -199,7 +199,7 @@ class WatchlistAPI {
   Future<bool> deleteDetail(int id) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -231,7 +231,7 @@ class WatchlistAPI {
   Future<bool> updateDetail(int id, DateTime date, double shares, double price) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -267,7 +267,7 @@ class WatchlistAPI {
   Future<List<WatchlistDetailListModel>> findDetail(int companyId) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -303,7 +303,7 @@ class WatchlistAPI {
   Future<List<WatchlistPerformanceModel>> getWatchlistPerformance(String type, int id) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -339,7 +339,7 @@ class WatchlistAPI {
   Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummary(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?

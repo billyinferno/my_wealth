@@ -11,10 +11,10 @@ class UserAPI {
 
   UserAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  _getJwt() {
+  getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 

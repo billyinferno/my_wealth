@@ -19,17 +19,17 @@ class BrokerSummaryAPI {
 
   BrokerSummaryAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  void _getJwt() {
+  void getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
   Future<BrokerSummaryModel> getBrokerSummary(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -67,7 +67,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryModel> getBrokerSummaryNet(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -105,7 +105,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList(String brokerCode, int start, int limit, [DateTime? dateFrom, DateTime? dateTo]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -143,7 +143,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryTxnDetailModel> getBrokerTransactionDetail(String brokerCode, String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -181,7 +181,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryTopModel> getBrokerSummaryTop([DateTime? searchDate]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -224,7 +224,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryDateModel> getBrokerSummaryCodeDate(String stockCode) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -256,7 +256,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryDateModel> getBrokerSummaryBrokerDate(String brokerID) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -288,7 +288,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryDateModel> getBrokerSummaryDate() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -320,7 +320,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String version, String stockCode, DateTime currentDate) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?

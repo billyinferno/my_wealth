@@ -24,17 +24,17 @@ class InsightAPI {
 
   InsightAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  void _getJwt() {
+  void getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
   Future<List<SectorSummaryModel>> getSectorSummary() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -70,7 +70,7 @@ class InsightAPI {
   Future<List<SectorSummaryModel>> getIndustrySummary(String sectorName) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -108,7 +108,7 @@ class InsightAPI {
   Future<List<SectorSummaryModel>> getSubSectorSummary(String sectorName) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -146,7 +146,7 @@ class InsightAPI {
   Future<TopWorseCompanyListModel> getTopWorseCompany(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -178,7 +178,7 @@ class InsightAPI {
   Future<BrokerTopTransactionModel> getBrokerTopTransaction() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -210,7 +210,7 @@ class InsightAPI {
   Future<TopWorseCompanyListModel> getTopWorseReksadana(String type, String topWorse) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -242,7 +242,7 @@ class InsightAPI {
   Future<InsightBandarInterestModel> getBandarInteresting() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -274,7 +274,7 @@ class InsightAPI {
   Future<List<InsightAccumulationModel>> getTopAccumulation(int oneDayRate, DateTime fromDate, DateTime toDate) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -313,7 +313,7 @@ class InsightAPI {
   Future<List<InsightEpsModel>> getTopEPS(int minDiff, int minDiffRate) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -349,7 +349,7 @@ class InsightAPI {
   Future<List<InsightSidewayModel>> getSideway(int maxOneDay, int oneDayRange, int oneWeekRange) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -385,7 +385,7 @@ class InsightAPI {
   Future<MarketTodayModel> getMarketToday() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -417,7 +417,7 @@ class InsightAPI {
   Future<List<MarketCapModel>> getMarketCap() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -453,7 +453,7 @@ class InsightAPI {
   Future<List<IndexBeaterModel>> getIndexBeater() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?

@@ -13,17 +13,17 @@ class IndexAPI {
 
   IndexAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  void _getJwt() {
+  void getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
   Future<List<IndexModel>> getIndex() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -59,7 +59,7 @@ class IndexAPI {
   Future<List<IndexPriceModel>> getIndexPrice(int indexId) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?

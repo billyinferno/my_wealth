@@ -55,6 +55,7 @@ class LoginPageState extends State<LoginPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
   
   bool _isLoading = true;
+  bool _isInvalidToken = false;
 
   @override
   void initState() {
@@ -367,8 +368,10 @@ class LoginPageState extends State<LoginPage> {
           debugPrint("3️⃣ Update user information");
         });
       }
-    }).onError((error, stackTrace) {
+    }).onError((error, stackTrace) async {
       debugPrint("⛔ $error");
+      _isInvalidToken = true;
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to login with existing token"));
     });
 
     // return the result of the check login to the caller
@@ -414,6 +417,20 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _getAdditionalInfo() async {
+    // check whether this is due to invalid token?
+    // if so then we need to refresh the JWT being used by each call with the new JWT that we got
+    // when we perform re-login above
+    if (_isInvalidToken) {
+      _userAPI.getJwt();
+      _faveAPI.getJwt();
+      _watchlistApi.getJwt();
+      _indexApi.getJwt();
+      _brokerApi.getJwt();
+      _brokerSummaryApi.getJwt();
+      _insightAPI.getJwt();
+      _companyAPI.getJwt();
+    }
+    
     await Future.wait([
       _faveAPI.getFavourites("reksadana").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);

@@ -13,17 +13,17 @@ class PortofolioAPI {
 
   PortofolioAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  void _getJwt() {
+  void getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
   Future<List<PortofolioSummaryModel>> getPortofolioSummary(String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -59,7 +59,7 @@ class PortofolioAPI {
   Future<List<PortofolioDetailModel>> getPortofolioDetail(String type, String companyType) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?

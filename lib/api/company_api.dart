@@ -20,17 +20,17 @@ class CompanyAPI {
 
   CompanyAPI() {
     // get the bearer token from user shared secured box
-    _getJwt();
+    getJwt();
   }
 
-  void _getJwt() {
+  void getJwt() {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
   Future<CompanyDetailModel> getCompanyDetail(int companyId, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -62,7 +62,7 @@ class CompanyAPI {
   Future<List<CompanySearchModel>> getCompanyByName(String companyName, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -98,7 +98,7 @@ class CompanyAPI {
   Future<CompanyDetailModel> getCompanyByID(int companyId, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -130,7 +130,7 @@ class CompanyAPI {
   Future<CompanyDetailModel> getCompanyByCode(String companyCode, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -162,7 +162,7 @@ class CompanyAPI {
   Future<List<CompanyDetailModel>> getCompanySectorAndSubSector(String type, String sectorName, String subSectorName) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -200,7 +200,7 @@ class CompanyAPI {
   Future<List<SectorNameModel>> getSectorNameList() async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -236,7 +236,7 @@ class CompanyAPI {
   Future<SectorPerDetailModel> getCompanySectorPER(String sectorName) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -269,7 +269,7 @@ class CompanyAPI {
   Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?
@@ -304,7 +304,7 @@ class CompanyAPI {
   Future<FindOtherCommpanySahamModel> getOtherCompany(String companyCode) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
-      _getJwt();
+      getJwt();
     }
 
     // check if we have bearer token or not?

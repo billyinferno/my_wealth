@@ -10,6 +10,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/selectable_button.dart';
+import 'package:my_wealth/widgets/selectable_list.dart';
 import 'package:provider/provider.dart';
 
 class InsightReksadanaPage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
 
   late Map<String, TopWorseCompanyListModel> _topReksadanaList;
   late Map<String, TopWorseCompanyListModel> _worseReksadanaList;
+  late List<SelectableItem> _selectableItemList;
 
   String _topSahamPeriodSelected = '1d';
   String _topCampuranPeriodSelected = '1d';
@@ -42,6 +44,17 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     // initialize top reksadana list with empty map
     _topReksadanaList = {};
     _worseReksadanaList = {};
+
+    // initialise the selectable item
+    _selectableItemList = [
+      const SelectableItem(name: '1d', value: '1d'),
+      const SelectableItem(name: '1w', value: '1w'),
+      const SelectableItem(name: '1m', value: '1m'),
+      const SelectableItem(name: '3m', value: '3m'),
+      const SelectableItem(name: '6m', value: '6m'),
+      const SelectableItem(name: 'ytd', value: 'ytd'),
+      const SelectableItem(name: '1y', value: '1y'),
+    ];
 
     // now get all the information from the shared preferences and put it on the topReksadanaList
     _topReksadanaList['saham'] = InsightSharedPreferences.getTopReksadanaList('saham');
@@ -164,60 +177,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_topSahamPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_topSahamPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_topSahamPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_topSahamPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_topSahamPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_topSahamPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_topSahamPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setTopSahamPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _topSahamPeriodSelected,
+                  onPress: ((value) {
+                    _setTopSahamPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'saham', period: _topSahamPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
@@ -232,60 +197,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_worseSahamPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_worseSahamPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_worseSahamPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_worseSahamPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_worseSahamPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_worseSahamPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_worseSahamPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setWorseSahamPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _worseSahamPeriodSelected,
+                  onPress: ((value) {
+                    _setWorseSahamPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'saham', period: _worseSahamPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
@@ -300,60 +217,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_topCampuranPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_topCampuranPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_topCampuranPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_topCampuranPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_topCampuranPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_topCampuranPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_topCampuranPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setTopCampuranPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _topCampuranPeriodSelected,
+                  onPress: ((value) {
+                    _setTopCampuranPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'campuran', period: _topCampuranPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
@@ -368,60 +237,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_worseCampuranPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_worseCampuranPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_worseCampuranPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_worseCampuranPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_worseCampuranPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_worseCampuranPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_worseCampuranPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setWorseCampuranPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _worseCampuranPeriodSelected,
+                  onPress: ((value) {
+                    _setWorseCampuranPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'campuran', period: _worseCampuranPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
@@ -436,60 +257,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_topPasaruangPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_topPasaruangPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_topPasaruangPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_topPasaruangPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_topPasaruangPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_topPasaruangPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_topPasaruangPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setTopPasaruangPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _topPasaruangPeriodSelected,
+                  onPress: ((value) {
+                    _setTopPasaruangPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'pasaruang', period: _topPasaruangPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
@@ -504,60 +277,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_worsePasaruangPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_worsePasaruangPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_worsePasaruangPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_worsePasaruangPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_worsePasaruangPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_worsePasaruangPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_worsePasaruangPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setWorsePasaruangPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _worsePasaruangPeriodSelected,
+                  onPress: ((value) {
+                    _setWorsePasaruangPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'pasaruang', period: _worsePasaruangPeriodSelected, codeColor: accentColor, gainColor: Colors.red),
@@ -572,60 +297,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_topPendapatantetapPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_topPendapatantetapPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_topPendapatantetapPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_topPendapatantetapPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_topPendapatantetapPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_topPendapatantetapPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_topPendapatantetapPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setTopPendapatanTetapPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _topPendapatantetapPeriodSelected,
+                  onPress: ((value) {
+                    _setTopPendapatanTetapPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _topReksadanaList, type: 'pendapatantetap', period: _topPendapatantetapPeriodSelected, codeColor: accentColor, gainColor: Colors.green),
@@ -640,60 +317,12 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                   ),
                 ),
                 const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SelectableButton(
-                      text: "1d",
-                      selected: (_worsePendapatantetapPeriodSelected == "1d"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('1d');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1w",
-                      selected: (_worsePendapatantetapPeriodSelected == "1w"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('1w');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1m",
-                      selected: (_worsePendapatantetapPeriodSelected == "1m"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('1m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "3m",
-                      selected: (_worsePendapatantetapPeriodSelected == "3m"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('3m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "6m",
-                      selected: (_worsePendapatantetapPeriodSelected == "6m"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('6m');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "ytd",
-                      selected: (_worsePendapatantetapPeriodSelected == "ytd"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('ytd');
-                      })
-                    ),
-                    SelectableButton(
-                      text: "1y",
-                      selected: (_worsePendapatantetapPeriodSelected == "1y"),
-                      onPress: (() {
-                        _setWorsePendapatanTetapPeriodSelected('1y');
-                      })
-                    ),
-                  ],
+                SelectableList(
+                  items: _selectableItemList,
+                  initialValue: _worsePendapatantetapPeriodSelected,
+                  onPress: ((value) {
+                    _setWorsePendapatanTetapPeriodSelected(value);
+                  })
                 ),
                 const SizedBox(height: 10,),
                 _generateTopWorseList(reksadanaList: _worseReksadanaList, type: 'pendapatantetap', period: _worsePendapatantetapPeriodSelected, codeColor: accentColor, gainColor: Colors.red),

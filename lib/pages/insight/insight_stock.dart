@@ -20,6 +20,7 @@ import 'package:my_wealth/utils/prefs/shared_company.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/selectable_button.dart';
+import 'package:my_wealth/widgets/selectable_list.dart';
 import 'package:provider/provider.dart';
 
 class InsightStockPage extends StatefulWidget {
@@ -39,6 +40,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
   late TopWorseCompanyListModel _worseCompanyList;
   late List<SectorNameModel> _sectorNameList;
   late UserLoginInfoModel? _userInfo;
+  late List<SelectableItem> _selectableItemList;
 
   String _sectorSummaryPeriod = "1d";
   String _topCompanyPeriod = "1d";
@@ -52,6 +54,20 @@ class _InsightStockPageState extends State<InsightStockPage> {
     _sectorNameList = CompanySharedPreferences.getSectorNameList();
 
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // initialize the selectable item list
+    _selectableItemList = [
+      const SelectableItem(name: '1d', value: '1d'),
+      const SelectableItem(name: '1w', value: '1w'),
+      const SelectableItem(name: 'mtd', value: 'mtd'),
+      const SelectableItem(name: '1m', value: '1m'),
+      const SelectableItem(name: '3m', value: '3m'),
+      const SelectableItem(name: '6m', value: '6m'),
+      const SelectableItem(name: 'ytd', value: 'ytd'),
+      const SelectableItem(name: '1y', value: '1y'),
+      const SelectableItem(name: '3y', value: '3y'),
+      const SelectableItem(name: '5y', value: '5y'),
+    ];
     super.initState();
   }
 
@@ -129,81 +145,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     ),
                   ),
                   const SizedBox(height: 10,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SelectableButton(
-                        text: "1d",
-                        selected: (_sectorSummaryPeriod == "1d"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('1d');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1w",
-                        selected: (_sectorSummaryPeriod == "1w"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('1w');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "mtd",
-                        selected: (_sectorSummaryPeriod == "mtd"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('mtd');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1m",
-                        selected: (_sectorSummaryPeriod == "1m"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('1m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "3m",
-                        selected: (_sectorSummaryPeriod == "3m"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('3m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "6m",
-                        selected: (_sectorSummaryPeriod == "6m"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('6m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "ytd",
-                        selected: (_sectorSummaryPeriod == "ytd"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('ytd');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1y",
-                        selected: (_sectorSummaryPeriod == "1y"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('1y');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "3y",
-                        selected: (_sectorSummaryPeriod == "3y"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('3y');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "5y",
-                        selected: (_sectorSummaryPeriod == "5y"),
-                        onPress: (() {
-                          _setSectorSummaryPeriod('5y');
-                        })
-                      ),
-                    ],
+                  SelectableList(
+                    items: _selectableItemList,
+                    initialValue: _sectorSummaryPeriod,
+                    onPress: ((value) {
+                      _setSectorSummaryPeriod(value);
+                    })
                   ),
                   const SizedBox(height: 10,),
                   SizedBox(
@@ -322,81 +269,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     )
                   ),
                   const SizedBox(height: 10,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SelectableButton(
-                        text: "1d",
-                        selected: (_topCompanyPeriod == "1d"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('1d');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1w",
-                        selected: (_topCompanyPeriod == "1w"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('1w');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "mtd",
-                        selected: (_topCompanyPeriod == "mtd"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('mtd');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1m",
-                        selected: (_topCompanyPeriod == "1m"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('1m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "3m",
-                        selected: (_topCompanyPeriod == "3m"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('3m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "6m",
-                        selected: (_topCompanyPeriod == "6m"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('6m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "ytd",
-                        selected: (_topCompanyPeriod == "ytd"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('ytd');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1y",
-                        selected: (_topCompanyPeriod == "1y"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('1y');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "3y",
-                        selected: (_topCompanyPeriod == "3y"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('3y');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "5y",
-                        selected: (_topCompanyPeriod == "5y"),
-                        onPress: (() {
-                          _setTopCompanyPeriod('5y');
-                        })
-                      ),
-                    ],
+                  SelectableList(
+                    items: _selectableItemList,
+                    initialValue: _topCompanyPeriod,
+                    onPress: ((value) {
+                      _setTopCompanyPeriod(value);
+                    })
                   ),
                   const SizedBox(height: 10,),
                   _generateTopWorseList(type: 'top', codeColor: accentColor, gainColor: Colors.green),
@@ -410,81 +288,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
                     )
                   ),
                   const SizedBox(height: 10,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SelectableButton(
-                        text: "1d",
-                        selected: (_worseCompanyPeriod == "1d"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('1d');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1w",
-                        selected: (_worseCompanyPeriod == "1w"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('1w');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "mtd",
-                        selected: (_worseCompanyPeriod == "mtd"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('mtd');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1m",
-                        selected: (_worseCompanyPeriod == "1m"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('1m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "3m",
-                        selected: (_worseCompanyPeriod == "3m"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('3m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "6m",
-                        selected: (_worseCompanyPeriod == "6m"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('6m');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "ytd",
-                        selected: (_worseCompanyPeriod == "ytd"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('ytd');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "1y",
-                        selected: (_worseCompanyPeriod == "1y"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('1y');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "3y",
-                        selected: (_worseCompanyPeriod == "3y"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('3y');
-                        })
-                      ),
-                      SelectableButton(
-                        text: "5y",
-                        selected: (_worseCompanyPeriod == "5y"),
-                        onPress: (() {
-                          _setWorseCompanyPeriod('5y');
-                        })
-                      ),
-                    ],
+                  SelectableList(
+                    items: _selectableItemList,
+                    initialValue: _worseCompanyPeriod,
+                    onPress: ((value) {
+                      _setWorseCompanyPeriod(value);
+                    })
                   ),
                   const SizedBox(height: 10,),
                   _generateTopWorseList(type: 'worse', codeColor: accentColor, gainColor: secondaryLight),

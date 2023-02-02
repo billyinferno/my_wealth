@@ -353,6 +353,7 @@ class LoginPageState extends State<LoginPage> {
 
   Future<bool> _checkLogin() async {
     bool ret = false;
+    String currJwtToken = UserSharedPreferences.getUserJWT();
 
     await _userAPI.me().then((resp) async {
       // check if user confirmed and not blocked
@@ -370,8 +371,14 @@ class LoginPageState extends State<LoginPage> {
       }
     }).onError((error, stackTrace) async {
       debugPrint("⛔ $error");
-      _isInvalidToken = true;
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to login with existing token"));
+
+      // check if we have jwt token or not?
+      if (currJwtToken.isNotEmpty) {
+        // if already got token but unable to login, it means that the token already invalid
+        _isInvalidToken = true;
+        // show invalid token message on the login screen
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Token expired, please re-login"));
+      }
     });
 
     // return the result of the check login to the caller

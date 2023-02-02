@@ -448,22 +448,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             _brokerTopItem(byText: 'BY', txnText: 'Txn', lotText: 'Lot', bgColor: Colors.green[900], align: Alignment.center, fontWeight: FontWeight.bold),
-                            ...List<Widget>.generate(_brokerTopTransactionBuySell.buy.length, (index) {
-                              BrokerDetailArgs args = BrokerDetailArgs(brokerFirmID: _brokerTopTransactionBuySell.buy[index].brokerSummaryId);
-
-                              return InkWell(
-                                onTap: (() {
-                                  Navigator.pushNamed(context, '/broker/detail', arguments: args);
-                                }),
-                                child: _brokerTopItem(
-                                  bgColor: primaryDark,
-                                  byText: _brokerTopTransactionBuySell.buy[index].brokerSummaryId,
-                                  txnText: _brokerTopTransactionBuySell.buy[index].brokerTotalTxn,
-                                  lotText: formatCurrency(_brokerTopTransactionBuySell.buy[index].brokerTotalLot, true, false, true),
-                                  align: Alignment.center,
-                                ),
-                              );
-                            }),
+                            ..._generateBroketTopTransactionTable(data: _brokerTopTransactionBuySell.buy),
                           ],
                         ),
                       ),
@@ -473,22 +458,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             _brokerTopItem(byText: 'SY', txnText: 'Txn', lotText: 'Lot', bgColor: secondaryDark, align: Alignment.center, fontWeight: FontWeight.bold),
-                            ...List<Widget>.generate(_brokerTopTransactionBuySell.sell.length, (index) {
-                              BrokerDetailArgs args = BrokerDetailArgs(brokerFirmID: _brokerTopTransactionBuySell.sell[index].brokerSummaryId);
-
-                              return InkWell(
-                                onTap: (() {
-                                  Navigator.pushNamed(context, '/broker/detail', arguments: args);
-                                }),
-                                child: _brokerTopItem(
-                                  bgColor: primaryDark,
-                                  byText: _brokerTopTransactionBuySell.sell[index].brokerSummaryId,
-                                  txnText: _brokerTopTransactionBuySell.sell[index].brokerTotalTxn,
-                                  lotText: formatCurrency(_brokerTopTransactionBuySell.sell[index].brokerTotalLot, true, false, true),
-                                  align: Alignment.center,
-                                ),
-                              );
-                            }),
+                            ..._generateBroketTopTransactionTable(data: _brokerTopTransactionBuySell.sell),
                           ],
                         ),
                       ),
@@ -872,22 +842,81 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   }
 
   Widget _generateBrokerTopListTable(List<BrokerSummaryBuyElement> data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        ...List<Widget>.generate(data.length, (index) {
-          return _generateRow(
-            num: (index+1).toString(),
-            code: data[index].brokerSummaryCode,
-            lastPrice: formatIntWithNull(data[index].brokerSummaryLastPrice, false, false),
-            average: formatIntWithNull(data[index].brokerSummaryAverage, false, false),
-            lot: formatIntWithNull(data[index].brokerSummaryLot, true, true),
-            count: data[index].brokerSummaryCount,
-            backgroundColor: primaryDark
-          );
-        }),
-      ],
-    );
+    // check the data length, if it's zero then return it as "data not yet available"
+    // instead generate an empty data
+    if (data.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(2),
+        color: primaryDark,
+        child: const Center(
+          child: Text(
+            "Data Not Yet Available"
+          ),
+        ),
+      );
+    }
+    else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          ...List<Widget>.generate(data.length, (index) {
+            return _generateRow(
+              num: (index+1).toString(),
+              code: data[index].brokerSummaryCode,
+              lastPrice: formatIntWithNull(data[index].brokerSummaryLastPrice, false, false),
+              average: formatIntWithNull(data[index].brokerSummaryAverage, false, false),
+              lot: formatIntWithNull(data[index].brokerSummaryLot, true, true),
+              count: data[index].brokerSummaryCount,
+              backgroundColor: primaryDark
+            );
+          }),
+        ],
+      );
+    }
+  }
+
+  List<Widget> _generateBroketTopTransactionTable({required List<BuySellItem> data}) {
+    // check if data is empty, if empty then we can just print "Data N/A"
+    if (data.isEmpty) {
+      return [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded (
+              child: Container(
+                color: primaryDark,
+                padding: const EdgeInsets.all(2),
+                child: const Center(
+                  child: Text(
+                    "Data N/A",
+                  )
+                ),
+              ),
+            ),
+          ],
+        ),
+      ];
+    }
+    else {
+      return List<Widget>.generate(data.length, (index) {
+        BrokerDetailArgs args = BrokerDetailArgs(brokerFirmID: data[index].brokerSummaryId);
+
+        return InkWell(
+          onTap: (() {
+            Navigator.pushNamed(context, '/broker/detail', arguments: args);
+          }),
+          child: _brokerTopItem(
+            bgColor: primaryDark,
+            byText: data[index].brokerSummaryId,
+            txnText: data[index].brokerTotalTxn,
+            lotText: formatCurrency(data[index].brokerTotalLot, true, false, true),
+            align: Alignment.center,
+          ),
+        );
+      });
+    }
   }
 }

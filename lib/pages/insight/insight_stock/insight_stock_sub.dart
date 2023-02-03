@@ -1,11 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
+import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/industry_summary_args.dart';
 import 'package:my_wealth/utils/arguments/insight_stock_sub_list_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -22,23 +27,26 @@ class InsightStockSubPage extends StatefulWidget {
 
 class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTickerProviderStateMixin {
   final InsightAPI _insightAPI = InsightAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
   final ScrollController _scrollControllerSub = ScrollController();
   final ScrollController _scrollControllerIndustry = ScrollController();
+  final ScrollController _scrollControllerBody = ScrollController();
 
   late UserLoginInfoModel? _userInfo;
   late IndustrySummaryArgs _args;
-  late TabController _tabController;
 
   bool _isLoading = true;
+  late TopWorseCompanyListModel _sectorListTop;
+  late TopWorseCompanyListModel _sectorListWorse;
   List<SectorSummaryModel> _subSectorList = [];
   List<SectorSummaryModel> _industryList = [];
   String _currentPeriod = '1d';
+  String _currentSegment = "summary";
 
   @override
   void initState() {
     _args = widget.args! as IndustrySummaryArgs;
     _isLoading = true;
-    _tabController = TabController(length: 2, vsync: this);
 
     // get user info from shared preferences
     _userInfo = UserSharedPreferences.getUserInfo();
@@ -55,6 +63,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
   void dispose() {
     _scrollControllerSub.dispose();
     _scrollControllerIndustry.dispose();
+    _scrollControllerBody.dispose();
     super.dispose();
   }
 
@@ -94,9 +103,10 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(height: 10,),
-          SizedBox(
+          Container(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             width: double.infinity,
+            color: primaryDark,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -114,57 +124,55 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
           ),
           const SizedBox(height: 10,),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  tabs: const <Widget>[
-                    Tab(text: 'SUB SECTOR',),
-                    Tab(text: 'INDUSTRY',),
+            child: SingleChildScrollView(
+              controller: _scrollControllerBody,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      width: double.infinity,
+                      child: CupertinoSegmentedControl( 
+                        selectedColor: secondaryColor,
+                        groupValue: _currentSegment,
+                        children: <String, Widget>{
+                          "summary": Container(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: const Text("Summary")
+                          ),
+                          "subsector": Container(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: const Text("Sub Sector")
+                          ),
+                          "industry": Container(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: const Text("Industry")
+                          ),
+                        },
+                        onValueChanged: ((String val) {
+                          setState(() {
+                            _currentSegment = val;
+                          });
+                        })
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          _showBodyPage(),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const SizedBox(height: 10,),
-                            Expanded(
-                              child: GridView.count(
-                                controller: _scrollControllerSub,
-                                crossAxisCount: 3,
-                                children: _listItems(type: "subsector", sectorList: _subSectorList),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const SizedBox(height: 10,),
-                            Expanded(
-                              child: GridView.count(
-                                controller: _scrollControllerIndustry,
-                                crossAxisCount: 3,
-                                children: _listItems(type: "industry", sectorList: _industryList),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -172,17 +180,65 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
     );
   }
 
+  Widget _showBodyPage() {
+    switch(_currentSegment) {
+      case "subsector":
+        return SizedBox(
+          width: double.infinity,
+          height: (_subSectorList.length / 3).ceil() * 123.3333333,
+          child: GridView.count(
+            controller: _scrollControllerSub,
+            crossAxisCount: 3,
+            children: _listItems(type: "subsector", sectorList: _subSectorList),
+          ),
+        );
+      case "industry":
+        return SizedBox(
+          width: double.infinity,
+          height: (_industryList.length / 3).ceil() * 123.3333333,
+          child: GridView.count(
+            controller: _scrollControllerIndustry,
+            crossAxisCount: 3,
+            children: _listItems(type: "industry", sectorList: _industryList),
+          ),
+        );
+      default:
+        return SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Center(
+                child: Text(
+                  "Top Performer",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              _generateTopWorseList(type: 'top', codeColor: accentColor, gainColor: Colors.green),
+              const SizedBox(height: 20,),
+              const Center(
+                child: Text(
+                  "Worse Performer",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              _generateTopWorseList(type: 'worse', codeColor: accentColor, gainColor: secondaryColor),
+            ],
+          ),
+        );
+    }
+  }
+
   Widget _periodButton({required double value, required String title}) {
     Color bgColor = riskColor((1 + value), 1, _userInfo!.risk);
     Color textColor = riskColorReverse((1 + value), 1);
-    Color borderColor = (value >= 0 ? const Color.fromARGB(255, 15, 88, 17) : secondaryDark);
-
-    if (value < 0) {
-      borderColor = Colors.red[900]!;
-    }
-    if (value > 0) {
-      borderColor = Colors.green[900]!;
-    }
 
     return GestureDetector(
       onTap: (() {
@@ -193,17 +249,12 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
       child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.all(5),
+            margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
             height: 35,
             width: 35,
             decoration: BoxDecoration(
-              border: Border.all(
-                color: (_currentPeriod == title ? borderColor : primaryDark),
-                style: BorderStyle.solid,
-                width: 1.0
-              ),
-              borderRadius: BorderRadius.circular(5),
-              color: (_currentPeriod == title ? bgColor : primaryLight),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+              color: (_currentPeriod == title ? bgColor : Colors.transparent),
             ),
             child: Center(
               child: Text(
@@ -211,22 +262,16 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: (_currentPeriod == title ? textColor : primaryDark),
+                  color: (_currentPeriod == title ? textColor : accentColor),
                 ),
               ),
             ),
           ),
           Container(
-            margin: const EdgeInsets.fromLTRB(5, 0, 5, 5),
             width: 35,
             height: 10,
             decoration: BoxDecoration(
-              border: Border.all(
-                color: borderColor,
-                style: BorderStyle.solid,
-                width: 1.0
-              ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: (_currentPeriod == title ? const BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5)) : BorderRadius.circular(5)),
               color: bgColor,
             ),
           )
@@ -329,10 +374,170 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
     });
   }
 
+  Widget _generateTopWorseList({required String type, required Color codeColor, required Color gainColor}) {
+    List<CompanyInfo> info = [];
+    
+    if (type == 'top') {
+      // select which info we will display based on the _topPeriod
+      switch(_currentPeriod) {
+        case '1d':
+          info = _sectorListTop.companyList.the1D;
+          break;
+        case '1w':
+          info = _sectorListTop.companyList.the1W;
+          break;
+        case '1m':
+          info = _sectorListTop.companyList.the1M;
+          break;
+        case '3m':
+          info = _sectorListTop.companyList.the3M;
+          break;
+        case '6m':
+          info = _sectorListTop.companyList.the6M;
+          break;
+        case '1y':
+          info = _sectorListTop.companyList.the1Y;
+          break;
+        case '3y':
+          info = _sectorListTop.companyList.the3Y;
+          break;
+        case '5y':
+          info = _sectorListTop.companyList.the5Y;
+          break;
+        default:
+          info = _sectorListTop.companyList.the1D;
+          break;
+      }
+    }
+    else if (type == 'worse') {
+      // select which info we will display based on the _topPeriod
+      switch(_currentPeriod) {
+        case '1d':
+          info = _sectorListWorse.companyList.the1D;
+          break;
+        case '1w':
+          info = _sectorListWorse.companyList.the1W;
+          break;
+        case '1m':
+          info = _sectorListWorse.companyList.the1M;
+          break;
+        case '3m':
+          info = _sectorListWorse.companyList.the3M;
+          break;
+        case '6m':
+          info = _sectorListWorse.companyList.the6M;
+          break;
+        case '1y':
+          info = _sectorListWorse.companyList.the1Y;
+          break;
+        case '3y':
+          info = _sectorListWorse.companyList.the3Y;
+          break;
+        case '5y':
+          info = _sectorListWorse.companyList.the5Y;
+          break;
+        default:
+          info = _sectorListWorse.companyList.the1D;
+          break;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: List.generate(info.length, (index) {
+        return InkWell(
+          onTap: () async {
+            showLoaderDialog(context);
+            await _companyAPI.getCompanyByCode(info[index].code, 'saham').then((resp) {
+              CompanyDetailArgs args = CompanyDetailArgs(
+                companyId: resp.companyId,
+                companyName: resp.companyName,
+                companyCode: info[index].code,
+                companyFavourite: (resp.companyFavourites ?? false),
+                favouritesId: (resp.companyFavouritesId ?? -1),
+                type: "saham",
+              );
+              
+              // remove the loader dialog
+              Navigator.pop(context);
+
+              // go to the company page
+              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+            }).onError((error, stackTrace) {
+              // remove the loader dialog
+              Navigator.pop(context);
+
+              // show the error message
+              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  width: 20,
+                  child: Text(
+                    (index + 1).toString(),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold
+                    ),
+                  )
+                ),
+                const SizedBox(width: 5,),
+                Text(
+                  "(${info[index].code})",
+                  style: TextStyle(
+                    color: codeColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 5,),
+                Expanded(
+                  child: Text(
+                    info[index].name,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 5,),
+                Text(
+                  '${formatDecimal(info[index].gain * 100, 2)}%',
+                  style: TextStyle(
+                    color: gainColor,
+                    fontSize: 12,
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   Future<void> _getIndustrySummary() async {
     // get the industry summary from backend
     showLoaderDialog(context);
     Future.microtask(() async {
+      await _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'top').then((resp) {
+        // set the sub sector list with the response
+        _sectorListTop = resp;
+      });
+
+      await _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'worse').then((resp) {
+        // set the sub sector list with the response
+        _sectorListWorse = resp;
+      });
+
       await _insightAPI.getSubSectorSummary(_args.sectorData.sectorName).then((resp) {
         // set the sub sector list with the response
         _subSectorList = resp;

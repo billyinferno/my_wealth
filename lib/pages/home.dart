@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ionicons/ionicons.dart';
@@ -52,14 +53,18 @@ class HomePageState extends State<HomePage> {
       bottom: true,
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Ionicons.search_outline
-            ),
-            onPressed: (() {
-              // open the search/favorites page
-              _onItemTapped(5);
-            }),
+          leading: Row(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Ionicons.star_outline
+                ),
+                onPressed: (() {
+                  // open the search/favorites page
+                  _onItemTapped(5);
+                }),
+              ),
+            ],
           ),
           title: Center(
             child: Text(
@@ -70,6 +75,63 @@ class HomePageState extends State<HomePage> {
             )
           ),
           actions: <Widget>[
+            IconButton(
+              onPressed: (() {
+                showCupertinoModalPopup<void>(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoActionSheet(
+                    title: const Text(
+                      "Search Symbol",
+                      style: TextStyle(
+                        fontFamily: '--apple-system',
+                      ),
+                    ),
+                    actions: <CupertinoActionSheetAction>[
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          // navigate to reksadana
+                          Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
+                        }),
+                        child: const Text(
+                          "Mutual Fund",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          // navigate to reksadana
+                          Navigator.popAndPushNamed(context, '/favourites/list/saham');
+                        }),
+                        child: const Text(
+                          "Stock",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      CupertinoActionSheetAction(
+                        onPressed: (() {
+                          // navigate to reksadana
+                          Navigator.popAndPushNamed(context, '/favourites/list/crypto');
+                        }),
+                        child: const Text(
+                          "Crypto",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                            color: textPrimary,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }),
+              icon: const Icon(Ionicons.search_outline)
+            ),
             IconButton(
               onPressed: (() {
                 Navigator.pushNamed(context, '/user');

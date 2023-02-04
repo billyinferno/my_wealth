@@ -16,9 +16,9 @@ import 'package:my_wealth/pages/insight/insight_stock/insight_stock_sub_list.dar
 import 'package:my_wealth/pages/login.dart';
 import 'package:my_wealth/pages/portofolio/portofolio_detail.dart';
 import 'package:my_wealth/pages/portofolio/portofolio_list.dart';
-import 'package:my_wealth/pages/users/change_password.dart';
-import 'package:my_wealth/pages/users/update_bot.dart';
-import 'package:my_wealth/pages/users/update_risk.dart';
+import 'package:my_wealth/pages/users/user/change_password.dart';
+import 'package:my_wealth/pages/users/user/update_bot.dart';
+import 'package:my_wealth/pages/users/user/update_risk.dart';
 import 'package:my_wealth/pages/users/user.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';

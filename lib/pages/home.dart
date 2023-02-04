@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage> {
               IconButton(
                 icon: Icon(
                   (_selectedIndex == 5 ? Ionicons.star : Ionicons.star_outline),
-                  color: (_selectedIndex == 5 ? Colors.orange : textPrimary),
+                  color: (_selectedIndex == 5 ? Colors.yellow : textPrimary),
                 ),
                 onPressed: (() {
                   // open the search/favorites page

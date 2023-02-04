@@ -8,6 +8,7 @@ import 'package:my_wealth/storage/local_box.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
@@ -72,370 +73,390 @@ class _UserPageState extends State<UserPage> {
               ),
             ),
             const SizedBox(height: 25,),
-            InkWell(
-              onTap: (() {
-                Navigator.pushNamed(context, '/user/password');
-              }),
-              child: Container(
-                width: double.infinity,
-                height: 60,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  )
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const <Widget>[
-                    Icon(
-                      Ionicons.lock_open,
-                      color: secondaryColor,
-                      size: 20,
-                    ),
-                    SizedBox(width: 10,),
-                    Expanded(
-                      child: Text(
-                        "Change Password",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ),
-                  ],
-                )
-              ),
-            ),
-            InkWell(
-              onTap: (() {
-                Navigator.pushNamed(context, '/user/risk');
-              }),
-              child: Container(
-                width: double.infinity,
-                height: 60,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  )
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const Icon(
-                      Ionicons.warning_outline,
-                      color: secondaryColor,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      child: Text(
-                        "Risk Factor (Current: ${_userInfo!.risk}%)",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ),
-                  ],
-                )
-              ),
-            ),
-            Container(
-              height: 60,
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: primaryLight,
-                    width: 1.0,
-                    style: BorderStyle.solid,
-                  ),
-                )
-              ),
-              width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const <Widget>[
-                            Icon(
-                              Ionicons.eye_outline,
-                              color: secondaryColor,
-                              size: 20,
-                            ),
-                            SizedBox(width: 10,),
-                            Text(
-                              "Visibility",
+                  InkWell(
+                    onTap: (() {
+                      Navigator.pushNamed(context, '/user/password');
+                    }),
+                    child: Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                        )
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: const <Widget>[
+                          Icon(
+                            Ionicons.lock_open,
+                            color: secondaryColor,
+                            size: 20,
+                          ),
+                          SizedBox(width: 10,),
+                          Expanded(
+                            child: Text(
+                              "Change Password",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
-                          ],
-                        ),
-                        const Text(
-                          "Affects after restart",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: primaryLight,
-                            fontStyle: FontStyle.italic,
+                            )
                           ),
-                        ),
-                      ],
+                        ],
+                      )
                     ),
                   ),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _isVisible,
-                    onChanged: ((value) async {
-                      _isVisible = !_isVisible;
-                      await _updateVisibilitySummary(_isVisible).then((resp) {
-                        debugPrint("🔃 Update Visibility to $_isVisible");
-                        setSummaryVisible(_isVisible);
-                      }).onError((error, stackTrace) {
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      });
+                  InkWell(
+                    onTap: (() {
+                      Navigator.pushNamed(context, '/user/risk');
                     }),
-                  ),
-                ],
-              )
-            ),
-            Container(
-              height: 60,
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: primaryLight,
-                    width: 1.0,
-                    style: BorderStyle.solid,
-                  ),
-                )
-              ),
-              width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const <Widget>[
-                            Icon(
-                              Ionicons.list_outline,
-                              color: secondaryColor,
-                              size: 20,
-                            ),
-                            SizedBox(width: 10,),
-                            Text(
-                              "Show Lots",
-                              style: TextStyle(
+                    child: Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                        )
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Icon(
+                            Ionicons.warning_outline,
+                            color: secondaryColor,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10,),
+                          Expanded(
+                            child: Text(
+                              "Risk Factor (Current: ${_userInfo!.risk}%)",
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
-                          ],
-                        ),
-                        const Text(
-                          "Affects after restart",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: primaryLight,
-                            fontStyle: FontStyle.italic,
+                            )
                           ),
-                        ),
-                      ],
+                        ],
+                      )
                     ),
                   ),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showLots,
-                    onChanged: ((value) async {
-                      _showLots = !_showLots;
-                      await _updateShowLots(_showLots).then((resp) {
-                        debugPrint("🔃 Update Show Lots to $_showLots");
-                        setShowLots(_showLots);
-                      }).onError((error, stackTrace) {
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      });
-                    }),
-                  ),
-                ],
-              )
-            ),
-            Container(
-              height: 60,
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: primaryLight,
-                    width: 1.0,
-                    style: BorderStyle.solid,
-                  ),
-                )
-              ),
-              width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const <Widget>[
-                            Icon(
-                              Ionicons.list_outline,
-                              color: secondaryColor,
-                              size: 20,
-                            ),
-                            SizedBox(width: 10,),
-                            Text(
-                              "Show Empty Watchlist",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Text(
-                          "Affects after restart",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: primaryLight,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showEmptyWatchlist,
-                    onChanged: ((value) async {
-                      _showEmptyWatchlist = !_showEmptyWatchlist;
-                      await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
-                        debugPrint("🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
-                        setShowEmptywatchlist(_showEmptyWatchlist);
-                      }).onError((error, stackTrace) {
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      });
-                    }),
-                  ),
-                ],
-              )
-            ),
-            // TODO: to enable once we already have telegram bot token for the price alert, or else
-            // InkWell(
-            //   onTap: (() {
-            //     Navigator.pushNamed(context, '/user/bot');
-            //   }),
-            //   child: Container(
-            //     width: double.infinity,
-            //     height: 60,
-            //     decoration: const BoxDecoration(
-            //       border: Border(
-            //         bottom: BorderSide(
-            //           color: primaryLight,
-            //           width: 1.0,
-            //           style: BorderStyle.solid,
-            //         ),
-            //       )
-            //     ),
-            //     child: Row(
-            //       crossAxisAlignment: CrossAxisAlignment.center,
-            //       mainAxisAlignment: MainAxisAlignment.start,
-            //       children: const <Widget>[
-            //         Icon(
-            //           Ionicons.notifications_outline,
-            //           color: secondaryColor,
-            //           size: 20,
-            //         ),
-            //         SizedBox(width: 10,),
-            //         Expanded(
-            //           child: Text(
-            //             "Telegram Bot Token",
-            //             style: TextStyle(
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           )
-            //         ),
-            //       ],
-            //     )
-            //   ),
-            // ),
-            InkWell(
-              onTap: (() {
-                Future<bool?> result = ShowMyDialog(
-                  title: "Logout",
-                  text: "Do you want to logout?",
-                ).show(context);
-
-                result.then((value) async {
-                  if(value == true) {
-                    await LocalBox.clear().then((_) {
-                      debugPrint("🧹 Cleaning Local Storage");
-                      // navigate back to login
-                      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-                    });
-                  }
-                });
-              }),
-              child: Container(
-                width: double.infinity,
-                height: 60,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  )
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const <Widget>[
-                    Icon(
-                      Ionicons.log_out_outline,
-                      color: secondaryColor,
-                      size: 20,
-                    ),
-                    SizedBox(width: 10,),
-                    Expanded(
-                      child: Text(
-                        "Logout",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                  Container(
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
                         ),
                       )
                     ),
-                  ],
-                )
+                    width: double.infinity,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: const <Widget>[
+                                  Icon(
+                                    Ionicons.eye_outline,
+                                    color: secondaryColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 10,),
+                                  Text(
+                                    "Visibility",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Text(
+                                "Affects after restart",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: primaryLight,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        CupertinoSwitch(
+                          value: _isVisible,
+                          onChanged: ((value) async {
+                            _isVisible = !_isVisible;
+                            await _updateVisibilitySummary(_isVisible).then((resp) {
+                              debugPrint("🔃 Update Visibility to $_isVisible");
+                              setSummaryVisible(_isVisible);
+                            }).onError((error, stackTrace) {
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                            });
+                          }),
+                        ),
+                      ],
+                    )
+                  ),
+                  Container(
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      )
+                    ),
+                    width: double.infinity,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: const <Widget>[
+                                  Icon(
+                                    Ionicons.list_outline,
+                                    color: secondaryColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 10,),
+                                  Text(
+                                    "Show Lots",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Text(
+                                "Affects after restart",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: primaryLight,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        CupertinoSwitch(
+                          value: _showLots,
+                          onChanged: ((value) async {
+                            _showLots = !_showLots;
+                            await _updateShowLots(_showLots).then((resp) {
+                              debugPrint("🔃 Update Show Lots to $_showLots");
+                              setShowLots(_showLots);
+                            }).onError((error, stackTrace) {
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                            });
+                          }),
+                        ),
+                      ],
+                    )
+                  ),
+                  Container(
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      )
+                    ),
+                    width: double.infinity,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: const <Widget>[
+                                  Icon(
+                                    Ionicons.list_outline,
+                                    color: secondaryColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 10,),
+                                  Text(
+                                    "Show Empty Watchlist",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Text(
+                                "Affects after restart",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: primaryLight,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        CupertinoSwitch(
+                          value: _showEmptyWatchlist,
+                          onChanged: ((value) async {
+                            _showEmptyWatchlist = !_showEmptyWatchlist;
+                            await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
+                              debugPrint("🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
+                              setShowEmptywatchlist(_showEmptyWatchlist);
+                            }).onError((error, stackTrace) {
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                            });
+                          }),
+                        ),
+                      ],
+                    )
+                  ),
+                  // TODO: to enable once we already have telegram bot token for the price alert, or else
+                  // InkWell(
+                  //   onTap: (() {
+                  //     Navigator.pushNamed(context, '/user/bot');
+                  //   }),
+                  //   child: Container(
+                  //     width: double.infinity,
+                  //     height: 60,
+                  //     decoration: const BoxDecoration(
+                  //       border: Border(
+                  //         bottom: BorderSide(
+                  //           color: primaryLight,
+                  //           width: 1.0,
+                  //           style: BorderStyle.solid,
+                  //         ),
+                  //       )
+                  //     ),
+                  //     child: Row(
+                  //       crossAxisAlignment: CrossAxisAlignment.center,
+                  //       mainAxisAlignment: MainAxisAlignment.start,
+                  //       children: const <Widget>[
+                  //         Icon(
+                  //           Ionicons.notifications_outline,
+                  //           color: secondaryColor,
+                  //           size: 20,
+                  //         ),
+                  //         SizedBox(width: 10,),
+                  //         Expanded(
+                  //           child: Text(
+                  //             "Telegram Bot Token",
+                  //             style: TextStyle(
+                  //               fontWeight: FontWeight.bold,
+                  //             ),
+                  //           )
+                  //         ),
+                  //       ],
+                  //     )
+                  //   ),
+                  // ),
+                  InkWell(
+                    onTap: (() {
+                      Future<bool?> result = ShowMyDialog(
+                        title: "Logout",
+                        text: "Do you want to logout?",
+                      ).show(context);
+            
+                      result.then((value) async {
+                        if(value == true) {
+                          await LocalBox.clear().then((_) {
+                            debugPrint("🧹 Cleaning Local Storage");
+                            // navigate back to login
+                            Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                          });
+                        }
+                      });
+                    }),
+                    child: Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                        )
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: const <Widget>[
+                          Icon(
+                            Ionicons.log_out_outline,
+                            color: secondaryColor,
+                            size: 20,
+                          ),
+                          SizedBox(width: 10,),
+                          Expanded(
+                            child: Text(
+                              "Logout",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ),
+                        ],
+                      )
+                    ),
+                  ),  
+                ],
               ),
             ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                "Application Version: ${Globals.appVersion}",
+                style: const TextStyle(
+                  color: primaryLight,
+                  fontSize: 10,
+                  fontStyle: FontStyle.italic
+                ),
+              )
+            ),
+            const SizedBox(height: 30,),
           ],
         ),
       ),

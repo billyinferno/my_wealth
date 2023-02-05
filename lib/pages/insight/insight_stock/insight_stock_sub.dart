@@ -123,6 +123,33 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
             ),
           ),
           const SizedBox(height: 10,),
+          SizedBox(
+            width: double.infinity,
+            child: CupertinoSegmentedControl( 
+              selectedColor: secondaryColor,
+              groupValue: _currentSegment,
+              children: <String, Widget>{
+                "summary": Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: const Text("Summary")
+                ),
+                "subsector": Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: const Text("Sub Sector")
+                ),
+                "industry": Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: const Text("Industry")
+                ),
+              },
+              onValueChanged: ((String val) {
+                setState(() {
+                  _currentSegment = val;
+                });
+              })
+            ),
+          ),
+          const SizedBox(height: 10,),
           Expanded(
             child: SingleChildScrollView(
               controller: _scrollControllerBody,
@@ -133,33 +160,6 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(
-                      width: double.infinity,
-                      child: CupertinoSegmentedControl( 
-                        selectedColor: secondaryColor,
-                        groupValue: _currentSegment,
-                        children: <String, Widget>{
-                          "summary": Container(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: const Text("Summary")
-                          ),
-                          "subsector": Container(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: const Text("Sub Sector")
-                          ),
-                          "industry": Container(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: const Text("Industry")
-                          ),
-                        },
-                        onValueChanged: ((String val) {
-                          setState(() {
-                            _currentSegment = val;
-                          });
-                        })
-                      ),
-                    ),
-                    const SizedBox(height: 10,),
                     SizedBox(
                       width: double.infinity,
                       child: Column(
@@ -175,6 +175,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
               ),
             ),
           ),
+          const SizedBox(height: 30,), // safe are for bottom of the screen
         ],
       ),
     );

@@ -576,6 +576,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                     }),
                   ),
                 ),
+                const SizedBox(height: 30,),
               ],
             );
           }),

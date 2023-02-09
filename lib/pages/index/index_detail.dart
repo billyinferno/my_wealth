@@ -767,6 +767,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
         }),
       ),
     ));
+
+    // add another spacer on the end
+    table.add(const SizedBox(height: 30,));
     
     return table;
   }

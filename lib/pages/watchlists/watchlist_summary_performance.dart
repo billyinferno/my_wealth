@@ -42,6 +42,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _max;
   late double _min;
   late double _avg;
+  late double _maxPL;
+  late double _minPL;
   late int _totalData;
 
   @override
@@ -327,6 +329,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       plColor = secondaryDark;
                     }
                   }
+
+                  bool isPLMinMax = false;
+                  if (plDiff == _maxPL || plDiff == _minPL) {
+                    // means for this we will need to put color on the container instead of the text
+                    isPLMinMax = true;
+                    plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
+                  }
                   
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,11 +366,12 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.all(5),
+                          color: (isPLMinMax ? plDiffColor : Colors.transparent),
                           child: Text(
                             formatCurrencyWithNull(plDiff, false, false, false, 0),
                             textAlign: TextAlign.center,
                             style: _smallFont.copyWith(
-                              color: plDiffColor,
+                              color: (isPLMinMax ? Colors.white : plDiffColor),
                             ),
                           ),
                         ),
@@ -371,6 +381,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 },
               ),
             ),
+            const SizedBox(height: 30,),
           ],
         ),
       ),
@@ -426,13 +437,39 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         double max = double.infinity * (-1);
         double min = double.infinity;
         double avg = 0;
+        double plDiffMin = double.infinity;
+        double plDiffMax = double.infinity * (-1);
+        double? plBefore;
+        double? plDiff;
 
-        for(SummaryPerformanceModel dt in _summaryPerfData) {
+        for(int i=0; i < _summaryPerfData.length; i++) {
+          SummaryPerformanceModel dt = _summaryPerfData[i];
+
           // add this data to the performance data
           _perfData.add(PerformanceData(date: dt.plDate, gain: dt.plValue));
 
           // got data, so now check if this is max or not
           _totalData++;
+
+          // check if this is first PL or not?
+          if (plBefore == null) {
+            plBefore = dt.plValue;
+          }
+          else {
+            plDiff = dt.plValue - plBefore;
+
+            // check if this is plDiffMax or plDiffMin
+            if (plDiff > plDiffMax) {
+              plDiffMax = plDiff;
+            }
+
+            if (plDiff < plDiffMin) {
+              plDiffMin = plDiff;
+            }
+
+            // set plBefore to pl
+            plBefore = dt.plValue;
+          }
 
           // check if this is min or max?
           if (dt.plValue > max) {
@@ -451,6 +488,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           _max = max;
           _min = min;
           _avg = avg / _totalData;
+          _maxPL = plDiffMax;
+          _minPL = plDiffMin;
         }
       });
     }

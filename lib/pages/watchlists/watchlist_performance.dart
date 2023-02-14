@@ -42,6 +42,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late Color _minColor;
   late double? _avg;
   late Color _avgColor;
+  late double? _maxPL;
+  late double? _minPL;
   late int _totalData;
 
   @override
@@ -93,6 +95,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     _minColor = textPrimary;
     _avg = null;
     _avgColor = textPrimary;
+    _maxPL = null;
+    _minPL = null;
     
     // get initial data
     _getData = _getInitData();
@@ -439,6 +443,13 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryDark : Colors.green[900]!));
                   }
 
+                  bool isPLMinMax = false;
+                  if (plDiff == _maxPL || plDiff == _minPL) {
+                    // means for this we will need to put color on the container instead of the text
+                    isPLMinMax = true;
+                    plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
+                  }
+
 
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,11 +510,12 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.all(5),
+                          color: (isPLMinMax ? plDiffColor : Colors.transparent),
                           child: Text(
                             formatCurrencyWithNull(plDiff, false, false, true, 0),
                             textAlign: TextAlign.center,
                             style: _smallFont.copyWith(
-                              color: plDiffColor,
+                              color: (isPLMinMax ? Colors.white : plDiffColor),
                             ),
                           ),
                         ),
@@ -561,8 +573,14 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
         double min = double.infinity;
         double avg = 0;
         double pl = 0;
+        double plDiffMin = double.infinity;
+        double plDiffMax = double.infinity * (-1);
+        double? plBefore;
+        double? plDiff;
 
-        for(WatchlistPerformanceModel dt in _watchlistPerformance) {
+        for(int i=0; i < _watchlistPerformance.length; i++) {
+          WatchlistPerformanceModel dt = _watchlistPerformance[i];
+
           // check if we got the data or not?
           if (dt.buyTotal > 0) {
 
@@ -570,6 +588,26 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             _totalData++;
 
             pl = (dt.buyTotal * dt.currentPrice) - (dt.buyTotal * dt.buyAvg);
+
+            // check if this is first PL or not?
+            if (plBefore == null) {
+              plBefore = pl;
+            }
+            else {
+              plDiff = pl - plBefore;
+
+              // check if this is plDiffMax or plDiffMin
+              if (plDiff > plDiffMax) {
+                plDiffMax = plDiff;
+              }
+
+              if (plDiff < plDiffMin) {
+                plDiffMin = plDiff;
+              }
+
+              // set plBefore to pl
+              plBefore = pl;
+            }
 
             // check if this is min or max?
             if (pl > max) {
@@ -609,6 +647,9 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
           else if (_avg! < 0) {
             _avgColor = secondaryColor;
           }
+
+          _maxPL = plDiffMax;
+          _minPL = plDiffMin;
         }
       });
     }

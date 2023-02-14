@@ -352,6 +352,59 @@ class _UserPageState extends State<UserPage> {
                       ],
                     )
                   ),
+                  Container(
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      )
+                    ),
+                    width: double.infinity,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: const <Widget>[
+                                  Icon(
+                                    Ionicons.information,
+                                    color: secondaryColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 10,),
+                                  Text(
+                                    "Application Version",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                Globals.appVersion,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: primaryLight,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
                   // TODO: to enable once we already have telegram bot token for the price alert, or else
                   // InkWell(
                   //   onTap: (() {
@@ -444,17 +497,6 @@ class _UserPageState extends State<UserPage> {
                   ),  
                 ],
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                "Application Version: ${Globals.appVersion}",
-                style: const TextStyle(
-                  color: primaryLight,
-                  fontSize: 10,
-                  fontStyle: FontStyle.italic
-                ),
-              )
             ),
             const SizedBox(height: 30,),
           ],

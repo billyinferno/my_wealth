@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
+import 'package:my_wealth/model/watchlist_history_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
@@ -14,6 +16,7 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/compute_watchlist.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
@@ -33,14 +36,20 @@ class WatchlistsPage extends StatefulWidget {
 
 class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProviderStateMixin {
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
-  final ScrollController _scrollController = ScrollController();
-  final ScrollController _scrollController2 = ScrollController();
+  final ScrollController _scrollControllerMutual = ScrollController();
+  final ScrollController _scrollControllerStock = ScrollController();
+  final ScrollController _scrollControllerCrypto = ScrollController();
+  final ScrollController _scrollControllerGold = ScrollController();
+  final ScrollController _scrollControllerHistory = ScrollController();
+  final DateFormat _df = DateFormat("dd/MM/yyyy");
+  final TextStyle _historyStyle = const TextStyle(fontSize: 11, color: textPrimary);
   late TabController _tabController;
   late UserLoginInfoModel? _userInfo;
   late List<WatchlistListModel>? _watchlistReksadana;
   late List<WatchlistListModel>? _watchlistSaham;
   late List<WatchlistListModel>? _watchlistCrypto;
   late List<WatchlistListModel>? _watchlistGold;
+  late List<WatchlistHistoryModel>? _watchlistHistory;
   late ComputeWatchlistResult? _watchlistAll;
   
   bool _isShowedLots = false;
@@ -55,6 +64,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _watchlistSaham = WatchlistSharedPreferences.getWatchlist("saham");
     _watchlistCrypto = WatchlistSharedPreferences.getWatchlist("crypto");
     _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
+    _watchlistHistory = WatchlistSharedPreferences.getWatchlistHistory();
 
     // sort the watchlist
     _watchlistReksadana = _sortWatchlist(_watchlistReksadana!);
@@ -68,15 +78,18 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _isShowedLots = _userInfo!.showLots;
     _isShowEmptyWatchlist = _userInfo!.showEmptyWatchlist;
 
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
   void dispose() {
     super.dispose();
     _tabController.dispose();
-    _scrollController.dispose();
-    _scrollController2.dispose();
+    _scrollControllerMutual.dispose();
+    _scrollControllerStock.dispose();
+    _scrollControllerCrypto.dispose();
+    _scrollControllerGold.dispose();
+    _scrollControllerHistory.dispose();
   }
 
   @override
@@ -88,6 +101,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         _watchlistSaham = watchlistProvider.watchlistSaham;
         _watchlistCrypto = watchlistProvider.watchlistCrypto;
         _watchlistGold = watchlistProvider.watchlistGold;
+        _watchlistHistory = watchlistProvider.watchlistHistory;
 
         // sort the watchlist
         _watchlistReksadana = _sortWatchlist(_watchlistReksadana!);
@@ -222,6 +236,12 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       Tab(text: 'STOCK',),
                       Tab(text: 'CRYPTO',),
                       Tab(text: 'GOLD'),
+                      Tab(icon: Icon(
+                          Ionicons.document_text,
+                          size: 12,
+                          color: accentColor,
+                        ),
+                      ),
                     ],
                   ),
                   Expanded(
@@ -232,6 +252,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         _generateSaham(),
                         _generateCrypto(),
                         _generateGold(),
+                        _generateHistory(),
                       ],
                     ),
                   ),
@@ -254,7 +275,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         value: _watchlistAll!.totalValueReksadana,
         isInLot: false,
         shareTitle: "Share",
-        checkThousandOnPrice: false
+        checkThousandOnPrice: false,
+        scrollController: _scrollControllerMutual,
       );
     }
     return const Center(child: Text("No mutual fund watchlists"));
@@ -270,7 +292,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         value: _watchlistAll!.totalValueSaham,
         isInLot: true,
         shareTitle: "Lot",
-        checkThousandOnPrice: false
+        checkThousandOnPrice: false,
+        scrollController: _scrollControllerStock,
       );
     }
     return const Center(child: Text("No stock watchlists"));
@@ -286,7 +309,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         value: _watchlistAll!.totalValueCrypto,
         isInLot: false,
         shareTitle: "Coin",
-        checkThousandOnPrice: true
+        checkThousandOnPrice: true,
+        scrollController: _scrollControllerCrypto,
       );
     }
     return const Center(child: Text("No crypto watchlists"));
@@ -302,13 +326,112 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         value:  _watchlistAll!.totalValueGold,
         isInLot: false,
         shareTitle: "Gram",
-        checkThousandOnPrice: true
+        checkThousandOnPrice: true,
+        scrollController: _scrollControllerGold,
       );
     }
     return const Center(child: Text("Error while get gold watchlist"));
   }
 
-  Widget _generateWatchlistItem({required String type, List<WatchlistListModel>? data, required double dayGain, required double cost, required double value, required bool isInLot, required String shareTitle, required bool checkThousandOnPrice}) {
+  Widget _generateHistory() {
+    if (_watchlistHistory!.isNotEmpty) {
+      return RefreshIndicator(
+        onRefresh: (() async {
+          await _refreshWatchlist();
+          // once finished rebuild widget
+          setState(() {
+            // just rebuild
+          });
+        }),
+        color: accentColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: _scrollControllerHistory,
+                itemCount: (_watchlistHistory!.length),
+                itemBuilder: ((context, index) {
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid
+                        )
+                      )
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          (_watchlistHistory![index].watchlistDetailShare < 0 ? Ionicons.remove_circle : Ionicons.add_circle),
+                          color: (_watchlistHistory![index].watchlistDetailShare < 0 ? secondaryColor : Colors.green),
+                          size: 15,
+                        ),
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          child: Text.rich(
+                            TextSpan(
+                              text: _watchlistHistory![index].watchlistDetailShare < 0 ? "Sell": "Buy",
+                              style: _historyStyle,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: " "
+                                ),
+                                TextSpan(
+                                  text: _watchlistHistory![index].companyName,
+                                  style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const TextSpan(
+                                  text: " for ",
+                                ),
+                                TextSpan(
+                                  text: formatDecimal(makePositive(_watchlistHistory![index].watchlistDetailShare), 2),
+                                  style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const TextSpan(text: "@"),
+                                TextSpan(
+                                  text: formatCurrency(_watchlistHistory![index].watchlistDetailPrice),
+                                  style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: " (${formatCurrency(makePositive(_watchlistHistory![index].watchlistDetailShare) * _watchlistHistory![index].watchlistDetailPrice)})",
+                                  style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const TextSpan(text: " at "),
+                                TextSpan(
+                                  text: _df.format(_watchlistHistory![index].watchlistDetailDate.toLocal()),
+                                  style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            // "${_watchlistHistory![index].watchlistDetailShare < 0 ? "Sell": "Buy"} ${_watchlistHistory![index].companyName} for ${formatDecimal(_watchlistHistory![index].watchlistDetailShare, 2)}@${formatCurrency(_watchlistHistory![index].watchlistDetailPrice)} at ${_df.format(_watchlistHistory![index].watchlistDetailDate.toLocal())}",
+                            // style: const TextStyle(
+                            //   fontSize: 12,
+                            // ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return const Center(child: Text("Error while get gold watchlist"));
+  }
+
+  Widget _generateWatchlistItem({required String type, List<WatchlistListModel>? data, required double dayGain, required double cost, required double value, required bool isInLot, required String shareTitle, required bool checkThousandOnPrice, required ScrollController scrollController}) {
     return RefreshIndicator(
       onRefresh: (() async {
         await _refreshWatchlist();
@@ -327,7 +450,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
             child: ListView.builder(
               shrinkWrap: true,
               physics: const AlwaysScrollableScrollPhysics(),
-              controller: _scrollController,
+              controller: scrollController,
               itemCount: (data!.length + 1), // add 1 for the summary
               itemBuilder: ((context, index) {
                 // for the first index we will return the summary
@@ -501,6 +624,17 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         debugPrint("🔃 Refresh watchlist gold");
       }).onError((error, stackTrace) {
         throw Exception("❌ Error when refresh watchlist gold");
+      });
+
+      // get history
+      await _watchlistAPI.getWatchlistHistory().then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlistHistory(resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
+        debugPrint("🔃 Refresh watchlist history");
+      }).onError((error, stackTrace) {
+        throw Exception("❌ Error when refresh watchlist history");
       });
     })).whenComplete(() {
       Navigator.pop(context);

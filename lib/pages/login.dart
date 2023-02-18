@@ -595,6 +595,12 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<CompanyProvider>(context, listen: false).setSectorList(resp);
         debugPrint('🔟1️⃣ Get Saham Sector Name List');
       }),
+      _watchlistApi.getWatchlistHistory().then((resp) async {
+        await WatchlistSharedPreferences.setWatchlistHistory(resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
+        debugPrint("🔟2️⃣ Get user watchlist history");
+      }),
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen

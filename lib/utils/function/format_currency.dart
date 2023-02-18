@@ -107,3 +107,10 @@ String formatIntWithNull(int? value, [bool? checkThousand, bool? showDecimal, in
   }
   return formatCurrency(value.toDouble(), isCheckThousand, isShowDecimal, true, decimalNum);
 }
+
+double makePositive(double value) {
+  if (value < 0) {
+    return value * -1;
+  }
+  return value;
+}

@@ -94,10 +94,10 @@ class _UserPageState extends State<UserPage> {
                           ),
                         )
                       ),
-                      child: Row(
+                      child: const Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: const <Widget>[
+                        children: <Widget>[
                           Icon(
                             Ionicons.lock_open,
                             color: secondaryColor,
@@ -170,7 +170,7 @@ class _UserPageState extends State<UserPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
+                        const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -178,7 +178,7 @@ class _UserPageState extends State<UserPage> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: const <Widget>[
+                                children: <Widget>[
                                   Icon(
                                     Ionicons.eye_outline,
                                     color: secondaryColor,
@@ -193,7 +193,7 @@ class _UserPageState extends State<UserPage> {
                                   ),
                                 ],
                               ),
-                              const Text(
+                              Text(
                                 "Affects after restart",
                                 style: TextStyle(
                                   fontSize: 12,
@@ -236,7 +236,7 @@ class _UserPageState extends State<UserPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
+                        const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -244,7 +244,7 @@ class _UserPageState extends State<UserPage> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: const <Widget>[
+                                children: <Widget>[
                                   Icon(
                                     Ionicons.list_outline,
                                     color: secondaryColor,
@@ -259,7 +259,7 @@ class _UserPageState extends State<UserPage> {
                                   ),
                                 ],
                               ),
-                              const Text(
+                              Text(
                                 "Affects after restart",
                                 style: TextStyle(
                                   fontSize: 12,
@@ -302,7 +302,7 @@ class _UserPageState extends State<UserPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
+                        const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -310,7 +310,7 @@ class _UserPageState extends State<UserPage> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: const <Widget>[
+                                children: <Widget>[
                                   Icon(
                                     Ionicons.list_outline,
                                     color: secondaryColor,
@@ -325,7 +325,7 @@ class _UserPageState extends State<UserPage> {
                                   ),
                                 ],
                               ),
-                              const Text(
+                              Text(
                                 "Affects after restart",
                                 style: TextStyle(
                                   fontSize: 12,
@@ -373,10 +373,10 @@ class _UserPageState extends State<UserPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Row(
+                              const Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: const <Widget>[
+                                children: <Widget>[
                                   Icon(
                                     Ionicons.information,
                                     color: secondaryColor,
@@ -473,10 +473,10 @@ class _UserPageState extends State<UserPage> {
                           ),
                         )
                       ),
-                      child: Row(
+                      child: const Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: const <Widget>[
+                        children: <Widget>[
                           Icon(
                             Ionicons.log_out_outline,
                             color: secondaryColor,

@@ -200,10 +200,10 @@ class _PortofolioPageState extends State<PortofolioPage> {
             borderRadius: BorderRadius.circular(100),
           ),
           padding: const EdgeInsets.all(10),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
+            children: <Widget>[
               Icon(
                 Ionicons.eye_off,
                 color: primaryLight,

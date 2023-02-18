@@ -434,10 +434,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       )
                     )
                   ),
-                  child: Row(
+                  child: const Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Expanded(
                         child: Text(
                           "Date",

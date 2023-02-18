@@ -117,10 +117,10 @@ class LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 25,
             ),
-            Row(
+            const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const <Widget>[
+              children: <Widget>[
                 Text(
                   "my",
                   style: TextStyle(
@@ -154,7 +154,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginScreen() {
-    final mq = MediaQueryData.fromWindow(window);
+    final mq = MediaQueryData.fromView(window);
     final double height = mq.size.height;
     
     return SingleChildScrollView(
@@ -167,10 +167,10 @@ class LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Row(
+            const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const <Widget>[
+              children: <Widget>[
                 Text(
                   "my",
                   style: TextStyle(

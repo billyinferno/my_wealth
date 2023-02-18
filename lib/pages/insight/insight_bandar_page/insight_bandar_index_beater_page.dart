@@ -79,10 +79,10 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                 okayColor: secondaryLight,
               ).show(context);
             }),
-            child: Row(
+            child: const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const <Widget>[
+              children: <Widget>[
                 Text(
                   "Index Beater",
                   style: TextStyle(

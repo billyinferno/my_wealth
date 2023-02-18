@@ -11,10 +11,10 @@ class CommonLoadingPage extends StatelessWidget {
       body: Container(
         width: double.infinity,
         color: primaryColor,
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const <Widget>[
+          children: <Widget>[
             SpinKitCubeGrid(
               color: secondaryColor,
               size: 25,

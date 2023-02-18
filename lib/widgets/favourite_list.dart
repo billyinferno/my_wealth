@@ -49,10 +49,10 @@ class FavouriteList extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 10,),
-                  Row(
+                  const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Expanded(
                         child: Text(
                           "Date",

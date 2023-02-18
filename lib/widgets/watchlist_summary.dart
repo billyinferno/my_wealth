@@ -133,10 +133,10 @@ class WatchlistSummary extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Column(
+                      const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: const <Widget>[
+                        children: <Widget>[
                           Text(
                             "TOTAL GAIN",
                             style: TextStyle(
@@ -166,10 +166,10 @@ class WatchlistSummary extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10,),
-                  Row(
+                  const Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const <Widget>[
+                    children: <Widget>[
                       WatchlistSummaryInfo(text: "DAY GAIN", amount: null),
                       SizedBox(width: 10,),
                       WatchlistSummaryInfo(text: "VALUE", amount: null),

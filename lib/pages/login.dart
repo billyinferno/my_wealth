@@ -533,73 +533,91 @@ class LoginPageState extends State<LoginPage> {
         await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
-        debugPrint('🔟 Get Worse Company Summary List');
+        debugPrint('🔟1️⃣ Get Worse Company Summary List');
       }),
       _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('saham', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
-        debugPrint('🔟 Get Top Reksadana Saham Summary List');
+        debugPrint('🔟2️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
-        debugPrint('🔟 Get Top Reksadana Campuran Summary List');
+        debugPrint('🔟3️⃣ Get Top Reksadana Campuran Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
-        debugPrint('🔟 Get Top Reksadana Pasar Uang Summary List');
+        debugPrint('🔟4️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
-        debugPrint('🔟 Get Top Reksadana Pendapatan Tetap Summary List');
+        debugPrint('🔟5️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
-        debugPrint('🔟 Get Top Reksadana Saham Summary List');
+        debugPrint('🔟6️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
-        debugPrint('🔟 Get Top Reksadana Campuran Summary List');
+        debugPrint('🔟7️⃣ Get Top Reksadana Campuran Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
-        debugPrint('🔟 Get Top Reksadana Pasar Uang Summary List');
+        debugPrint('🔟8️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
-        debugPrint('🔟 Get Top Reksadana Pendapatan Tetap Summary List');
+        debugPrint('🔟9️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getBandarInteresting().then((resp) async {
         await InsightSharedPreferences.setBandarInterestingList(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setBandarInterestingList(resp);
-        debugPrint('🔟 Get Bandar Interesting List');
+        debugPrint('🔟🔟 Get Bandar Interesting List');
       }),
       _companyAPI.getSectorNameList().then((resp) async {
         await CompanySharedPreferences.setSectorNameList(resp);
         if (!mounted) return;
         Provider.of<CompanyProvider>(context, listen: false).setSectorList(resp);
-        debugPrint('🔟1️⃣ Get Saham Sector Name List');
+        debugPrint('🔟🔟1️⃣ Get Saham Sector Name List');
       }),
       _watchlistApi.getWatchlistHistory().then((resp) async {
         await WatchlistSharedPreferences.setWatchlistHistory(resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
-        debugPrint("🔟2️⃣ Get user watchlist history");
+        debugPrint("🔟🔟2️⃣ Get user watchlist history");
+      }),
+      _insightAPI.getStockNewListed().then((resp) async {
+        await InsightSharedPreferences.setStockNewListed(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockNewListed(resp);
+        debugPrint('🔟🔟3️⃣ Get Stock New Listed');
+      }),
+      _insightAPI.getStockDividendList().then((resp) async {
+        await InsightSharedPreferences.setStockDividendList(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockDividendList(resp);
+        debugPrint('🔟🔟4️⃣ Get Stock Dividend List');
+      }),
+      _insightAPI.getStockSplitList().then((resp) async {
+        await InsightSharedPreferences.setStockSplitList(resp);
+        if (!mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
+        debugPrint('🔟🔟5️⃣ Get Stock Split List');
       }),
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen

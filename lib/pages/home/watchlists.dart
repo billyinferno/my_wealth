@@ -355,6 +355,22 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 controller: _scrollControllerHistory,
                 itemCount: (_watchlistHistory!.length),
                 itemBuilder: ((context, index) {
+                  String type = "";
+                  switch(_watchlistHistory![index].watchlistType) {
+                    case 'reksadana':
+                      type = "Mutual Fund";
+                      break;
+                    case 'saham':
+                      type = "Stock";
+                      break;
+                    case 'crypto':
+                      type = "Crypto";
+                      break;
+                    default:
+                      type = "";
+                      break;
+                  }
+
                   return Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
@@ -382,8 +398,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                               text: _watchlistHistory![index].watchlistDetailShare < 0 ? "Sell": "Buy",
                               style: _historyStyle,
                               children: <TextSpan>[
-                                const TextSpan(
-                                  text: " "
+                                TextSpan(
+                                  text: (type.isNotEmpty ? " $type " : " ")
                                 ),
                                 TextSpan(
                                   text: _watchlistHistory![index].companyName,

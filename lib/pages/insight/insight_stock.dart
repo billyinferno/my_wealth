@@ -1,8 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/sector_name_list_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
+import 'package:my_wealth/model/stock_dividend_list_model.dart';
+import 'package:my_wealth/model/stock_new_listed_model.dart';
+import 'package:my_wealth/model/stock_split_list_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/provider/company_provider.dart';
@@ -33,6 +38,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
   final ScrollController _scrollController = ScrollController();
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
+  final DateTime _todayDate = DateTime.now();
+  final DateFormat _df = DateFormat('dd MMM yyyy');
 
   late List<SectorSummaryModel> _sectorSummaryList;
   late TopWorseCompanyListModel _topCompanyList;
@@ -40,6 +47,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
   late List<SectorNameModel> _sectorNameList;
   late UserLoginInfoModel? _userInfo;
   late List<SelectableItem> _selectableItemList;
+  late List<StockNewListedModel> _stockNewListedList;
+  late List<StockDividendListModel> _stockDividendList;
+  late List<StockSplitListModel> _stockSplitList;
 
   String _sectorSummaryPeriod = "1d";
   String _topCompanyPeriod = "1d";
@@ -51,6 +61,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
     _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList('top');
     _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList('worse');
     _sectorNameList = CompanySharedPreferences.getSectorNameList();
+    _stockNewListedList = InsightSharedPreferences.getStockNewListed();
+    _stockDividendList = InsightSharedPreferences.getStockDividendList();
+    _stockSplitList = InsightSharedPreferences.getStockSplitList();
 
     _userInfo = UserSharedPreferences.getUserInfo();
 
@@ -84,7 +97,11 @@ class _InsightStockPageState extends State<InsightStockPage> {
         _sectorSummaryList = (insightProvider.sectorSummaryList ?? []);
         _topCompanyList = insightProvider.topCompanyList!;
         _worseCompanyList = insightProvider.worseCompanyList!;
-        _sectorNameList = companyProvider.sectorNameList!;
+        _sectorNameList = (companyProvider.sectorNameList ?? []);
+        _stockNewListedList = (insightProvider.stockNewListed ?? []);
+        _stockDividendList = (insightProvider.stockDividendList ?? []);
+        _stockSplitList = (insightProvider.stockSplitList ?? []);
+
 
         return RefreshIndicator(
           color: accentColor,
@@ -363,12 +380,409 @@ class _InsightStockPageState extends State<InsightStockPage> {
                       }),
                     ),
                   ),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "Stock Newly Listed",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ),
+                  const SizedBox(height: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List<Widget>.generate(
+                      _stockNewListedList.length,
+                      ((index) {
+                        return InkWell(
+                          onTap: (() async {
+                            // check if the listed date is more than today date?
+                            if (_stockNewListedList[index].listedDate != null) {
+                              if (_stockNewListedList[index].listedDate!.isBefore(_todayDate)) {
+                                // able to click and go to the company
+                                showLoaderDialog(context);
+                                await _companyAPI.getCompanyByCode(_stockNewListedList[index].code, 'saham').then((resp) {
+                                  CompanyDetailArgs args = CompanyDetailArgs(
+                                    companyId: resp.companyId,
+                                    companyName: resp.companyName,
+                                    companyCode: _stockNewListedList[index].code,
+                                    companyFavourite: (resp.companyFavourites ?? false),
+                                    favouritesId: (resp.companyFavouritesId ?? -1),
+                                    type: "saham",
+                                  );
+                                  
+                                  // remove the loader dialog
+                                  Navigator.pop(context);
+
+                                  // go to the company page
+                                  Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                                }).onError((error, stackTrace) {
+                                  // remove the loader dialog
+                                  Navigator.pop(context);
+
+                                  // show the error message
+                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                                });
+                              }
+                            }
+                            else {
+                              showCupertinoDialog(
+                                context: context,
+                                builder: ((BuildContext context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text("Not Available"),
+                                    content: Text("Listed date for ${_stockNewListedList[index].code} is not exists"),
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
+                                        onPressed: (() {
+                                          Navigator.pop(context);
+                                        }),
+                                        child: const Text("OK")
+                                      )
+                                    ],
+                                  );
+                                })
+                              );
+                            }
+                          }),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                )
+                              )
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text.rich(
+                                  TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "(${_stockNewListedList[index].code}) ",
+                                        style: const TextStyle(
+                                          color: accentColor,
+                                          fontWeight: FontWeight.bold,
+                                        )
+                                      ),
+                                      TextSpan(
+                                        text: _stockNewListedList[index].name,
+                                        style: const TextStyle(
+                                          color: textPrimary,
+                                          fontWeight: FontWeight.bold,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      ),
+                                    ]
+                                  ),
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockNewListedList[index].listedShares, true, true, 2)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Shares Offered", value: formatIntWithNull(_stockNewListedList[index].numOfShares, true, true, 2)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "% Shares", value: "${formatDecimalWithNull((_stockNewListedList[index].numOfShares ?? 0) / (_stockNewListedList[index].listedShares ?? 1), 100, 2)}%"),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Offering Price", value: formatCurrencyWithNull(_stockNewListedList[index].offering as double, false, false, false, 0)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Fund Raised", value: formatIntWithNull(_stockNewListedList[index].fundRaised, true, true, 2)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Listed Date", value: (_stockNewListedList[index].listedDate != null ? _df.format(_stockNewListedList[index].listedDate!) : '-')),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Current Price", value: formatCurrencyWithNull(_stockNewListedList[index].currentPrice as double, false, false, false, 0)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Diff Price", value: formatIntWithNull((_stockNewListedList[index].currentPrice! > 0 ? _stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering! : null), false, false, 0)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "% Diff", value: "${formatDecimalWithNull((_stockNewListedList[index].currentPrice! > 0 ? (_stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering!) / _stockNewListedList[index].offering! : null), 100, 2)}%"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "Latest Stock Dividend List",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ),
+                  const SizedBox(height: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List<Widget>.generate(
+                      _stockDividendList.length,
+                      ((index) {
+                        return InkWell(
+                          onTap: (() async {
+                            // click and go to the company
+                            showLoaderDialog(context);
+                            await _companyAPI.getCompanyByCode(_stockDividendList[index].code, 'saham').then((resp) {
+                              CompanyDetailArgs args = CompanyDetailArgs(
+                                companyId: resp.companyId,
+                                companyName: resp.companyName,
+                                companyCode: _stockDividendList[index].code,
+                                companyFavourite: (resp.companyFavourites ?? false),
+                                favouritesId: (resp.companyFavouritesId ?? -1),
+                                type: "saham",
+                              );
+                              
+                              // remove the loader dialog
+                              Navigator.pop(context);
+
+                              // go to the company page
+                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                            }).onError((error, stackTrace) {
+                              // remove the loader dialog
+                              Navigator.pop(context);
+
+                              // show the error message
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                            });
+                          }),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                )
+                              )
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text.rich(
+                                  TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "(${_stockDividendList[index].code}) ",
+                                        style: const TextStyle(
+                                          color: accentColor,
+                                          fontWeight: FontWeight.bold,
+                                        )
+                                      ),
+                                      TextSpan(
+                                        text: _stockDividendList[index].name,
+                                        style: const TextStyle(
+                                          color: textPrimary,
+                                          fontWeight: FontWeight.bold,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Cum Date", value: (_stockDividendList[index].cumDividend != null ? _df.format(_stockDividendList[index].cumDividend!) : '-')),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Ex Date", value: (_stockDividendList[index].exDividend != null ? _df.format(_stockDividendList[index].exDividend!) : '-')),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Dividend", value: formatDecimalWithNull(_stockDividendList[index].cashDividend, 1, 2)),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Record Date", value: (_stockDividendList[index].recordDate != null ? _df.format(_stockDividendList[index].recordDate!) : '-')),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Payment Date", value: (_stockDividendList[index].paymentDate != null ? _df.format(_stockDividendList[index].paymentDate!) : '-')),
+                                    const SizedBox(width: 10,),
+                                    const Expanded(child: SizedBox(width: double.infinity,),),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "Latest Stock Split",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ),
+                  const SizedBox(height: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List<Widget>.generate(
+                      _stockSplitList.length,
+                      ((index) {
+                        return InkWell(
+                          onTap: (() async {
+                            // click and go to the company
+                            showLoaderDialog(context);
+                            await _companyAPI.getCompanyByCode(_stockSplitList[index].code, 'saham').then((resp) {
+                              CompanyDetailArgs args = CompanyDetailArgs(
+                                companyId: resp.companyId,
+                                companyName: resp.companyName,
+                                companyCode: _stockSplitList[index].code,
+                                companyFavourite: (resp.companyFavourites ?? false),
+                                favouritesId: (resp.companyFavouritesId ?? -1),
+                                type: "saham",
+                              );
+                              
+                              // remove the loader dialog
+                              Navigator.pop(context);
+
+                              // go to the company page
+                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                            }).onError((error, stackTrace) {
+                              // remove the loader dialog
+                              Navigator.pop(context);
+
+                              // show the error message
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                            });
+                          }),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                )
+                              )
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text.rich(
+                                  TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "(${_stockSplitList[index].code}) ",
+                                        style: const TextStyle(
+                                          color: accentColor,
+                                          fontWeight: FontWeight.bold,
+                                        )
+                                      ),
+                                      TextSpan(
+                                        text: _stockSplitList[index].name,
+                                        style: const TextStyle(
+                                          color: textPrimary,
+                                          fontWeight: FontWeight.bold,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Ratio", value: _stockSplitList[index].ratio),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Current Price", value: formatIntWithNull(_stockSplitList[index].lastPrice, false, false, 0)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "New Price", value: formatCurrencyWithNull((_stockSplitList[index].lastPrice! * _stockSplitList[index].nominalNew!) / _stockSplitList[index].nomimal!, false, false, false, 0)),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockSplitList[index].listedShares, true, true, 2)),
+                                    const SizedBox(width: 10,),
+                                    _smallBox(title: "Split Date", value: (_stockSplitList[index].listingDate != null ? _df.format(_stockSplitList[index].listingDate!) : '-')),
+                                    const SizedBox(width: 10,),
+                                    const Expanded(child: SizedBox(width: double.infinity,),),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         );
       }),
+    );
+  }
+
+  Widget _smallBox({required String title, required String value}) {
+    return Expanded(
+      child: SizedBox(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: extendedLight,
+              ),
+            ),
+            const SizedBox(height: 5,),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 12
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

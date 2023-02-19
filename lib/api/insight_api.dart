@@ -13,6 +13,9 @@ import 'package:my_wealth/model/insight_sideway_model.dart';
 import 'package:my_wealth/model/market_cap_model.dart';
 import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
+import 'package:my_wealth/model/stock_dividend_list_model.dart';
+import 'package:my_wealth/model/stock_new_listed_model.dart';
+import 'package:my_wealth/model/stock_split_list_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -509,6 +512,114 @@ class InsightAPI {
           indexBeaterList.add(indexBeater);
         }
         return indexBeaterList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<StockNewListedModel>> getStockNewListed() async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/insight/stock/new'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<StockNewListedModel> stockNewList = [];
+        for (var data in commonModel.data) {
+          StockNewListedModel stock = StockNewListedModel.fromJson(data['attributes']);
+          stockNewList.add(stock);
+        }
+        return stockNewList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<StockDividendListModel>> getStockDividendList() async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/insight/stock/dividend'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<StockDividendListModel> stockNewList = [];
+        for (var data in commonModel.data) {
+          StockDividendListModel stock = StockDividendListModel.fromJson(data['attributes']);
+          stockNewList.add(stock);
+        }
+        return stockNewList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<StockSplitListModel>> getStockSplitList() async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/insight/stock/split'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<StockSplitListModel> stockNewList = [];
+        for (var data in commonModel.data) {
+          StockSplitListModel stock = StockSplitListModel.fromJson(data['attributes']);
+          stockNewList.add(stock);
+        }
+        return stockNewList;
       }
 
       // status code is not 200, means we got error

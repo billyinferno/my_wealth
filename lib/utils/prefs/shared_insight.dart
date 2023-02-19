@@ -8,6 +8,9 @@ import 'package:my_wealth/model/insight_sideway_model.dart';
 import 'package:my_wealth/model/market_cap_model.dart';
 import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
+import 'package:my_wealth/model/stock_dividend_list_model.dart';
+import 'package:my_wealth/model/stock_new_listed_model.dart';
+import 'package:my_wealth/model/stock_split_list_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
 
@@ -32,7 +35,9 @@ class InsightSharedPreferences {
   static const _sidewayResultKey = "insight_sideway_result";
   static const _marketCapKey = "insight_market_cap";
   static const _indexBeaterKey = "insight_index_beater";
-
+  static const _stockNewListedKey = "insight_stock_new_listed";
+  static const _stockDividendListKey = "insight_stock_dividend_list";
+  static const _stockSplitListKey = "insight_stock_split_list";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -713,5 +718,128 @@ class InsightSharedPreferences {
 
     // clear all the key for the index beaterdata
     LocalBox.delete(_indexBeaterKey, true);
+  }
+
+  static Future<void> setStockNewListed(List<StockNewListedModel> stockNewList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    List<String> stockNewListResp = [];
+    for (StockNewListedModel stock in stockNewList) {
+      stockNewListResp.add(jsonEncode(stock.toJson()));
+    }
+    LocalBox.putStringList(_stockNewListedKey, stockNewListResp);
+  }
+
+  static List<StockNewListedModel> getStockNewListed() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> stockNewList = (LocalBox.getStringList(_stockNewListedKey) ?? []);
+
+    // check if the list is empty or not?
+    if (stockNewList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<StockNewListedModel> ret = [];
+      for (String stockString in stockNewList) {
+        StockNewListedModel stock = StockNewListedModel.fromJson(jsonDecode(stockString));
+        ret.add(stock);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
+    }
+  }
+
+  static Future<void> setStockDividendList(List<StockDividendListModel> stockDividendList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    List<String> stockDividendListResp = [];
+    for (StockDividendListModel stock in stockDividendList) {
+      stockDividendListResp.add(jsonEncode(stock.toJson()));
+    }
+    LocalBox.putStringList(_stockDividendListKey, stockDividendListResp);
+  }
+
+  static List<StockDividendListModel> getStockDividendList() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> stockDividendList = (LocalBox.getStringList(_stockDividendListKey) ?? []);
+
+    // check if the list is empty or not?
+    if (stockDividendList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<StockDividendListModel> ret = [];
+      for (String stockString in stockDividendList) {
+        StockDividendListModel stock = StockDividendListModel.fromJson(jsonDecode(stockString));
+        ret.add(stock);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
+    }
+  }
+
+  static Future<void> setStockSplitList(List<StockSplitListModel> stockDividendList) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    List<String> stockSplitListResp = [];
+    for (StockSplitListModel stock in stockDividendList) {
+      stockSplitListResp.add(jsonEncode(stock.toJson()));
+    }
+    LocalBox.putStringList(_stockSplitListKey, stockSplitListResp);
+  }
+
+  static List<StockSplitListModel> getStockSplitList() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> stockSplitList = (LocalBox.getStringList(_stockSplitListKey) ?? []);
+
+    // check if the list is empty or not?
+    if (stockSplitList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<StockSplitListModel> ret = [];
+      for (String stockString in stockSplitList) {
+        StockSplitListModel stock = StockSplitListModel.fromJson(jsonDecode(stockString));
+        ret.add(stock);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
+    }
   }
 }

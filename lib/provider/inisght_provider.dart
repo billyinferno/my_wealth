@@ -5,6 +5,9 @@ import 'package:my_wealth/model/insight_accumulation_model.dart';
 import 'package:my_wealth/model/market_cap_model.dart';
 import 'package:my_wealth/model/market_today_model.dart';
 import 'package:my_wealth/model/sector_summary_model.dart';
+import 'package:my_wealth/model/stock_dividend_list_model.dart';
+import 'package:my_wealth/model/stock_new_listed_model.dart';
+import 'package:my_wealth/model/stock_split_list_model.dart';
 import 'package:my_wealth/model/top_worse_company_list_model.dart';
 
 class InsightProvider extends ChangeNotifier {
@@ -20,6 +23,9 @@ class InsightProvider extends ChangeNotifier {
   List<InsightAccumulationModel>? topAccumList;
   MarketTodayModel? brokerMarketToday;
   List<MarketCapModel>? marketCap;
+  List<StockNewListedModel>? stockNewListed;
+  List<StockDividendListModel>? stockDividendList;
+  List<StockSplitListModel>? stockSplitList;
 
   setSectorSummaryList(List<SectorSummaryModel> list) {
     sectorSummaryList = list;
@@ -79,6 +85,21 @@ class InsightProvider extends ChangeNotifier {
 
   setMarketCap(List<MarketCapModel> data) {
     marketCap = data;
+    notifyListeners();
+  }
+
+  setStockNewListed(List<StockNewListedModel> data) {
+    stockNewListed = data;
+    notifyListeners();
+  }
+
+  setStockDividendList(List<StockDividendListModel> data) {
+    stockDividendList = data;
+    notifyListeners();
+  }
+
+  setStockSplitList(List<StockSplitListModel> data) {
+    stockSplitList = data;
     notifyListeners();
   }
 }

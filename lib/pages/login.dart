@@ -619,6 +619,12 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
         debugPrint('🔟🔟5️⃣ Get Stock Split List');
       }),
+      _companyAPI.getCompanySahamList().then((resp) async {
+        await CompanySharedPreferences.setCompanySahamList(resp);
+        if (!mounted) return;
+        Provider.of<CompanyProvider>(context, listen: false).setCompanySahamList(resp);
+        debugPrint('🔟🔟6️⃣ Get Company Saham List');
+      }),
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen

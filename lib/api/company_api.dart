@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/model/common_array_model.dart';
 import 'package:my_wealth/model/common_single_model.dart';
 import 'package:my_wealth/model/company_detail_model.dart';
+import 'package:my_wealth/model/company_saham_list_model.dart';
 import 'package:my_wealth/model/company_search_model.dart';
 import 'package:my_wealth/model/company_top_broker_model.dart';
 import 'package:my_wealth/model/find_other_company_saham_model.dart';
@@ -323,6 +324,42 @@ class CompanyAPI {
         CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
         FindOtherCommpanySahamModel company = FindOtherCommpanySahamModel.fromJson(commonModel.data['attributes']);
         return company;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<CompanySahamListModel>> getCompanySahamList() async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/company-saham/list'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<CompanySahamListModel> ret = [];
+        for (dynamic data in commonModel.data) {
+          CompanySahamListModel company = CompanySahamListModel.fromJson(data['attributes']);
+          ret.add(company);
+        }
+        return ret;
       }
 
       // status code is not 200, means we got error

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
@@ -18,6 +19,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
+import 'package:my_wealth/widgets/transparent_button.dart';
 import 'package:provider/provider.dart';
 
 class InsightBrokerPage extends StatefulWidget {
@@ -300,6 +302,39 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                             ],
                           ),
                         ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "Broker Query",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          TransparentButton(
+                            icon: Ionicons.funnel,
+                            iconSize: 12,
+                            bgColor: primaryDark,
+                            borderColor: primaryLight,
+                            text: "Specific Broker and Code",
+                            // vertical: true,
+                            callback: (() {
+                              Navigator.pushNamed(context, '/insight/broker/specificquery');
+                            })
+                          ),
+                        ],
                       ),
                     ],
                   ),

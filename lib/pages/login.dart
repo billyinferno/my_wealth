@@ -625,6 +625,11 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<CompanyProvider>(context, listen: false).setCompanySahamList(resp);
         debugPrint('🔟🔟6️⃣ Get Company Saham List');
       }),
+      _brokerSummaryApi.getBrokerSummaryDate().then((resp) async {
+        await BrokerSharedPreferences.setBrokerMinMaxDate(resp.brokerMinDate, resp.brokerMaxDate);
+        debugPrint('🔟🔟7️⃣ Get Broker Min and Max Date');
+      }),
+      
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen

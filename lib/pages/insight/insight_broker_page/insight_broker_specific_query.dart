@@ -31,15 +31,20 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
 
   late List<BrokerModel> _brokerList;
   late List<CompanySahamListModel> _companySahamList;
+  late List<Widget> _pageItems;
   late String _brokerCode;
   late String _companySahamCode;
   late int _companySahamCodePrice;
+  late int _currentCompanySahamCodePrice;
   late DateTime _dateCurrent;
   late DateTime _dateFrom;
   late DateTime _dateTo;
   late DateTime _brokerMinDate;
   late DateTime _brokerMaxDate;
   late BrokerSummaryTxnDetailModel? _brokerSummaryData;
+  late int _totalBuyLot;
+  late double _totalBuyAverage;
+  late int _totalSellLot;
 
   @override
   void initState() {
@@ -47,6 +52,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     _brokerCode = "";
     _companySahamCode = "";
     _companySahamCodePrice = -1;
+    _currentCompanySahamCodePrice = -1;
+    _pageItems = [];
     _dateCurrent = DateTime.now().toLocal();
     _dateFrom = DateTime.now().subtract(const Duration(days: 30)).toLocal();
     _dateTo = DateTime.now().subtract(const Duration(days: 1)).toLocal();
@@ -413,6 +420,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                       await _getBrokerTransaction();
                       setState(() {
                         // rebuild widget
+                        _currentCompanySahamCodePrice = _companySahamCodePrice;
                       });
                     }
                   }),
@@ -472,22 +480,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
               ),
             ),
           ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 30),
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    _generateExpanstionTileChildren(),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          _generateExpanstionTileChildren(),
+          const SizedBox(height: 30,),
         ],
       ),
     );
@@ -503,56 +497,190 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     Map<DateTime, BrokerSummaryTxnCombineModel> combineDomestic = (_brokerSummaryData?.brokerSummaryDomestic == null ? {} : _combineBrokerTransaction(_brokerSummaryData!.brokerSummaryDomestic));
     Map<DateTime, BrokerSummaryTxnCombineModel> combineForeign = (_brokerSummaryData?.brokerSummaryForeign == null ? {} : _combineBrokerTransaction(_brokerSummaryData!.brokerSummaryForeign));
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          padding: const EdgeInsets.all(2),
-          // decoration: BoxDecoration(
-          //   border: Border.all(color: primaryDark, style: BorderStyle.solid, width: 1.0),
-          //   color: primaryDark,
-          // ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                "All",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              _generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true),
-              ..._generateCombineRows(combineAll),
-              _generateAverage(combineAll),
-              const SizedBox(height: 10,),
-              const Text(
-                "Domestic",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              _generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true),
-              ..._generateCombineRows(combineDomestic),
-              _generateAverage(combineDomestic),
-              const SizedBox(height: 10,),
-              const Text(
-                "Foreign",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-              _generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true),
-              ..._generateCombineRows(combineForeign),
-              _generateAverage(combineForeign),
-            ],
-          ),
+    // check and ensure that at least we have data to render
+    // for this we can check on the all since all will be combination of
+    // both domestic and foreign
+    if (_brokerSummaryData!.brokerSummaryAll.brokerSummaryBuy.isEmpty && _brokerSummaryData!.brokerSummaryAll.brokerSummarySell.isEmpty) {
+      return const Center(
+        child: Text(
+          "No data for this query",
         ),
-      ],
+      );
+    }
+
+    // generate the items that we will render
+    // as if we using column, the performance will be slugish, instead of using ListView builder
+    _pageItems.clear();
+
+    // generate for all
+    _pageItems.add(const Text(
+      "All",
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.bold
+      ),
+    ));
+    _pageItems.add(_generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true));
+    _pageItems.addAll(_generateCombineRows(combineAll));
+    _pageItems.add(_generateAverage(combineAll, true));
+    _pageItems.add(const SizedBox(height: 10,));
+
+    // generate for domestic
+    _pageItems.add(const Text(
+      "Domestic",
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.bold
+      ),
+    ));
+    _pageItems.add(_generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true));
+    _pageItems.addAll(_generateCombineRows(combineDomestic));
+    _pageItems.add(_generateAverage(combineDomestic));
+    _pageItems.add(const SizedBox(height: 10,));
+
+    // generate for foreign
+    _pageItems.add(const Text(
+      "Foreign",
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.bold
+      ),
+    ));
+    _pageItems.add(_generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true));
+    _pageItems.addAll(_generateCombineRows(combineForeign));
+    _pageItems.add(_generateAverage(combineForeign));
+
+    int companySahamCodePrice = _currentCompanySahamCodePrice;
+    int shareLeft = (_totalBuyLot - _totalSellLot) * 100;
+    Color shareLeftColor = (shareLeft == 0 ? textPrimary : (shareLeft < 0 ? secondaryColor : Colors.green));
+    double shareValue = shareLeft * _totalBuyAverage;
+    Color shareValueColor = (shareValue == 0 ? textPrimary : (shareValue < 0 ? secondaryColor : Colors.green));
+    double shareAvg = shareValue / shareLeft;
+    Color shareAvgColor = (shareAvg == companySahamCodePrice ? textPrimary : (shareAvg < companySahamCodePrice ? secondaryColor : Colors.green));
+    double sharePL = (companySahamCodePrice - shareAvg) * shareLeft;
+    Color sharePLColor = (sharePL == companySahamCodePrice ? textPrimary : (sharePL < companySahamCodePrice ? secondaryColor : Colors.green));
+
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 80,
+                      child: Text(
+                        "Share Left :",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Text(
+                      "${formatDecimal(shareLeft/100, 0)} lots",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: shareLeftColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 80,
+                      child: Text(
+                        "Share Value :",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Text(
+                      formatCurrency(shareValue, false, false, false, 0),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: shareValueColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 80,
+                      child: Text(
+                        "Share AVG :",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Text(
+                      "${formatCurrency(shareAvg, false, false, false, 0)} (${formatDecimal(companySahamCodePrice - shareAvg, 0)})",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: shareAvgColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 80,
+                      child: Text(
+                        "Estimated PL :",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Text(
+                      formatCurrency(sharePL, false, false, false, 0),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: sharePLColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _pageItems.length,
+                itemBuilder: (context, index) {
+                  return _pageItems[index];
+                },
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -727,7 +855,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     return result;
   }
 
-  Widget _generateAverage(Map<DateTime, BrokerSummaryTxnCombineModel> data) {
+  Widget _generateAverage(Map<DateTime, BrokerSummaryTxnCombineModel> data, [bool? isNeedSaved]) {
     // loop thru the data if available
     if(data.isEmpty) {
       return const SizedBox.shrink();
@@ -753,6 +881,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
 
       if (totalSellLot > 0) {
         totalSellAverage = (totalSellValue / (totalSellLot * 100));
+      }
+
+      // check whether we need to save this data or not?
+      if (isNeedSaved != null) {
+        if (isNeedSaved) {
+          // save the total data to the variable so we can display it on the screen
+          // without perform other calculation.
+          _totalBuyLot = totalBuyLot;
+          _totalBuyAverage = totalBuyAverage;
+          _totalSellLot = totalSellLot;
+        }
       }
 
       return _generateRow(

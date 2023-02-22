@@ -89,20 +89,17 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
       initiallyExpanded: _isShowedLots,
       collapsedTextColor: textPrimary,
       textColor: textPrimary,
-      children: [
-        ...List<Widget>.generate(widget.watchlist.watchlistDetail.length,
-            (index) {
-          return ExpandedTileChildren(
-            date: dt.format(widget.watchlist.watchlistDetail[index].watchlistDetailDate),
-            shares: widget.watchlist.watchlistDetail[index].watchlistDetailShare,
-            isInLot: _isInLot,
-            price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
-            currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
-            averagePrice: _averagePrice,
-            risk: widget.userInfo.risk,
-          );
-        })
-      ],
+      children: List<Widget>.generate(widget.watchlist.watchlistDetail.length, (index) {
+        return ExpandedTileChildren(
+          date: dt.format(widget.watchlist.watchlistDetail[index].watchlistDetailDate),
+          shares: widget.watchlist.watchlistDetail[index].watchlistDetailShare,
+          isInLot: _isInLot,
+          price: widget.watchlist.watchlistDetail[index].watchlistDetailPrice,
+          currentPrice: widget.watchlist.watchlistCompanyNetAssetValue!,
+          averagePrice: _averagePrice,
+          risk: widget.userInfo.risk,
+        );
+      }),
     );
   }
 

@@ -38,13 +38,19 @@ class ExpandedTileViewState extends State<ExpandedTileView> {
   int _totalSell = 0;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // initialize the value
     _isShowedLots = (widget.showedLot ?? false);
     _isInLot = (widget.isInLot ?? false);
 
     // perform computation to knew all the information we need to put on the expansion tile
     _computeDetail();
-    
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // after that check if the showEmptyWatchlist is set as false?
     // if so ensure that if txn > 0 but totalShare is 0, just return SizedBox instead of expansion tile
     if (!widget.showEmptyWatchlist) {

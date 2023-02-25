@@ -62,203 +62,190 @@ class ExpandedTileTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        /* header */
-        IntrinsicHeight(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                width: 5,
-                color: rColor,
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: rColor,
-                                  width: 2.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: Text(
-                              formatCurrencyWithNull(gain),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 5,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 2,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                const Icon(
-                                  Ionicons.time_outline,
-                                  size: 15,
-                                  color: primaryLight,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 5,
+              height: 55,
+              color: rColor,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(width: 5,),
-                                Text(
-                                  lastUpdate,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                  ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: rColor,
+                                    width: 2.0,
+                                    style: BorderStyle.solid,
+                                  )
                                 )
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              "${buy > 0 ? "$buy" : "-"}${sell > 0 ? "($sell)" : ""} Txn",
-                              style: const TextStyle(
-                                fontSize: 12,
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              (share > 0 ? "${formatCurrency(share, true, true, true)} ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            flex: 2,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Icon(
-                                  trendIcon,
-                                  color: trendColor,
-                                  size: 12,
+                              child: Text(
+                                formatCurrencyWithNull(gain),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(width: 2,),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: trendColor,
-                                        width: 2.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    )
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 5,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Icon(
+                                    Ionicons.time_outline,
+                                    size: 15,
+                                    color: primaryLight,
                                   ),
-                                  child: Text(
-                                    formatCurrency(
-                                      price,
-                                      (checkThousandOnPrice ?? false),
-                                    ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    lastUpdate,
                                     style: const TextStyle(
                                       fontSize: 12,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                "${buy > 0 ? "$buy" : "-"}${sell > 0 ? "($sell)" : ""} Txn",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                (share > 0 ? "${formatCurrency(share, true, true, true)} ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Icon(
+                                    trendIcon,
+                                    color: trendColor,
+                                    size: 12,
+                                  ),
+                                  const SizedBox(width: 2,),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: trendColor,
+                                          width: 2.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      formatCurrency(
+                                        price,
+                                        (checkThousandOnPrice ?? false),
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        /* sub header */
-        IntrinsicHeight(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                width: 5,
-                color: (subHeaderRiskColor ?? Colors.white),
-              ),
-              const SizedBox(width: 10,),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _subHeaderInformation(
-                      header: "DAY GAIN",
-                      value: formatCurrencyWithNull(totalDayGain),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    _subHeaderInformation(
-                      header: "VALUE",
-                      value: formatCurrencyWithNull(totalValue),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    _subHeaderInformation(
-                      header: "COST",
-                      value: formatCurrencyWithNull(totalCost),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    _subHeaderInformation(
-                      header: "AVERAGE",
-                      value: formatCurrencyWithNull(averagePrice),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 5,
+              height: 35,
+              color: (subHeaderRiskColor ?? Colors.white),
+            ),
+            const SizedBox(width: 10,),
+            _subHeaderInformation(
+              header: "DAY GAIN",
+              value: formatCurrencyWithNull(totalDayGain),
+            ),
+            const SizedBox(width: 10,),
+            _subHeaderInformation(
+              header: "VALUE",
+              value: formatCurrencyWithNull(totalValue),
+            ),
+            const SizedBox(width: 10,),
+            _subHeaderInformation(
+              header: "COST",
+              value: formatCurrencyWithNull(totalCost),
+            ),
+            const SizedBox(width: 10,),
+            _subHeaderInformation(
+              header: "AVERAGE",
+              value: formatCurrencyWithNull(averagePrice),
+            ),
+          ],
         ),
       ],
     );
   }
 
-  Widget _subHeaderInformation(
-      {required String header, required String value}) {
+  Widget _subHeaderInformation({required String header, required String value}) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),

@@ -1,261 +1,118 @@
+import 'package:flutter/widgets.dart';
+import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist_list_model.dart';
+import 'package:my_wealth/utils/function/risk_color.dart';
 
 class ComputeWatchlistResult {
+  final double totalShare;
+  final double totalGain;
   final double totalDayGain;
-  final double totalValue;
   final double totalCost;
-  final double totalRealised;
+  final double totalValue;
+  final double averagePrice;
+  final int totalBuy;
+  final int totalSell;
+  final Color headerRiskColor;
+  final Color subHeaderRiskColor;
 
-  final double totalDayGainReksadana;
-  final double totalValueReksadana;
-  final double totalCostReksadana;
-  final double totalRealisedReksadana;
-
-  final double totalDayGainSaham;
-  final double totalValueSaham;
-  final double totalCostSaham;
-  final double totalRealisedSaham;
-
-  final double totalDayGainCrypto;
-  final double totalValueCrypto;
-  final double totalCostCrypto;
-  final double totalRealisedCrypto;
-
-  final double totalDayGainGold;
-  final double totalValueGold;
-  final double totalCostGold;
-  final double totalRealisedGold;
-
-  ComputeWatchlistResult({
-    required this.totalDayGain, required this.totalValue, required this.totalCost, required this.totalRealised,
-    required this.totalDayGainReksadana, required this.totalValueReksadana, required this.totalCostReksadana, required this.totalRealisedReksadana,
-    required this.totalDayGainSaham, required this.totalValueSaham, required this.totalCostSaham, required this.totalRealisedSaham,
-    required this.totalDayGainCrypto, required this.totalValueCrypto, required this.totalCostCrypto, required this.totalRealisedCrypto,
-    required this.totalDayGainGold, required this.totalValueGold, required this.totalCostGold, required this.totalRealisedGold,
+  const ComputeWatchlistResult({
+    required this.totalShare, required this.totalGain, required this.totalDayGain,
+    required this.totalCost, required this.totalValue, required this.averagePrice,
+    required this.totalBuy, required this.totalSell, required this.headerRiskColor,
+    required this.subHeaderRiskColor,
   });
 }
 
-ComputeWatchlistResult computeWatchlist(List<WatchlistListModel> watchlistsMutualfund, List<WatchlistListModel> watchlistsStock, List<WatchlistListModel> watchlistsCrypto, List<WatchlistListModel> watchlistsGold) {
-    // reset the value before we actually compute the data
-    double totalDayGain = 0;
-    double totalValue = 0;
-    double totalCost = 0;
-    double totalRealised = 0;
-    
-    double totalDayGainReksadana = 0;
-    double totalValueReksadana = 0;
-    double totalCostReksadana = 0;
-    double totalRealisedReksadana = 0;
+List<ComputeWatchlistResult> computeWatchlistDetail({required List<WatchlistListModel> watchlistList, required UserLoginInfoModel userInfo}) {
+  List<ComputeWatchlistResult> results = [];
+  double totalShare;
+  double totalGain;
+  double totalDayGain;
+  double totalCost;
+  double totalValue;
+  double averagePrice;
+  int totalBuy;
+  int totalSell;
+  Color headerRiskColor;
+  Color subHeaderRiskColor;
 
-    double totalDayGainSaham = 0;
-    double totalValueSaham = 0;
-    double totalCostSaham = 0;
-    double totalRealisedSaham = 0;
+  for (WatchlistListModel watchlist in watchlistList) {
+    // loop thru the watchlist details and calculate the total share and total gain
+    totalShare = 0;
+    totalGain = 0;
+    totalCost = 0;
+    totalBuy = 0;
+    totalSell = 0;
+    totalDayGain = 0;
+    totalValue = 0;
+    averagePrice = 0;
 
-    double totalDayGainCrypto = 0;
-    double totalValueCrypto = 0;
-    double totalCostCrypto = 0;
-    double totalRealisedCrypto = 0;
-
-    double totalDayGainGold = 0;
-    double totalValueGold = 0;
-    double totalCostGold = 0;
-    double totalRealisedGold = 0;
-
-    double tShare = 0;
-    double tCost = 0;
-    double tValue = 0;
-    double tAvgPrice = 0;
-    double tRealised = 0;
-    double tDayGain = 0;
-
-    // loop for reksadana
-    for (WatchlistListModel watchlist in watchlistsMutualfund) {
-      // initialize the computation variable
-      tShare = 0;
-      tCost = 0;
-      tValue = 0;
-      tAvgPrice = 0;
-      tRealised = 0;
-      tDayGain = 0;
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
-        // check whether this is buy or sell?
-        if (detail.watchlistDetailShare > 0) {
-          // this is buy
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
-          tAvgPrice = tCost / tShare;
-        }
-        else {
-          // this is sell, calculate the realised pl
-          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
-          // recalculate the share and cost
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * tAvgPrice;
-        }
-    
+    // for the calculation of the sell share's to avoid any average cost problem
+    // we need to see how much is the average cost for each share that we buy
+    for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
+      // check whether buy or sell
+      if (detail.watchlistDetailShare > 0) {
+        // if buy we add the total share
+        totalShare += detail.watchlistDetailShare;
+        // get the total cost
+        totalCost += (detail.watchlistDetailShare * detail.watchlistDetailPrice);
+        // calculate the average price
+        averagePrice = totalCost / totalShare;
+        // and add _totalBuy
+        totalBuy++;
+      } else {
+        // if sell we add the total share (since sell will always minus)
+        totalShare += detail.watchlistDetailShare;
+        // calculate the total cost based on the share sell multiply by average price
+        totalCost += (detail.watchlistDetailShare * averagePrice);
+        // and add _totalSell
+        totalSell++;
       }
-      // check if we still have share at the end?
-      if (tShare > 0) {
-        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
-        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
-      }
-      else {
-        tCost = 0;
-        tValue = 0;
-        tDayGain = 0;
-      }
-
-      // once all finished then we can add this to the main variable container
-      totalDayGainReksadana += tDayGain;
-      totalValueReksadana += tValue;
-      totalCostReksadana += tCost;
-      totalRealisedReksadana += tRealised;
     }
 
-    // loop for stock
-    for (WatchlistListModel watchlist in watchlistsStock) {
-      // initialize the computation variable
-      tShare = 0;
-      tCost = 0;
-      tValue = 0;
-      tAvgPrice = 0;
-      tRealised = 0;
-      tDayGain = 0;
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
-        // check whether this is buy or sell?
-        if (detail.watchlistDetailShare > 0) {
-          // this is buy
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
-          tAvgPrice = tCost / tShare;
-        }
-        else {
-          // this is sell, calculate the realised pl
-          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
-          // recalculate the share and cost
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * tAvgPrice;
-        }
-    
-      }
-      // check if we still have share at the end?
-      if (tShare > 0) {
-        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
-        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
+    // if we still have totalShare, just recalculate the average price
+    // just to ensure, even though that by right this value shouldn't change
+    if (totalShare > 0) {
+      averagePrice = totalCost / totalShare;
+
+      // now we can calculate the other total
+      totalValue = (totalShare * watchlist.watchlistCompanyNetAssetValue!); 
+      totalGain = totalValue - totalCost;
+      
+      // for total day gain, we need to ensure that the previous price is more than 0
+      if (watchlist.watchlistCompanyPrevPrice! > 0) {
+          totalDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * totalShare;
       }
       else {
-        tCost = 0;
-        tValue = 0;
-        tDayGain = 0;
+        // we don't have previous price yet, so we can just compute the day gain
+        // based on the value - cost
+        totalDayGain = totalValue - totalCost;
       }
-
-      // once all finished then we can add this to the main variable container
-      totalDayGainSaham += tDayGain;
-      totalValueSaham += tValue;
-      totalCostSaham += tCost;
-      totalRealisedSaham += tRealised;
     }
-
-    // loop for crypto
-    for (WatchlistListModel watchlist in watchlistsCrypto) {
-      // initialize the computation variable
-      tShare = 0;
-      tCost = 0;
-      tValue = 0;
-      tAvgPrice = 0;
-      tRealised = 0;
-      tDayGain = 0;
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
-        // check whether this is buy or sell?
-        if (detail.watchlistDetailShare > 0) {
-          // this is buy
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
-          tAvgPrice = tCost / tShare;
-        }
-        else {
-          // this is sell, calculate the realised pl
-          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
-          // recalculate the share and cost
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * tAvgPrice;
-        }
+    else {
+      // if we don't have share left, then we can assume that we don't have
+      // any cost or value.
+      averagePrice = 0;
+      totalCost = 0;
+      totalValue = 0;
+      totalGain = 0;
+      totalDayGain = 0;
+    }
     
-      }
-      // check if we still have share at the end?
-      if (tShare > 0) {
-        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
-        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
-      }
-      else {
-        tCost = 0;
-        tValue = 0;
-        tDayGain = 0;
-      }
+    headerRiskColor = riskColor((totalShare * watchlist.watchlistCompanyNetAssetValue!), totalCost, userInfo.risk);
+    subHeaderRiskColor = riskColor((totalDayGain + totalCost), totalCost, userInfo.risk);
 
-      // once all finished then we can add this to the main variable container
-      totalDayGainCrypto += tDayGain;
-      totalValueCrypto += tValue;
-      totalCostCrypto += tCost;
-      totalRealisedCrypto += tRealised;
-    }
-
-    // loop for gold
-    for (WatchlistListModel watchlist in watchlistsGold) {
-      // initialize the computation variable
-      tShare = 0;
-      tCost = 0;
-      tValue = 0;
-      tAvgPrice = 0;
-      tRealised = 0;
-      tDayGain = 0;
-      for (WatchlistDetailListModel detail in watchlist.watchlistDetail.reversed) {
-        // check whether this is buy or sell?
-        if (detail.watchlistDetailShare > 0) {
-          // this is buy
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * detail.watchlistDetailPrice;
-          tAvgPrice = tCost / tShare;
-        }
-        else {
-          // this is sell, calculate the realised pl
-          tRealised += (detail.watchlistDetailShare * detail.watchlistDetailPrice * (-1)) + (detail.watchlistDetailShare * tAvgPrice);
-          // recalculate the share and cost
-          tShare += detail.watchlistDetailShare;
-          tCost += detail.watchlistDetailShare * tAvgPrice;
-        }
-    
-      }
-      // check if we still have share at the end?
-      if (tShare > 0) {
-        tValue = tShare * watchlist.watchlistCompanyNetAssetValue!;
-        tDayGain = (watchlist.watchlistCompanyNetAssetValue! - watchlist.watchlistCompanyPrevPrice!) * tShare;
-      }
-      else {
-        tCost = 0;
-        tValue = 0;
-        tDayGain = 0;
-      }
-
-      // once all finished then we can add this to the main variable container
-      totalDayGainGold += tDayGain;
-      totalValueGold += tValue;
-      totalCostGold += tCost;
-      totalRealisedGold += tRealised;
-    }
-
-    totalDayGain = totalDayGainReksadana + totalDayGainSaham + totalDayGainCrypto + totalDayGainGold;
-    totalValue = totalValueReksadana + totalValueSaham + totalValueCrypto + totalValueGold;
-    totalCost = totalCostReksadana + totalCostSaham + totalCostCrypto + totalCostGold;
-    totalRealised = totalRealisedReksadana + totalRealisedSaham + totalRealisedCrypto + totalRealisedGold;
-
-    return ComputeWatchlistResult(
-      totalDayGain: totalDayGain, totalValue: totalValue, totalCost: totalCost, totalRealised: totalRealised,
-      totalDayGainReksadana: totalDayGainReksadana, totalValueReksadana: totalValueReksadana, totalCostReksadana: totalCostReksadana, totalRealisedReksadana: totalRealisedReksadana,
-      totalDayGainSaham: totalDayGainSaham, totalValueSaham: totalValueSaham, totalCostSaham: totalCostSaham, totalRealisedSaham: totalRealisedSaham,
-      totalDayGainCrypto: totalDayGainCrypto, totalValueCrypto: totalValueCrypto, totalCostCrypto: totalCostCrypto, totalRealisedCrypto: totalRealisedCrypto,
-      totalDayGainGold: totalDayGainGold, totalValueGold: totalValueGold, totalCostGold: totalCostGold, totalRealisedGold: totalRealisedGold
+    ComputeWatchlistResult result = ComputeWatchlistResult(
+      totalShare: totalShare, totalGain: totalGain, totalDayGain: totalDayGain,
+      totalCost: totalCost, totalValue: totalValue, averagePrice: averagePrice,
+      totalBuy: totalBuy, totalSell: totalSell, headerRiskColor: headerRiskColor,
+      subHeaderRiskColor: subHeaderRiskColor,
     );
+
+    // add result to the result lists
+    results.add(result);
   }
+
+  return results;
+}

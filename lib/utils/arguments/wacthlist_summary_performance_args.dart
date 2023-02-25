@@ -1,8 +1,8 @@
-import 'package:my_wealth/utils/function/compute_watchlist.dart';
+import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
 
 class WatchlistSummaryPerformanceArgs {
   final String type;
-  final ComputeWatchlistResult? computeResult;
+  final ComputeWatchlistAllResult? computeResult;
 
   WatchlistSummaryPerformanceArgs({required this.type, required this.computeResult});
 }

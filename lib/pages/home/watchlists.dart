@@ -16,6 +16,7 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/compute_watchlist.dart';
+import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
@@ -50,7 +51,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   late List<WatchlistListModel>? _watchlistCrypto;
   late List<WatchlistListModel>? _watchlistGold;
   late List<WatchlistHistoryModel>? _watchlistHistory;
-  late ComputeWatchlistResult? _watchlistAll;
+  late ComputeWatchlistAllResult? _watchlistAll;
+  late List<ComputeWatchlistResult> _watchlistResultReksadana;
+  late List<ComputeWatchlistResult> _watchlistResultSaham;
+  late List<ComputeWatchlistResult> _watchlistResultCrypto;
+  late List<ComputeWatchlistResult> _watchlistResultGold;
   
   bool _isShowedLots = false;
   bool _isSummaryVisible = false;
@@ -72,7 +77,13 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _watchlistCrypto = _sortWatchlist(_watchlistCrypto!);
 
     // initialize also in the initial state
-    _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+    _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+
+    // compute all the watchlist detail
+    _watchlistResultReksadana = computeWatchlistDetail(watchlistList: _watchlistReksadana!, userInfo: _userInfo!);
+    _watchlistResultSaham = computeWatchlistDetail(watchlistList: _watchlistSaham!, userInfo: _userInfo!);
+    _watchlistResultCrypto = computeWatchlistDetail(watchlistList: _watchlistCrypto!, userInfo: _userInfo!);
+    _watchlistResultGold = computeWatchlistDetail(watchlistList: _watchlistGold!, userInfo: _userInfo!);
 
     _isSummaryVisible = _userInfo!.visibility;
     _isShowedLots = _userInfo!.showLots;
@@ -109,7 +120,13 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         _watchlistCrypto = _sortWatchlist(_watchlistCrypto!);
 
         // compute all the watchlist first
-        _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+        _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+
+        // compute all the watchlist detail
+        _watchlistResultReksadana = computeWatchlistDetail(watchlistList: _watchlistReksadana!, userInfo: _userInfo!);
+        _watchlistResultSaham = computeWatchlistDetail(watchlistList: _watchlistSaham!, userInfo: _userInfo!);
+        _watchlistResultCrypto = computeWatchlistDetail(watchlistList: _watchlistCrypto!, userInfo: _userInfo!);
+        _watchlistResultGold = computeWatchlistDetail(watchlistList: _watchlistGold!, userInfo: _userInfo!);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,6 +287,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       return _generateWatchlistItem(
         type: "reksadana",
         data: _watchlistReksadana,
+        result: _watchlistResultReksadana,
         dayGain: _watchlistAll!.totalDayGainReksadana,
         cost: _watchlistAll!.totalCostReksadana,
         value: _watchlistAll!.totalValueReksadana,
@@ -287,6 +305,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       return _generateWatchlistItem(
         type: "saham",
         data: _watchlistSaham,
+        result: _watchlistResultSaham,
         dayGain: _watchlistAll!.totalDayGainSaham,
         cost: _watchlistAll!.totalCostSaham,
         value: _watchlistAll!.totalValueSaham,
@@ -304,6 +323,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       return _generateWatchlistItem(
         type: "crypto",
         data: _watchlistCrypto,
+        result: _watchlistResultCrypto,
         dayGain: _watchlistAll!.totalDayGainCrypto,
         cost: _watchlistAll!.totalCostCrypto,
         value: _watchlistAll!.totalValueCrypto,
@@ -321,6 +341,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       return _generateWatchlistItem(
         type: "gold",
         data: _watchlistGold,
+        result: _watchlistResultGold,
         dayGain: _watchlistAll!.totalDayGainGold,
         cost: _watchlistAll!.totalCostGold,
         value:  _watchlistAll!.totalValueGold,
@@ -447,7 +468,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     return const Center(child: Text("Error while get gold watchlist"));
   }
 
-  Widget _generateWatchlistItem({required String type, List<WatchlistListModel>? data, required double dayGain, required double cost, required double value, required bool isInLot, required String shareTitle, required bool checkThousandOnPrice, required ScrollController scrollController}) {
+  Widget _generateWatchlistItem({required String type, List<WatchlistListModel>? data, List<ComputeWatchlistResult>? result, required double dayGain, required double cost, required double value, required bool isInLot, required String shareTitle, required bool checkThousandOnPrice, required ScrollController scrollController}) {
     return RefreshIndicator(
       onRefresh: (() async {
         await _refreshWatchlist();
@@ -575,15 +596,15 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
                     }),
                     child: ExpandedTileView(
-                      key: Key("expansionTitle$idx"),
-                      userInfo: _userInfo!,
                       showedLot: _isShowedLots,
-                      isInLot: isInLot,
+                      inLot: isInLot,
+                      risk: _userInfo!.risk,
                       isVisible: _isSummaryVisible,
                       watchlist: data[idx],
+                      watchlistResult: result![idx],
                       shareTitle: shareTitle,
                       checkThousandOnPrice: checkThousandOnPrice,
-                      showEmptyWatchlist: _isShowEmptyWatchlist,
+                      showEmptyWatchlist: _isShowEmptyWatchlist
                     ),
                   ),
                 );

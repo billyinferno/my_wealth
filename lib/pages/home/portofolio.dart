@@ -6,7 +6,7 @@ import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
-import 'package:my_wealth/utils/function/compute_watchlist.dart';
+import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
@@ -30,7 +30,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
   late List<WatchlistListModel>? _watchlistSaham;
   late List<WatchlistListModel>? _watchlistCrypto;
   late List<WatchlistListModel>? _watchlistGold;
-  late ComputeWatchlistResult? _watchlistAll;
+  late ComputeWatchlistAllResult? _watchlistAll;
   late List<BarChartData> _barChartData;
 
   bool _isSummaryVisible = true;
@@ -45,7 +45,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
     _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
 
     // initialize also in the initial state
-    _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+    _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
 
     // put the value in bar chart data
     _generateBarChartData();
@@ -72,7 +72,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         _watchlistGold = watchlistProvider.watchlistGold;
 
         // compute all the watchlist first
-        _watchlistAll = computeWatchlist(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+        _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
         _generateBarChartData();
 
         return Column(

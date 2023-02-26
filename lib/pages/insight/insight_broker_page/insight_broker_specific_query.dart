@@ -59,6 +59,20 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     _dateTo = DateTime.now().subtract(const Duration(days: 1)).toLocal();
     _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
     _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
+    
+    // check brokerMinDate is more than _dateFrom or not?
+    if (_brokerMinDate.isAfter(_dateFrom)) {
+      // means that we cannot parse from that date, we can only parse from
+      // _brokerMinDate
+      _dateFrom = _brokerMinDate;
+    }
+
+    // check if brokerMaxDate if lesser than _dateTo or not?
+    if (_brokerMaxDate.isBefore(_dateTo)) {
+      // means that we cannot parse to that date, we can only parse until
+      // _brokerMaxDate
+      _dateTo = _brokerMaxDate;
+    }
 
     // get the broker list from shared preferences
     _brokerList = BrokerSharedPreferences.getBrokerList();

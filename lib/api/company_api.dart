@@ -267,7 +267,7 @@ class CompanyAPI {
     }
   }
 
-  Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate) async {
+  Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate, [int? limit]) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       getJwt();
@@ -277,9 +277,10 @@ class CompanyAPI {
     if (_bearerToken.isNotEmpty) {
       String dateFromString = _df.format(fromDate);
       String dateToString = _df.format(toDate);
+      int currLimit = (limit ?? 10);
 
       final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/broker/$code/from/$dateFromString/to/$dateToString'),
+        Uri.parse('${Globals.apiURL}api/companies/broker/$code/from/$dateFromString/to/$dateToString/limit/$currLimit'),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',

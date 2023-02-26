@@ -94,13 +94,13 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
 
   @override
   void dispose() {
-    super.dispose();
     _tabController.dispose();
     _scrollControllerMutual.dispose();
     _scrollControllerStock.dispose();
     _scrollControllerCrypto.dispose();
     _scrollControllerGold.dispose();
     _scrollControllerHistory.dispose();
+    super.dispose();
   }
 
   @override

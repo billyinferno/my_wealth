@@ -10,6 +10,7 @@ import 'package:my_wealth/pages/favourites/favourite_company_list_reksadana.dart
 import 'package:my_wealth/pages/favourites/favourite_company_list_saham.dart';
 import 'package:my_wealth/pages/home.dart';
 import 'package:my_wealth/pages/index/index_detail.dart';
+import 'package:my_wealth/pages/insight/insight_broker_page/insight_broker_specific_company.dart';
 import 'package:my_wealth/pages/insight/insight_broker_page/insight_broker_specific_query.dart';
 import 'package:my_wealth/pages/insight/insight_stock_page/insight_stock_per_list.dart';
 import 'package:my_wealth/pages/insight/insight_stock_page/insight_stock_sub.dart';
@@ -209,6 +210,10 @@ class RouterPageState extends State<RouterPage> {
       case '/insight/broker/specificquery':
       {
         return createAnimationRoute(const InsightBrokerSpecificQueryPage());
+      }
+      case '/insight/broker/specificcode':
+      {
+        return createAnimationRoute(const InsightBrokerSpecificCompanyPage());
       }
       case '/portofolio/list':
       {

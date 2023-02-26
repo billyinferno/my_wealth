@@ -570,9 +570,14 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     double shareValue = shareLeft * _totalBuyAverage;
     Color shareValueColor = (shareValue == 0 ? textPrimary : (shareValue < 0 ? secondaryColor : Colors.green));
     double shareAvg = shareValue / shareLeft;
-    Color shareAvgColor = (shareAvg == companySahamCodePrice ? textPrimary : (shareAvg < companySahamCodePrice ? secondaryColor : Colors.green));
+    Color shareAvgColor = (shareAvg == companySahamCodePrice ? textPrimary : (shareAvg < companySahamCodePrice ? Colors.green : secondaryColor ));
     double sharePL = (companySahamCodePrice - shareAvg) * shareLeft;
-    Color sharePLColor = (sharePL == companySahamCodePrice ? textPrimary : (sharePL < companySahamCodePrice ? secondaryColor : Colors.green));
+    Color sharePLColor = (sharePL == companySahamCodePrice ? textPrimary : (sharePL < companySahamCodePrice ? Colors.green : secondaryColor));
+    
+    // in case sharePL is minus, make it plus
+    if (sharePL < 0) {
+      sharePL = sharePL * -1;
+    }
 
     return Expanded(
       child: Container(
@@ -590,7 +595,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     const SizedBox(
-                      width: 80,
+                      width: 85,
                       child: Text(
                         "Share Left :",
                         style: TextStyle(
@@ -614,7 +619,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     const SizedBox(
-                      width: 80,
+                      width: 85,
                       child: Text(
                         "Share Value :",
                         style: TextStyle(
@@ -638,7 +643,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     const SizedBox(
-                      width: 80,
+                      width: 85,
                       child: Text(
                         "Share AVG :",
                         style: TextStyle(
@@ -662,7 +667,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     const SizedBox(
-                      width: 80,
+                      width: 85,
                       child: Text(
                         "Estimated PL :",
                         style: TextStyle(

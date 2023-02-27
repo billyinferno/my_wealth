@@ -23,8 +23,8 @@ class BrokerSummaryAccumulationModel {
 
     factory BrokerSummaryAccumulationModel.fromJson(Map<String, dynamic> json) => BrokerSummaryAccumulationModel(
         brokerSummaryCode: json["broker_summary_code"],
-        brokerSummaryAvgCurrentLot: json["broker_summary_avg_current_lot"].toDouble(),
-        brokerSummaryAvgLot: json["broker_summary_avg_lot"].toDouble(),
+        brokerSummaryAvgCurrentLot: (json["broker_summary_avg_current_lot"] != null ? json["broker_summary_avg_current_lot"].toDouble() : 0),
+        brokerSummaryAvgLot: (json["broker_summary_avg_lot"] != null ? json["broker_summary_avg_lot"].toDouble() : 0),
         brokerSummaryData: List<BrokerSummaryDatum>.from(json["broker_summary_data"].map((x) => BrokerSummaryDatum.fromJson(x))),
     );
 

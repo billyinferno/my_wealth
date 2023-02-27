@@ -23,6 +23,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
   late int _brokerAccumulationRight;
 
   int _accumVersion = 1;
+  bool _enableV2 = true;
   bool _showBrokerAccumulationList = false;
 
   @override
@@ -30,8 +31,22 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
     // initialize all the variable needed for the widget
     _accumVersion = 1;
 
-    // calculate the _brokerAccumulationLeft and Right
-    _calculateBrokerAccumulationRatio(widget.data[_accumVersion]);
+    // check if we need to enable v2 or not?
+    // we can do this by checking if the length of the widget.data is more than 1
+    // since v2 will use index-1.
+    if (widget.data.length < 2) {
+      _enableV2 = false;
+      _accumVersion = 0; // force  to v1
+
+      // defaulted left and right as 0
+      _brokerAccumulationLeft = 0;
+      _brokerAccumulationRight = 0;
+    }
+    else {
+      // v2 is enable, we can calculate this data
+      // calculate the _brokerAccumulationLeft and Right
+      _calculateBrokerAccumulationRatio(widget.data[_accumVersion]);
+    }
 
     super.initState();
   }
@@ -92,7 +107,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                         child: CupertinoSwitch(
                           value: (_accumVersion == 1),
                           activeColor: accentColor,
-                          onChanged: ((value) {
+                          onChanged: ((_enableV2 == false ? null : (value) {
                             if (_accumVersion == 0) {
                               _accumVersion = 1;
                             }
@@ -103,7 +118,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             setState(() {
                               _calculateBrokerAccumulationRatio(widget.data[_accumVersion]);
                             });
-                          }),
+                          })),
                         ),
                       ),
                     ),

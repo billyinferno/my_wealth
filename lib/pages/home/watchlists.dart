@@ -596,6 +596,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
                     }),
                     child: ExpandedTileView(
+                      key: Key("watchlist_${type}_${data[idx].watchlistCompanyId}"),
                       showedLot: _isShowedLots,
                       inLot: isInLot,
                       risk: _userInfo!.risk,

@@ -272,6 +272,7 @@ class ExpandedTileTitle extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 12,
               ),
+              overflow: TextOverflow.ellipsis,
             )
           ],
         ),

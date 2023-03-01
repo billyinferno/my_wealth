@@ -360,6 +360,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                             style: _smallFont.copyWith(
                               color: (isMinMax ? Colors.white : plColor),
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),
@@ -373,6 +374,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                             style: _smallFont.copyWith(
                               color: (isPLMinMax ? Colors.white : plDiffColor),
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),

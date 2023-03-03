@@ -16,6 +16,7 @@ import 'package:my_wealth/model/company_top_broker_model.dart';
 import 'package:my_wealth/model/info_fundamentals_model.dart';
 import 'package:my_wealth/model/info_saham_price_model.dart';
 import 'package:my_wealth/model/price_saham_ma_model.dart';
+import 'package:my_wealth/model/seasonality_model.dart';
 import 'package:my_wealth/model/user_login.dart';
 import 'package:my_wealth/model/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -34,6 +35,7 @@ import 'package:my_wealth/widgets/common_loading_page.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
+import 'package:my_wealth/widgets/seasonality_table.dart';
 import 'package:my_wealth/widgets/stock_candlestick_painter.dart';
 import 'package:my_wealth/widgets/stock_volume_painter.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
@@ -76,6 +78,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late String _brokerSummarySelected;
   late Map<DateTime, int> _watchlistDetail;
   late String? _otherCompanyCode;
+  late List<SeasonalityModel> _seasonality;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -116,7 +119,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     super.initState();
 
     // initialize the tab controller for summary page
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
 
     // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
@@ -519,6 +522,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             Tab(text: 'SUMMARY',),
             Tab(text: 'FUNDAMENTAL',),
             Tab(text: 'COMPARE'),
+            Tab(text: 'SEASONALITY'),
           ],
         ),
         const SizedBox(height: 10,),
@@ -529,411 +533,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               _tabSummaryInfo(),
               _tabFundamentalInfo(),
               _tabCompareInfo(),
+              _tabSeasonality(),
             ],
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _tabFundamentalInfo() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: SingleChildScrollView(
-        controller: _fundamentalController,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Center(
-              child: InkWell(
-                onTap: (() async {
-                  int? quarter;
-                  await showCupertinoModalPopup<void>(
-                    context: context,
-                    builder: (BuildContext context) => CupertinoActionSheet(
-                      title: const Text(
-                        "Select Period",
-                        style: TextStyle(
-                          fontFamily: '--apple-system',
-                        ),
-                      ),
-                      actions: <CupertinoActionSheetAction>[
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 5;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "Every Quarter",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
-                            ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 1;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "3 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
-                            ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 2;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "6 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
-                            ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 3;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "9 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
-                            ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 4;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "12 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-      
-                  // check if quarter is null or not?
-                  if (quarter  != null) {
-                    // set the quarter selection
-                    _quarterSelection = quarter!;
-                    // set the quarter selection text
-                    switch(_quarterSelection) {
-                      case 1:
-                        _quarterSelectionText = "3 Month";
-                        break;
-                      case 2:
-                        _quarterSelectionText = "6 Month";
-                        break;
-                      case 3:
-                        _quarterSelectionText = "9 Month";
-                        break;
-                      case 4:
-                        _quarterSelectionText = "12 Month";
-                        break;
-                      case 5:
-                        _quarterSelectionText = "Every Quarter";
-                        break;
-                      default:
-                        _quarterSelectionText = "Every Quarter";
-                        break;
-                    }
-      
-                    // get the new data from api
-                    await _getFundamental();
-                  }
-                }),
-                child: Text(
-                  _quarterSelectionText,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: secondaryColor,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  width: 125,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      _text(
-                        text: "Period",
-                        fontWeight: FontWeight.bold,
-                        color: secondaryColor,
-                      ),
-                      _text(
-                        text: "Last Price",
-                      ),
-                      _text(
-                        text: "Share Out",
-                      ),
-                      _text(
-                        text: "Market Cap",
-                      ),
-                      _text(
-                        text: "BALANCE SHEET",
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
-                      ),
-                      _text(
-                        text: "Cash",
-                      ),
-                      _text(
-                        text: "Total Asset",
-                      ),
-                      _text(
-                        text: "S.T.Borrowing",
-                      ),
-                      _text(
-                        text: "L.T.Borrowing",
-                      ),
-                      _text(
-                        text: "Total Equity",
-                      ),
-                      _text(
-                        text: "INCOME STATEMENT",
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
-                      ),
-                      _text(
-                        text: "Revenue",
-                      ),
-                      _text(
-                        text: "Gross Profit",
-                      ),
-                      _text(
-                        text: "Operating Profit",
-                      ),
-                      _text(
-                        text: "Net.Profit",
-                      ),
-                      _text(
-                        text: "EBITDA",
-                      ),
-                      _text(
-                        text: "Interest Expense",
-                      ),
-                      _text(
-                        text: "RATIO",
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
-                      ),
-                      _text(
-                        text: "Deviden",
-                      ),
-                      _text(
-                        text: "EPS",
-                      ),
-                      _text(
-                        text: "PER",
-                      ),
-                      _text(
-                        text: "BVPS",
-                      ),
-                      _text(
-                        text: "PBV",
-                      ),
-                      _text(
-                        text: "ROA",
-                      ),
-                      _text(
-                        text: "ROE",
-                      ),
-                      _text(
-                        text: "EV/EBITDA",
-                      ),
-                      _text(
-                        text: "Debt/Equity",
-                      ),
-                      _text(
-                        text: "Debt/TotalCap",
-                      ),
-                      _text(
-                        text: "Debt/EBITDA",
-                      ),
-                      _text(
-                        text: "EBITDA/IntExps",
-                      ),
-                    ],
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: _fundamentalItemController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: List<Widget>.generate(_infoFundamental.length, (index) {
-                        return SizedBox(
-                          width: 85,
-                          child: _fundamentalItem(fundamental: _infoFundamental[index])
-                        );
-                      }),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _fundamentalItem({required InfoFundamentalsModel fundamental}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        _text(
-          text: "${fundamental.period}M ${fundamental.year}",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-          color: secondaryLight
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.lastPrice, false, false),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.shareOut, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.marketCap, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: "",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.cash, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.totalAsset, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.stBorrowing, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.ltBorrowing, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.totalEquity, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: "",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.revenue, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.grossProfit, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.operatingProfit, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.netProfit, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.ebitda, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatIntWithNull(fundamental.interestExpense, false, true),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: "",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.deviden),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.eps),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: '${formatCurrencyWithNull(fundamental.per)} x',
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.bvps),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: '${formatCurrencyWithNull(fundamental.pbv)} x',
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: '${formatCurrencyWithNull(fundamental.roa)} %',
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: '${formatCurrencyWithNull(fundamental.roe)} %',
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.evEbitda),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.debtEquity),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.debtTotalcap),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.debtEbitda),
-          bgColor: primaryDark,
-        ),
-        _text(
-          text: formatCurrencyWithNull(fundamental.ebitdaInterestexpense),
-          bgColor: primaryDark,
         ),
       ],
     );
@@ -1309,6 +911,475 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           ],
         ),
       ),
+    );
+  }
+
+  Widget _tabFundamentalInfo() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        controller: _fundamentalController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Center(
+              child: InkWell(
+                onTap: (() async {
+                  int? quarter;
+                  await showCupertinoModalPopup<void>(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoActionSheet(
+                      title: const Text(
+                        "Select Period",
+                        style: TextStyle(
+                          fontFamily: '--apple-system',
+                        ),
+                      ),
+                      actions: <CupertinoActionSheetAction>[
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 5;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "Every Quarter",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 1;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "3 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 2;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "6 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 3;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "9 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            quarter = 4;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text(
+                            "12 Month",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+      
+                  // check if quarter is null or not?
+                  if (quarter  != null) {
+                    // set the quarter selection
+                    _quarterSelection = quarter!;
+                    // set the quarter selection text
+                    switch(_quarterSelection) {
+                      case 1:
+                        _quarterSelectionText = "3 Month";
+                        break;
+                      case 2:
+                        _quarterSelectionText = "6 Month";
+                        break;
+                      case 3:
+                        _quarterSelectionText = "9 Month";
+                        break;
+                      case 4:
+                        _quarterSelectionText = "12 Month";
+                        break;
+                      case 5:
+                        _quarterSelectionText = "Every Quarter";
+                        break;
+                      default:
+                        _quarterSelectionText = "Every Quarter";
+                        break;
+                    }
+      
+                    // get the new data from api
+                    await _getFundamental();
+                  }
+                }),
+                child: Text(
+                  _quarterSelectionText,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: secondaryColor,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  width: 125,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _text(
+                        text: "Period",
+                        fontWeight: FontWeight.bold,
+                        color: secondaryColor,
+                      ),
+                      _text(
+                        text: "Last Price",
+                      ),
+                      _text(
+                        text: "Share Out",
+                      ),
+                      _text(
+                        text: "Market Cap",
+                      ),
+                      _text(
+                        text: "BALANCE SHEET",
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                      _text(
+                        text: "Cash",
+                      ),
+                      _text(
+                        text: "Total Asset",
+                      ),
+                      _text(
+                        text: "S.T.Borrowing",
+                      ),
+                      _text(
+                        text: "L.T.Borrowing",
+                      ),
+                      _text(
+                        text: "Total Equity",
+                      ),
+                      _text(
+                        text: "INCOME STATEMENT",
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                      _text(
+                        text: "Revenue",
+                      ),
+                      _text(
+                        text: "Gross Profit",
+                      ),
+                      _text(
+                        text: "Operating Profit",
+                      ),
+                      _text(
+                        text: "Net.Profit",
+                      ),
+                      _text(
+                        text: "EBITDA",
+                      ),
+                      _text(
+                        text: "Interest Expense",
+                      ),
+                      _text(
+                        text: "RATIO",
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                      _text(
+                        text: "Deviden",
+                      ),
+                      _text(
+                        text: "EPS",
+                      ),
+                      _text(
+                        text: "PER",
+                      ),
+                      _text(
+                        text: "BVPS",
+                      ),
+                      _text(
+                        text: "PBV",
+                      ),
+                      _text(
+                        text: "ROA",
+                      ),
+                      _text(
+                        text: "ROE",
+                      ),
+                      _text(
+                        text: "EV/EBITDA",
+                      ),
+                      _text(
+                        text: "Debt/Equity",
+                      ),
+                      _text(
+                        text: "Debt/TotalCap",
+                      ),
+                      _text(
+                        text: "Debt/EBITDA",
+                      ),
+                      _text(
+                        text: "EBITDA/IntExps",
+                      ),
+                    ],
+                  )
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _fundamentalItemController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: List<Widget>.generate(_infoFundamental.length, (index) {
+                        return SizedBox(
+                          width: 85,
+                          child: _fundamentalItem(fundamental: _infoFundamental[index])
+                        );
+                      }),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tabCompareInfo() {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: SingleChildScrollView(
+        controller: _compareController,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Code"),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Last Price", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "One Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Three Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Five Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Ten Year", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Period", fontWeight: FontWeight.bold),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Balance Sheet", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Cash", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Total Asset", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "S.T.Borrow", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "L.T.Borrow", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Total Equity", fontWeight: FontWeight.bold),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Income Stmt", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Revenue", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Gross Profit", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Opr Profit", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Net Profit", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EBITDA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Int Expense", fontWeight: FontWeight.bold),
+                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Ratio", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EPS", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PER", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PER Annual", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Beta 1Y", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "BVPS", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PBV", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PSR Annual", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PCFR Annual", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "ROA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "ROE", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EV/EBITDA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/Equity", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/Total Cap", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/EBITDA", fontWeight: FontWeight.bold),
+                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EBITDA/IntExp", fontWeight: FontWeight.bold),
+                ],
+              ),
+            ),
+            _companyCompareInfo(),
+            _otherCompanyCompareInfo(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tabSeasonality() {
+    return SeasonalityTable(data: _seasonality);
+  }
+
+  Widget _fundamentalItem({required InfoFundamentalsModel fundamental}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        _text(
+          text: "${fundamental.period}M ${fundamental.year}",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+          color: secondaryLight
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.lastPrice, false, false),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.shareOut, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.marketCap, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: "",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.cash, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.totalAsset, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.stBorrowing, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.ltBorrowing, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.totalEquity, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: "",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.revenue, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.grossProfit, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.operatingProfit, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.netProfit, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.ebitda, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatIntWithNull(fundamental.interestExpense, false, true),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: "",
+          fontWeight: FontWeight.bold,
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.deviden),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.eps),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.per)} x',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.bvps),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.pbv)} x',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.roa)} %',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: '${formatCurrencyWithNull(fundamental.roe)} %',
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.evEbitda),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.debtEquity),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.debtTotalcap),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.debtEbitda),
+          bgColor: primaryDark,
+        ),
+        _text(
+          text: formatCurrencyWithNull(fundamental.ebitdaInterestexpense),
+          bgColor: primaryDark,
+        ),
+      ],
     );
   }
 
@@ -2305,68 +2376,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     );
   }
 
-  Widget _tabCompareInfo() {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      child: SingleChildScrollView(
-        controller: _compareController,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Code"),
-                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Last Price", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "One Year", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Three Year", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Five Year", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Ten Year", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Period", fontWeight: FontWeight.bold),
-                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Balance Sheet", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Cash", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Total Asset", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "S.T.Borrow", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "L.T.Borrow", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Total Equity", fontWeight: FontWeight.bold),
-                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Income Stmt", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Revenue", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Gross Profit", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Opr Profit", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Net Profit", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EBITDA", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Int Expense", fontWeight: FontWeight.bold),
-                  _compareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Ratio", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EPS", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PER", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PER Annual", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Beta 1Y", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "BVPS", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PBV", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PSR Annual", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "PCFR Annual", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "ROA", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "ROE", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EV/EBITDA", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/Equity", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/Total Cap", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "Debt/EBITDA", fontWeight: FontWeight.bold),
-                  _compareFields(color: primaryDark, borderColor: primaryLight, text: "EBITDA/IntExp", fontWeight: FontWeight.bold),
-                ],
-              ),
-            ),
-            _companyCompareInfo(),
-            _otherCompanyCompareInfo(),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _companyCompareInfo() {
     return Expanded(
       child: Column(
@@ -2852,6 +2861,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         }
       }).onError((error, stackTrace) {
         debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrintStack(stackTrace: stackTrace);
+      });
+
+      await _companyApi.getSeasonality(_companyData.companyCode).then((resp) {
+        _seasonality = resp;
+      }).onError((error, stackTrace) {
+        debugPrint("Error on Get Seasonality");
         debugPrintStack(stackTrace: stackTrace);
       });
     }

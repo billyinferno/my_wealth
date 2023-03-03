@@ -9,6 +9,7 @@ import 'package:my_wealth/model/company_saham_list_model.dart';
 import 'package:my_wealth/model/company_search_model.dart';
 import 'package:my_wealth/model/company_top_broker_model.dart';
 import 'package:my_wealth/model/find_other_company_saham_model.dart';
+import 'package:my_wealth/model/seasonality_model.dart';
 import 'package:my_wealth/model/sector_name_list_model.dart';
 import 'package:my_wealth/model/sector_per_detail_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
@@ -359,6 +360,42 @@ class CompanyAPI {
         for (dynamic data in commonModel.data) {
           CompanySahamListModel company = CompanySahamListModel.fromJson(data['attributes']);
           ret.add(company);
+        }
+        return ret;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<SeasonalityModel>> getSeasonality(String code) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/company-saham/seasonality/$code'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<SeasonalityModel> ret = [];
+        for (dynamic data in commonModel.data) {
+          SeasonalityModel seasonality = SeasonalityModel.fromJson(data['attributes']);
+          ret.add(seasonality);
         }
         return ret;
       }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/model/user/user_login.dart';
 
 class UserProvider extends ChangeNotifier {
   UserLoginInfoModel? userInfo;

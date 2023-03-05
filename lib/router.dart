@@ -39,6 +39,7 @@ import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/themes/theme.dart';
 import 'package:my_wealth/utils/animation/page_transition.dart';
+import 'package:my_wealth/utils/extensions/custom_scroll_behaviour.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
@@ -64,6 +65,7 @@ class RouterPageState extends State<RouterPage> {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        scrollBehavior: MyCustomScrollBehavior(),
         title: "My Wealth",
         theme: themeData.copyWith(
           colorScheme: themeData.colorScheme.copyWith(

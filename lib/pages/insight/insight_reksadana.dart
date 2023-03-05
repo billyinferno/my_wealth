@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
-import 'package:my_wealth/model/top_worse_company_list_model.dart';
+import 'package:my_wealth/model/insight/insight_top_worse_company_list_model.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';

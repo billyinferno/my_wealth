@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wealth/api/broker_api.dart';
-import 'package:my_wealth/model/broker_model.dart';
+import 'package:my_wealth/model/broker/broker_model.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/broker_detail_args.dart';

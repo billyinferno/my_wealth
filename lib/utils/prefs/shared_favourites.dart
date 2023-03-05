@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/favourites_model.dart';
+import 'package:my_wealth/model/favourites/favourites_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
 
 class FavouritesSharedPreferences {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
-import 'package:my_wealth/model/insight_sideway_model.dart';
+import 'package:my_wealth/model/insight/insight_sideway_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';

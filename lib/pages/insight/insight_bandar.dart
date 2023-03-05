@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
+import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_accumulation_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_eps_page.dart';

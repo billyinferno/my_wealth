@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
-import 'package:my_wealth/model/watchlist_list_model.dart';
+import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';

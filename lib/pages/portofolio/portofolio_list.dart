@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/portofolio_api.dart';
-import 'package:my_wealth/model/portofolio_summary_model.dart';
+import 'package:my_wealth/model/portofolio/portofolio_summary_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';

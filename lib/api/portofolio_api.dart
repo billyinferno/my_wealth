@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:my_wealth/model/common_array_model.dart';
-import 'package:my_wealth/model/portofolio_detail_model.dart';
-import 'package:my_wealth/model/portofolio_summary_model.dart';
+import 'package:my_wealth/model/common/common_array_model.dart';
+import 'package:my_wealth/model/portofolio/portofolio_detail_model.dart';
+import 'package:my_wealth/model/portofolio/portofolio_summary_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';

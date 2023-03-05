@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_wealth/model/watchlist_list_model.dart';
+import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/compute_watchlist.dart';
 import 'package:my_wealth/widgets/expanded_tile_children.dart';

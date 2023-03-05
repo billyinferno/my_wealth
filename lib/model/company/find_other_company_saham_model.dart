@@ -5,7 +5,6 @@
 // ignore_for_file: prefer_null_aware_operators
 
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 
 FindOtherCommpanySahamModel findOtherCommpanySahamModelFromJson(String str) => FindOtherCommpanySahamModel.fromJson(json.decode(str));
 
@@ -53,7 +52,6 @@ class OtherCompanyInfo {
     double? threeYear;
     double? fiveYear;
     double? tenYear;
-    final ScrollController controller = ScrollController();
 
     factory OtherCompanyInfo.fromJson(Map<String, dynamic> json) => OtherCompanyInfo(
         name: json["name"],

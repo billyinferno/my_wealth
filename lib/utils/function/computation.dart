@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/watchlist_detail_list_model.dart';
-import 'package:my_wealth/model/watchlist_list_model.dart';
+import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
+import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 
 class WatchlistComputationResult {

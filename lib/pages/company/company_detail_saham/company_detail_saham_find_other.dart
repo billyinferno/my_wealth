@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/model/find_other_company_saham_model.dart';
+import 'package:my_wealth/model/company/find_other_company_saham_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -64,15 +64,6 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
   void dispose() {
     _textController.dispose();
     _scrollController.dispose();
-
-    for (OtherCompanyInfo data in _similarList) {
-      data.controller.dispose();
-    }
-
-    for (OtherCompanyInfo data in _companyList) {
-      data.controller.dispose();
-    }
-    
     super.dispose();
   }
 
@@ -185,7 +176,6 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
                             ),
                             const SizedBox(height: 5,),
                             SingleChildScrollView(
-                              controller: _filterList[index].controller,
                               physics: const AlwaysScrollableScrollPhysics(),
                               scrollDirection: Axis.horizontal,
                               child: Row(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 

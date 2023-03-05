@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_wealth/model/seasonality_model.dart';
+import 'package:my_wealth/model/company/company_seasonality_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';

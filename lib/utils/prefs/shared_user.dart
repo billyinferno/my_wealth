@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/user_login.dart';
+import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/storage/local_box.dart';
 
 class UserSharedPreferences {

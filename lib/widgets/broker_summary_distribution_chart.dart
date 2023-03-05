@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/model/broker_summary_accumulation_model.dart';
+import 'package:my_wealth/model/broker/broker_summary_accumulation_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';

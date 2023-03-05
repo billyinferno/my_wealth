@@ -1,17 +1,17 @@
 import 'dart:convert';
-import 'package:my_wealth/model/broker_top_transaction_model.dart';
-import 'package:my_wealth/model/index_beater_model.dart';
-import 'package:my_wealth/model/inisght_bandar_interest_model.dart';
-import 'package:my_wealth/model/insight_accumulation_model.dart';
-import 'package:my_wealth/model/insight_eps_model.dart';
-import 'package:my_wealth/model/insight_sideway_model.dart';
-import 'package:my_wealth/model/market_cap_model.dart';
-import 'package:my_wealth/model/market_today_model.dart';
-import 'package:my_wealth/model/sector_summary_model.dart';
-import 'package:my_wealth/model/stock_dividend_list_model.dart';
-import 'package:my_wealth/model/stock_new_listed_model.dart';
-import 'package:my_wealth/model/stock_split_list_model.dart';
-import 'package:my_wealth/model/top_worse_company_list_model.dart';
+import 'package:my_wealth/model/broker/broker_top_transaction_model.dart';
+import 'package:my_wealth/model/index/index_beater_model.dart';
+import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
+import 'package:my_wealth/model/insight/insight_accumulation_model.dart';
+import 'package:my_wealth/model/insight/insight_eps_model.dart';
+import 'package:my_wealth/model/insight/insight_sideway_model.dart';
+import 'package:my_wealth/model/insight/insight_market_cap_model.dart';
+import 'package:my_wealth/model/insight/insight_market_today_model.dart';
+import 'package:my_wealth/model/insight/insight_sector_summary_model.dart';
+import 'package:my_wealth/model/insight/insight_stock_dividend_list_model.dart';
+import 'package:my_wealth/model/insight/insight_stock_new_listed_model.dart';
+import 'package:my_wealth/model/insight/insight_stock_split_list_model.dart';
+import 'package:my_wealth/model/insight/insight_top_worse_company_list_model.dart';
 import 'package:my_wealth/storage/local_box.dart';
 
 class InsightSharedPreferences {

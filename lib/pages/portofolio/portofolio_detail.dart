@@ -123,179 +123,172 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "Total Value",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 5,),
-                              Text(
-                                formatCurrency(_args.value, false, false, false),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              const SizedBox(height: 5,),
-                              const Text(
-                                "Total Cost",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 5,),
-                              Text(
-                                formatCurrency(_args.cost, false, false, false),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
+                      const Text(
+                        "Total Value",
+                        style: TextStyle(
+                          fontSize: 12,
                         ),
                       ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "Total Unrealised",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 5,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(
-                                    trendIcon,
-                                    size: 12,
-                                    color: trendColor,
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  Text(
-                                    formatCurrencyWithNull(_args.unrealised, false, false, false),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: trendColor
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5,),
-                              Text(
-                                "${(_args.unrealised ?? 0) > 0 ? '+' : ''}${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 2)}%",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10,
-                                  color: trendColor
-                                ),
-                              ),
-                              const SizedBox(height: 5,),
-                              const Text(
-                                "Total Realised",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 5,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(
-                                    Ionicons.wallet_outline,
-                                    size: 12,
-                                    color: realisedColor,
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  Text(
-                                    formatCurrencyWithNull(_args.realised, false, false, false),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: realisedColor
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        formatCurrency(_args.value, false, false, false),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      const Text(
+                        "Total Cost",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        formatCurrency(_args.cost, false, false, false),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
                         ),
                       ),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: List<Widget>.generate(_portofolioList.length, ((index) {
-                      int colorMap = (index % Globals.colorList.length);
-                      
-                      return ProductListItem(
-                        bgColor: Globals.colorList[colorMap],
-                        title: (_args.type == 'reksadana' ? _portofolioList[index].companyName : "(${_portofolioList[index].companyCode}) ${_portofolioList[index].companyName}"),
-                        subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} shares",
-                        value: _portofolioList[index].watchlistSubTotalValue,
-                        cost: _portofolioList[index].watchlistSubTotalCost,
-                        realised: _portofolioList[index].watchlistSubTotalRealised,
-                        unrealised: _portofolioList[index].watchlistSubTotalUnrealised,
-                        total: _portofolioTotalValue,
-                        onTap: (() async {
-                          showLoaderDialog(context);
-                          await _watchlistAPI.findSpecific(_args.type, _portofolioList[index].watchlistId).then((resp) {
-                            WatchlistListArgs watchlistArgs = WatchlistListArgs(
-                              type: _args.type,
-                              watchList: resp
-                            );
-
-                            // remove the loader dialog
-                            Navigator.pop(context);
-
-                            // go to the watchlist list page
-                            Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
-                          }).onError((error, stackTrace) {
-                            // remove the loader dialog
-                            Navigator.pop(context);
-
-                            // show the error message
-                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                          });
-                        }),
-                      );
-                    })),
-                  ),
-                  const SizedBox(height: 30,),
-                ],
+                ),
               ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "Total Unrealised",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(
+                            trendIcon,
+                            size: 12,
+                            color: trendColor,
+                          ),
+                          const SizedBox(width: 5,),
+                          Text(
+                            formatCurrencyWithNull(_args.unrealised, false, false, false),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: trendColor
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        "${(_args.unrealised ?? 0) > 0 ? '+' : ''}${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 2)}%",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          color: trendColor
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      const Text(
+                        "Total Realised",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(
+                            Ionicons.wallet_outline,
+                            size: 12,
+                            color: realisedColor,
+                          ),
+                          const SizedBox(width: 5,),
+                          Text(
+                            formatCurrencyWithNull(_args.realised, false, false, false),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: realisedColor
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: _portofolioList.length,
+              itemBuilder: ((context, index) {
+                int colorMap = (index % Globals.colorList.length);
+              
+                return ProductListItem(
+                  bgColor: Globals.colorList[colorMap],
+                  title: (_args.type == 'reksadana' ? _portofolioList[index].companyName : "(${_portofolioList[index].companyCode}) ${_portofolioList[index].companyName}"),
+                  subTitle: "${formatDecimal(_portofolioList[index].watchlistSubTotalShare, 2)} shares",
+                  value: _portofolioList[index].watchlistSubTotalValue,
+                  cost: _portofolioList[index].watchlistSubTotalCost,
+                  realised: _portofolioList[index].watchlistSubTotalRealised,
+                  unrealised: _portofolioList[index].watchlistSubTotalUnrealised,
+                  total: _portofolioTotalValue,
+                  netAssetValue: _portofolioList[index].companyNetAssetValue,
+                  oneDay: _portofolioList[index].companyDailyReturn,
+                  onTap: (() async {
+                    showLoaderDialog(context);
+                    await _watchlistAPI.findSpecific(_args.type, _portofolioList[index].watchlistId).then((resp) {
+                      WatchlistListArgs watchlistArgs = WatchlistListArgs(
+                        type: _args.type,
+                        watchList: resp
+                      );
+
+                      // remove the loader dialog
+                      Navigator.pop(context);
+
+                      // go to the watchlist list page
+                      Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
+                    }).onError((error, stackTrace) {
+                      // remove the loader dialog
+                      Navigator.pop(context);
+
+                      // show the error message
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                    });
+                  }),
+                );
+              }),
             ),
           ),
+          const SizedBox(height: 30,),
         ],
       ),
     );

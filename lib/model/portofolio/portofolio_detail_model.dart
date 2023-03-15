@@ -14,6 +14,8 @@ class PortofolioDetailModel {
         required this.companyName,
         required this.companyCode,
         required this.companyType,
+        required this.companyNetAssetValue,
+        required this.companyDailyReturn,
         required this.watchlistSubTotalShare,
         required this.watchlistSubTotalCost,
         required this.watchlistSubTotalValue,
@@ -25,6 +27,8 @@ class PortofolioDetailModel {
     final String companyName;
     final String companyCode;
     final String companyType;
+    final double companyNetAssetValue;
+    final double? companyDailyReturn;
     final double watchlistSubTotalShare;
     final double watchlistSubTotalCost;
     final double watchlistSubTotalValue;
@@ -36,6 +40,8 @@ class PortofolioDetailModel {
         companyName: json["company_name"],
         companyCode: json["company_code"],
         companyType: json["company_type"],
+        companyNetAssetValue: (json["company_net_asset_value"] == null ? -1 : json["company_net_asset_value"].toDouble()),
+        companyDailyReturn: (json["company_daily_return"] == null ? 0 : json["company_daily_return"].toDouble()),
         watchlistSubTotalShare: json["watchlist_sub_total_share"].toDouble(),
         watchlistSubTotalCost: json["watchlist_sub_total_cost"].toDouble(),
         watchlistSubTotalValue: json["watchlist_sub_total_value"].toDouble(),
@@ -48,6 +54,8 @@ class PortofolioDetailModel {
         "company_name": companyName,
         "company_code": companyCode,
         "company_type": companyType,
+        "company_net_asset_value": companyNetAssetValue,
+        "company_daily_return": companyDailyReturn,
         "watchlist_sub_total_share": watchlistSubTotalShare,
         "watchlist_sub_total_cost": watchlistSubTotalCost,
         "watchlist_sub_total_value": watchlistSubTotalValue,

@@ -12,9 +12,11 @@ class ProductListItem extends StatelessWidget {
   final double total;
   final double? realised;
   final double? unrealised;
+  final double? netAssetValue;
+  final double? oneDay;
   final VoidCallback? onTap;
 
-  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.onTap}) : super(key: key);
+  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.netAssetValue, this.oneDay, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +106,7 @@ class ProductListItem extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(width: 5,),
+                                  const SizedBox(height: 5,),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -138,6 +140,8 @@ class ProductListItem extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+                                  const SizedBox(height: 5,),
+                                  _priceItem(netAssetValue: netAssetValue, oneDay: oneDay),
                                 ],
                               ),
                             ),
@@ -203,6 +207,55 @@ class ProductListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _priceItem({required double? netAssetValue, required double? oneDay}) {
+    // if both netAssetValue and oneDay not null then return the widget otherwise
+    // just return a SizedBox
+    if (netAssetValue != null || oneDay != null) {
+      IconData priceIcon = Ionicons.remove;
+      Color priceColor = textPrimary;
+
+      if (oneDay! < 0) {
+        priceIcon = Ionicons.caret_down;
+        priceColor = secondaryColor;
+      }
+      else {
+        priceIcon = Ionicons.caret_up;
+        priceColor = Colors.green;
+      }
+
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Icon(
+            priceIcon,
+            color: priceColor,
+            size: 15,
+          ),
+          const SizedBox(width: 5,),
+          Text(
+            formatCurrencyWithNull(netAssetValue, false, true, false, 2),
+            style: const TextStyle(
+              color: textPrimary,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Text(
+            "(${formatDecimalWithNull(oneDay, 100, 2)}%)",
+            style: TextStyle(
+              color: priceColor,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      );
+    }
+
+    // return SizedBox
+    return const SizedBox.shrink();
   }
 
   Widget _productItem({required IconData icon, required Color iconColor, required String text, required Color textColor}) {

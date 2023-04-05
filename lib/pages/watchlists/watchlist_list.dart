@@ -100,7 +100,15 @@ class WatchlistListPageState extends State<WatchlistListPage> {
               icon: const Icon(
                 Ionicons.business_outline
               ),
-            )
+            ),
+            IconButton(
+              onPressed: (() {
+                Navigator.pushNamed(context, '/watchlist/performance', arguments: _watchlistArgs);
+              }),
+              icon: const Icon(
+                Ionicons.pulse_outline
+              ),
+            ),
           ],
           title: const Center(
             child: Text(

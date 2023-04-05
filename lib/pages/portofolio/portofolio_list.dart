@@ -26,18 +26,32 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   
   late List<BarChartData> _barChartData;
   late List<PortofolioSummaryModel> _portofolioList;
+  late List<PortofolioSummaryModel> _portofolioFiltered;
+  final Map<String, String> _sortMap = {
+    "type": "Type",
+    "total": "Total Product(s)",
+    "share": "Total Share",
+    "cost": "Total Cost",
+    "value": "Total Value",
+    "realized": "Total Realized P/L",
+    "unrealized": "Total Unrealized P/L",
+  };
+  final List<String> _sortList = ["type", "total", "share", "cost", "value", "realized", "unrealized"];
 
   Color trendColor = Colors.white;
   Color realisedColor = Colors.white;
   IconData trendIcon = Ionicons.remove;
   bool _isLoading = true;
   double _portofolioTotalValue = 0;
+  String _sortType = "type";
+  bool _sortAscending = true;
 
   @override
   void initState() {
     // init list
     _barChartData = [];
     _portofolioList = [];
+    _portofolioFiltered = [];
 
     // convert the arguments into portofilio list args
     _args = widget.args as PortofolioListArgs;
@@ -64,6 +78,9 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
       await _portofolioAPI.getPortofolioSummary(_args.type).then((resp) {
         _portofolioList = resp;
+
+        // filter the data
+        _filterList();
 
         // generate the _barChartData based on response
         _portofolioTotalValue = 0;
@@ -122,6 +139,88 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
             ),
           )
         ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (() {
+              // show the modal dialog for what to filter
+              // code/name, total investment, share left, realized pl, unrealized pl, one day
+              showModalBottomSheet(
+                context: context,
+                isDismissible: true,
+                builder: (context) {
+                  return SizedBox(
+                    height: 250,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _sortList.length,
+                            itemBuilder: ((context, index) {
+                              return InkWell(
+                                onTap: (() {
+                                  setState(() {
+                                    _sortType = _sortList[index];
+                                    _filterList();
+                                  });
+                                  // dismiss the bottom sheet
+                                  Navigator.pop(context);
+                                }),
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: primaryLight,
+                                        width: 1.0,
+                                        style: BorderStyle.solid,
+                                      )
+                                    )
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                    child: Text(
+                                      (_sortMap[_sortList[index]] ?? _sortList[index]),
+                                      style: const TextStyle(
+                                        color: textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                        const SizedBox(height: 30,),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }),
+            icon: const Icon(
+              Ionicons.filter_circle_outline,
+              color: textPrimary,
+            ),
+          ),
+          InkWell(
+            onTap: (() {
+              // change the sort from ascending to descending
+              setState(() {
+                _sortAscending = !_sortAscending;
+                _filterList();
+              });
+            }),
+            child: Container(
+              width: 55,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(55),
+              ),
+              child: _ascendingIcon(),
+            ),
+          ),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,36 +355,36 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
             child: ListView.builder(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: _portofolioList.length,
+              itemCount: _portofolioFiltered.length,
               itemBuilder: (context, index) {
                 int colorMap = (index % Globals.colorList.length);
                 return ProductListItem(
                   onTap: (() {
                     // convert the total product
-                    int? numProd = _portofolioList[index].portofolioTotalProduct;
+                    int? numProd = _portofolioFiltered[index].portofolioTotalProduct;
             
                     // check if we have product here or not?
                     if (numProd > 0) {
                       // got product means we can display the details here 
                       PortofolioListArgs args = PortofolioListArgs(
-                        title: _portofolioList[index].portofolioCompanyDescription,
-                        value: _portofolioList[index].portofolioTotalValue,
-                        cost: _portofolioList[index].portofolioTotalCost,
-                        realised: _portofolioList[index].portofolioTotalRealised,
-                        unrealised: _portofolioList[index].portofolioTotalUnrealised,
+                        title: _portofolioFiltered[index].portofolioCompanyDescription,
+                        value: _portofolioFiltered[index].portofolioTotalValue,
+                        cost: _portofolioFiltered[index].portofolioTotalCost,
+                        realised: _portofolioFiltered[index].portofolioTotalRealised,
+                        unrealised: _portofolioFiltered[index].portofolioTotalUnrealised,
                         type: _args.type,
-                        subType: _portofolioList[index].portofolioCompanyType
+                        subType: _portofolioFiltered[index].portofolioCompanyType
                       );
             
                       Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
                     }
                   }),
                   bgColor: Globals.colorList[colorMap],
-                  title: _portofolioList[index].portofolioCompanyDescription,
-                  subTitle: "${_portofolioList[index].portofolioTotalProduct} product${_portofolioList[index].portofolioTotalProduct > 1 ? "s" : ""}",
-                  value: _portofolioList[index].portofolioTotalValue,
-                  cost: _portofolioList[index].portofolioTotalCost,
-                  realised: _portofolioList[index].portofolioTotalRealised,
+                  title: _portofolioFiltered[index].portofolioCompanyDescription,
+                  subTitle: "${_portofolioFiltered[index].portofolioTotalProduct} product${_portofolioFiltered[index].portofolioTotalProduct > 1 ? "s" : ""}",
+                  value: _portofolioFiltered[index].portofolioTotalValue,
+                  cost: _portofolioFiltered[index].portofolioTotalCost,
+                  realised: _portofolioFiltered[index].portofolioTotalRealised,
                   total: _portofolioTotalValue,
                 );
               },
@@ -295,5 +394,86 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         ],
       ),
     );
+  }
+
+  Widget _ascendingIcon() {
+    String textUp = "A";
+    String textDown = "Z";
+    IconData currentIcon = Ionicons.arrow_down;
+
+    if (!_sortAscending) {
+      textUp = "Z";
+      textDown = "A";
+      currentIcon = Ionicons.arrow_up;
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              textUp,
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              textDown,
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 2,),
+        Icon(
+          currentIcon,
+          size: 20,
+        )
+      ],
+    );
+  }
+
+  void _filterList() {
+    _portofolioFiltered.clear();
+
+    // since we will used portofolio list as based, just copy from here
+    // this can be used as default value also for code/name
+    _portofolioFiltered = _portofolioList.toList();
+
+    // check what kind of sort type is being implemented
+    // "total", "share", "cost", "value", "realized", "unrealized"
+    switch(_sortType) {
+      case "total":
+        _portofolioFiltered.sort((a, b) => a.portofolioTotalProduct.compareTo(b.portofolioTotalProduct));
+        break;
+      case "share":
+        _portofolioFiltered.sort((a, b) => a.portofolioTotalShare.compareTo(b.portofolioTotalShare));
+        break;
+      case "cost":
+        _portofolioFiltered.sort((a, b) => a.portofolioTotalCost.compareTo(b.portofolioTotalCost));
+        break;
+      case "value":
+        _portofolioFiltered.sort((a, b) => a.portofolioTotalValue.compareTo(b.portofolioTotalValue));
+        break;
+      case "realized":
+        _portofolioFiltered.sort((a, b) => a.portofolioTotalRealised.compareTo(b.portofolioTotalRealised));
+        break;
+      case "unrealized":
+        _portofolioFiltered.sort((a, b) => a.portofolioTotalUnrealised.compareTo(b.portofolioTotalUnrealised));
+        break;
+      default:
+        // already copied above
+        break;
+    }
+
+    // check if this is ascending of descending
+    if (!_sortAscending) {
+      _portofolioFiltered = _portofolioFiltered.reversed.toList();
+    }
   }
 }

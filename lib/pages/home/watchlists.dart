@@ -138,6 +138,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
               cost: _watchlistAll!.totalCost,
               riskFactor: _userInfo!.risk,
               visibility: _isSummaryVisible,
+              compResult: _watchlistAll,
               onVisibilityPress: (() {
                 setState(() {
                   _isSummaryVisible = !_isSummaryVisible;

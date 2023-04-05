@@ -69,6 +69,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     // value, so we don't need to calculate or compute again, as this already compute on
     // the watchlist page.
     switch(_args.type) {
+      case 'all':
+        _totalDayGain = _args.computeResult!.totalDayGainReksadana + _args.computeResult!.totalDayGainSaham + _args.computeResult!.totalDayGainGold + _args.computeResult!.totalDayGainCrypto;
+        _totalCost = _args.computeResult!.totalCostReksadana + _args.computeResult!.totalCostSaham + _args.computeResult!.totalCostGold + _args.computeResult!.totalCostCrypto;
+        _totalValue = _args.computeResult!.totalValueReksadana + _args.computeResult!.totalValueSaham + _args.computeResult!.totalValueGold + _args.computeResult!.totalValueCrypto;
+        _totalRealised = _args.computeResult!.totalRealisedReksadana + _args.computeResult!.totalRealisedSaham + _args.computeResult!.totalRealisedGold + _args.computeResult!.totalRealisedCrypto;
+        _totalUnrealised = _totalValue - _totalCost;
+        break;
       case 'reksadana':
         _totalDayGain = _args.computeResult!.totalDayGainReksadana;
         _totalCost = _args.computeResult!.totalCostReksadana;
@@ -427,77 +434,165 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   }
 
   Future<bool> _getPerformanceData() async {
-    try {
-      // perform the get company detail information here
-      await _watchlistAPI.getWatchlistPerformanceSummary(_args.type).then((resp) {
-        // copy the response to watchlist performance
-        _summaryPerfData = resp; 
+    double max = double.infinity * (-1);
+    double min = double.infinity;
+    double avg = 0;
+    double plDiffMin = double.infinity;
+    double plDiffMax = double.infinity * (-1);
+    double? plBefore;
+    double? plDiff;
 
-        // get the maximum and minimum
+    // check whether the arguments is all, if all then we will need to get all the data, and combine it later
+    if (_args.type == 'all') {
+      Map<String, List<SummaryPerformanceModel>> perfData = {};
+      await Future.wait([
+        _watchlistAPI.getWatchlistPerformanceSummary('reksadana').then((resp) {
+          perfData['reksadana'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummary('saham').then((resp) {
+          perfData['saham'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummary('gold').then((resp) {
+          perfData['gold'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummary('crypto').then((resp) {
+          perfData['crypto'] = resp;
+        }),
+      ]).then((_) {
+        // set the total data as 0
         _totalData = 0;
-        
-        double max = double.infinity * (-1);
-        double min = double.infinity;
-        double avg = 0;
-        double plDiffMin = double.infinity;
-        double plDiffMax = double.infinity * (-1);
-        double? plBefore;
-        double? plDiff;
 
-        for(int i=0; i < _summaryPerfData.length; i++) {
-          SummaryPerformanceModel dt = _summaryPerfData[i];
+        // temporaty performance data map
+        Map<DateTime, SummaryPerformanceModel> tmpSummaryPerfData = {};
+        Map<DateTime, bool> mapDates = {};
+        List<DateTime> listDates = [];
+        SummaryPerformanceModel tmpCurrentSummaryPerfModel;
+        SummaryPerformanceModel tmpNextSummaryPerfModel;
 
-          // add this data to the performance data
-          _perfData.add(PerformanceData(date: dt.plDate, gain: dt.plValue));
-
-          // got data, so now check if this is max or not
-          _totalData++;
-
-          // check if this is first PL or not?
-          if (plBefore == null) {
-            plBefore = dt.plValue;
+        // loop thru all the perf data to get the dates
+        perfData.forEach((key, data) {
+          for(int i=0; i < data.length; i++) {
+            mapDates[data[i].plDate] = true;
           }
-          else {
-            plDiff = dt.plValue - plBefore;
+        });
+        // sort the dates so we can use it later when we want to generate the performance data
+        listDates = mapDates.keys.toList()..sort();
 
-            // check if this is plDiffMax or plDiffMin
-            if (plDiff > plDiffMax) {
-              plDiffMax = plDiff;
+        // loop thru all the perfData
+        perfData.forEach((key, data) {
+          // convert the performance data to map, so we can check whether the date is available or not?
+          Map<DateTime, SummaryPerformanceModel> tmpPerfData = {};
+
+          // loop thru all the performance model
+          for(int i=0; i < data.length; i++) {
+            tmpPerfData[data[i].plDate] = data[i];
+          }
+
+          // loop thru the list of dates
+          double prevValue = 0;
+          for(int i=0; i < listDates.length; i++) {
+            // check if this date is available or not on the tmpPerfData
+            if (tmpPerfData.containsKey(listDates[i])) {
+              // just add the data
+              prevValue = tmpPerfData[listDates[i]]!.plValue;
             }
 
-            if (plDiff < plDiffMin) {
-              plDiffMin = plDiff;
+            // add this prevValue to the tmpSummaryPerfData
+            // first check if exists or not on the tmpSummaryPerfData
+            if (tmpSummaryPerfData.containsKey(listDates[i])) {
+              // get the current value
+              tmpCurrentSummaryPerfModel = tmpSummaryPerfData[listDates[i]]!;
+              // create the next data
+              tmpNextSummaryPerfModel = SummaryPerformanceModel(
+                plDate: listDates[i],
+                plValue: tmpCurrentSummaryPerfModel.plValue + prevValue
+              );
+              // add to the tmpSummaryPerfData
+              tmpSummaryPerfData[listDates[i]] = tmpNextSummaryPerfModel;
             }
-
-            // set plBefore to pl
-            plBefore = dt.plValue;
+            else {
+              tmpSummaryPerfData[listDates[i]] = SummaryPerformanceModel(plDate: listDates[i], plValue: prevValue);
+            }
           }
+        });
 
-          // check if this is min or max?
-          if (dt.plValue > max) {
-            max = dt.plValue;
-          }
-
-          if (dt.plValue < min) {
-            min = dt.plValue;
-          }
-
-          // add for the average
-          avg = avg + dt.plValue;
-        }
-
-        if (_totalData > 0) {
-          _max = max;
-          _min = min;
-          _avg = avg / _totalData;
-          _maxPL = plDiffMax;
-          _minPL = plDiffMin;
-        }
+        // once finished loop all the performance data, and combine it
+        // extract the data from map to list of _summaryPerfData and _perfData
+        _summaryPerfData = [];
+        tmpSummaryPerfData.forEach((key, data) {
+          // add this data to the summary perf data
+          _summaryPerfData.add(data);
+        });
+      }).onError((error, stackTrace) {
+        debugPrint(error.toString());
+        throw 'Error when try to get the data from server';
       });
     }
-    catch(error) {
-      debugPrint(error.toString());
-      throw 'Error when try to get the data from server';
+    else {
+      try {
+        // perform the get company detail information here
+        await _watchlistAPI.getWatchlistPerformanceSummary(_args.type).then((resp) {
+          // copy the response to watchlist performance
+          _summaryPerfData = resp; 
+        });
+      }
+      catch(error) {
+        debugPrint(error.toString());
+        throw 'Error when try to get the data from server';
+      }
+    }
+
+    // calculate the summary performance data
+    _totalData = 0;
+    
+    for(int i=0; i < _summaryPerfData.length; i++) {
+      SummaryPerformanceModel dt = _summaryPerfData[i];
+
+      // add this data to the performance data
+      _perfData.add(PerformanceData(date: dt.plDate, gain: dt.plValue));
+
+      // got data, so now check if this is max or not
+      _totalData++;
+
+      // check if this is first PL or not?
+      if (plBefore == null) {
+        plBefore = dt.plValue;
+      }
+      else {
+        plDiff = dt.plValue - plBefore;
+
+        // check if this is plDiffMax or plDiffMin
+        if (plDiff > plDiffMax) {
+          plDiffMax = plDiff;
+        }
+
+        if (plDiff < plDiffMin) {
+          plDiffMin = plDiff;
+        }
+
+        // set plBefore to pl
+        plBefore = dt.plValue;
+      }
+
+      // check if this is min or max?
+      if (dt.plValue > max) {
+        max = dt.plValue;
+      }
+
+      if (dt.plValue < min) {
+        min = dt.plValue;
+      }
+
+      // add for the average
+      avg = avg + dt.plValue;
+    }
+
+    if (_totalData > 0) {
+      _max = max;
+      _min = min;
+      _avg = avg / _totalData;
+      _maxPL = plDiffMax;
+      _minPL = plDiffMin;
     }
 
     return true;

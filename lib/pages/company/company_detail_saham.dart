@@ -114,6 +114,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   int? _maxHigh;
   int? _minLow;
 
+  int? _totalBuyLot;
+  double? _totalBuyValue;
+  double? _totalBuyAverage;
+  int? _totalSellLot;
+  double? _totalSellValue;
+  double? _totalSellAverage;
+
   @override
   void initState() {
     super.initState();
@@ -1557,6 +1564,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                             _brokerSummaryBuySell = _brokerSummary.brokerSummaryForeign;
                             _brokerSummarySelected = "f";
                           }
+                          _calculateBrokerSummary();
                         });
                       }),
                       groupValue: _brokerSummarySelected,
@@ -1606,6 +1614,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                   );
                                 }
                               },),
+                               Container(
+                                child: _tableRow(
+                                  brokerCode: "Σ",
+                                  lot: formatIntWithNull(_totalBuyLot, true, false),
+                                  value: formatCurrencyWithNull(_totalBuyValue, true, false),
+                                  average: formatCurrencyWithNull(_totalBuyAverage, false, false),
+                                  isBold: true,
+                                  backgroundColor: secondaryDark,
+                                  enableTab: false,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -1636,6 +1655,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                   );
                                 }
                               },),
+                              Container(
+                                child: _tableRow(
+                                  brokerCode: "Σ",
+                                  lot: formatIntWithNull(_totalSellLot, true, false),
+                                  value: formatCurrencyWithNull(_totalSellValue, true, false),
+                                  average: formatCurrencyWithNull(_totalSellAverage, false, false),
+                                  isBold: true,
+                                  backgroundColor: Colors.green[900],
+                                  enableTab: false,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -2630,7 +2660,51 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       else if (_brokerSummarySelected == 'f') {
         _brokerSummaryBuySell = value.brokerSummaryForeign;
       }
+      // calculate the broker summary
+      _calculateBrokerSummary();
     });
+  }
+
+  void _calculateBrokerSummary() {
+    int? totalBuyLot;
+    double? totalBuyValue;
+    double? totalBuyAverage;
+    int? totalSellLot;
+    double? totalSellValue;
+    double? totalSellAverage;
+
+    // we will calculate based on the current broker summary buy sell variable
+    for (BrokerSummaryBuySellElement buy in _brokerSummaryBuySell.brokerSummaryBuy) {
+      // check if total buy still null?
+      // if so then initialize it with 0
+      totalBuyLot ??= 0;
+      totalBuyValue ??= 0;
+
+      // add the total buy for this stock
+      totalBuyLot += buy.brokerSummaryLot!;
+      totalBuyValue += buy.brokerSummaryValue!;
+      totalBuyAverage = totalBuyValue / (totalBuyLot * 100);
+    }
+
+    for (BrokerSummaryBuySellElement sell in _brokerSummaryBuySell.brokerSummarySell) {
+      // check if total buy still null?
+      // if so then initialize it with 0
+      totalSellLot ??= 0;
+      totalSellValue ??= 0;
+
+      // add the total buy for this stock
+      totalSellLot += sell.brokerSummaryLot!;
+      totalSellValue += sell.brokerSummaryValue!;
+      totalSellAverage = totalSellValue / (totalSellLot * 100);
+    }
+
+    // move all the result to the class variable
+    _totalBuyLot = totalBuyLot;
+    _totalBuyValue = totalBuyValue;
+    _totalBuyAverage = totalBuyAverage;
+    _totalSellLot = totalSellLot;
+    _totalSellValue = totalSellValue;
+    _totalSellAverage = totalSellAverage;
   }
 
   Future<void> _getBrokerSummary() async {
@@ -2750,6 +2824,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _brokerSummaryNet = resp;
         _brokerSummaryBuySell = resp.brokerSummaryAll;
         _brokerSummarySelected = "a";
+
+        // calculate the broker summary
+        _calculateBrokerSummary();
       }).onError((error, stackTrace) {
         debugPrint("Error on getBrokerSummaryCodeDate");
         debugPrintStack(stackTrace: stackTrace);

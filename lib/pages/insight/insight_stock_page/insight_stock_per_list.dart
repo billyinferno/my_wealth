@@ -105,7 +105,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 const Text(
-                  "FILTER",
+                  "SORT",
                   style: TextStyle(
                     color: primaryLight,
                     fontSize: 10,

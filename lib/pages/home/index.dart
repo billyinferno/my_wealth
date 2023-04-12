@@ -76,7 +76,7 @@ class IndexPageState extends State<IndexPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const Text(
-                    "FILTER",
+                    "SORT",
                     style: TextStyle(
                       color: primaryLight,
                       fontSize: 10,

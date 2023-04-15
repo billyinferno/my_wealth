@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ionicons/ionicons.dart';
@@ -154,195 +153,193 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginScreen() {
-    final mq = MediaQueryData.fromView(window);
-    final double height = mq.size.height;
-    
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Container(
-        color: Colors.transparent,
-        width: double.infinity,
-        height: height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "my",
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: secondaryColor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "my",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: secondaryColor,
+                    ),
                   ),
-                ),
-                Text(
-                  "Wealth",
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: secondaryLight,
+                  Text(
+                    "Wealth",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: secondaryLight,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Form(
-              key: _formKey,
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(15),
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: primaryDark,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "username",
-                      style: TextStyle(
-                        color: secondaryLight,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 5,),
-                    TextFormField(
-                      controller: _usernameController,
-                      focusNode: _usernameFocus,
-                      validator: ((val) {
-                        if (val!.isNotEmpty) {
-                          return null;
-                        }
-                        else {
-                          return "Please enter username";
-                        }
-                      }),
-                      onTap: (() {
-                        setState(() {
-                          FocusScope.of(context).requestFocus(_usernameFocus);
-                        });
-                      }),
-                      decoration: InputDecoration(
-                        hintText: "username",
-                        prefixIcon: Icon(
-                          Ionicons.person,
-                          color: (_usernameFocus.hasFocus ? secondaryColor : textPrimary),
-                        ),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: textPrimary,
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: secondaryLight,
-                            width: 1.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15,),
-                    const Text(
-                      "password",
-                      style: TextStyle(
-                        color: secondaryLight,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 5,),
-                    TextFormField(
-                      controller: _passwordController,
-                      focusNode: _passwordFocus,
-                      obscureText: true,
-                      validator: ((val) {
-                        if (val!.isNotEmpty) {
-                          if (val.length < 6) {
-                            return "Password length cannot be less than 6";
-                          }
-                          return null;
-                        }
-                        else {
-                          return "Please enter password";
-                        }
-                      }),
-                      onTap: (() {
-                        setState(() {
-                          FocusScope.of(context).requestFocus(_passwordFocus);
-                        });
-                      }),
-                      decoration: InputDecoration(
-                        hintText: "password",
-                        prefixIcon: Icon(
-                          Ionicons.key,
-                          color: (_passwordFocus.hasFocus ? secondaryColor : textPrimary),
-                        ),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: textPrimary,
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: secondaryLight,
-                            width: 1.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15,),
-                    MaterialButton(
-                      height: 50,
-                      onPressed: (() async {
-                        if (_formKey.currentState!.validate()) {
-                          showLoaderDialog(context);
-                          await _login(_usernameController.text, _passwordController.text).then((res) async {
-                            Navigator.pop(context);
-                            if(res) {
-                              debugPrint("🏠 Login success, redirect to home");
-                              Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
-                            }
-                            else {
-                              debugPrint("⛔ Wrong login information");
-                            }
-                          });
-                        }
-                      }),
-                      color: secondaryDark,
-                      minWidth: double.infinity,
-                      child: const Text(
-                        "Login",
+                ],
+              ),
+              Form(
+                key: _formKey,
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: primaryDark,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        "username",
                         style: TextStyle(
-                          fontSize: 15,
+                          color: secondaryLight,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: Text(
-                  "version - ${Globals.appVersion}",
-                  style: const TextStyle(
-                    color: primaryLight,
-                    fontSize: 10,
+                      const SizedBox(height: 5,),
+                      TextFormField(
+                        controller: _usernameController,
+                        focusNode: _usernameFocus,
+                        validator: ((val) {
+                          if (val!.isNotEmpty) {
+                            return null;
+                          }
+                          else {
+                            return "Please enter username";
+                          }
+                        }),
+                        onTap: (() {
+                          setState(() {
+                            FocusScope.of(context).requestFocus(_usernameFocus);
+                          });
+                        }),
+                        decoration: InputDecoration(
+                          hintText: "username",
+                          prefixIcon: Icon(
+                            Ionicons.person,
+                            color: (_usernameFocus.hasFocus ? secondaryColor : textPrimary),
+                          ),
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: textPrimary,
+                              width: 1.0,
+                            ),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: secondaryLight,
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15,),
+                      const Text(
+                        "password",
+                        style: TextStyle(
+                          color: secondaryLight,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      TextFormField(
+                        controller: _passwordController,
+                        focusNode: _passwordFocus,
+                        obscureText: true,
+                        validator: ((val) {
+                          if (val!.isNotEmpty) {
+                            if (val.length < 6) {
+                              return "Password length cannot be less than 6";
+                            }
+                            return null;
+                          }
+                          else {
+                            return "Please enter password";
+                          }
+                        }),
+                        onTap: (() {
+                          setState(() {
+                            FocusScope.of(context).requestFocus(_passwordFocus);
+                          });
+                        }),
+                        decoration: InputDecoration(
+                          hintText: "password",
+                          prefixIcon: Icon(
+                            Ionicons.key,
+                            color: (_passwordFocus.hasFocus ? secondaryColor : textPrimary),
+                          ),
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: textPrimary,
+                              width: 1.0,
+                            ),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: secondaryLight,
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15,),
+                      MaterialButton(
+                        height: 50,
+                        onPressed: (() async {
+                          if (_formKey.currentState!.validate()) {
+                            showLoaderDialog(context);
+                            await _login(_usernameController.text, _passwordController.text).then((res) async {
+                              Navigator.pop(context);
+                              if(res) {
+                                debugPrint("🏠 Login success, redirect to home");
+                                Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+                              }
+                              else {
+                                debugPrint("⛔ Wrong login information");
+                              }
+                            });
+                          }
+                        }),
+                        color: secondaryDark,
+                        minWidth: double.infinity,
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: Text(
+                    "version - ${Globals.appVersion}",
+                    style: const TextStyle(
+                      color: primaryLight,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 

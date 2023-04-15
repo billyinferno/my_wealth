@@ -66,6 +66,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   @override
   void initState() {
+    super.initState();
+
     _showCurrentPriceComparison = false;
 
     _bodyPage = 0;
@@ -94,8 +96,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _watchlistDetail = {};
 
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override
@@ -105,6 +105,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _priceController.dispose();
     _graphScrollController.dispose();
     _calendarScrollController.dispose();
+    _monthController.dispose();
+    _amountController.dispose();
   }
 
   @override

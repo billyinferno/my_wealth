@@ -45,6 +45,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final ScrollController _priceController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
+  final ScrollController _calcScrollController = ScrollController();
+  final ScrollController _calcTableScrollController = ScrollController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
@@ -52,6 +54,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   final Bit _bitData = Bit();
+  final List<Widget> _calcTableResult = [];
   
   bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
@@ -62,7 +65,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   double? _avgPrice;
   double? _avgDaily;
   int _avgCount = 0;
-  List<Widget> _calcTableResult = [];
 
   @override
   void initState() {
@@ -107,6 +109,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _calendarScrollController.dispose();
     _monthController.dispose();
     _amountController.dispose();
+    _calcScrollController.dispose();
+    _calcTableScrollController.dispose();
   }
 
   @override
@@ -809,114 +813,118 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
 
     calc = [
-      const SizedBox(height: 10,),
       Expanded(
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                height: 60,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
+        child: SingleChildScrollView(
+          controller: _calcScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    )
+                  ),
+                  child: InkWell(
+                    onTap: (() async {
+                      await ShowInfoDialog(
+                        title: "Average Daily Estimation",
+                        text: "We estimate the average daily based on average weight on daily, weekly, monthly, quarterly, semi annual, and yearly.\n\nThis information is only for information and not reflect the actual performance of the mutual funds.",
+                        okayColor: accentColor
+                      ).show(context);
+                    }),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const SizedBox(width: 10,),
+                        const Text(
+                          "Average Daily Estimation",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryLight,
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                        Expanded(
+                          child: Text(
+                            "${formatDecimalWithNull(_avgDaily, 100)}%",
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              color: textPrimary,
+                            ),  
+                          ),
+                        ),
+                        const SizedBox(width: 10,),
+                      ],
                     ),
+                  ),
+                ),
+                WatchlistDetailCreateTextFields(
+                  controller: _monthController,
+                  title: "Month",
+                  decimal: 0,
+                  limit: 4,
+                  hintText: "0",
+                ),
+                WatchlistDetailCreateTextFields(
+                  controller: _amountController,
+                  title: "Amount",
+                  decimal: 0,
+                  hintText: "0",
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TransparentButton(
+                      text: "Calculate",
+                      bgColor: secondaryDark,
+                      icon: Ionicons.calculator,
+                      callback: (() {
+                        _simulateReksadana();
+                      })
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                (
+                  _calcTableResult.isEmpty ?
+                  const SizedBox.shrink() :
+                  _calcRow(
+                    month: "Mth",
+                    percentage: "%",
+                    interest: "Interest",
+                    value: "Value",
+                    textAlign: TextAlign.center,
+                    fontWeight: FontWeight.bold,
+                    bgColor: primaryDark,
                   )
                 ),
-                child: InkWell(
-                  onTap: (() async {
-                    await ShowInfoDialog(
-                      title: "Average Daily Estimation",
-                      text: "We estimate the average daily based on average weight on daily, weekly, monthly, quarterly, semi annual, and yearly.\n\nThis information is only for information and not reflect the actual performance of the mutual funds.",
-                      okayColor: accentColor
-                    ).show(context);
-                  }),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(width: 10,),
-                      const Text(
-                        "Average Daily Estimation",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: secondaryLight,
-                        ),
-                      ),
-                      const SizedBox(width: 10,),
-                      Expanded(
-                        child: Text(
-                          "${formatDecimalWithNull(_avgDaily, 100)}%",
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                            color: textPrimary,
-                          ),  
-                        ),
-                      ),
-                      const SizedBox(width: 10,),
-                    ],
-                  ),
-                ),
-              ),
-              WatchlistDetailCreateTextFields(
-                controller: _monthController,
-                title: "Month",
-                decimal: 0,
-                limit: 4,
-                hintText: "0",
-              ),
-              WatchlistDetailCreateTextFields(
-                controller: _amountController,
-                title: "Amount",
-                decimal: 0,
-                hintText: "0",
-              ),
-              const SizedBox(height: 10,),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TransparentButton(
-                    text: "Calculate",
-                    bgColor: secondaryDark,
-                    icon: Ionicons.calculator,
-                    callback: (() {
-                      _simulateReksadana();
-                    })
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10,),
-              (
-                _calcTableResult.isEmpty ?
-                const SizedBox.shrink() :
-                _calcRow(
-                  month: "Mth",
-                  percentage: "%",
-                  interest: "Interest",
-                  value: "Value",
-                  textAlign: TextAlign.center,
-                  fontWeight: FontWeight.bold,
-                  bgColor: primaryDark,
-                )
-              ),
-              Expanded(
-                child: ListView.builder(
+                ListView.builder(
+                  controller: _calcTableScrollController,
+                  shrinkWrap: true,
                   itemCount: _calcTableResult.length,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return _calcTableResult[index];
                   },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
+      )
     ];
 
     return calc;

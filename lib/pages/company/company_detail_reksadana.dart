@@ -10,6 +10,8 @@ import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
@@ -22,6 +24,7 @@ import 'package:my_wealth/widgets/company_info_box.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
+import 'package:my_wealth/widgets/watchlist_detail_create_textfields.dart';
 
 class CompanyDetailReksadanaPage extends StatefulWidget {
   final Object? companyData;
@@ -42,6 +45,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final ScrollController _priceController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
   final ScrollController _graphScrollController = ScrollController();
+  final TextEditingController _monthController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
@@ -55,10 +60,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   double? _minPrice;
   double? _maxPrice;
   double? _avgPrice;
+  double? _avgDaily;
+  int _avgCount = 0;
+  List<Widget> _calcTableResult = [];
 
   @override
   void initState() {
-    super.initState();
     _showCurrentPriceComparison = false;
 
     _bodyPage = 0;
@@ -87,6 +94,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _watchlistDetail = {};
 
     _getData = _getInitData();
+
+    super.initState();
   }
 
   @override
@@ -329,7 +338,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   active: (_bodyPage == 0),
                   vertical: true,
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Table",
                   bgColor: primaryDark,
@@ -342,7 +351,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   active: (_bodyPage == 1),
                   vertical: true,
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Map",
                   bgColor: primaryDark,
@@ -355,7 +364,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   active: (_bodyPage == 2),
                   vertical: true,
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Graph",
                   bgColor: primaryDark,
@@ -366,6 +375,19 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     });
                   }),
                   active: (_bodyPage == 3),
+                  vertical: true,
+                ),
+                const SizedBox(width: 5,),
+                TransparentButton(
+                  text: "Calc",
+                  bgColor: primaryDark,
+                  icon: Ionicons.calculator_outline,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 4;
+                    });
+                  }),
+                  active: (_bodyPage == 4),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -434,6 +456,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         return _showCalendar();
       case 3:
         return _showGraph();
+      case 4:
+        return _showCalc();
       default:
         return _showTable();
     }
@@ -769,10 +793,355 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     return graph;
   }
 
+  List<Widget> _showCalc() {
+    List<Widget> calc = [];
+
+    // the average daily are 0, so no need to calculate
+    if (_avgDaily == 0) {
+      calc.add(
+        const Center(
+          child: Text("Calculate average daily are 0, no calculation needed"),
+        )
+      );
+      return calc;
+    }
+
+    calc = [
+      const SizedBox(height: 10,),
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                height: 60,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  )
+                ),
+                child: InkWell(
+                  onTap: (() async {
+                    await ShowInfoDialog(
+                      title: "Average Daily Estimation",
+                      text: "We estimate the average daily based on average weight on daily, weekly, monthly, quarterly, semi annual, and yearly.\n\nThis information is only for information and not reflect the actual performance of the mutual funds.",
+                      okayColor: accentColor
+                    ).show(context);
+                  }),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(width: 10,),
+                      const Text(
+                        "Average Daily Estimation",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: secondaryLight,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        child: Text(
+                          "${formatDecimalWithNull(_avgDaily, 100)}%",
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            color: textPrimary,
+                          ),  
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                    ],
+                  ),
+                ),
+              ),
+              WatchlistDetailCreateTextFields(
+                controller: _monthController,
+                title: "Month",
+                decimal: 0,
+                limit: 4,
+                hintText: "0",
+              ),
+              WatchlistDetailCreateTextFields(
+                controller: _amountController,
+                title: "Amount",
+                decimal: 0,
+                hintText: "0",
+              ),
+              const SizedBox(height: 10,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  TransparentButton(
+                    text: "Calculate",
+                    bgColor: secondaryDark,
+                    icon: Ionicons.calculator,
+                    callback: (() {
+                      _simulateReksadana();
+                    })
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10,),
+              (
+                _calcTableResult.isEmpty ?
+                const SizedBox.shrink() :
+                _calcRow(
+                  month: "Mth",
+                  percentage: "%",
+                  interest: "Interest",
+                  value: "Value",
+                  textAlign: TextAlign.center,
+                  fontWeight: FontWeight.bold,
+                  bgColor: primaryDark,
+                )
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _calcTableResult.length,
+                  itemBuilder: (context, index) {
+                    return _calcTableResult[index];
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
+
+    return calc;
+  }
+
+  void _simulateReksadana() {
+    // get all the value from month and amount
+    String strMonth = _monthController.text;
+    String strAmount = _amountController.text;
+    int month;
+    double amount;
+    double calcAmount;
+    double calcPercentage;
+    double averagePercentage;
+    double totalInterest;
+    double totalAmount;
+    double avgYearly;
+
+    // ensure that both month and amount is not empty
+    if (strMonth.isNotEmpty && strAmount.isNotEmpty) {
+      // ensure that both is number
+      try {
+        month = int.parse(strMonth);
+      }
+      catch(e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          createSnackBar(
+            message: "Month need to be numeric",
+          )
+        );
+        return;
+      }
+
+      try {
+        amount = double.parse(strAmount);
+      }
+      catch(e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          createSnackBar(
+            message: "Amount need to be numeric",
+          )
+        );
+        return;
+      }
+
+      // both is numeric, we can now perform the calculation
+      avgYearly = (_avgDaily! * 260);
+      totalAmount = 0;
+      averagePercentage = 0;
+      totalInterest = 0;
+
+      // clear the widget
+      _calcTableResult.clear();
+
+      // loop to all month
+      for(int m=1; m<=month; m++) {
+        calcPercentage = (((month - m + 1)/12) * avgYearly);
+        averagePercentage += calcPercentage;
+
+        calcAmount = calcPercentage * amount;
+        totalInterest += calcAmount;
+
+        totalAmount += (calcAmount + amount);
+
+        _calcTableResult.add(_calcRow(
+          month: "$m",
+          percentage: "${formatDecimalWithNull(calcPercentage, 100, 2)}%",
+          interest: formatCurrency(calcAmount, false, false, false, 0),
+          value: formatCurrency((calcAmount + amount), false, false, false, 0),
+          textAlign: TextAlign.center,
+        ));
+      }
+
+      _calcTableResult.add(_calcRow(
+        month: "Total",
+        percentage: "${formatDecimalWithNull((averagePercentage / month), 100, 2)}%",
+        interest: formatCurrency(totalInterest, false, false, false, 0),
+        value: formatCurrency(totalAmount, false, false, false, 0),
+        textAlign: TextAlign.center,
+        fontWeight: FontWeight.bold,
+        bgColor: accentDark,
+      ));
+    }
+    else {
+      // error, showed error and just return
+      ScaffoldMessenger.of(context).showSnackBar(
+        createSnackBar(
+          message: "Month and Amount cannot be empty",
+        )
+      );
+    }
+
+    // set state, to rebuild the page
+    setState(() {
+    });
+  }
+
+  Widget _calcRow({
+    required String month,
+    required String percentage,
+    required String interest,
+    required String value,
+    double? borderWidth,
+    Color? borderColor,
+    double? fontSize,
+    FontWeight?
+    fontWeight,
+    Color? fontColor,
+    TextAlign? textAlign,
+    Color? bgColor
+  }) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: (bgColor ?? Colors.transparent),
+        border: Border(
+          bottom: BorderSide(
+            color: (borderColor ?? primaryLight),
+            width: (borderWidth ?? 1),
+          )
+        )
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Text(
+                month,
+                style: TextStyle(
+                  fontSize: (fontSize ?? 10),
+                  fontWeight: (fontWeight ?? FontWeight.normal),
+                  color: (fontColor ?? textPrimary),
+                ),
+                textAlign: (textAlign ?? TextAlign.left),
+              )
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Text(
+                percentage,
+                style: TextStyle(
+                  fontSize: (fontSize ?? 10),
+                  fontWeight: (fontWeight ?? FontWeight.normal),
+                  color: (fontColor ?? textPrimary),
+                ),
+                textAlign: (textAlign ?? TextAlign.left),
+              )
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Expanded(
+            flex: 6,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Text(
+                interest,
+                style: TextStyle(
+                  fontSize: (fontSize ?? 10),
+                  fontWeight: (fontWeight ?? FontWeight.normal),
+                  color: (fontColor ?? textPrimary),
+                ),
+                textAlign: (textAlign ?? TextAlign.left),
+              )
+            ),
+          ),
+          const SizedBox(width: 5,),
+          Expanded(
+            flex: 6,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: (fontSize ?? 10),
+                  fontWeight: (fontWeight ?? FontWeight.normal),
+                  color: (fontColor ?? textPrimary),
+                ),
+                textAlign: (textAlign ?? TextAlign.left),
+              )
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _getInitData() async {
     try {
       await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
         _companyDetail = resp;
+
+        // calculate the average daily based on the daily, weekly, monthly, quarterly, semi annual, and yearly
+        _avgDaily = 0;
+        _avgCount = 0;
+        if (_companyDetail.companyDailyReturn != null) {
+          _avgDaily = _avgDaily! + _companyDetail.companyDailyReturn!;
+          _avgCount++;
+        }
+        if (_companyDetail.companyWeeklyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyDailyReturn! / 5);
+          _avgCount++;
+        }
+        if (_companyDetail.companyMonthlyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyMonthlyReturn! / 21.67);
+          _avgCount++;
+        }
+        if (_companyDetail.companyQuarterlyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyQuarterlyReturn! / 65);
+          _avgCount++;
+        }
+        if (_companyDetail.companySemiAnnualReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companySemiAnnualReturn! / 130);
+          _avgCount++;
+        }
+        if (_companyDetail.companyYearlyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyYearlyReturn! / 260);
+          _avgCount++;
+        }
+        _avgDaily = (_avgDaily! / _avgCount);
 
         // map the price date on company
         List<GraphData> tempData = [];

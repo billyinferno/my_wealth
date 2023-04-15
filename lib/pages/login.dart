@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
@@ -116,26 +117,26 @@ class LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 25,
             ),
-            const Row(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
+                const Text(
                   "my",
                   style: TextStyle(
                     color: secondaryColor,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
-                Text(
+                ).animate().fade(duration: const Duration(milliseconds: 1000)).slideY(),
+                const Text(
                   "Wealth",
                   style: TextStyle(
                     color: secondaryLight,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                ).animate().fade(duration: const Duration(milliseconds: 1000)).slideY(),
               ],
             ),
             Text(

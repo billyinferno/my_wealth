@@ -45,6 +45,7 @@ dependencies:
   lazy_load_scrollview: ^1.3.0
   flutter_slidable: ^3.0.0
   ionicons: ^0.2.2
+  flutter_animate: ^4.1.1+1
 
 dev_dependencies:
   flutter_test:

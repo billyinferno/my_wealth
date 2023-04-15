@@ -8,6 +8,7 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
   final String title;
   final int? decimal;
   final int? limit;
+  final String? hintText;
 
   const WatchlistDetailCreateTextFields({
     Key? key,
@@ -15,12 +16,21 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
     required this.title,
     this.decimal,
     this.limit,
+    this.hintText,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     int dec = (decimal ?? 4);
     int lim = (limit ?? 12);
+    String? currHintText = (hintText ?? "0.00");
+    bool isDecimal = (dec > 0 ? true : false);
+
+    List<TextInputFormatter> formatter = [];
+    formatter.add(LengthLimitingTextInputFormatter(lim));
+    if (dec > 0) {
+      formatter.add(DecimalTextInputFormatter(decimalRange: dec));
+    }
 
     return Container(
       decoration: const BoxDecoration(
@@ -50,20 +60,17 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
               controller: controller,
               showCursor: true,
               cursorColor: secondaryColor,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: TextInputType.numberWithOptions(decimal: isDecimal),
               keyboardAppearance: Brightness.dark,
               textAlign: TextAlign.right,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(
                   borderSide: BorderSide.none,
                 ),
                 focusColor: secondaryColor,
-                hintText: "0.00",
+                hintText: currHintText,
               ),
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(lim),
-                DecimalTextInputFormatter(decimalRange: dec),
-              ],
+              inputFormatters: formatter,
             ),
           ),
         ],

@@ -235,13 +235,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 ],
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              child: PerformanceChart(
-                perfData: _perfData,
-                height: 250,
-              ),
-            ),
+            _showChart(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -393,6 +387,27 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
             const SizedBox(height: 30,),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _showChart() {
+    // check if we have data or not?
+    if (_perfData.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(10),
+        child: const Center(
+          child: Text("No data"),
+        ),
+      );
+    }
+
+    // we got performance date
+    return SizedBox(
+      width: double.infinity,
+      child: PerformanceChart(
+        perfData: _perfData,
+        height: 250,
       ),
     );
   }
@@ -593,6 +608,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       _avg = avg / _totalData;
       _maxPL = plDiffMax;
       _minPL = plDiffMin;
+    }
+    else {
+      _max = 0;
+      _min = 0;
+      _avg = 0;
+      _maxPL = 0;
+      _minPL = 0;
     }
 
     return true;

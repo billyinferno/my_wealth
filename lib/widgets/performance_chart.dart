@@ -20,12 +20,20 @@ class _PerformanceChartState extends State<PerformanceChart> {
   final Bit _bitData = Bit();
   late List<WatchlistPerformanceModel> _watchlistData;
   late List<PerformanceData> _data;
+  late ChartProperties _dataProperties;
+  late List<PerformanceData> _investment;
+  late ChartProperties _investmentProperties;
   final Map<DateTime, int> _watchlist = {};
 
   double _min = double.infinity;
   double _max = 0;
   double _gap = 0;
   double _norm = 0;
+
+  double _minInvestment = double.infinity;
+  double _maxInvestment = 0;
+  double _gapInvestment = 0;
+  double _normInvestment = 0;
   bool _isLoaded = false;
 
   @override
@@ -33,6 +41,11 @@ class _PerformanceChartState extends State<PerformanceChart> {
     // check if we already got performance data or not?
     // if got, then we can just put the performance data there
     _data = (widget.perfData ?? []);
+
+    // initialize the investment data with empty data
+    // we will only compute this, if the watchlist is available
+    // since we will need the full data, not just performance data
+    _investment = [];
 
     // put the watchlist performance data into watchlistData
     _watchlistData = (widget.data ?? []);
@@ -54,11 +67,10 @@ class _PerformanceChartState extends State<PerformanceChart> {
     return CustomPaint(
       painter: PerformanceChartPainter(
         data: _data,
+        dataProperties: _dataProperties,
+        investment: _investment,
+        investmentProperties: _investmentProperties,
         watchlist: _watchlist,
-        min: _min,
-        max: _max,
-        gap: _gap,
-        norm: _norm,
       ),
       child: SizedBox(
         height: (widget.height ?? 250),
@@ -68,11 +80,12 @@ class _PerformanceChartState extends State<PerformanceChart> {
 
   void _compute() {
     double gain;
+    double value;
 
     // check if we already got performance data or not?
     if (_data.isEmpty) {
       // loop thru all the performance model data
-      for (WatchlistPerformanceModel perf in widget.data!) {
+      for (WatchlistPerformanceModel perf in _watchlistData) {
         // calculate the gain
         gain = (perf.buyTotal * perf.currentPrice) - (perf.buyTotal * perf.buyAvg);
 
@@ -90,6 +103,20 @@ class _PerformanceChartState extends State<PerformanceChart> {
 
         // add the performance data to the list
         _data.add(dt);
+
+        // calculate the investment value at this date
+        value = (perf.buyAvg * perf.buyTotal);
+        if (value < _minInvestment) {
+          _minInvestment = value;
+        }
+        if (value > _maxInvestment) {
+          _maxInvestment = value;
+        }
+
+        PerformanceData iv = PerformanceData(date: perf.buyDate, gain: value);
+
+        // add the investment data to the list
+        _investment.add(iv);
       }
     }
     else {
@@ -104,9 +131,14 @@ class _PerformanceChartState extends State<PerformanceChart> {
       }
     }
 
+    // check if we never set min before
+    if (_min == double.infinity) {
+      _min = 0;
+    }
+
     // check the gap between _min and _max
-    // print("$_max - $_min");
     _gap = _max - _min;
+    _gapInvestment = _maxInvestment - _minInvestment;
 
     // check if _gap is less than 0, if less than 0 it means that this watchlist
     // never even go to the green even once. thus we will need to make the gap
@@ -115,8 +147,17 @@ class _PerformanceChartState extends State<PerformanceChart> {
       _gap = _gap * (-1);
     }
 
+    if (_gapInvestment < 0) {
+      _gapInvestment = _gapInvestment * (-1);
+    }
+
     // calculate the normalize value
     _norm = _gap - _max;
+    _normInvestment = _gapInvestment - _maxInvestment;
+
+    // create the chart properties
+    _dataProperties = ChartProperties(min: _min, max: _max, gap: _gap, norm: _norm);
+    _investmentProperties = ChartProperties(min: _minInvestment, max: _maxInvestment, gap: _gapInvestment, norm: _normInvestment);
 
     // loop thru the watchlist if available
     if (widget.watchlist != null) {

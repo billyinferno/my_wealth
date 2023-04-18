@@ -9,26 +9,42 @@ class PerformanceData {
 
   PerformanceData({required this.date, required this.gain});
 }
-
-class PerformanceChartPainter extends CustomPainter {
-  final List<PerformanceData> data;
-  final Map<DateTime, int>? watchlist;
+class ChartProperties {
   final double min;
   final double max;
   final double gap;
   final double norm;
 
-  PerformanceChartPainter(
-      {required this.data,
-      this.watchlist,
-      required this.min,
-      required this.max,
-      required this.gap,
-      required this.norm});
+  ChartProperties({required this.min, required this.max, required this.gap, required this.norm});
+}
+
+class PerformanceChartPainter extends CustomPainter {
+  final List<PerformanceData> data;
+  final ChartProperties dataProperties;
+  final List<PerformanceData> investment;
+  final ChartProperties investmentProperties;
+  final Map<DateTime, int>? watchlist;
+  // final double min;
+  // final double max;
+  // final double gap;
+  // final double norm;
+
+  PerformanceChartPainter({
+    required this.data,
+    required this.dataProperties,
+    required this.investment,
+    required this.investmentProperties,
+    this.watchlist,
+  });
 
   // draw the path
   final Paint dpUp = Paint()
     ..color = Colors.green
+    ..strokeWidth = 1.0
+    ..style = PaintingStyle.stroke;
+
+  final Paint dpInvestment = Paint()
+    ..color = extendedDark
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
 
@@ -60,6 +76,16 @@ class PerformanceChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // at least investment or data shouldn't be empty
+    if (investment.isNotEmpty || data.isNotEmpty) {
+      _drawBorder(canvas, size);
+    }
+    
+    // if we have investment data, draw the investment data
+    if (investment.isNotEmpty) {
+      _drawInvestmentLine(canvas, size);
+    }
+
     // draw the line if we have data
     if (data.isNotEmpty) {
       _drawLine(canvas, size);
@@ -72,6 +98,45 @@ class PerformanceChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
+  }
+
+  void _drawBorder(Canvas canvas, Size size) {
+    // create the rect that we will use as a guide for the graph
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
+
+    // calculate the xLeft and the width guide that will be used to move between
+    // one point to another point in the graph.
+    int count = data.length;
+    double xLeft = graphRect.left;
+    double guideW = graphRect.size.width / count;
+
+    // check for the date print offset
+    int datePrintOffset = 10;
+    if (count < datePrintOffset) {
+      datePrintOffset = count - 1;
+    }
+
+    for (int i = 0; i < data.length; i++) {
+      Offset p1 = Offset(xLeft, graphRect.bottom);
+      Offset p2 = Offset(xLeft, graphRect.top);
+
+      if (i % datePrintOffset == 0 && i > 0) {
+        canvas.drawLine(p1, p2, graphRectBorderWhite);
+      } else {
+        canvas.drawLine(p1, p2, graphRectBorder);
+      }
+
+      // next
+      xLeft += guideW;
+    }
+
+    // draw horizontal line
+    double yD = graphRect.size.height / 4;
+    for (int i = 0; i < 4; i++) {
+      Offset p1 = Offset(graphRect.left, graphRect.bottom - (yD * i));
+      Offset p2 = Offset(graphRect.right, graphRect.bottom - (yD * i));
+      canvas.drawLine(p1, p2, graphRectBorder);
+    }
   }
 
   void _drawLine(Canvas canvas, Size size) {
@@ -94,11 +159,8 @@ class PerformanceChartPainter extends CustomPainter {
     }
 
     for (int i = 0; i < data.length; i++) {
-      Offset p1 = Offset(xLeft, graphRect.bottom);
-      Offset p2 = Offset(xLeft, graphRect.top);
-
       if (i % datePrintOffset == 0 && i > 0) {
-        canvas.drawLine(p1, p2, graphRectBorderWhite);
+        // canvas.drawLine(p1, p2, graphRectBorderWhite);
         _drawText(
             canvas: canvas,
             position: Offset(xLeft, graphRect.bottom),
@@ -110,8 +172,6 @@ class PerformanceChartPainter extends CustomPainter {
             maxHeight: graphRect.height + 20,
             minWidth: 0,
             maxWidth: graphRect.width + 20);
-      } else {
-        canvas.drawLine(p1, p2, graphRectBorder);
       }
 
       // next
@@ -121,11 +181,7 @@ class PerformanceChartPainter extends CustomPainter {
     // draw horizontal line
     double yD = graphRect.size.height / 4;
     for (int i = 0; i < 4; i++) {
-      Offset p1 = Offset(graphRect.left, graphRect.bottom - (yD * i));
-      Offset p2 = Offset(graphRect.right, graphRect.bottom - (yD * i));
-      canvas.drawLine(p1, p2, graphRectBorder);
-
-      double currVal = min + (((max - min) / 4.0) * i.toDouble());
+      double currVal = dataProperties.min + (((dataProperties.max - dataProperties.min) / 4.0) * i.toDouble());
       _drawText(
           canvas: canvas,
           position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
@@ -144,7 +200,7 @@ class PerformanceChartPainter extends CustomPainter {
         canvas: canvas,
         position: Offset(graphRect.left, graphRect.top),
         width: 60,
-        text: formatCurrency(max),
+        text: formatCurrency(dataProperties.max),
         left: 0,
         top: -5,
         minHeight: 10,
@@ -161,8 +217,8 @@ class PerformanceChartPainter extends CustomPainter {
     double xi = 0;
     double yi = 0;
 
-    if (gap > 0) {
-      ratio = graphRect.height / gap;
+    if (dataProperties.gap > 0) {
+      ratio = graphRect.height / dataProperties.gap;
     }
 
     x = graphRect.left;
@@ -170,7 +226,7 @@ class PerformanceChartPainter extends CustomPainter {
 
     // loop thru data
     for (PerformanceData value in data) {
-      y = 10 + graphRect.height - ((value.gain + norm) * ratio);
+      y = 10 + graphRect.height - ((value.gain + dataProperties.norm) * ratio);
 
       // check whether this is the first data?
       if (isFirst) {
@@ -245,6 +301,96 @@ class PerformanceChartPainter extends CustomPainter {
     canvas.drawPath(pUp, dpUp);
     canvas.drawPath(pDown, dpDown);
     canvas.drawPath(pNoChange, dpNoChange);
+  }
+
+  void _drawInvestmentLine(Canvas canvas, Size size) {
+    // create the rect that we will use as a guide for the graph
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
+
+    // check if min and max is the same?
+    // if the same then we can just draw the line on the bottom
+    // and just draw the text on the right side
+    if (investmentProperties.min == investmentProperties.max) {
+      _drawText(
+              canvas: canvas,
+              position: Offset(graphRect.left, graphRect.bottom),
+              width: 60,
+              text: formatCurrency(investmentProperties.max),
+              left: graphRect.right,
+              top: -5,
+              minHeight: 10,
+              maxHeight: graphRect.height,
+              minWidth: 10,
+              maxWidth: graphRect.width);
+    }
+    else {
+      double yD = graphRect.size.height / 4;
+      for (int i = 0; i < 4; i++) {    
+        double currVal = investmentProperties.min + (((investmentProperties.max - investmentProperties.min) / 4.0) * i.toDouble());
+        _drawText(
+          canvas: canvas,
+          position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
+          width: 60,
+          text: formatCurrency(currVal),
+          left: graphRect.right,
+          top: -5,
+          minHeight: 10,
+          maxHeight: graphRect.height,
+          minWidth: 10,
+          maxWidth: graphRect.width,
+          textColor: extendedLight.withOpacity(0.3)
+        );
+      }
+
+      // put the max price
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.left, graphRect.top),
+        width: 60,
+        text: formatCurrency(investmentProperties.max),
+        left: graphRect.right,
+        top: -5,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width,
+        textColor: extendedLight.withOpacity(0.3)
+      );
+    }
+
+    double x;
+    double y;
+
+    Path pInvestment = Path();
+    bool isFirst = true;
+    double ratio = 0;
+    double w = graphRect.width / (data.length.toDouble() - 1);
+
+    if (investmentProperties.gap > 0) {
+      ratio = graphRect.height / investmentProperties.gap;
+    }
+
+    x = graphRect.left;
+    y = 0;
+
+    // loop thru data
+    for (PerformanceData value in investment) {
+      y = 10 + graphRect.height - ((value.gain + investmentProperties.norm) * ratio);
+
+      // check whether this is the first data?
+      if (isFirst) {
+        pInvestment.moveTo(x, y);
+        isFirst = false;
+      } else {
+        pInvestment.lineTo(x, y);
+      }
+
+      // next column
+      x += w;
+    }
+
+    // draw the line chart
+    canvas.drawPath(pInvestment, dpInvestment);
   }
 
   void _drawBox(Canvas canvas, Size size) {

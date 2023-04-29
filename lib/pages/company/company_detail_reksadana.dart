@@ -5,6 +5,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
+import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/model/price/price_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
@@ -16,11 +17,13 @@ import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/common_error_page.dart';
 import 'package:my_wealth/widgets/common_loading_page.dart';
 import 'package:my_wealth/widgets/company_detail_price_list.dart';
 import 'package:my_wealth/widgets/company_info_box.dart';
+import 'package:my_wealth/widgets/compare_fields.dart';
 import 'package:my_wealth/widgets/heat_graph.dart';
 import 'package:my_wealth/widgets/line_chart.dart';
 import 'package:my_wealth/widgets/transparent_button.dart';
@@ -34,12 +37,14 @@ class CompanyDetailReksadanaPage extends StatefulWidget {
   CompanyDetailReksadanaPageState createState() => CompanyDetailReksadanaPageState();
 }
 
-class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> {
+class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> with SingleTickerProviderStateMixin {
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
   late UserLoginInfoModel? _userInfo;
   late Map<DateTime, int> _watchlistDetail;
   late Future<bool> _getData;
+  late CompanyListModel _otherCompany;
+  late CompanyDetailModel? _otherCompanyDetail;
   
   final ScrollController _summaryController = ScrollController();
   final ScrollController _priceController = ScrollController();
@@ -47,8 +52,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final ScrollController _graphScrollController = ScrollController();
   final ScrollController _calcScrollController = ScrollController();
   final ScrollController _calcTableScrollController = ScrollController();
+  final ScrollController _compareController = ScrollController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+  late TabController _tabController;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
@@ -66,12 +73,20 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   double? _avgPrice;
   double? _avgDaily;
   int _avgCount = 0;
+  String _compareCompanyName = "";
 
   @override
   void initState() {
     super.initState();
 
+    // initialize tab
+    _tabController = TabController(length: 2, vsync: this);
+
+    // initialize variable
+    _recurring = true;
     _showCurrentPriceComparison = false;
+    _compareCompanyName = "";
+    _otherCompanyDetail = null;
 
     _bodyPage = 0;
     _numPrice = 0;
@@ -112,6 +127,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _amountController.dispose();
     _calcScrollController.dispose();
     _calcTableScrollController.dispose();
+    _compareController.dispose();
+    _tabController.dispose();
   }
 
   @override
@@ -471,6 +488,33 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   }
 
   Widget _showSummary() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabs: const <Widget>[
+            Tab(text: 'SUMMARY',),
+            Tab(text: 'COMPARE'),
+          ],
+        ),
+        const SizedBox(height: 10,),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: <Widget>[
+              _tabSummaryInfo(),
+              _tabCompareInfo(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _tabSummaryInfo() {
     return Container(
       padding: const EdgeInsets.all(10),
       child: SingleChildScrollView(
@@ -580,6 +624,235 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _tabCompareInfo() {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                InkWell(
+                  onTap: (() async {
+                    await Navigator.pushNamed(context, '/company/detail/find', arguments: 'reksadana').then((value) {
+                      // check if value is not null?
+                      if (value != null) {
+                        // convert the value to company list model
+                        _otherCompany = value as CompanyListModel;
+
+                        Future.microtask(() async {
+                          // show loader dialog
+                          showLoaderDialog(context);
+
+                          // get the company detail information
+                          await _companyApi.getCompanyByID(_otherCompany.companyId, 'reksadana').then((resp) {
+                            _otherCompanyDetail = resp;
+                          });
+                        }).whenComplete(() {
+                          Navigator.pop(context);
+                          setState(() {
+                            // set state to rebuild the widget
+                          });
+                        });
+                      }
+                    });
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: primaryLight,
+                        style: BorderStyle.solid,
+                        width: 1.0,
+                      ),
+                      color: secondaryColor,
+                    ),
+                    child: const Center(
+                      child: Text("ADD COMPANY"),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5,),
+                Visibility(
+                  visible: (_otherCompanyDetail != null),
+                  child: Text("Now comparing with ${_otherCompanyDetail?.companyName}")
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10,),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _compareController,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        CompareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Type", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Last Price", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Daily", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Weekly", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Monthly", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Quarterly", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Semi Annual", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Yearly", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "YTD", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Total Asset", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Total Unit", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Rating", fontWeight: FontWeight.bold),
+                        CompareFields(color: primaryDark, borderColor: primaryLight, text: "Risk", fontWeight: FontWeight.bold),
+                      ],
+                    ),
+                  ),
+                  _companyCompareInfo(
+                    companyA: _companyDetail,
+                    companyB: _otherCompanyDetail,
+                    compare: _otherCompanyDetail,
+                    color: accentColor
+                  ),
+                  _companyCompareInfo(
+                    companyA: _otherCompanyDetail,
+                    companyB: _companyDetail,
+                    compare: _otherCompanyDetail,
+                    color: extendedLight
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _companyCompareInfo({required CompanyDetailModel? companyA, required CompanyDetailModel? companyB, required CompanyDetailModel? compare, required Color color}) {
+    String type = (companyA != null ? companyA.companyType : '-');
+    switch(type) {
+      case "reksadanapendapatantetap":
+          type = "Pendapatan Tetap";
+          break;
+      case "reksadanacampuran":
+          type = "Campuran";
+          break;
+      case "reksadanapasaruang":
+          type = "Pasar Uang";
+          break;
+      case "reksadanasaham":
+          type = "Saham";
+          break;
+    }
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const CompareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: type,
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: formatCurrencyWithNull((companyA?.companyNetAssetValue)),
+            isBigger: (companyB != null ? (companyA?.companyNetAssetValue ?? 0) > (companyB.companyNetAssetValue ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companyDailyReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companyDailyReturn ?? 0) > (companyB.companyDailyReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companyWeeklyReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companyWeeklyReturn ?? 0) > (companyB.companyWeeklyReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companyMonthlyReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companyMonthlyReturn ?? 0) > (companyB.companyMonthlyReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companyQuarterlyReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companyQuarterlyReturn ?? 0) > (companyB.companyQuarterlyReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companySemiAnnualReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companySemiAnnualReturn ?? 0) > (companyB.companySemiAnnualReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companyYearlyReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companyYearlyReturn ?? 0) > (companyB.companyYearlyReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: "${formatDecimalWithNull(companyA?.companyYtdReturn, 100)}%",
+            isBigger: (companyB != null ? (companyA?.companyYtdReturn ?? 0) > (companyB.companyYtdReturn ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: formatCurrencyWithNull(companyA?.companyAssetUnderManagement!),
+            isBigger: (companyB != null ? (companyA?.companyAssetUnderManagement ?? 0) > (companyB.companyAssetUnderManagement ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: formatCurrencyWithNull(companyA?.companyTotalUnit!),
+            isBigger: (companyB != null ? (companyA?.companyTotalUnit ?? 0) > (companyB.companyTotalUnit ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: ("${companyA != null ? companyA.companyYearlyRating! : '-'}"),
+            isBigger: (companyB != null ? (companyA?.companyYearlyRating ?? 0) > (companyB.companyYearlyRating ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+          CompareFields(
+            color: primaryDark,
+            borderColor: color,
+            text: ("${companyA != null ? companyA.companyYearlyRisk! : '-'}"),
+            isBigger: (companyB != null ? (companyA?.companyYearlyRisk ?? 0) < (companyB.companyYearlyRisk ?? 0) : true),
+            showCompare: (compare != null ? true : false),
+          ),
+        ],
       ),
     );
   }

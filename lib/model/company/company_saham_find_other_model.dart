@@ -6,12 +6,12 @@
 
 import 'dart:convert';
 
-FindOtherCommpanySahamModel findOtherCommpanySahamModelFromJson(String str) => FindOtherCommpanySahamModel.fromJson(json.decode(str));
+CompanySahamFindOtherModel companySahamFindOtherModelFromJson(String str) => CompanySahamFindOtherModel.fromJson(json.decode(str));
 
-String findOtherCommpanySahamModelToJson(FindOtherCommpanySahamModel data) => json.encode(data.toJson());
+String companySahamFindOtherModelToJson(CompanySahamFindOtherModel data) => json.encode(data.toJson());
 
-class FindOtherCommpanySahamModel {
-    FindOtherCommpanySahamModel({
+class CompanySahamFindOtherModel {
+    CompanySahamFindOtherModel({
         required this.similar,
         required this.all,
     });
@@ -19,7 +19,7 @@ class FindOtherCommpanySahamModel {
     List<OtherCompanyInfo> similar;
     List<OtherCompanyInfo> all;
 
-    factory FindOtherCommpanySahamModel.fromJson(Map<String, dynamic> json) => FindOtherCommpanySahamModel(
+    factory CompanySahamFindOtherModel.fromJson(Map<String, dynamic> json) => CompanySahamFindOtherModel(
         similar: List<OtherCompanyInfo>.from(json["similar"].map((x) => OtherCompanyInfo.fromJson(x))),
         all: List<OtherCompanyInfo>.from(json["all"].map((x) => OtherCompanyInfo.fromJson(x))),
     );

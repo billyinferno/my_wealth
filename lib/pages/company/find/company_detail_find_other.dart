@@ -66,7 +66,7 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
         appBar: AppBar(
           title: Center(
             child: Text(
-              "Find Other $_companyType",
+              "Find $_companyType",
               style: const TextStyle(
                 color: secondaryColor,
               ),
@@ -137,8 +137,8 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
                             children: <Widget>[
                               Visibility(
                                 visible: _filterList[index].companySymbol.isNotEmpty,
-                                child: Container(
-                                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                child: SizedBox(
+                                  width: 60,
                                   child: Text(
                                     _filterList[index].companySymbol,
                                     style: const TextStyle(

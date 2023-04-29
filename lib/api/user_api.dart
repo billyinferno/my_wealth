@@ -46,23 +46,28 @@ class UserAPI {
 
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/users/me'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
+      try {
+        final response = await http.get(
+          Uri.parse('${Globals.apiURL}api/users/me'),
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+            'Content-Type': 'application/json',
+          },
+        );
 
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response and put on user login model
-        UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
-        return userInfo;
+        // check if we got 200 response or not?
+        if (response.statusCode == 200) {
+          // parse the response and put on user login model
+          UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(response.body));
+          return userInfo;
+        }
+
+        // status code is not 200, means we got error
+        throw Exception(parseError(response.body).error.message);
       }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+      catch(error) {
+        throw Exception("UnableToAccessAPI");
+      }
     }
     else {
       throw Exception("No bearer token");

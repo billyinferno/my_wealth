@@ -365,12 +365,18 @@ class LoginPageState extends State<LoginPage> {
     }).onError((error, stackTrace) async {
       debugPrint("⛔ $error");
 
-      // check if we have jwt token or not?
-      if (currJwtToken.isNotEmpty) {
-        // if already got token but unable to login, it means that the token already invalid
-        _isInvalidToken = true;
-        // show invalid token message on the login screen
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Token expired, please re-login"));
+      if(error.toString() == "Exception: UnableToAccessAPI") {
+        // show no connection to API
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to connect to API"));
+      }
+      else {
+        // check if we have jwt token or not?
+        if (currJwtToken.isNotEmpty) {
+          // if already got token but unable to login, it means that the token already invalid
+          _isInvalidToken = true;
+          // show invalid token message on the login screen
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Token expired, please re-login"));
+        }
       }
     });
 

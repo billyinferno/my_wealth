@@ -171,14 +171,14 @@ class _InsightStockPageState extends State<InsightStockPage> {
                   const SizedBox(height: 10,),
                   SizedBox(
                     width: double.infinity,
-                    height: 370,
                     child: GridView.count(
+                      shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: 3,
                       children: List<Widget>.generate(_sectorSummaryList.length, (index) {
                         double sectorAverage = 0;
                         IndustrySummaryArgs industryArgs = IndustrySummaryArgs(sectorData: _sectorSummaryList[index]);
-        
+                        
                         switch (_sectorSummaryPeriod) {
                           case '1d':
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1D;
@@ -214,7 +214,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                             sectorAverage = _sectorSummaryList[index].sectorAverage.the1D;
                             break;
                         }
-        
+                        
                         // Color bgColor = (sectorAverage >= 0 ? Colors.green : secondaryColor);
                         Color bgColor = riskColor((1 + sectorAverage), 1, _userInfo!.risk);
                         Color textColor = riskColorReverse((1 + sectorAverage), 1);
@@ -325,8 +325,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
                   const SizedBox(height: 10,),
                   SizedBox(
                     width: double.infinity,
-                    height: 370,
                     child: GridView.count(
+                      shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: 3,
                       children: List<Widget>.generate(_sectorNameList.length, (index) {             

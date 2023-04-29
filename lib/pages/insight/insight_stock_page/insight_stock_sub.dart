@@ -186,8 +186,8 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
       case "subsector":
         return SizedBox(
           width: double.infinity,
-          height: (_subSectorList.length / 3).ceil() * 123.3333333,
           child: GridView.count(
+            shrinkWrap: true,
             controller: _scrollControllerSub,
             crossAxisCount: 3,
             children: _listItems(type: "subsector", sectorList: _subSectorList),
@@ -196,8 +196,8 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
       case "industry":
         return SizedBox(
           width: double.infinity,
-          height: (_industryList.length / 3).ceil() * 123.3333333,
           child: GridView.count(
+            shrinkWrap: true,
             controller: _scrollControllerIndustry,
             crossAxisCount: 3,
             children: _listItems(type: "industry", sectorList: _industryList),

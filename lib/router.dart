@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/pages/broker/broker_detail.dart';
+import 'package:my_wealth/pages/broker/broker_find_other.dart';
 import 'package:my_wealth/pages/company/company_detail_crypto.dart';
 import 'package:my_wealth/pages/company/company_detail_gold.dart';
 import 'package:my_wealth/pages/company/company_detail_reksadana.dart';
@@ -197,6 +198,10 @@ class RouterPageState extends State<RouterPage> {
       case '/watchlist/detail/edit':
       {
         return createAnimationRoute(WatchlistDetailEditPage(watchlistArgs: settings.arguments,));
+      }
+      case '/broker/find':
+      {
+        return createAnimationRoute(const BrokerFindOtherPage());
       }
       case '/broker/detail':
       {

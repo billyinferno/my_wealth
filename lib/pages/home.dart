@@ -5,7 +5,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/pages/home/broker.dart';
 import 'package:my_wealth/pages/home/favourites.dart';
 import 'package:my_wealth/pages/home/index.dart';
-import 'package:my_wealth/pages/home/inisght.dart';
+import 'package:my_wealth/pages/home/insight.dart';
 import 'package:my_wealth/pages/home/portofolio.dart';
 import 'package:my_wealth/pages/home/watchlists.dart';
 import 'package:my_wealth/themes/colors.dart';

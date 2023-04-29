@@ -5,11 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/model/common/common_array_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
+import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/model/company/company_saham_list_model.dart';
 import 'package:my_wealth/model/company/company_search_model.dart';
 import 'package:my_wealth/model/company/company_top_broker_model.dart';
 import 'package:my_wealth/model/company/company_seasonality_model.dart';
-import 'package:my_wealth/model/company/find_other_company_saham_model.dart';
+import 'package:my_wealth/model/company/company_saham_find_other_model.dart';
 import 'package:my_wealth/model/insight/insight_sector_name_list_model.dart';
 import 'package:my_wealth/model/insight/insight_sector_per_detail_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
@@ -29,6 +30,42 @@ class CompanyAPI {
     _bearerToken = UserSharedPreferences.getUserJWT();
   }
 
+  Future<List<CompanyListModel>> findCompany(String type) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/companies/type/${type.toLowerCase()}'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<CompanyListModel> ret = [];
+        for (dynamic data in commonModel.data) {
+          CompanyListModel company = CompanyListModel.fromJson(data['attributes']);
+          ret.add(company);
+        }
+        return ret;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
   Future<CompanyDetailModel> getCompanyDetail(int companyId, String type) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
@@ -38,7 +75,7 @@ class CompanyAPI {
     // check if we have bearer token or not?
     if (_bearerToken.isNotEmpty) {
       final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/$type/detail/$companyId'),
+        Uri.parse('${Globals.apiURL}api/companies/${type.toLowerCase()}/detail/$companyId'),
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
           'Content-Type': 'application/json',
@@ -304,7 +341,7 @@ class CompanyAPI {
     }
   }
 
-  Future<FindOtherCommpanySahamModel> getOtherCompany(String companyCode) async {
+  Future<CompanySahamFindOtherModel> getOtherCompany(String companyCode) async {
     // if empty then we try to get again the bearer token from user preferences
     if (_bearerToken.isEmpty) {
       getJwt();
@@ -324,7 +361,7 @@ class CompanyAPI {
       if (response.statusCode == 200) {
         // parse the response to get the data and process each one
         CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        FindOtherCommpanySahamModel company = FindOtherCommpanySahamModel.fromJson(commonModel.data['attributes']);
+        CompanySahamFindOtherModel company = CompanySahamFindOtherModel.fromJson(commonModel.data['attributes']);
         return company;
       }
 

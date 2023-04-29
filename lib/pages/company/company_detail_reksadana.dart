@@ -57,6 +57,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final List<Widget> _calcTableResult = [];
   
   bool _showCurrentPriceComparison = false;
+  bool _recurring = true;
   int _bodyPage = 0;
   Map<DateTime, GraphData>? _graphData;
   int _numPrice = 0;
@@ -400,7 +401,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               ],
             ),
             const SizedBox(height: 5,),
-            ..._detail(),
+            Expanded(child: _detail(),),
             const SizedBox(height: 30,),
           ],
         ),
@@ -452,7 +453,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     return ret;
   }
 
-  List<Widget> _detail() {
+  Widget _detail() {
     switch(_bodyPage) {
       case 0:
         return _showSummary();
@@ -469,324 +470,309 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
   }
 
-  List<Widget> _showSummary() {
-    List<Widget> table = [];
-
-    table.add(
-      Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: SingleChildScrollView(
-            controller: _summaryController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
+  Widget _showSummary() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: SingleChildScrollView(
+        controller: _summaryController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Daily",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Weekly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Monthly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Quarterly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Semi Annual",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Yearly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "YTD",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Total Asset",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        formatCurrency(_companyDetail.companyAssetUnderManagement!),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Total Unit",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        formatCurrency(_companyDetail.companyTotalUnit!),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        )
-      )
-    );
-
-    return table;
-  }
-
-  List<Widget> _showTable() {
-    List<Widget> table = [];
-
-    table.add(Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Container(
-            color: primaryColor,
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                CompanyInfoBox(
+                  header: "Daily",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
+                    textAlign: TextAlign.right,
                   ),
                 ),
                 const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Price",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  )
+                CompanyInfoBox(
+                  header: "Weekly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
                 ),
                 const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.swap_vertical,
-                        size: 16,
-                      ),
-                    ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.pulse_outline,
-                        size: 16,
-                      ),
-                    ),
-                  )
+                CompanyInfoBox(
+                  header: "Monthly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
                 ),
               ],
             ),
-          ),
-        ),
-      ],
-    ));
-
-    table.add(Expanded(
-      child: ListView(
-        controller: _priceController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-          double? dayDiff;
-          Color dayDiffColor = Colors.transparent;
-          if((index+1) < _companyDetail.companyPrices.length) {
-            double currPrice = _companyDetail.companyPrices[index].priceValue;
-            double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-            dayDiff = currPrice - prevPrice;
-            dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-          }
-          return CompanyDetailPriceList(
-            date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-            price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-            riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-            dayDiffColor: dayDiffColor,
-          );
-        }),
-      ),
-    ));
-
-    return table;
-  }
-
-  List<Widget> _showCalendar() {
-    List<Widget> calendar = [];
-
-    calendar.add(Expanded(
-      child: SingleChildScrollView(
-        controller: _calendarScrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: primaryLight,
-              width: 1.0,
-              style: BorderStyle.solid,
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "Quarterly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Semi Annual",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Yearly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 5,),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text("Current Price Comparison"),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showCurrentPriceComparison,
-                    activeColor: accentColor,
-                    onChanged: ((val) {
-                      setState(() {
-                        _showCurrentPriceComparison = val;
-                      });
-                    })
-                  )
-                ],
-              ),
-              const SizedBox(height: 5,),
-              HeatGraph(
-                data: _graphData!,
-                userInfo: _userInfo!,
-                currentPrice: _companyDetail.companyNetAssetValue!,
-                enableDailyComparison: _showCurrentPriceComparison,
-              ),
-            ],
-          ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "YTD",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Total Asset",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    formatCurrency(_companyDetail.companyAssetUnderManagement!),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Total Unit",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    formatCurrency(_companyDetail.companyTotalUnit!),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-    ));
-
-    return calendar;
+    );
   }
 
-  List<Widget> _showGraph() {
-    List<Widget> graph = [];
+  Widget _showTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(width: 10,),
+            Expanded(
+              child: Container(
+                color: primaryColor,
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Price",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      )
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.swap_vertical,
+                            size: 16,
+                          ),
+                        ),
+                      )
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.pulse_outline,
+                            size: 16,
+                          ),
+                        ),
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView(
+            controller: _priceController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
+              double? dayDiff;
+              Color dayDiffColor = Colors.transparent;
+              if((index+1) < _companyDetail.companyPrices.length) {
+                double currPrice = _companyDetail.companyPrices[index].priceValue;
+                double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+                dayDiff = currPrice - prevPrice;
+                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+              }
+              return CompanyDetailPriceList(
+                date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
+                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
+                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
+                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                dayDiffColor: dayDiffColor,
+              );
+            }),
+          ),
+        )
+      ],
+    );
+  }
 
-    graph.add(SingleChildScrollView(
+  Widget _showCalendar() {
+    return SingleChildScrollView(
+      controller: _calendarScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 5,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text("Current Price Comparison"),
+                const SizedBox(width: 10,),
+                CupertinoSwitch(
+                  value: _showCurrentPriceComparison,
+                  activeColor: accentColor,
+                  onChanged: ((val) {
+                    setState(() {
+                      _showCurrentPriceComparison = val;
+                    });
+                  })
+                )
+              ],
+            ),
+            const SizedBox(height: 5,),
+            HeatGraph(
+              data: _graphData!,
+              userInfo: _userInfo!,
+              currentPrice: _companyDetail.companyNetAssetValue!,
+              enableDailyComparison: _showCurrentPriceComparison,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _showGraph() {
+    return SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       child: LineChart(
@@ -794,140 +780,166 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         height: 250,
         watchlist: _watchlistDetail,
       ),
-    ));
-
-    return graph;
+    );
   }
 
-  List<Widget> _showCalc() {
-    List<Widget> calc = [];
-
-    // the average daily are 0, so no need to calculate
+  Widget _showCalc() {
     if (_avgDaily == 0) {
-      calc.add(
-        const Center(
-          child: Text("Calculate average daily are 0, no calculation needed"),
-        )
+      return const Center(
+        child: Text("Calculate average daily are 0, no calculation needed"),
       );
-      return calc;
     }
 
-    calc = [
-      Expanded(
-        child: SingleChildScrollView(
-          controller: _calcScrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  height: 60,
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
+    return SingleChildScrollView(
+      controller: _calcScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              height: 60,
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: primaryLight,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                )
+              ),
+              child: InkWell(
+                onTap: (() async {
+                  await ShowInfoDialog(
+                    title: "Average Daily Estimation",
+                    text: "We estimate the average daily based on average weight on daily, weekly, monthly, quarterly, semi annual, and yearly.\n\nThis information is only for information and not reflect the actual performance of the mutual funds.",
+                    okayColor: accentColor
+                  ).show(context);
+                }),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(width: 10,),
+                    const Text(
+                      "Average Daily Estimation",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
                       ),
-                    )
-                  ),
-                  child: InkWell(
-                    onTap: (() async {
-                      await ShowInfoDialog(
-                        title: "Average Daily Estimation",
-                        text: "We estimate the average daily based on average weight on daily, weekly, monthly, quarterly, semi annual, and yearly.\n\nThis information is only for information and not reflect the actual performance of the mutual funds.",
-                        okayColor: accentColor
-                      ).show(context);
-                    }),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const SizedBox(width: 10,),
-                        const Text(
-                          "Average Daily Estimation",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: secondaryLight,
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          child: Text(
-                            "${formatDecimalWithNull(_avgDaily, 100)}%",
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              color: textPrimary,
-                            ),  
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                      ],
                     ),
-                  ),
-                ),
-                WatchlistDetailCreateTextFields(
-                  controller: _monthController,
-                  title: "Month",
-                  decimal: 0,
-                  limit: 4,
-                  hintText: "0",
-                ),
-                WatchlistDetailCreateTextFields(
-                  controller: _amountController,
-                  title: "Amount",
-                  decimal: 0,
-                  hintText: "0",
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TransparentButton(
-                      text: "Calculate",
-                      bgColor: secondaryDark,
-                      icon: Ionicons.calculator,
-                      callback: (() {
-                        _simulateReksadana();
-                      })
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      child: Text(
+                        "${formatDecimalWithNull(_avgDaily, 100)}%",
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          color: textPrimary,
+                        ),  
+                      ),
                     ),
+                    const SizedBox(width: 10,),
                   ],
                 ),
-                const SizedBox(height: 10,),
-                (
-                  _calcTableResult.isEmpty ?
-                  const SizedBox.shrink() :
-                  _calcRow(
-                    month: "Mth",
-                    percentage: "%",
-                    interest: "Interest",
-                    value: "Value",
-                    textAlign: TextAlign.center,
-                    fontWeight: FontWeight.bold,
-                    bgColor: primaryDark,
-                  )
-                ),
-                ListView.builder(
-                  controller: _calcTableScrollController,
-                  shrinkWrap: true,
-                  itemCount: _calcTableResult.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return _calcTableResult[index];
-                  },
+              ),
+            ),
+            WatchlistDetailCreateTextFields(
+              controller: _monthController,
+              title: "Month",
+              decimal: 0,
+              limit: 4,
+              hintText: "0",
+            ),
+            WatchlistDetailCreateTextFields(
+              controller: _amountController,
+              title: "Amount",
+              decimal: 0,
+              hintText: "0",
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: primaryLight,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                )
+              ),
+              height: 60,
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(width: 10,),
+                  const Expanded(
+                    child: Text(
+                      "Recurring",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                  CupertinoSwitch(
+                    activeColor: secondaryColor,
+                    value: _recurring,
+                    onChanged: ((value) async {
+                      setState(() {
+                        _recurring = value;
+                      });
+                    }),
+                  ),
+                  const SizedBox(width: 10,),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TransparentButton(
+                  text: "Calculate",
+                  bgColor: secondaryDark,
+                  icon: Ionicons.calculator,
+                  callback: (() {
+                    _simulateReksadana();
+                  })
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 10,),
+            (
+              _calcTableResult.isEmpty ?
+              const SizedBox.shrink() :
+              _calcRow(
+                month: "Mth",
+                percentage: "%",
+                interest: "Interest",
+                value: "Value",
+                textAlign: TextAlign.center,
+                fontWeight: FontWeight.bold,
+                bgColor: primaryDark,
+              )
+            ),
+            ListView.builder(
+              controller: _calcTableScrollController,
+              shrinkWrap: true,
+              itemCount: _calcTableResult.length,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return _calcTableResult[index];
+              },
+            ),
+          ],
         ),
-      )
-    ];
-
-    return calc;
+      ),
+    );
   }
 
   void _simulateReksadana() {
@@ -996,6 +1008,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           value: formatCurrency((calcAmount + amount), false, false, false, 0),
           textAlign: TextAlign.center,
         ));
+
+        if (!_recurring) {
+          // no need to calculate till end of the month
+          // since we will only showed 1 record
+          m = month + 1;
+        }
       }
 
       _calcTableResult.add(_calcRow(

@@ -5,7 +5,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/broker/broker_summary_model.dart';
-import 'package:my_wealth/model/company/company_saham_list_model.dart';
+import 'package:my_wealth/model/company/company_detail_model.dart';
+import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/model/company/company_top_broker_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
@@ -13,7 +14,6 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
-import 'package:my_wealth/utils/prefs/shared_company.dart';
 
 class InsightBrokerSpecificCompanyPage extends StatefulWidget {
   const InsightBrokerSpecificCompanyPage({Key? key}) : super(key: key);
@@ -36,14 +36,13 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   late List<Widget> _pageItemsSummary;
   late List<Widget> _pageItemsTop;
   late String _companySahamCode;
-  late CompanySahamListModel? _companySaham;
-  late CompanySahamListModel? _currentCompanySaham;
   late DateTime _dateCurrent;
   late DateTime _dateFrom;
   late DateTime _dateTo;
   late DateTime _brokerMinDate;
   late DateTime _brokerMaxDate;
-  late List<CompanySahamListModel> _companySahamList;
+  late CompanyListModel? _companyData;
+  late CompanyDetailModel? _companyDetail;
   late BrokerSummaryModel? _brokerSummaryData;
   late BrokerSummaryBuySellModel _brokerSummaryCurrent;
   late CompanyTopBrokerModel? _brokerTopData;
@@ -56,10 +55,10 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
     // initialize the value
     _companySahamCode = "";
-    _companySaham = null;
-    _currentCompanySaham = null;
     _brokerSummaryData = null;
     _brokerTopData = null;
+    _companyData = null;
+    _companyDetail = null;
 
     _pageItemsSummary = [];
     _pageItemsTop = [];
@@ -70,8 +69,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
     _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
     
-    _companySahamList = CompanySharedPreferences.getCompanySahamList();
-
     // check brokerMinDate is more than _dateFrom or not?
     if (_brokerMinDate.isAfter(_dateFrom)) {
       // means that we cannot parse from that date, we can only parse from
@@ -149,65 +146,40 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                           ),
                           const SizedBox(height: 5,),
                           InkWell(
-                            onTap: (() {
-                              // create the bottom sheet and show the list of the company saham
-                              showModalBottomSheet(
-                                context: context,
-                                isDismissible: true,
-                                useSafeArea: true,
-                                builder: ((BuildContext context) {
-                                  return Container(
-                                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 30),
-                                    height: 350,
-                                    child: ListView.builder(
-                                      controller: _scrollControllerCompanySahamList,
-                                      itemCount: _companySahamList.length,
-                                      itemBuilder: ((context, index) {
-                                        return InkWell(
-                                          onTap: (() {
-                                            setState(() {
-                                              _companySahamCode = _companySahamList[index].code;
-                                              _companySaham = _companySahamList[index];
-                                              Navigator.pop(context);
-                                            });
-                                          }),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: primaryLight,
-                                                  width: 1.0,
-                                                  style: BorderStyle.solid,
-                                                )
-                                              )
-                                            ),
-                                            child: Text.rich(
-                                              TextSpan(
-                                                children: <TextSpan>[
-                                                  TextSpan(
-                                                    text: "(${_companySahamList[index].code}) ",
-                                                    style: const TextStyle(
-                                                      color: accentColor,
-                                                      fontWeight: FontWeight.bold,
-                                                    )
-                                                  ),
-                                                  TextSpan(
-                                                    text: _companySahamList[index].name,
-                                                  )
-                                                ]
-                                              ),
-                                              style: const TextStyle(
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                }),
-                              );
+                            onTap: (() async {
+                              // navigate to the find other company list and we will get the value from there
+                              await Navigator.pushNamed(context, '/company/detail/find', arguments: 'Saham').then((value) {
+                                if (value != null) {
+                                  // convert value to company list model
+                                  _companyData = value as CompanyListModel;
+
+                                  // get the detail information for this company
+                                  Future.microtask(() async {
+                                    // show the loader dialog
+                                    showLoaderDialog(context);
+
+                                    // get the company detail
+                                    await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
+                                      _companyDetail = resp;
+                                    });
+                                  }).whenComplete(() {
+                                    // remove the loader dialog
+                                    Navigator.pop(context);
+
+                                    // check if this is the same as previous saham code or not?
+                                    if (_companySahamCode != _companyDetail!.companySymbol) {
+                                      // set state to refresh the page
+                                      setState(() {
+                                        _companySahamCode = _companyDetail!.companySymbol!;
+
+                                        // clear the current search result
+                                        _brokerSummaryData = null;
+                                        _brokerTopData = null;
+                                      });
+                                    }
+                                  });
+                                }
+                              });
                             }),
                             child: Container(
                               padding: const EdgeInsets.all(5),
@@ -339,11 +311,10 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                     }
                     else {
                       await _getBrokerTransaction();
-                      // generate the summary and top page
-                      _generateSummaryPage();
-                      _generateTopPage();
-                      setState(() {
-                        _currentCompanySaham = _companySaham;
+                      setState(() {                        
+                        // generate the summary and top page
+                        _generateSummaryPage();
+                        _generateTopPage();
                       });
                     }
                   }),
@@ -373,7 +344,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
           ),
           Expanded(
             child: Visibility(
-              visible: (_currentCompanySaham != null),
+              visible: (_companyDetail != null),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -399,7 +370,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                (_currentCompanySaham == null ? '' : _currentCompanySaham!.name),
+                                (_companyDetail == null ? '' : _companyDetail!.companyName),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -407,7 +378,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                               ),
                               const SizedBox(height: 5,),
                               Text(
-                                "Current Price: ${(_currentCompanySaham == null ? '' : formatIntWithNull(_currentCompanySaham!.lastPrice, false, false, 0))}",
+                                "Current Price: ${(_companyDetail == null ? '' : formatDecimalWithNull(_companyDetail!.companyNetAssetValue, 1, 0))}",
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ],
@@ -663,7 +634,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   }
 
   Widget _brokerSummaryPage() {
-    if (_brokerSummaryData == null) {
+    if (_brokerSummaryData == null ) {
       return const SizedBox.shrink();
     }
 
@@ -765,7 +736,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
     // loop thru all the broker summary top data
     for(int i=0; i < _brokerTopData!.brokerData.length; i++) {
-      currentValue = (_brokerTopData!.brokerData[i].brokerSummaryLot * (_companySaham!.lastPrice ?? 0)) * 100;
+      currentValue = (_brokerTopData!.brokerData[i].brokerSummaryLot * (_companyDetail!.companyNetAssetValue ?? 0)) * 100;
       currentDiff = (currentValue - (_brokerTopData!.brokerData[i].brokerSummaryValue * 100));
 
       _pageItemsTop.add(

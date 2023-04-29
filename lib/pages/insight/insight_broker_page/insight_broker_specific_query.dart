@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
+import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/broker/broker_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_txn_detail_model.dart';
-import 'package:my_wealth/model/company/company_saham_list_model.dart';
+import 'package:my_wealth/model/company/company_detail_model.dart';
+import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
-import 'package:my_wealth/utils/prefs/shared_company.dart';
 
 class InsightBrokerSpecificQueryPage extends StatefulWidget {
   const InsightBrokerSpecificQueryPage({Key? key}) : super(key: key);
@@ -23,19 +24,21 @@ class InsightBrokerSpecificQueryPage extends StatefulWidget {
 
 class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQueryPage> {
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollControllerBrokerList = ScrollController();
   final ScrollController _scrollControllerCompanySahamList = ScrollController();
   final DateFormat _df = DateFormat('dd-MM-yyyy');
   final DateFormat _dfs = DateFormat('dd/MM');
 
-  late List<BrokerModel> _brokerList;
-  late List<CompanySahamListModel> _companySahamList;
+  late CompanyListModel? _companyData;
+  late CompanyDetailModel? _companyDetail;
+  late BrokerModel _brokerData;
   late List<Widget> _pageItems;
   late String _brokerCode;
   late String _companySahamCode;
-  late int _companySahamCodePrice;
-  late int _currentCompanySahamCodePrice;
+  late double _companySahamCodePrice;
+  late double _currentCompanySahamCodePrice;
   late DateTime _dateCurrent;
   late DateTime _dateFrom;
   late DateTime _dateTo;
@@ -74,9 +77,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       _dateTo = _brokerMaxDate;
     }
 
-    // get the broker list from shared preferences
-    _brokerList = BrokerSharedPreferences.getBrokerList();
-    _companySahamList = CompanySharedPreferences.getCompanySahamList();
     _brokerSummaryData = null;
 
     // get the company saham list
@@ -143,64 +143,19 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                           ),
                           const SizedBox(height: 5,),
                           InkWell(
-                            onTap: (() {
-                              // create the bottom sheet and show the list of the broker
-                              showModalBottomSheet(
-                                context: context,
-                                isDismissible: true,
-                                useSafeArea: true,
-                                builder: ((BuildContext context) {
-                                  return Container(
-                                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 30),
-                                    height: 350,
-                                    child: ListView.builder(
-                                      controller: _scrollControllerBrokerList,
-                                      itemCount: _brokerList.length,
-                                      itemBuilder: ((context, index) {
-                                        return InkWell(
-                                          onTap: (() {
-                                            setState(() {
-                                              _brokerCode = _brokerList[index].brokerFirmId;
-                                              Navigator.pop(context);
-                                            });
-                                          }),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: primaryLight,
-                                                  width: 1.0,
-                                                  style: BorderStyle.solid,
-                                                )
-                                              )
-                                            ),
-                                            child: Text.rich(
-                                              TextSpan(
-                                                children: <TextSpan>[
-                                                  TextSpan(
-                                                    text: "(${_brokerList[index].brokerFirmId}) ",
-                                                    style: const TextStyle(
-                                                      color: accentColor,
-                                                      fontWeight: FontWeight.bold,
-                                                    )
-                                                  ),
-                                                  TextSpan(
-                                                    text: _brokerList[index].brokerFirmName,
-                                                  )
-                                                ]
-                                              ),
-                                              style: const TextStyle(
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                }),
-                              );
+                            onTap: (() async {
+                              // navigate to the find other company list and we will get the value from there
+                              await Navigator.pushNamed(context, '/broker/find').then((value) {
+                                if (value != null) {
+                                  // convert value to company list model
+                                  _brokerData = value as BrokerModel;
+
+                                  // set the data
+                                  setState(() {
+                                    _brokerCode = _brokerData.brokerFirmId;
+                                  });
+                                }
+                              });
                             }),
                             child: Container(
                               padding: const EdgeInsets.all(5),
@@ -242,65 +197,37 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                           ),
                           const SizedBox(height: 5,),
                           InkWell(
-                            onTap: (() {
-                              // create the bottom sheet and show the list of the company saham
-                              showModalBottomSheet(
-                                context: context,
-                                isDismissible: true,
-                                useSafeArea: true,
-                                builder: ((BuildContext context) {
-                                  return Container(
-                                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 30),
-                                    height: 350,
-                                    child: ListView.builder(
-                                      controller: _scrollControllerCompanySahamList,
-                                      itemCount: _companySahamList.length,
-                                      itemBuilder: ((context, index) {
-                                        return InkWell(
-                                          onTap: (() {
-                                            setState(() {
-                                              _companySahamCode = _companySahamList[index].code;
-                                              _companySahamCodePrice = (_companySahamList[index].lastPrice ?? -1);
-                                              Navigator.pop(context);
-                                            });
-                                          }),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: primaryLight,
-                                                  width: 1.0,
-                                                  style: BorderStyle.solid,
-                                                )
-                                              )
-                                            ),
-                                            child: Text.rich(
-                                              TextSpan(
-                                                children: <TextSpan>[
-                                                  TextSpan(
-                                                    text: "(${_companySahamList[index].code}) ",
-                                                    style: const TextStyle(
-                                                      color: accentColor,
-                                                      fontWeight: FontWeight.bold,
-                                                    )
-                                                  ),
-                                                  TextSpan(
-                                                    text: _companySahamList[index].name,
-                                                  )
-                                                ]
-                                              ),
-                                              style: const TextStyle(
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                }),
-                              );
+                            onTap: (() async {
+                              // navigate to the find other company list and we will get the value from there
+                              await Navigator.pushNamed(context, '/company/detail/find', arguments: 'saham').then((value) {
+                                if (value != null) {
+                                  // convert value to company list model
+                                  _companyData = value as CompanyListModel;
+
+                                  // get the detail information for this company
+                                  Future.microtask(() async {
+                                    // show the loader dialog
+                                    showLoaderDialog(context);
+
+                                    // get the company detail
+                                    await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
+                                      _companyDetail = resp;
+                                    });
+                                  }).whenComplete(() {
+                                    // remove the loader dialog
+                                    Navigator.pop(context);
+
+                                    // check if this is the same as previous saham code or not?
+                                    if (_companySahamCode != _companyDetail!.companySymbol) {
+                                      // set state to refresh the page
+                                      setState(() {
+                                        _companySahamCode = _companyDetail!.companySymbol!;
+                                        _companySahamCodePrice = (_companyDetail!.companyNetAssetValue ?? -1);
+                                      });
+                                    }
+                                  });
+                                }
+                              });
                             }),
                             child: Container(
                               padding: const EdgeInsets.all(5),
@@ -483,7 +410,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                       text: " is ",
                     ),
                     TextSpan(
-                      text: formatIntWithNull(_companySahamCodePrice, false, false, 0),
+                      text: formatDecimalWithNull(_companySahamCodePrice, 1, 0),
                       style: const TextStyle(
                         color: accentColor,
                         fontWeight: FontWeight.bold,
@@ -564,7 +491,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     _pageItems.addAll(_generateCombineRows(combineForeign));
     _pageItems.add(_generateAverage(combineForeign));
 
-    int companySahamCodePrice = _currentCompanySahamCodePrice;
+    double companySahamCodePrice = _currentCompanySahamCodePrice;
     int shareLeft = (_totalBuyLot - _totalSellLot) * 100;
     Color shareLeftColor = (shareLeft == 0 ? textPrimary : (shareLeft < 0 ? secondaryColor : Colors.green));
     double shareValue = shareLeft * _totalBuyAverage;

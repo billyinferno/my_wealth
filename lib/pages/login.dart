@@ -620,12 +620,6 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
         debugPrint('🔟🔟🔟4️⃣ Get Stock Split List');
       }),
-      _companyAPI.getCompanySahamList().then((resp) async {
-        await CompanySharedPreferences.setCompanySahamList(resp);
-        if (!mounted) return;
-        Provider.of<CompanyProvider>(context, listen: false).setCompanySahamList(resp);
-        debugPrint('🔟🔟🔟5️⃣ Get Company Saham List');
-      }),
       _brokerSummaryApi.getBrokerSummaryDate().then((resp) async {
         await BrokerSharedPreferences.setBrokerMinMaxDate(resp.brokerMinDate, resp.brokerMaxDate);
         debugPrint('🔟🔟🔟6️⃣ Get Broker Min and Max Date');

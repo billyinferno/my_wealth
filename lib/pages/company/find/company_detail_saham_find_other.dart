@@ -209,6 +209,7 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
                   }),
                 ),
               ),
+              const SizedBox(height: 30,),
             ],
           ),
         ),

@@ -73,7 +73,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   double? _avgPrice;
   double? _avgDaily;
   int _avgCount = 0;
-  String _compareCompanyName = "";
 
   @override
   void initState() {
@@ -85,7 +84,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     // initialize variable
     _recurring = true;
     _showCurrentPriceComparison = false;
-    _compareCompanyName = "";
     _otherCompanyDetail = null;
 
     _bodyPage = 0;

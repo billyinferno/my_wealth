@@ -7,8 +7,8 @@ import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/widgets/bar_chart.dart';
-import 'package:my_wealth/widgets/product_list_item.dart';
+import 'package:my_wealth/widgets/chart/bar_chart.dart';
+import 'package:my_wealth/widgets/list/product_list_item.dart';
 
 class PortofolioListPage extends StatefulWidget {
   final Object? args;

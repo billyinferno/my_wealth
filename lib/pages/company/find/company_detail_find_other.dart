@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/widgets/common_error_page.dart';
-import 'package:my_wealth/widgets/common_loading_page.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class CompanyDetailFindOtherPage extends StatefulWidget {
   final Object? type;

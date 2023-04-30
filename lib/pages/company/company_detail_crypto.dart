@@ -14,13 +14,13 @@ import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
-import 'package:my_wealth/widgets/common_error_page.dart';
-import 'package:my_wealth/widgets/common_loading_page.dart';
-import 'package:my_wealth/widgets/company_detail_price_list.dart';
-import 'package:my_wealth/widgets/company_info_box.dart';
-import 'package:my_wealth/widgets/heat_graph.dart';
-import 'package:my_wealth/widgets/line_chart.dart';
-import 'package:my_wealth/widgets/transparent_button.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
+import 'package:my_wealth/widgets/list/company_detail_price_list.dart';
+import 'package:my_wealth/widgets/list/company_info_box.dart';
+import 'package:my_wealth/widgets/chart/heat_graph.dart';
+import 'package:my_wealth/widgets/chart/line_chart.dart';
+import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class CompanyDetailCryptoPage extends StatefulWidget {
   final Object? companyData;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/widgets/selectable_button.dart';
+import 'package:my_wealth/widgets/components/selectable_button.dart';
 
 class SelectableItem {
   final String name;

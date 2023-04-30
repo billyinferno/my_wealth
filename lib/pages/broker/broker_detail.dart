@@ -14,8 +14,8 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/widgets/common_error_page.dart';
-import 'package:my_wealth/widgets/common_loading_page.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class BrokerDetailPage extends StatefulWidget {
   final Object? args;

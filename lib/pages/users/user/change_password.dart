@@ -4,8 +4,8 @@ import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/widgets/password_textfields.dart';
-import 'package:my_wealth/widgets/transparent_button.dart';
+import 'package:my_wealth/widgets/components/password_textfields.dart';
+import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({ Key? key }) : super(key: key);

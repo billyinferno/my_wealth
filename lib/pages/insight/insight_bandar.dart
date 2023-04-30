@@ -7,7 +7,7 @@ import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_index
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_sideway_page.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
-import 'package:my_wealth/widgets/scroll_segmented_control.dart';
+import 'package:my_wealth/widgets/components/scroll_segmented_control.dart';
 import 'package:provider/provider.dart';
 
 class InsightBandarPage extends StatefulWidget {

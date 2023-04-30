@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/widgets/heat_graph.dart';
-import 'package:my_wealth/widgets/line_chart_painter.dart';
+import 'package:my_wealth/widgets/chart/heat_graph.dart';
+import 'package:my_wealth/widgets/chart/line_chart_painter.dart';
 
 class LineChart extends StatelessWidget {
   final Map<DateTime, GraphData> data;

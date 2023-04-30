@@ -19,7 +19,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_broker.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
-import 'package:my_wealth/widgets/transparent_button.dart';
+import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:provider/provider.dart';
 
 class InsightBrokerPage extends StatefulWidget {

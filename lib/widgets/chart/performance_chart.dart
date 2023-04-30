@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_performance_model.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
-import 'package:my_wealth/widgets/performance_chart_painter.dart';
+import 'package:my_wealth/widgets/chart/performance_chart_painter.dart';
 
 class PerformanceChart extends StatefulWidget {
   final List<WatchlistPerformanceModel>? data;

@@ -10,7 +10,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/widgets/product_list_item.dart';
+import 'package:my_wealth/widgets/list/product_list_item.dart';
 
 class PortofolioDetailPage extends StatefulWidget {
   final Object? args;

@@ -15,7 +15,7 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
-import 'package:my_wealth/widgets/watchlist_list.dart';
+import 'package:my_wealth/widgets/list/watchlist_list.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistAddPage extends StatefulWidget {

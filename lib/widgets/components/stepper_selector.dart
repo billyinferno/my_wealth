@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/widgets/stepper_selector_controller.dart';
+import 'package:my_wealth/widgets/components/stepper_selector_controller.dart';
 
 class StepperSelector extends StatefulWidget {
   final StepperSelectorController controller;

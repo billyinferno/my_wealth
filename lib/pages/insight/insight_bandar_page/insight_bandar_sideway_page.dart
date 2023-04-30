@@ -10,7 +10,7 @@ import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
-import 'package:my_wealth/widgets/number_stepper.dart';
+import 'package:my_wealth/widgets/components/number_stepper.dart';
 
 class InsightBandarSidewayPage extends StatefulWidget {
   const InsightBandarSidewayPage({Key? key}) : super(key: key);

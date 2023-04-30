@@ -11,9 +11,9 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_favourites.dart';
-import 'package:my_wealth/widgets/favourite_company_list.dart';
-import 'package:my_wealth/widgets/stepper_selector.dart';
-import 'package:my_wealth/widgets/stepper_selector_controller.dart';
+import 'package:my_wealth/widgets/list/favourite_company_list.dart';
+import 'package:my_wealth/widgets/components/stepper_selector.dart';
+import 'package:my_wealth/widgets/components/stepper_selector_controller.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListReksadanaPage extends StatefulWidget {

@@ -10,9 +10,9 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
-import 'package:my_wealth/widgets/common_error_page.dart';
-import 'package:my_wealth/widgets/common_loading_page.dart';
-import 'package:my_wealth/widgets/performance_chart.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
+import 'package:my_wealth/widgets/chart/performance_chart.dart';
 
 class WatchlistPerformancePage extends StatefulWidget {
   final Object? args;

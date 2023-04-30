@@ -6,7 +6,7 @@ import 'package:my_wealth/model/broker/broker_summary_accumulation_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/widgets/expanded_section.dart';
+import 'package:my_wealth/widgets/list/expanded_section.dart';
 
 class BrokerSummaryDistributionChart extends StatefulWidget {
   final List<BrokerSummaryAccumulationModel> data;

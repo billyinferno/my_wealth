@@ -21,10 +21,10 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
 import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
-import 'package:my_wealth/widgets/expanded_tile_view.dart';
-import 'package:my_wealth/widgets/transparent_button.dart';
-import 'package:my_wealth/widgets/watchlist_sub_summary.dart';
-import 'package:my_wealth/widgets/watchlist_summary.dart';
+import 'package:my_wealth/widgets/list/expanded_tile_view.dart';
+import 'package:my_wealth/widgets/components/transparent_button.dart';
+import 'package:my_wealth/widgets/header/watchlist_sub_summary.dart';
+import 'package:my_wealth/widgets/header/watchlist_summary.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 

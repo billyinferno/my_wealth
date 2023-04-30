@@ -24,7 +24,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/utils/prefs/shared_company.dart';
 import 'package:my_wealth/utils/prefs/shared_insight.dart';
 import 'package:my_wealth/utils/prefs/shared_user.dart';
-import 'package:my_wealth/widgets/selectable_list.dart';
+import 'package:my_wealth/widgets/components/selectable_list.dart';
 import 'package:provider/provider.dart';
 
 class InsightStockPage extends StatefulWidget {

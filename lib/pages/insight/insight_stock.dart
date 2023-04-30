@@ -21,9 +21,9 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/utils/prefs/shared_company.dart';
-import 'package:my_wealth/utils/prefs/shared_insight.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_company.dart';
+import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/components/selectable_list.dart';
 import 'package:provider/provider.dart';
 

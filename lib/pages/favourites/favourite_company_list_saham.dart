@@ -8,7 +8,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/utils/prefs/shared_favourites.dart';
+import 'package:my_wealth/storage/prefs/shared_favourites.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:provider/provider.dart';
 

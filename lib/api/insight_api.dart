@@ -19,7 +19,7 @@ import 'package:my_wealth/model/insight/insight_stock_split_list_model.dart';
 import 'package:my_wealth/model/insight/insight_top_worse_company_list_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 
 class InsightAPI {
   late String _bearerToken;

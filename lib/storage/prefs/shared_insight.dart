@@ -12,7 +12,7 @@ import 'package:my_wealth/model/insight/insight_stock_dividend_list_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_new_listed_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_split_list_model.dart';
 import 'package:my_wealth/model/insight/insight_top_worse_company_list_model.dart';
-import 'package:my_wealth/storage/local_box.dart';
+import 'package:my_wealth/storage/box/local_box.dart';
 
 class InsightSharedPreferences {
   static const _sectorSummaryKey = "sector_summary";

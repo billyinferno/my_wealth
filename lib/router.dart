@@ -42,7 +42,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/themes/theme.dart';
 import 'package:my_wealth/utils/animation/page_transition.dart';
 import 'package:my_wealth/utils/extensions/custom_scroll_behaviour.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
 class RouterPage extends StatefulWidget {

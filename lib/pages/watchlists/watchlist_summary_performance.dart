@@ -9,7 +9,7 @@ import 'package:my_wealth/utils/arguments/wacthlist_summary_performance_args.dar
 import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/chart/performance_chart.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_wealth/router.dart';
-import 'package:my_wealth/storage/local_box.dart';
+import 'package:my_wealth/storage/box/local_box.dart';
 
 void main() {
   // this is needed to ensure that all the binding already initialized before

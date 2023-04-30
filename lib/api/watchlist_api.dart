@@ -10,7 +10,7 @@ import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_performance_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 
 class WatchlistAPI {
   late String _bearerToken;

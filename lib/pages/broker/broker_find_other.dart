@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker/broker_model.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/prefs/shared_broker.dart';
+import 'package:my_wealth/storage/prefs/shared_broker.dart';
 
 class BrokerFindOtherPage extends StatefulWidget {
   const BrokerFindOtherPage({Key? key}) : super(key: key);

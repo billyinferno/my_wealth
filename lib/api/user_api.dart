@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 
 class UserAPI {
   late String _bearerToken;

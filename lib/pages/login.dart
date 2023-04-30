@@ -17,18 +17,18 @@ import 'package:my_wealth/provider/index_provider.dart';
 import 'package:my_wealth/provider/inisght_provider.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/provider/watchlist_provider.dart';
-import 'package:my_wealth/storage/local_box.dart';
+import 'package:my_wealth/storage/box/local_box.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/utils/prefs/shared_broker.dart';
-import 'package:my_wealth/utils/prefs/shared_company.dart';
-import 'package:my_wealth/utils/prefs/shared_favourites.dart';
-import 'package:my_wealth/utils/prefs/shared_index.dart';
-import 'package:my_wealth/utils/prefs/shared_insight.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/storage/prefs/shared_company.dart';
+import 'package:my_wealth/storage/prefs/shared_favourites.dart';
+import 'package:my_wealth/storage/prefs/shared_index.dart';
+import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/prefs/shared_watchlist.dart';
+import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {

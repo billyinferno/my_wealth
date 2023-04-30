@@ -12,7 +12,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
 import 'package:my_wealth/widgets/chart/heat_graph.dart';
 import 'package:my_wealth/widgets/chart/line_chart.dart';

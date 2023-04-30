@@ -6,7 +6,7 @@ import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
 class UpdateBotPage extends StatefulWidget {

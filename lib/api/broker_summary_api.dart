@@ -11,7 +11,7 @@ import 'package:my_wealth/model/broker/broker_summary_txn_detail_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 
 class BrokerSummaryAPI {
   late String _bearerToken;

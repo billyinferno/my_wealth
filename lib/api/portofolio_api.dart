@@ -6,7 +6,7 @@ import 'package:my_wealth/model/portofolio/portofolio_detail_model.dart';
 import 'package:my_wealth/model/portofolio/portofolio_summary_model.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/prefs/shared_user.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
 
 class PortofolioAPI {
   late String _bearerToken;

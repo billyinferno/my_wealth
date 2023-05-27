@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
 import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+
+
+enum ChartType { avg, ma10, ma20, ma30 }
 
 class AveragePriceChart extends StatefulWidget {
   final CompanyDetailModel company;
@@ -18,6 +22,9 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
   late int _max;
   late int _currentFlexLeft;
   late int _currentFlexRight;
+  late int _selectedValue;
+  late int _selectedFlexLeft;
+  late int _selectedFlexRight;
   late int _ma10;
   late int _ma10FlexLeft;
   late int _ma10FlexRight;
@@ -30,6 +37,21 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
   late int _avg;
   late int _avgFlexLeft;
   late int _avgFlexRight;
+  late ChartType _currentSegment;
+
+  final Map<ChartType, Color> _chartColors = {
+    ChartType.avg: Colors.orange,
+    ChartType.ma10: Colors.purple,
+    ChartType.ma20: const Color(0xff40826d),
+    ChartType.ma30: const Color(0xff007ba7),
+  };
+
+  final Map<ChartType, String> _chartName = {
+    ChartType.avg: "Average",
+    ChartType.ma10: "MA10",
+    ChartType.ma20: "MA20",
+    ChartType.ma30: "MA30",
+  };
 
   @override
   void initState() {
@@ -41,6 +63,11 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
     _avg = 0;
     
     _calculate();
+    _currentSegment = ChartType.avg;
+    _selectedValue = _avg;
+    _selectedFlexLeft = _avgFlexLeft;
+    _selectedFlexRight = _avgFlexRight;
+
     super.initState();
   }
 
@@ -52,14 +79,146 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          const Text(
-            "Average Price Comparison",
-            style: TextStyle(
-              color: secondaryColor,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Price Comparison",
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Expanded(
+                child: CupertinoSegmentedControl<ChartType>(
+                  selectedColor: _chartColors[_currentSegment],
+                  groupValue: _currentSegment,
+                  onValueChanged: (ChartType value) {
+                    setState(() {
+                      switch(value) {
+                        case ChartType.avg:
+                          _selectedValue = _avg;
+                          _selectedFlexLeft = _avgFlexLeft;
+                          _selectedFlexRight = _avgFlexRight;
+                          break;
+                        case ChartType.ma10:
+                          _selectedValue = _ma10;
+                          _selectedFlexLeft = _ma10FlexLeft;
+                          _selectedFlexRight = _ma10FlexRight;
+                          break;
+                        case ChartType.ma20:
+                          _selectedValue = _ma20;
+                          _selectedFlexLeft = _ma20FlexLeft;
+                          _selectedFlexRight = _ma20FlexRight;
+                          break;
+                        case ChartType.ma30:
+                          _selectedValue = _ma30;
+                          _selectedFlexLeft = _ma30FlexLeft;
+                          _selectedFlexRight = _ma30FlexRight;
+                          break;
+                        default:
+                          _selectedValue = _avg;
+                          _selectedFlexLeft = _avgFlexLeft;
+                          _selectedFlexRight = _avgFlexRight;
+                          break;
+                      }
+                      _currentSegment = value;
+                    });
+                  },
+                  children: const<ChartType, Widget> {
+                    ChartType.avg: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        "AVG",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ChartType.ma10: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        "MA10",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ChartType.ma20: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        "MA20",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ChartType.ma30: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        "MA30",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  }
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: _selectedFlexLeft,
+                child: const SizedBox(),
+              ),
+              Text(
+                "${_chartName[_currentSegment]} Price ${formatIntWithNull(_selectedValue, false, false, 0)}",
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _chartColors[_currentSegment],
+                ),
+              ),
+              Expanded(
+                flex: _selectedFlexRight,
+                child: const SizedBox(),
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: _selectedFlexLeft,
+                child: const SizedBox(),
+              ),
+              SizedBox(
+                height: 25,
+                width: 15,
+                child: Center(
+                  child: Container(
+                    height: 25,
+                    width: 1,
+                    color: _chartColors[_currentSegment],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: _selectedFlexRight,
+                child: const SizedBox(),
+              ),
+            ],
+          ),
           SizedBox(
             width: double.infinity,
             child: Stack(
@@ -83,85 +242,19 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
-                      flex: _ma10FlexLeft,
+                      flex: _selectedFlexLeft,
                       child: const SizedBox(),
                     ),
                     Container(
-                      width: 13,
-                      height: 23,
+                      width: 15,
+                      height: 15,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(23),
-                        color: Colors.orange,
+                        color: _chartColors[_currentSegment],
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     Expanded(
-                      flex: _ma10FlexRight,
-                      child: const SizedBox(),
-                    ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: _ma20FlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Container(
-                      width: 11,
-                      height: 21,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(21),
-                        color: Colors.blue,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _ma20FlexRight,
-                      child: const SizedBox(),
-                    ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: _ma30FlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Container(
-                      width: 9,
-                      height: 19,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(19),
-                        color: Colors.green,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _ma30FlexRight,
-                      child: const SizedBox(),
-                    ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: _avgFlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Container(
-                      width: 7,
-                      height: 17,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(17),
-                        color: secondaryColor,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _avgFlexRight,
+                      flex: _selectedFlexRight,
                       child: const SizedBox(),
                     ),
                   ],
@@ -175,11 +268,11 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       child: const SizedBox(),
                     ),
                     Container(
-                      width: 5,
+                      width: 15,
                       height: 15,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
                         color: textPrimary,
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     Expanded(
@@ -191,262 +284,69 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
               ],
             ),
           ),
-          const SizedBox(height: 5,),
-          Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    formatIntWithNull(_min, false, false, 0),
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: secondaryColor,
-                    ),
-                  ),
-                  const Expanded(child: SizedBox(),),
-                  Text(
-                    formatIntWithNull(_max, false, false, 0),
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      flex: _ma10FlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Text(
-                      formatIntWithNull(_ma10, false, false, 0),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.orange,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _ma10FlexRight,
-                      child: const SizedBox(),
-                    ),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      flex: _ma20FlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Text(
-                      formatIntWithNull(_ma20, false, false, 0),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _ma20FlexRight,
-                      child: const SizedBox(),
-                    ),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      flex: _ma30FlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Text(
-                      formatIntWithNull(_ma30, false, false, 0),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.green,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _ma30FlexRight,
-                      child: const SizedBox(),
-                    ),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      flex: _avgFlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Text(
-                      formatIntWithNull(_avg, false, false, 0),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: secondaryColor,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _avgFlexRight,
-                      child: const SizedBox(),
-                    ),
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      flex: _currentFlexLeft,
-                      child: const SizedBox(),
-                    ),
-                    Text(
-                      formatIntWithNull((widget.company.companyNetAssetValue == null ? 0 : widget.company.companyNetAssetValue!.toInt()), false, false, 0),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: textPrimary,
-                      ),
-                    ),
-                    Expanded(
-                      flex: _currentFlexRight,
-                      child: const SizedBox(),
-                    ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 10,),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.orange,
-                      ),
+                flex: _currentFlexLeft,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    formatIntWithNull(_min, false, false, 0),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: secondaryColor,
                     ),
-                    const SizedBox(width: 2,),
-                    const Text(
-                      "MA10",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.orange,
-                      ),
-                    )
-                  ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 25,
+                width: 15,
+                child: Center(
+                  child: Container(
+                    height: 25,
+                    width: 1,
+                    color: textPrimary,
+                  ),
                 ),
               ),
               Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.green,
-                      ),
+                flex: _currentFlexRight,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    formatIntWithNull(_max, false, false, 0),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.green,
                     ),
-                    const SizedBox(width: 2,),
-                    const Text(
-                      "MA20",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.green,
-                      ),
-                    )
-                  ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: _currentFlexLeft,
+                child: const SizedBox(),
+              ),
+              Text(
+                "Current Price ${formatIntWithNull((widget.company.companyNetAssetValue == null ? 0 : widget.company.companyNetAssetValue!.toInt()), false, false, 0)}",
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: textPrimary,
                 ),
               ),
               Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.blue,
-                      ),
-                    ),
-                    const SizedBox(width: 2,),
-                    const Text(
-                      "MA30",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.blue,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: secondaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 2,),
-                    const Text(
-                      "AVG",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: secondaryColor,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: textPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 2,),
-                    const Text(
-                      "Current",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: textPrimary,
-                      ),
-                    )
-                  ],
-                ),
+                flex: _currentFlexRight,
+                child: const SizedBox(),
               ),
             ],
           ),

@@ -29,6 +29,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/chart/average_price_chart.dart';
 import 'package:my_wealth/widgets/chart/broker_summary_distribution_chart.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
@@ -1433,6 +1434,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
+                  AveragePriceChart(
+                    company: _companyDetail,
+                    price: _infoSahamPrice,
+                  ),
+                  const SizedBox(height: 20,),
                   BrokerSummaryDistributionChart(data: _brokerSummaryAccumulation),
                   const SizedBox(height: 20,),
                   const Center(

@@ -35,7 +35,6 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   final ScrollController _scrollController = ScrollController();
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   final WatchlistAPI _watchlistApi = WatchlistAPI();
-  final GlobalKey _scaffold = GlobalKey();
 
   late WatchlistListArgs _watchlistArgs;
   late String _type;
@@ -79,7 +78,6 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         return false;
       }),
       child: Scaffold(
-        key: _scaffold,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(
@@ -485,6 +483,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
                       WatchlistDetailEditArgs args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
+                      final Color rColor = riskColor(
+                        (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
+                        (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
+                        _userInfo!.risk
+                      );
     
                       return Slidable(
                         endActionPane: ActionPane(
@@ -531,7 +534,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
                           }),
                           child: Container(
-                            padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                             decoration: BoxDecoration(
                               color: _listColor(_watchlist.watchlistDetail[index].watchlistDetailShare),
                               border: const Border(
@@ -546,6 +549,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
+                                Container(
+                                  color: rColor,
+                                  width: 5,
+                                  height: 45,
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
                                 Expanded(
                                   child: Text(
                                     _df.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),

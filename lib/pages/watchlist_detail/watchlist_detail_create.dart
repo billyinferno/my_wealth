@@ -176,7 +176,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
       });
     }
     else {
-      throw Exception("Shares cannot be zero, and price minimum is zero");
+      throw Exception("Share and Price are zero");
     }
   }
 

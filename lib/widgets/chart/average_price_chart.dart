@@ -5,7 +5,6 @@ import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 
-
 enum ChartType { avg, ma10, ma20, ma30 }
 
 class AveragePriceChart extends StatefulWidget {

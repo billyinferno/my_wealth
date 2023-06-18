@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 
 class MultiLineChartPainter extends CustomPainter {
@@ -153,14 +152,6 @@ class MultiLineChartPainter extends CustomPainter {
 
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
-    Paint graphRectBorder = Paint()
-      ..color = primaryDark.withOpacity(0.5)
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-    Paint graphRectBorderWhite = Paint()
-      ..color = primaryLight.withOpacity(0.5)
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
 
     double gap = graphRect.width / (data.length.toDouble() - 1);
     double ratio;

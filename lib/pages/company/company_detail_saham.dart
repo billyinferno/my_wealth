@@ -32,6 +32,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/chart/average_price_chart.dart';
 import 'package:my_wealth/widgets/chart/broker_summary_distribution_chart.dart';
+import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
@@ -76,6 +77,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late List<BrokerSummaryAccumulationModel> _brokerSummaryAccumulation;
   late PriceSahamMovingAverageModel _priceMA;
   late PriceSahamMovementModel _priceMovement;
+  late List<Map<String, double>> _priceMovementData;
   late List<InfoFundamentalsModel> _infoFundamental;
   late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
@@ -2378,12 +2380,29 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const Center(
+                  child: Text("Stock Price"),
+                ),
                 LineChart(
                   data: _graphData!,
                   height: 250,
                   watchlist: _watchlistDetail,
                 ),
                 const SizedBox(height: 5,),
+                const Center(
+                  child: Text("Monthly Price Movement"),
+                ),
+                MultiLineChart(
+                  height: 250,
+                  data: _priceMovementData,
+                  color: const [Colors.orange, Colors.red, Colors.green],
+                  legend: const ["Average", "Minimum", "Maximum"],
+                ),
+                const SizedBox(height: 5,),
+                const Center(
+                  child: Text("Candlestick and Trade Volume"),
+                ),
+                const SizedBox(height: 10,),
                 SizedBox(
                   height: 160,
                   child: CustomPaint(
@@ -2829,6 +2848,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
       await _priceAPI.getPriceMovement(_companyData.companyCode).then((resp) {
         _priceMovement = resp;
+
+        _priceMovementData = [];
+        Map<String, double> avgPrice = {};
+        Map<String, double> minPrice = {};
+        Map<String, double> maxPrice = {};
+        // loop thru the _priceMovement price
+        for (Price element in _priceMovement.prices) {
+          avgPrice[element.date] = element.avgPrice;
+          minPrice[element.date] = element.minPrice;
+          maxPrice[element.date] = element.maxPrice;
+        }
+        _priceMovementData.add(avgPrice);
+        _priceMovementData.add(minPrice);
+        _priceMovementData.add(maxPrice);
       }).onError((error, stackTrace) {
         debugPrint("Error on getPriceMovement");
         debugPrintStack(stackTrace: stackTrace);

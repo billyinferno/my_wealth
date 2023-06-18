@@ -17,6 +17,7 @@ import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
 import 'package:my_wealth/model/company/company_seasonality_model.dart';
 import 'package:my_wealth/model/company/company_info_fundamentals_model.dart';
 import 'package:my_wealth/model/price/price_saham_ma_model.dart';
+import 'package:my_wealth/model/price/price_saham_movement_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -74,6 +75,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late BrokerSummaryDateModel _brokerSummaryDate;
   late List<BrokerSummaryAccumulationModel> _brokerSummaryAccumulation;
   late PriceSahamMovingAverageModel _priceMA;
+  late PriceSahamMovementModel _priceMovement;
   late List<InfoFundamentalsModel> _infoFundamental;
   late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
@@ -2771,14 +2773,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           _topBrokerDateTo =  (_companyDetail.companyLastUpdate == null ? DateTime.now().toLocal() : _companyDetail.companyLastUpdate!.toLocal());
           _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getCompanyDetail");
         debugPrintStack(stackTrace: stackTrace);
       });
 
       await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
         _brokerSummaryGross = resp;
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getBrokerSummary");
         debugPrintStack(stackTrace: stackTrace);
       });
 
@@ -2791,21 +2793,21 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         // calculate the broker summary
         _calculateBrokerSummary();
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getBrokerSummaryNet");
         debugPrintStack(stackTrace: stackTrace);
       });
 
       await _brokerSummaryAPI.getBrokerSummaryAccumulation('v1', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
         _brokerSummaryAccumulation.add(resp);
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getBrokerSummaryAccumulation v1");
         debugPrintStack(stackTrace: stackTrace);
       });
 
       await _brokerSummaryAPI.getBrokerSummaryAccumulation('v2', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
         _brokerSummaryAccumulation.add(resp);
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getBrokerSummaryAccumulation v2");
         debugPrintStack(stackTrace: stackTrace);
       });
 
@@ -2814,21 +2816,28 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _topBrokerDateFrom = (resp.brokerMinDate ?? DateTime.now());
         _topBrokerDateTo = (resp.brokerMaxDate ?? DateTime.now());
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getCompanyTopBroker");
         debugPrintStack(stackTrace: stackTrace);
       });
 
       await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
         _priceMA = resp;
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getPriceMovingAverage");
+        debugPrintStack(stackTrace: stackTrace);
+      });
+
+      await _priceAPI.getPriceMovement(_companyData.companyCode).then((resp) {
+        _priceMovement = resp;
+      }).onError((error, stackTrace) {
+        debugPrint("Error on getPriceMovement");
         debugPrintStack(stackTrace: stackTrace);
       });
 
       await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
         _infoFundamental = resp;
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getInfoFundamental");
         debugPrintStack(stackTrace: stackTrace);
       });
 
@@ -2868,7 +2877,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         // generate map data
         _generateGraphData(_infoSahamPrice, _companyDetail);   
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on getInfoSahamPrice");
         debugPrintStack(stackTrace: stackTrace);
       });
 
@@ -2900,14 +2909,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           }
         }
       }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
+        debugPrint("Error on watchlist findDetail");
         debugPrintStack(stackTrace: stackTrace);
       });
 
       await _companyApi.getSeasonality(_companyData.companyCode).then((resp) {
         _seasonality = resp;
       }).onError((error, stackTrace) {
-        debugPrint("Error on Get Seasonality");
+        debugPrint("Error on Get getSeasonality");
         debugPrintStack(stackTrace: stackTrace);
       });
     }

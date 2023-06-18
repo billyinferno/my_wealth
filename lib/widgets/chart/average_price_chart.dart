@@ -283,15 +283,14 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
               ],
             ),
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+          Stack(
+            alignment: Alignment.center,
             children: <Widget>[
-              Expanded(
-                flex: _currentFlexLeft,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
                     formatIntWithNull(_min, false, false, 0),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -299,24 +298,7 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       color: secondaryColor,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 25,
-                width: 15,
-                child: Center(
-                  child: Container(
-                    height: 25,
-                    width: 1,
-                    color: textPrimary,
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: _currentFlexRight,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
+                  Text(
                     formatIntWithNull(_max, false, false, 0),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -324,8 +306,33 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       color: Colors.green,
                     ),
                   ),
-                ),
+                ],
               ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: _currentFlexLeft,
+                    child: const SizedBox(),
+                  ),
+                  SizedBox(
+                    height: 25,
+                    width: 15,
+                    child: Center(
+                      child: Container(
+                        height: 25,
+                        width: 1,
+                        color: textPrimary,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: _currentFlexRight,
+                    child: const SizedBox(),
+                  ),
+                ],
+              ),  
             ],
           ),
           Row(

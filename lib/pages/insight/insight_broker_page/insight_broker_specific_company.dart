@@ -30,8 +30,14 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   final ScrollController _scrollControllerCompanySahamList = ScrollController();
   late TabController _tabController;
   final DateFormat _df = DateFormat('dd-MM-yyyy');
-  final TextStyle _topBrokerHeader = const TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 10,);
-  final TextStyle _topBrokerRow = const TextStyle(fontSize: 10,);
+  final TextStyle _topBrokerHeader = const TextStyle(
+    color: accentColor,
+    fontWeight: FontWeight.bold,
+    fontSize: 10,
+  );
+  final TextStyle _topBrokerRow = const TextStyle(
+    fontSize: 10,
+  );
 
   late List<Widget> _pageItemsSummary;
   late List<Widget> _pageItemsTop;
@@ -44,9 +50,12 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   late CompanyListModel? _companyData;
   late CompanyDetailModel? _companyDetail;
   late BrokerSummaryModel? _brokerSummaryData;
+  late BrokerSummaryModel? _brokerSummaryDataGross;
+  late BrokerSummaryModel? _brokerSummaryDataNet;
   late BrokerSummaryBuySellModel _brokerSummaryCurrent;
   late CompanyTopBrokerModel? _brokerTopData;
   late String _brokerSummarySelected;
+  late bool _showNet;
 
   @override
   void initState() {
@@ -56,19 +65,23 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     // initialize the value
     _companySahamCode = "";
     _brokerSummaryData = null;
+    _brokerSummaryDataGross = null;
+    _brokerSummaryDataNet = null;
+
     _brokerTopData = null;
     _companyData = null;
     _companyDetail = null;
+    _showNet = false;
 
     _pageItemsSummary = [];
     _pageItemsTop = [];
-    
+
     _dateCurrent = DateTime.now().toLocal();
     _dateFrom = DateTime.now().subtract(const Duration(days: 30)).toLocal();
     _dateTo = DateTime.now().subtract(const Duration(days: 1)).toLocal();
     _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
     _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
-    
+
     // check brokerMinDate is more than _dateFrom or not?
     if (_brokerMinDate.isAfter(_dateFrom)) {
       // means that we cannot parse from that date, we can only parse from
@@ -82,7 +95,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       // _brokerMaxDate
       _dateTo = _brokerMaxDate;
     }
-    
+
     super.initState();
   }
 
@@ -93,7 +106,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     _scrollControllerCompanySahamList.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -311,7 +324,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                     }
                     else {
                       await _getBrokerTransaction();
-                      setState(() {                        
+                      setState(() {
                         // generate the summary and top page
                         _generateSummaryPage();
                         _generateTopPage();
@@ -397,7 +410,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                 favouritesId: (resp.companyFavouritesId ?? -1),
                                 type: "saham",
                               );
-                              
+
                               // remove the loader dialog
                               Navigator.pop(context);
 
@@ -408,7 +421,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                               Navigator.pop(context);
 
                               // show the error message
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message:'Error when try to get the company detail from server'));
                             });
                           }),
                           icon: const Icon(
@@ -446,16 +459,25 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     );
   }
 
-  Widget _tableRow({required String buyCode, required String buyLot, required String buyValue, required String buyAverage, TextStyle? buyStyle, Color? buyColor, required String sellCode, required String sellLot, required String sellValue, required String sellAverage, TextStyle? sellStyle, Color? sellColor}) {
+  Widget _tableRow({
+    required String buyCode,
+    required String buyLot,
+    required String buyValue,
+    required String buyAverage,
+    TextStyle? buyStyle,
+    Color? buyColor,
+    required String sellCode,
+    required String sellLot,
+    required String sellValue,
+    required String sellAverage,
+    TextStyle? sellStyle,
+    Color? sellColor
+  }) {
     TextStyle currBuyStyle = (buyStyle ?? const TextStyle(color: textPrimary));
-    currBuyStyle = currBuyStyle.copyWith(
-      fontSize: 9,
-    );
+    currBuyStyle = currBuyStyle.copyWith(fontSize: 9,);
 
     TextStyle currSellStyle = (sellStyle ?? const TextStyle(color: textPrimary));
-    currSellStyle = currSellStyle.copyWith(
-      fontSize: 9,
-    );
+    currSellStyle = currSellStyle.copyWith(fontSize: 9,);
 
     return SizedBox(
       width: double.infinity,
@@ -594,7 +616,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     String sellAverage;
 
     // now loop thru maxPage
-    for(int i=0; i<maxPage; i++) {
+    for (int i = 0; i < maxPage; i++) {
       buyCode = '-';
       buyLot = '-';
       buyValue = '-';
@@ -604,18 +626,42 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       sellValue = '-';
       sellAverage = '-';
 
-      if(_brokerSummaryCurrent.brokerSummaryBuy.length > i) {
+      if (_brokerSummaryCurrent.brokerSummaryBuy.length > i) {
         buyCode = _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryID!;
-        buyLot = formatIntWithNull(_brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryLot, true, false);
-        buyValue = formatCurrencyWithNull(_brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryValue, true, false);
-        buyAverage = formatCurrencyWithNull(_brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryAverage, false, false);
+        buyLot = formatIntWithNull(
+          _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryLot,
+          true,
+          false
+        );
+        buyValue = formatCurrencyWithNull(
+          _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryValue,
+          true,
+          false
+        );
+        buyAverage = formatCurrencyWithNull(
+          _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryAverage,
+          false,
+          false
+        );
       }
 
-      if(_brokerSummaryCurrent.brokerSummarySell.length > i) {
+      if (_brokerSummaryCurrent.brokerSummarySell.length > i) {
         sellCode = _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryID!;
-        sellLot = formatIntWithNull(_brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryLot, true, false);
-        sellValue = formatCurrencyWithNull(_brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryValue, true, false);
-        sellAverage = formatCurrencyWithNull(_brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryAverage, false, false);
+        sellLot = formatIntWithNull(
+          _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryLot,
+          true,
+          false
+        );
+        sellValue = formatCurrencyWithNull(
+          _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryValue,
+          true,
+          false
+        );
+        sellAverage = formatCurrencyWithNull(
+          _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryAverage,
+          false,
+          false
+        );
       }
 
       _pageItemsSummary.add(
@@ -634,12 +680,13 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   }
 
   Widget _brokerSummaryPage() {
-    if (_brokerSummaryData == null ) {
+    if (_brokerSummaryData == null) {
       return const SizedBox.shrink();
     }
 
     // ensure that we have data
-    if (_brokerSummaryData!.brokerSummaryAll.brokerSummaryBuy.isNotEmpty || _brokerSummaryData!.brokerSummaryAll.brokerSummarySell.isNotEmpty) {
+    if ( _brokerSummaryData!.brokerSummaryAll.brokerSummaryBuy.isNotEmpty ||
+         _brokerSummaryData!.brokerSummaryAll.brokerSummarySell.isNotEmpty ) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -654,17 +701,15 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               },
               onValueChanged: ((value) {
                 String selectedValue = value.toString();
-      
+
                 setState(() {
-                  if(selectedValue == "a") {
+                  if (selectedValue == "a") {
                     _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
                     _brokerSummarySelected = "a";
-                  }
-                  else if(selectedValue == "d") {
+                  } else if (selectedValue == "d") {
                     _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryDomestic;
                     _brokerSummarySelected = "d";
-                  }
-                  else if(selectedValue == "f") {
+                  } else if (selectedValue == "f") {
                     _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryForeign;
                     _brokerSummarySelected = "f";
                   }
@@ -678,6 +723,42 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
             ),
           ),
           const SizedBox(height: 10,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(child: SizedBox()),
+              const Text(
+                "Net",
+                style: TextStyle(
+                  color: textPrimary,
+                  fontSize: 12,
+                ),
+              ),
+              SizedBox(
+                width: 50,
+                height: 25,
+                child: FittedBox(
+                  child: CupertinoSwitch(
+                    value: _showNet,
+                    activeColor: accentColor,
+                    onChanged: ((value) {
+                      _showNet = value;
+
+                      if (_showNet) {
+                        _setBrokerSummary(_brokerSummaryDataNet);
+                      } else {
+                        _setBrokerSummary(_brokerSummaryDataGross);
+                      }
+                    }),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
           Container(
             margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: _tableRow(
@@ -717,13 +798,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
           ),
         ],
       );
-    }
-    else {
-      return const Center(
-        child: Text(
-          "No data to be displayed"
-        )
-      );
+    } else {
+      return const Center(child: Text("No data to be displayed"));
     }
   }
 
@@ -735,7 +811,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     _pageItemsTop.clear();
 
     // loop thru all the broker summary top data
-    for(int i=0; i < _brokerTopData!.brokerData.length; i++) {
+    for (int i = 0; i < _brokerTopData!.brokerData.length; i++) {
       currentValue = (_brokerTopData!.brokerData[i].brokerSummaryLot * (_companyDetail!.companyNetAssetValue ?? 0)) * 100;
       currentDiff = (currentValue - (_brokerTopData!.brokerData[i].brokerSummaryValue * 100));
 
@@ -776,7 +852,11 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               Expanded(
                 flex: 3,
                 child: Text(
-                  formatIntWithNull(_brokerTopData!.brokerData[i].brokerSummaryLot, false, false),
+                  formatIntWithNull(
+                    _brokerTopData!.brokerData[i].brokerSummaryLot,
+                    false,
+                    false
+                  ),
                   style: _topBrokerRow,
                 )
               ),
@@ -784,7 +864,12 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               Expanded(
                 flex: 3,
                 child: Text(
-                  formatCurrency(_brokerTopData!.brokerData[i].brokerSummaryAverage, false, false, true),
+                  formatCurrency(
+                    _brokerTopData!.brokerData[i].brokerSummaryAverage,
+                    false,
+                    false,
+                    true
+                  ),
                   style: _topBrokerRow,
                 )
               ),
@@ -837,82 +922,81 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
                 color: primaryDark,
-                border: Border.all(color: primaryLight, width: 1.0, style: BorderStyle.solid),
+                border: Border.all(
+                    color: primaryLight, width: 1.0, style: BorderStyle.solid),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
-                    child: Text(
-                      "ID",
-                      style: _topBrokerHeader,
-                    )
+                      flex: 1,
+                      child: Text(
+                        "ID",
+                        style: _topBrokerHeader,
+                      )),
+                  const SizedBox(
+                    width: 3,
                   ),
-                  const SizedBox(width: 3,),
                   Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Lot",
-                      style: _topBrokerHeader,
-                    )
+                      flex: 3,
+                      child: Text(
+                        "Lot",
+                        style: _topBrokerHeader,
+                      )),
+                  const SizedBox(
+                    width: 3,
                   ),
-                  const SizedBox(width: 3,),
                   Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Avg",
-                      style: _topBrokerHeader,
-                    )
+                      flex: 3,
+                      child: Text(
+                        "Avg",
+                        style: _topBrokerHeader,
+                      )),
+                  const SizedBox(
+                    width: 3,
                   ),
-                  const SizedBox(width: 3,),
                   Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Cost",
-                      style: _topBrokerHeader,
-                    )
+                      flex: 3,
+                      child: Text(
+                        "Cost",
+                        style: _topBrokerHeader,
+                      )),
+                  const SizedBox(
+                    width: 3,
                   ),
-                  const SizedBox(width: 3,),
                   Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Value",
-                      style: _topBrokerHeader,
-                    )
+                      flex: 3,
+                      child: Text(
+                        "Value",
+                        style: _topBrokerHeader,
+                      )),
+                  const SizedBox(
+                    width: 3,
                   ),
-                  const SizedBox(width: 3,),
                   Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Diff",
-                      style: _topBrokerHeader,
-                    )
-                  ),
+                      flex: 3,
+                      child: Text(
+                        "Diff",
+                        style: _topBrokerHeader,
+                      )),
                 ],
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                controller: _scrollControllerBrokerTop,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: _pageItemsTop.length,
-                itemBuilder: (context, index) {
-                  return _pageItemsTop[index];
-                },
-              )
-            ),
+                child: ListView.builder(
+              controller: _scrollControllerBrokerTop,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: _pageItemsTop.length,
+              itemBuilder: (context, index) {
+                return _pageItemsTop[index];
+              },
+            )),
           ],
         ),
       );
-    }
-    else {
-      return const Center(
-        child: Text(
-          "No data to be displayed"
-        )
-      );
+    } else {
+      return const Center(child: Text("No data to be displayed"));
     }
   }
 
@@ -921,7 +1005,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       context: context,
       firstDate: _brokerMinDate.toLocal(),
       lastDate: _brokerMaxDate.toLocal(),
-      initialDateRange: DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
+      initialDateRange:
+          DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
       confirmText: 'Done',
       currentDate: _dateCurrent.toLocal(),
     );
@@ -929,7 +1014,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     // check if we got the result or not?
     if (result != null) {
       // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if ((result.start.compareTo(_dateFrom) != 0) || (result.end.compareTo(_dateTo) != 0)) {                      
+      if ((result.start.compareTo(_dateFrom) != 0) ||
+          (result.end.compareTo(_dateTo) != 0)) {
         // set the broker from and to date
         setState(() {
           _dateFrom = result.start;
@@ -939,19 +1025,47 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     }
   }
 
+  void _setBrokerSummary(BrokerSummaryModel? value) {
+    if (value == null) {
+      return;
+    }
+
+    setState(() {
+      _brokerSummaryData = value;
+      // check what is current broker summary being selected
+      if (_brokerSummarySelected == 'a') {
+        _brokerSummaryCurrent = value.brokerSummaryAll;
+      } else if (_brokerSummarySelected == 'd') {
+        _brokerSummaryCurrent = value.brokerSummaryDomestic;
+      } else if (_brokerSummarySelected == 'f') {
+        _brokerSummaryCurrent = value.brokerSummaryForeign;
+      }
+      _generateSummaryPage();
+    });
+  }
+
   Future<void> _getBrokerTransaction() async {
     showLoaderDialog(context);
     await Future.wait([
       // get the data of the broker transaction for this company code
       _brokerSummaryAPI.getBrokerSummary(_companySahamCode, _dateFrom, _dateTo).then((resp) {
         _brokerSummaryData = resp;
-        _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
-        _brokerSummarySelected = "a";
+        _brokerSummaryDataGross = resp;
       }),
+
+      _brokerSummaryAPI.getBrokerSummaryNet(_companySahamCode, _dateFrom, _dateTo).then((resp) {
+        _brokerSummaryDataNet = resp;
+      }),
+
       _companyAPI.getCompanyTopBroker(_companySahamCode, _dateFrom, _dateTo, 9999).then((resp) {
         _brokerTopData = resp;
       }),
     ]).then((_) {
+      // reset the showed also
+      _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
+      _brokerSummarySelected = "a";
+      _showNet = false;
+
       // remove the loader dialog
       Navigator.pop(context);
     }).onError((error, stackTrace) {

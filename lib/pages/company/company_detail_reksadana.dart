@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/info_reksadana_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
+import 'package:my_wealth/model/company/company_info_reksadana_model.dart';
 import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/model/price/price_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
@@ -19,6 +21,7 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_detail_price_list.dart';
@@ -59,20 +62,27 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
+  final InfoReksadanaAPI _infoReksadanaAPI = InfoReksadanaAPI();
+
   final DateFormat _df = DateFormat("dd/MM/yyyy");
+  final DateFormat _dfShort = DateFormat("dd/MM");
   final Bit _bitData = Bit();
   final List<Widget> _calcTableResult = [];
+  late List<Map<String, double>> _movementData;
+  late Map<DateTime, GraphData>? _graphData;
+  late Map<DateTime, GraphData>? _unitData;
+  late Map<DateTime, GraphData>? _assetData;
   
   bool _showCurrentPriceComparison = false;
   bool _recurring = true;
   int _bodyPage = 0;
-  Map<DateTime, GraphData>? _graphData;
   int _numPrice = 0;
   double? _minPrice;
   double? _maxPrice;
   double? _avgPrice;
   double? _avgDaily;
   int _avgCount = 0;
+  int _dateOffset = 3;
 
   @override
   void initState() {
@@ -88,6 +98,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     _bodyPage = 0;
     _numPrice = 0;
+
+    _movementData = [];
 
     if (widget.companyData == null) {
       _companyData = CompanyDetailArgs(
@@ -107,6 +119,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     // initialize graph data
     _graphData = {};
+    _unitData = {};
+    _assetData = {};
     
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
@@ -1046,10 +1060,75 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     return SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      child: LineChart(
-        data: _graphData!,
-        height: 250,
-        watchlist: _watchlistDetail,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(height: 10,),
+          const Center(
+            child: Text(
+              "Price",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5,),
+          LineChart(
+            data: _graphData!,
+            height: 250,
+            watchlist: _watchlistDetail,
+          ),
+          const SizedBox(height: 10,),
+          const Center(
+            child: Text(
+              "Asset Under Management",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5,),
+          LineChart(
+            data: _assetData!,
+            height: 250,
+            watchlist: _watchlistDetail,
+            showLegend: false,
+          ),
+          const SizedBox(height: 10,),
+          const Center(
+            child: Text(
+              "Total Unit",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5,),
+          LineChart(
+            data: _unitData!,
+            height: 250,
+            watchlist: _watchlistDetail,
+            showLegend: false,
+          ),
+          const SizedBox(height: 10,),
+          const Center(
+            child: Text(
+              "Movement",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5,),
+          MultiLineChart(
+            height: 250,
+            data: _movementData,
+            color: const [Colors.orange, Colors.red, Colors.green, Colors.blue],
+            legend: const ["Daily", "Weekly", "Monthly", "Yearly"],
+            dateOffset: _dateOffset,
+          ),
+        ],
       ),
     );
   }
@@ -1540,6 +1619,41 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
             }
           }
+        }
+      });
+
+      await _infoReksadanaAPI.getInfoReksadana(_companyData.companyId, 90).then((resp) {
+        // got all the reksadana information, we can split all the data and put it
+        // on the list
+        Map<String, double> daily = {};
+        Map<String, double> weekly = {};
+        Map<String, double> monhtly = {};
+        Map<String, double> yearly = {};
+        for (InfoReksadanaModel data in resp) {
+          daily[_dfShort.format(data.date)] = data.dailyReturn * 100;
+          weekly[_dfShort.format(data.date)] = data.weeklyReturn * 100;
+          monhtly[_dfShort.format(data.date)] = data.monthlyReturn * 100;
+          yearly[_dfShort.format(data.date)] = data.yearlyReturn * 100;
+
+          GraphData gdUnit = GraphData(date: data.date, price: data.totalUnit);
+          _unitData![data.date] = gdUnit;
+
+          GraphData gdAsset = GraphData(date: data.date, price: data.totalUnit * data.netAssetValue);
+          _assetData![data.date] = gdAsset;
+        }
+
+        _movementData.add(daily);
+        _movementData.add(weekly);
+        _movementData.add(monhtly);
+        _movementData.add(yearly);
+
+        // calculate the date offset
+        _dateOffset = _movementData[0].length ~/ 10;
+        if (_dateOffset > 10) {
+          _dateOffset = 10;
+        }
+        if (_dateOffset < 3) {
+          _dateOffset = 3;
         }
       });
     }

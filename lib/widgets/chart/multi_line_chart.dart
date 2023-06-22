@@ -7,7 +7,8 @@ class MultiLineChart extends StatelessWidget {
   final List<Map<String, double>> data;
   final List<Color> color;
   final List<String>? legend;
-  const MultiLineChart({Key? key, this.height, required this.data, required this.color, this.legend}) : super(key: key);
+  final int? dateOffset;
+  const MultiLineChart({Key? key, this.height, required this.data, required this.color, this.legend, this.dateOffset}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,8 @@ class MultiLineChart extends StatelessWidget {
               max: minMax[1],
               color: color,
               data: data,
-              point: point
+              point: point,
+              dateOffset: dateOffset,
             ),
             child: Container(
               height: chartHeight,

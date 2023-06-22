@@ -8,8 +8,9 @@ class MultiLineChartPainter extends CustomPainter {
   final List<String> point;
   final List<Color> color;
   final List<Map<String, double>> data;
+  final int? dateOffset;
   
-  const MultiLineChartPainter({required this.min, required this.max, required this.point, required this.color, required this.data});
+  const MultiLineChartPainter({required this.min, required this.max, required this.point, required this.color, required this.data, this.dateOffset});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -39,6 +40,7 @@ class MultiLineChartPainter extends CustomPainter {
         for (int i = 0; i < data.length || !isAllGood; i++) {
           _drawLine(data[i], color[i], canvas, size, center);
         }
+        _draw0Point(canvas, size, center);
       }
     }
 
@@ -49,6 +51,34 @@ class MultiLineChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
+  }
+
+  void _draw0Point(Canvas canvas, Size size, Offset center) {
+    Paint graphRectBorderWhite = Paint()
+      ..color = Colors.white.withOpacity(0.7)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
+
+    // draw the 0 line if min is less than 0
+    if (min < 0) {
+      double yD = ((min * -1) / (max - min)) * graphRect.height;
+
+      _drawDashedLine(canvas, graphRect, 2, yD, graphRectBorderWhite);
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.right, graphRect.bottom - yD),
+        width: 60,
+        text: formatCurrency(0),
+        left: 0,
+        top: -10,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width + 8,
+      );
+    }
   }
 
   void _drawBorder(Canvas canvas, Size size, Offset center) {
@@ -79,7 +109,7 @@ class MultiLineChartPainter extends CustomPainter {
     double guideW = graphRect.size.width / point.length;
 
     // check for the date print offset
-    int datePrintOffset = 3;
+    int datePrintOffset = (dateOffset ?? 3);
     if (point.length < datePrintOffset) {
       datePrintOffset = point.length - 1;
     }
@@ -236,5 +266,19 @@ class MultiLineChartPainter extends CustomPainter {
     }
 
     textPainter.paint(canvas, Offset(dx, dy));
+  }
+
+  void _drawDashedLine(Canvas canvas, Rect graph, double width, double offset, Paint paint) {
+    int j = 0;
+    for (double i = graph.left; i <= graph.right; i = (i + width)) {
+      if (j % 2 == 0) {
+        canvas.drawLine(
+          Offset(i, graph.bottom - offset), Offset((i + width), graph.bottom - offset),
+          paint
+        );
+      }
+      // odd and even to print the line
+      j = j + 1;
+    }
   }
 }

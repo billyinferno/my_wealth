@@ -7,8 +7,9 @@ import 'package:my_wealth/widgets/chart/heat_graph.dart';
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
   final Map<DateTime, int>? watchlist;
+  final bool? showLegend;
   
-  const LineChartPainter({required this.data, this.watchlist});
+  const LineChartPainter({required this.data, this.watchlist, this.showLegend});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -203,95 +204,100 @@ class LineChartPainter extends CustomPainter {
         minWidth: 10,
         maxWidth: graphRect.width
       );
+    
+    // check if we need to show legend or not?
+    bool isShowLegend = (showLegend ?? true);
 
-    // draw the average price line
-    // ensure that (max-min is not 0)
-    if ((max-min) == 0) {
-      yD = ((avgPrice - min) / (min)) * graphRect.height;
-    }
-    else {
-      yD = ((avgPrice - min) / (max - min)) * graphRect.height;
-    }
-    _drawDashedLine(canvas, graphRect, 2, yD, avgPricePaint);
-    _drawText(
-      canvas: canvas,
-      position: Offset(graphRect.right, graphRect.bottom - yD),
-      width: 60,
-      text: formatCurrency(avgPrice),
-      left: 0,
-      top: -10,
-      minHeight: 10,
-      maxHeight: graphRect.height,
-      minWidth: 10,
-      maxWidth: graphRect.width + 8,
-      textColor: Colors.orange[300]!.withOpacity(0.5)
-    );
+    if (isShowLegend) {
+      // draw the average price line
+      // ensure that (max-min is not 0)
+      if ((max-min) == 0) {
+        yD = ((avgPrice - min) / (min)) * graphRect.height;
+      }
+      else {
+        yD = ((avgPrice - min) / (max - min)) * graphRect.height;
+      }
+      _drawDashedLine(canvas, graphRect, 2, yD, avgPricePaint);
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.right, graphRect.bottom - yD),
+        width: 60,
+        text: formatCurrency(avgPrice),
+        left: 0,
+        top: -10,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width + 8,
+        textColor: Colors.orange[300]!.withOpacity(0.5)
+      );
 
-    // draw the ma5 price line
-    if ((max-min) == 0) {
-      yD = ((ma5 - min) / (min)) * graphRect.height;
-    }
-    else {
-      yD = ((ma5 - min) / (max - min)) * graphRect.height;
-    }
-    _drawDashedLine(canvas, graphRect, 2, yD, ma5PricePaint);
-    _drawText(
-      canvas: canvas,
-      position: Offset(graphRect.right, graphRect.bottom - yD),
-      width: 60,
-      text: formatCurrency(ma5),
-      left: 0,
-      top: -10,
-      minHeight: 10,
-      maxHeight: graphRect.height,
-      minWidth: 10,
-      maxWidth: graphRect.width + 8,
-      textColor: Colors.green[300]!.withOpacity(0.5)
-    );
+      // draw the ma5 price line
+      if ((max-min) == 0) {
+        yD = ((ma5 - min) / (min)) * graphRect.height;
+      }
+      else {
+        yD = ((ma5 - min) / (max - min)) * graphRect.height;
+      }
+      _drawDashedLine(canvas, graphRect, 2, yD, ma5PricePaint);
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.right, graphRect.bottom - yD),
+        width: 60,
+        text: formatCurrency(ma5),
+        left: 0,
+        top: -10,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width + 8,
+        textColor: Colors.green[300]!.withOpacity(0.5)
+      );
 
-    // draw the ma8 price line
-    if ((max-min) == 0) {
-      yD = ((ma8 - min) / (min)) * graphRect.height;
-    }
-    else {
-      yD = ((ma8 - min) / (max - min)) * graphRect.height;
-    }
-    _drawDashedLine(canvas, graphRect, 2, yD, ma8PricePaint);
-    _drawText(
-      canvas: canvas,
-      position: Offset(graphRect.right, graphRect.bottom - yD),
-      width: 60,
-      text: formatCurrency(ma8),
-      left: 0,
-      top: -10,
-      minHeight: 10,
-      maxHeight: graphRect.height,
-      minWidth: 10,
-      maxWidth: graphRect.width + 8,
-      textColor: Colors.pink[300]!.withOpacity(0.5)
-    );
+      // draw the ma8 price line
+      if ((max-min) == 0) {
+        yD = ((ma8 - min) / (min)) * graphRect.height;
+      }
+      else {
+        yD = ((ma8 - min) / (max - min)) * graphRect.height;
+      }
+      _drawDashedLine(canvas, graphRect, 2, yD, ma8PricePaint);
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.right, graphRect.bottom - yD),
+        width: 60,
+        text: formatCurrency(ma8),
+        left: 0,
+        top: -10,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width + 8,
+        textColor: Colors.pink[300]!.withOpacity(0.5)
+      );
 
-    // draw the ma13 price line
-    if ((max-min) == 0) {
-      yD = ((ma13 - min) / (min)) * graphRect.height;
+      // draw the ma13 price line
+      if ((max-min) == 0) {
+        yD = ((ma13 - min) / (min)) * graphRect.height;
+      }
+      else {
+        yD = ((ma13 - min) / (max - min)) * graphRect.height;
+      }
+      _drawDashedLine(canvas, graphRect, 2, yD, ma13PricePaint);
+      _drawText(
+        canvas: canvas,
+        position: Offset(graphRect.right, graphRect.bottom - yD),
+        width: 60,
+        text: formatCurrency(ma13),
+        left: 0,
+        top: -10,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width + 8,
+        textColor: Colors.blue[300]!.withOpacity(0.5)
+      );
     }
-    else {
-      yD = ((ma13 - min) / (max - min)) * graphRect.height;
-    }
-    _drawDashedLine(canvas, graphRect, 2, yD, ma13PricePaint);
-    _drawText(
-      canvas: canvas,
-      position: Offset(graphRect.right, graphRect.bottom - yD),
-      width: 60,
-      text: formatCurrency(ma13),
-      left: 0,
-      top: -10,
-      minHeight: 10,
-      maxHeight: graphRect.height,
-      minWidth: 10,
-      maxWidth: graphRect.width + 8,
-      textColor: Colors.blue[300]!.withOpacity(0.5)
-    );
 
     // once guidelines finished, we can draw the actual graph
     double gap = graphRect.width / (data.length.toDouble() - 1);

@@ -7,11 +7,13 @@ class LineChart extends StatelessWidget {
   final Map<DateTime, GraphData> data;
   final Map<DateTime, int>? watchlist;
   final double? height;
-  const LineChart({ Key? key, required this.data, this.height, this.watchlist }) : super(key: key);
+  final bool? showLegend;
+  const LineChart({ Key? key, required this.data, this.height, this.watchlist, this.showLegend }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double chartHeight = (height ?? 250);
+    bool isShowLegend = (showLegend ?? true);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -22,23 +24,27 @@ class LineChart extends StatelessWidget {
             painter: LineChartPainter(
               data: _convertDataToList(),
               watchlist: watchlist,
+              showLegend: showLegend,
             ),
             child: Container(
               height: chartHeight,
             ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _legend(color: Colors.orange, text: "Average"),
-              _legend(color: Colors.green, text: "MA5"),
-              _legend(color: Colors.pink, text: "MA8"),
-              _legend(color: Colors.blue, text: "MA13"),
-            ],
+        Visibility(
+          visible: isShowLegend,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _legend(color: Colors.orange, text: "Average"),
+                _legend(color: Colors.green, text: "MA5"),
+                _legend(color: Colors.pink, text: "MA8"),
+                _legend(color: Colors.blue, text: "MA13"),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 10,),

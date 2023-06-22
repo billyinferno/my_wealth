@@ -168,24 +168,6 @@ class _StockCollectExpandedState extends State<StockCollectExpanded> {
   }
 
   Widget _itemList({required int index}) {
-    const Border borderThird = Border(
-      left: BorderSide(
-        color: primaryLight,
-        style: BorderStyle.solid,
-        width: 1.0,
-      ),
-      top: BorderSide(
-        color: primaryLight,
-        style: BorderStyle.solid,
-        width: 1.0,
-      ),
-      bottom: BorderSide(
-        color: primaryLight,
-        style: BorderStyle.solid,
-        width: 1.0,
-      ),
-    );
-    
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,

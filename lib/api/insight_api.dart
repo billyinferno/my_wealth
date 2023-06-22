@@ -13,6 +13,7 @@ import 'package:my_wealth/model/insight/insight_sideway_model.dart';
 import 'package:my_wealth/model/insight/insight_market_cap_model.dart';
 import 'package:my_wealth/model/insight/insight_market_today_model.dart';
 import 'package:my_wealth/model/insight/insight_sector_summary_model.dart';
+import 'package:my_wealth/model/insight/insight_stock_collect_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_dividend_list_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_new_listed_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_split_list_model.dart';
@@ -620,6 +621,48 @@ class InsightAPI {
           stockNewList.add(stock);
         }
         return stockNewList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<InsightStockCollectModel>> getStockCollect([int? accumLimit, DateTime? dateFrom, DateTime? dateTo]) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+      String dateFromString = _df.format(currentDateFrom);
+      String dateToString = _df.format(currentDateTo);
+      int currAccumLimit = (accumLimit ?? 75);
+
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/insight/stockcollect/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<InsightStockCollectModel> stockCollectList = [];
+        for (var data in commonModel.data) {
+          InsightStockCollectModel stock = InsightStockCollectModel.fromJson(data['attributes']);
+          stockCollectList.add(stock);
+        }
+        return stockCollectList;
       }
 
       // status code is not 200, means we got error

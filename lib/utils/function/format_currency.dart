@@ -99,13 +99,13 @@ String formatDecimalWithNull(double? value, [double? times, int? decimal]) {
   return dec.format(value * timesMult);
 }
 
-String formatIntWithNull(int? value, [bool? checkThousand, bool? showDecimal, int? decimalNum]) {
+String formatIntWithNull(int? value, [bool? checkThousand, bool? showDecimal, int? decimalNum, bool? shorten]) {
   bool isCheckThousand = checkThousand ?? false;
   bool isShowDecimal = showDecimal ?? true;
   if (value == null) {
     return "-";
   }
-  return formatCurrency(value.toDouble(), isCheckThousand, isShowDecimal, true, decimalNum);
+  return formatCurrency(value.toDouble(), isCheckThousand, isShowDecimal, (shorten ?? true), decimalNum);
 }
 
 double makePositive(double value) {

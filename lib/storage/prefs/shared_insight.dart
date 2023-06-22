@@ -8,6 +8,7 @@ import 'package:my_wealth/model/insight/insight_sideway_model.dart';
 import 'package:my_wealth/model/insight/insight_market_cap_model.dart';
 import 'package:my_wealth/model/insight/insight_market_today_model.dart';
 import 'package:my_wealth/model/insight/insight_sector_summary_model.dart';
+import 'package:my_wealth/model/insight/insight_stock_collect_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_dividend_list_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_new_listed_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_split_list_model.dart';
@@ -38,6 +39,10 @@ class InsightSharedPreferences {
   static const _stockNewListedKey = "insight_stock_new_listed";
   static const _stockDividendListKey = "insight_stock_dividend_list";
   static const _stockSplitListKey = "insight_stock_split_list";
+  static const _stockCollectKey = "insight_stock_collect";
+  static const _stockCollectFromDateKey = "insight_stock_collect_from_date";
+  static const _stockCollectToDateKey = "insight_stock_collect_to_date";
+  static const _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -841,5 +846,108 @@ class InsightSharedPreferences {
       // no data
       return [];
     }
+  }
+
+  static Future<void> setStockCollect(List<InsightStockCollectModel> stockCollectList, DateTime fromDate, DateTime toDate, int rate) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // store the from and to date
+    LocalBox.putString(_stockCollectFromDateKey, fromDate.toString());
+    LocalBox.putString(_stockCollectToDateKey, toDate.toString());
+
+    // store the rate
+    LocalBox.putString(_stockCollectAccumRateKey, rate.toString());
+
+    // convert the json to string so we can stored it on the local storage
+    List<String> stockCollectResp = [];
+    for (InsightStockCollectModel stock in stockCollectList) {
+      stockCollectResp.add(jsonEncode(stock.toJson()));
+    }
+    LocalBox.putStringList(_stockCollectKey, stockCollectResp);
+  }
+
+  static List<InsightStockCollectModel> getStockCollect() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    List<String> stockCollectList = (LocalBox.getStringList(_stockCollectKey) ?? []);
+
+    // check if the list is empty or not?
+    if (stockCollectList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<InsightStockCollectModel> ret = [];
+      for (String stockString in stockCollectList) {
+        InsightStockCollectModel stock = InsightStockCollectModel.fromJson(jsonDecode(stockString));
+        ret.add(stock);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
+    }
+  }
+
+  static DateTime? getStockCollectDate(String type) {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String dateString = '';
+    switch(type.toLowerCase()) {
+      case 'to':
+        dateString = (LocalBox.getString(_stockCollectToDateKey) ?? '');
+        break;
+      case 'from':
+      default:
+        dateString = (LocalBox.getString(_stockCollectFromDateKey) ?? '');
+        break;
+    }
+    
+    if (dateString.isNotEmpty) {
+      return DateTime.parse(dateString);
+    }
+
+    return null;
+  }
+
+  static int getStockCollectAccumulationRate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_stockCollectAccumRateKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 75%
+    return 75;
+  }
+
+  static Future<void> clearStockCollect() async {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      // null no need to clear
+      return;
+    }
+
+    // clear all the data for stock collect
+    LocalBox.delete(_stockCollectKey, true);
+    LocalBox.delete(_stockCollectFromDateKey, true);
+    LocalBox.delete(_stockCollectToDateKey, true);
+    LocalBox.delete(_stockCollectAccumRateKey, true);
   }
 }

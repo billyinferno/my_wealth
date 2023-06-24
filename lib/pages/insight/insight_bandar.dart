@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_accumulation_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
+import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_broker_collect.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_eps_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_index_beater_page.dart';
 import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_sideway_page.dart';
@@ -57,6 +58,7 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
                   "nearAtl30": "Near-ATL30",
                   "topAcq": "Accumulation",
                   "stockCollect": "Stock Collection",
+                  "brokerCollect": "Broker Collection",
                   "topEps": "EPS",
                   "sideways": "Sideways",
                   "indexBeater": "Index Beater",
@@ -98,6 +100,9 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
     }
     if (_selectedBandarPage == "stockCollect") {
       return const InsightBandarStockCollectPage();
+    }
+    if (_selectedBandarPage == "brokerCollect") {
+      return const InsightBandarBrokerCollectPage();
     }
     if (_selectedBandarPage == "topEps") {
       return const InsightBandarEPSPage();

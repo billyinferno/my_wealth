@@ -8,6 +8,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/list/my_table_view.dart';
 
 class StockCollectExpanded extends StatefulWidget {
   final InsightStockCollectModel data;
@@ -115,13 +116,32 @@ class _StockCollectExpandedState extends State<StockCollectExpanded> {
             ),
           ),
           const SizedBox(height: 5,),
-          _itemWithHeader(
-            countBuy: widget.data.summaryCountBuy,
-            countSell: widget.data.summaryCountSell,
-            totalBuy: widget.data.summaryTotalBuy,
-            totalSell: widget.data.summaryTotalSell,
-            totalLeft: widget.data.summaryTotalLeft,
-          ),
+          MyTableView(data: [
+            MyTableItem(
+              title: "BUY (LOT)",
+              color: Colors.green[900]!,
+              content: <String>[
+                formatIntWithNull(widget.data.summaryTotalBuy, false, false, 0, false),
+                "${formatIntWithNull(widget.data.summaryCountBuy, false, false, 0, false)} times",
+              ]
+            ),
+            MyTableItem(
+              title: "SELL (LOT)",
+              color: secondaryDark,
+              content: <String>[
+                formatIntWithNull(widget.data.summaryTotalSell, false, false, 0, false),
+                "${formatIntWithNull(widget.data.summaryCountSell, false, false, 0, false)} times",
+              ]
+            ),
+            MyTableItem(
+              title: "LEFT (LOT)",
+              color: Colors.blue[800]!,
+              content: <String>[
+                formatIntWithNull(widget.data.summaryTotalLeft, false, false, 0, false),
+                "${formatDecimalWithNull(widget.data.summaryTotalLeft / widget.data.summaryTotalBuy, 100, 2)} %",
+              ]
+            ),
+          ]),
           InkWell(
             onTap: (() {
               setState(() {
@@ -168,41 +188,72 @@ class _StockCollectExpandedState extends State<StockCollectExpanded> {
   }
 
   Widget _itemList({required int index}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          width: 40,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.orange[900],
-            border: Border(
-              left: borderStyle,
-              top: borderStyle,
-              bottom: borderStyle,
-            )
-          ),
-          child: Center(
-            child: Text(
-              widget.data.data[index].brokerSummaryId,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.orange,
+        border: Border.all(
+          color: primaryLight,
+          style: BorderStyle.solid,
+          width: 1.0,
+        )
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 40,
+            child: Center(
+              child: Text(
+                widget.data.data[index].brokerSummaryId,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: _itemWithHeader(
-            countBuy: widget.data.data[index].countBuy,
-            countSell: widget.data.data[index].countSell,
-            totalBuy: widget.data.data[index].totalBuy,
-            totalSell: widget.data.data[index].totalSell,
-            totalLeft: widget.data.data[index].totalLeft,
+          Expanded(
+            child: Container(
+              color: primaryDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  MyTableView(data: [
+                    MyTableItem(
+                      title: "BUY (LOT)",
+                      color: Colors.green[600]!,
+                      content: <String>[
+                        formatIntWithNull(widget.data.data[index].totalBuy, false, false, 0, false),
+                        "${formatIntWithNull(widget.data.data[index].countBuy, false, false, 0, false)} times",
+                      ]
+                    ),
+                    MyTableItem(
+                      title: "SELL (LOT)",
+                      color: secondaryColor,
+                      content: <String>[
+                        formatIntWithNull(widget.data.data[index].totalSell, false, false, 0, false),
+                        "${formatIntWithNull(widget.data.data[index].countSell, false, false, 0, false)} times",
+                      ]
+                    ),
+                    MyTableItem(
+                      title: "LEFT (LOT)",
+                      color: Colors.blue[400]!,
+                      content: <String>[
+                        formatIntWithNull(widget.data.data[index].totalLeft, false, false, 0, false),
+                        "${formatDecimalWithNull(widget.data.data[index].totalPercentage, 100, 2)} %",
+                      ]
+                    ),
+                  ]),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -213,204 +264,6 @@ class _StockCollectExpandedState extends State<StockCollectExpanded> {
         color: textPrimary,
         size: 11,
       ),
-    );
-  }
-
-  Widget _itemWithHeader({
-    required int totalBuy,
-    required int countBuy,
-    required int totalSell,
-    required int countSell,
-    required int totalLeft
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                left: borderStyle,
-                top: borderStyle,
-                bottom: borderStyle,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  color: Colors.green[900],
-                  child: Center(
-                    child: Text(
-                      "BUY (LOT)",
-                      style: headerStyle.copyWith(
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Text(
-                      formatIntWithNull(
-                        totalBuy,
-                        false,
-                        false,
-                        0,
-                        false
-                      ),
-                      style: headerStyle,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Text(
-                      "${formatIntWithNull(
-                        countBuy,
-                        false,
-                        false,
-                        0,
-                        false
-                      )} times",
-                      style: headerStyle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: primaryLight,
-                style: BorderStyle.solid,
-                width: 1.0,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  color: Colors.red[900],
-                  child: Center(
-                    child: Text(
-                      "SELL (LOT)",
-                      style: headerStyle.copyWith(
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Text(
-                      formatIntWithNull(
-                        totalSell,
-                        false,
-                        false,
-                        0,
-                        false
-                      ),
-                      style: headerStyle,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Text(
-                      "${formatIntWithNull(
-                        countSell,
-                        false,
-                        false,
-                        0,
-                        false
-                      )} times",
-                      style: headerStyle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                right: borderStyle,
-                top: borderStyle,
-                bottom: borderStyle,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  color: Colors.blue[800],
-                  child: Center(
-                    child: Text(
-                      "LEFT (LOT)",
-                      style: headerStyle.copyWith(
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Text(
-                      formatIntWithNull(
-                        totalLeft,
-                        false,
-                        false,
-                        0,
-                        false
-                      ),
-                      style: headerStyle,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(2),
-                  child: Center(
-                    child: Text(
-                      "${formatDecimalWithNull(
-                        totalLeft / totalBuy,
-                        100,
-                        2)} %",
-                      style: headerStyle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

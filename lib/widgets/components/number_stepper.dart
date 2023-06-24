@@ -39,6 +39,7 @@ class _NumberStepperState extends State<NumberStepper> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: (widget.height ?? 30),
       decoration: BoxDecoration(
         border: Border.all(
           color: (widget.borderColor ?? secondaryColor),

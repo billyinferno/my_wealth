@@ -3,6 +3,7 @@ import 'package:my_wealth/model/broker/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/index/index_beater_model.dart';
 import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight/insight_accumulation_model.dart';
+import 'package:my_wealth/model/insight/insight_broker_collect_model.dart';
 import 'package:my_wealth/model/insight/insight_eps_model.dart';
 import 'package:my_wealth/model/insight/insight_sideway_model.dart';
 import 'package:my_wealth/model/insight/insight_market_cap_model.dart';
@@ -43,6 +44,11 @@ class InsightSharedPreferences {
   static const _stockCollectFromDateKey = "insight_stock_collect_from_date";
   static const _stockCollectToDateKey = "insight_stock_collect_to_date";
   static const _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
+  static const _brokerCollectKey = "insight_broker_collect";
+  static const _brokerCollectIDKey = "insight_broker_collect_id";
+  static const _brokerCollectFromDateKey = "insight_broker_collect_from_date";
+  static const _brokerCollectToDateKey = "insight_broker_collect_to_date";
+  static const _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
 
   static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
     // stored the user info to box
@@ -949,5 +955,117 @@ class InsightSharedPreferences {
     LocalBox.delete(_stockCollectFromDateKey, true);
     LocalBox.delete(_stockCollectToDateKey, true);
     LocalBox.delete(_stockCollectAccumRateKey, true);
+  }
+
+  static Future<void> setBrokerCollect(InsightBrokerCollectModel brokerCollectList, String brokerId, DateTime fromDate, DateTime toDate, int rate) async {
+    // stored the user info to box
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // store the broker id
+    LocalBox.putString(_brokerCollectIDKey, brokerId);
+
+    // store the from and to date
+    LocalBox.putString(_brokerCollectFromDateKey, fromDate.toString());
+    LocalBox.putString(_brokerCollectToDateKey, toDate.toString());
+
+    // store the rate
+    LocalBox.putString(_brokerCollectAccumRateKey, rate.toString());
+
+    // convert the json to string so we can stored it on the local storage
+    LocalBox.putString(_brokerCollectKey, jsonEncode(brokerCollectList.toJson()));
+  }
+
+  static InsightBrokerCollectModel? getBrokerCollect() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String brokerCollectString = (LocalBox.getString(_brokerCollectKey) ?? '');
+
+    // check if the list is empty or not?
+    if (brokerCollectString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      InsightBrokerCollectModel brokerCollectData = InsightBrokerCollectModel.fromJson(jsonDecode(brokerCollectString));
+      return brokerCollectData;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
+
+  static String getBrokerCollectID() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String brokerId = (LocalBox.getString(_brokerCollectIDKey) ?? '');
+    if (brokerId.isNotEmpty) {
+      return brokerId;
+    }
+
+    return '';
+  }
+
+  static DateTime? getBrokerCollectDate(String type) {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String dateString = '';
+    switch(type.toLowerCase()) {
+      case 'to':
+        dateString = (LocalBox.getString(_brokerCollectToDateKey) ?? '');
+        break;
+      case 'from':
+      default:
+        dateString = (LocalBox.getString(_brokerCollectFromDateKey) ?? '');
+        break;
+    }
+    
+    if (dateString.isNotEmpty) {
+      return DateTime.parse(dateString);
+    }
+
+    return null;
+  }
+
+  static int getBrokerCollectAccumulationRate() {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      LocalBox.init();
+    }
+
+    // get the data from local box
+    String rateString = (LocalBox.getString(_brokerCollectAccumRateKey) ?? '');
+    if (rateString.isNotEmpty) {
+      return int.parse(rateString);
+    }
+
+    // default it as 75%
+    return 75;
+  }
+
+  static Future<void> clearBrokerCollect() async {
+    // check if the key box is null or not?
+    if(LocalBox.keyBox == null) {
+      // null no need to clear
+      return;
+    }
+
+    // clear all the data for stock collect
+    LocalBox.delete(_brokerCollectKey, true);
+    LocalBox.delete(_brokerCollectIDKey, true);
+    LocalBox.delete(_brokerCollectFromDateKey, true);
+    LocalBox.delete(_brokerCollectToDateKey, true);
+    LocalBox.delete(_brokerCollectAccumRateKey, true);
   }
 }

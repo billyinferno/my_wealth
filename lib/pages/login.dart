@@ -636,7 +636,8 @@ class LoginPageState extends State<LoginPage> {
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearIndexBeater(), // clear index beater result as we will inquiry when user visit the screen
-      InsightSharedPreferences.clearStockCollect(),
+      InsightSharedPreferences.clearStockCollect(), // clear stock collect result
+      InsightSharedPreferences.clearBrokerCollect(), // clear broker collect result
     ]).then((_) {
       debugPrint("💯 Finished get additional information");
     });

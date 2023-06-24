@@ -8,6 +8,7 @@ import 'package:my_wealth/model/common/common_single_model.dart';
 import 'package:my_wealth/model/index/index_beater_model.dart';
 import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
 import 'package:my_wealth/model/insight/insight_accumulation_model.dart';
+import 'package:my_wealth/model/insight/insight_broker_collect_model.dart';
 import 'package:my_wealth/model/insight/insight_eps_model.dart';
 import 'package:my_wealth/model/insight/insight_sideway_model.dart';
 import 'package:my_wealth/model/insight/insight_market_cap_model.dart';
@@ -663,6 +664,44 @@ class InsightAPI {
           stockCollectList.add(stock);
         }
         return stockCollectList;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<InsightBrokerCollectModel> getBrokerCollect(String broker, [int? accumLimit, DateTime? dateFrom, DateTime? dateTo]) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+      String dateFromString = _df.format(currentDateFrom);
+      String dateToString = _df.format(currentDateTo);
+      int currAccumLimit = (accumLimit ?? 75);
+
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/insight/brokercollect/broker/$broker/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
+        InsightBrokerCollectModel brokerCollect = InsightBrokerCollectModel.fromJson(commonModel.data['attributes']);
+        return brokerCollect;
       }
 
       // status code is not 200, means we got error

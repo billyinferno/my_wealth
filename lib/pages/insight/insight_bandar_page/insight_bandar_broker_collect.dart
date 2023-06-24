@@ -1,0 +1,581 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/insight_api.dart';
+import 'package:my_wealth/model/broker/broker_model.dart';
+import 'package:my_wealth/model/insight/insight_broker_collect_model.dart';
+import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/components/number_stepper.dart';
+import 'package:my_wealth/widgets/list/my_table_view.dart';
+
+class InsightBandarBrokerCollectPage extends StatefulWidget {
+  const InsightBandarBrokerCollectPage({Key? key}) : super(key: key);
+
+  @override
+  State<InsightBandarBrokerCollectPage> createState() => _InsightBandarBrokerCollectPageState();
+}
+
+class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerCollectPage> {
+  final InsightAPI _insightAPI = InsightAPI();
+  final CompanyAPI _companyAPI = CompanyAPI();
+  final DateFormat _df = DateFormat('dd/MM/yy');
+  final ScrollController _scrollController = ScrollController();
+  
+  late BrokerModel _brokerData;
+  late String _brokerCode;
+  late DateTime? _minBrokerDate;
+  late DateTime? _maxBrokerDate;
+  late DateTime? _fromDate;
+  late DateTime? _toDate;
+  late int _accumRate;
+  late InsightBrokerCollectModel? _brokerCollect;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // initialize broker code
+    _brokerCode = InsightSharedPreferences.getBrokerCollectID();
+    
+    // get the minimum and maximum broker date
+    _minBrokerDate = BrokerSharedPreferences.getBrokerMinDate();
+    _maxBrokerDate = BrokerSharedPreferences.getBrokerMaxDate();
+
+    // ensure min and max broker date is not null
+    if (_minBrokerDate == null || _maxBrokerDate == null) {
+      // assume the max broker date is today
+      _maxBrokerDate = DateTime.now();
+      _minBrokerDate = _maxBrokerDate!.add(const Duration(days: -14));
+    }
+
+    // get the from and to date
+    _fromDate = InsightSharedPreferences.getBrokerCollectDate('from');
+    _toDate = InsightSharedPreferences.getBrokerCollectDate('to');
+
+    // check if we got null?
+    // if got null, it means that we will defaulted the toDate to the maxBrokerDate
+    // and fromDate is -14 days of maxBrokerDate
+    if (_fromDate == null || _toDate == null) {
+      _toDate = _maxBrokerDate;
+      _fromDate = _toDate!.add(const Duration(days: -14));
+    }
+
+    // get the accumulation rate
+    _accumRate = InsightSharedPreferences.getBrokerCollectAccumulationRate();
+
+    // get the broker collection
+    _brokerCollect = InsightSharedPreferences.getBrokerCollect();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Broker",
+                          style: TextStyle(
+                            color: accentColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5,),
+                        InkWell(
+                          onTap: (() async {
+                            // navigate to the find other company list and we will get the value from there
+                            await Navigator.pushNamed(context, '/broker/find').then((value) {
+                              if (value != null) {
+                                // convert value to company list model
+                                _brokerData = value as BrokerModel;
+
+                                // set the data
+                                setState(() {
+                                  _brokerCode = _brokerData.brokerFirmId;
+                                });
+                              }
+                            });
+                          }),
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              color: primaryDark,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Center(
+                              child: Text(
+                                (_brokerCode.isEmpty ? '-' : _brokerCode),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Accum %",
+                          style: TextStyle(
+                            color: accentColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5,),
+                        NumberStepper(
+                          height: 25,
+                          borderColor: primaryLight,
+                          buttonColor: secondaryColor,
+                          bgColor: primaryDark,
+                          textColor: textPrimary,
+                          initialRate: _accumRate,
+                          onTap: ((newRate) {
+                            _accumRate = newRate;
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Expanded(
+                    flex: 7,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Date",
+                          style: TextStyle(
+                            color: accentColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5,),
+                        InkWell(
+                          onTap: (() async {
+                            await _showCalendar();
+                          }),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                    color: primaryDark,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(5),
+                                      topLeft: Radius.circular(5)
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      _df.format(_fromDate!),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
+                                    color: primaryDark,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomRight: Radius.circular(5),
+                                      topRight: Radius.circular(5)
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      _df.format(_toDate!),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5,),
+              InkWell(
+                onTap: (() async {
+                  // check that broker and code already filled
+                  if (_brokerCode.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CupertinoAlertDialog(
+                          title: const Text("Select Broker"),
+                          content: const Text("Please select broker from the list, before run the query."),
+                          actions: <CupertinoActionSheetAction>[
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                Navigator.pop(context);
+                              }),
+                              child: const Text("OK"),
+                            )
+                          ],
+                        );
+                      }
+                    );
+                  }
+                  else {
+                    // show the loader dialog
+                    showLoaderDialog(context);
+                    await _getBrokerCollect().then((_) {
+                      // remove loader dialog
+                      Navigator.pop(context);
+                    });
+                    
+                    // rebuild widget
+                    setState(() {
+                    });
+                  }
+                }),
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: primaryDark,
+                    border: Border.all(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    )
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "SEARCH",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          _generateSummary(),
+          const SizedBox(height: 10,),
+          _generateList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _generateSummary() {
+    // if broker collection still null, just return sized box
+    if (_brokerCollect == null) {
+      return const SizedBox.shrink();
+    }
+
+    // if broker collection not null, then we can display the list view
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.orange[800],
+            border: const Border(
+              top: BorderSide(
+                color: primaryLight,
+                style: BorderStyle.solid,
+                width: 1.0,
+              ),
+              left: BorderSide(
+                color: primaryLight,
+                style: BorderStyle.solid,
+                width: 1.0,
+              ),
+              right: BorderSide(
+                color: primaryLight,
+                style: BorderStyle.solid,
+                width: 1.0,
+              )
+            )
+          ),
+          child: const Center(
+            child: Text(
+              "SUMMARY",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        MyTableView(
+          data: [
+            MyTableItem(
+              title: "#",
+              color: Colors.orange[800]!,
+              content: <String>[
+                "LOT",
+                "VALUE",
+                "COUNT",
+              ],
+              width: 55,
+              textAlign: Alignment.centerLeft
+            ),
+            MyTableItem(
+              title: "BUY (LOT)",
+              content: <String>[
+                formatIntWithNull(_brokerCollect!.summaryTotalBuy, false, false, 0, false),
+                formatIntWithNull(_brokerCollect!.summaryTotalBuyValue, false, false, 0, true),
+                "${formatIntWithNull(_brokerCollect!.summaryCountBuy, false, false, 0, false)}x",
+              ],
+              color: Colors.green[900]!
+            ),
+            MyTableItem(
+              title: "SELL (LOT)",
+              content: <String>[
+                formatIntWithNull(_brokerCollect!.summaryTotalSell, false, false, 0, false),
+                formatIntWithNull(_brokerCollect!.summaryTotalSellValue, false, false, 0, true),
+                "${formatIntWithNull(_brokerCollect!.summaryCountSell, false, false, 0, false)}x",
+              ],
+              color: secondaryDark
+            ),
+            MyTableItem(
+              title: "LEFT (LOT)",
+              content: <String>[
+                formatIntWithNull(_brokerCollect!.summaryTotalLeft, false, false, 0, false),
+                formatIntWithNull(_brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue, false, false, 0, true),
+                "${formatDecimalWithNull(_brokerCollect!.summaryTotalLeft / _brokerCollect!.summaryTotalBuy, 100, 2)} %",
+              ],
+              color: Colors.blue[600]!
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _generateList() {
+    // if broker collection still null, just return sized box
+    if (_brokerCollect == null) {
+      return const SizedBox.shrink();
+    }
+
+    // if broker collection not null, then we can display the list view
+    return Expanded(
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: _brokerCollect!.data.length,
+        itemBuilder: ((context, index) {
+          return Slidable(
+            endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              extentRatio: 0.15,
+              children: <Widget>[
+                SlidableAction(
+                  onPressed: ((BuildContext context) async {
+                    showLoaderDialog(context);
+                    await _companyAPI.getCompanyByCode(_brokerCollect!.data[index].code, 'saham').then((resp) {
+                      CompanyDetailArgs args = CompanyDetailArgs(
+                        companyId: resp.companyId,
+                        companyName: resp.companyName,
+                        companyCode: _brokerCollect!.data[index].code,
+                        companyFavourite: (resp.companyFavourites ?? false),
+                        favouritesId: (resp.companyFavouritesId ?? -1),
+                        type: "saham",
+                      );
+                      
+                      // remove the loader dialog
+                      Navigator.pop(context);
+
+                      // go to the company page
+                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                    }).onError((error, stackTrace) {
+                      // remove the loader dialog
+                      Navigator.pop(context);
+
+                      // show the error message
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                    });
+                  }),
+                  icon: Ionicons.business_outline,
+                  backgroundColor: primaryColor,
+                  foregroundColor: extendedLight,
+                ),
+              ],
+            ),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: primaryDark,
+                border: Border.all(
+                  color: primaryLight,
+                  style: BorderStyle.solid,
+                  width: 1.0,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _brokerCollect!.data[index].code,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5,),
+                  MyTableView(data: [
+                    MyTableItem(
+                      title: "#",
+                      color: Colors.orange[600]!,
+                      content: <String>[
+                        "LOT",
+                        "VALUE",
+                        "AVG",
+                        "COUNT",
+                      ],
+                      width: 55,
+                      textAlign: Alignment.centerLeft
+                    ),
+                    MyTableItem(
+                      title: "BUY (LOT)",
+                      color: Colors.green[600]!,
+                      content: <String>[
+                        formatIntWithNull(_brokerCollect!.data[index].totalBuy, false, false, 0, false),
+                        formatIntWithNull(_brokerCollect!.data[index].totalBuyValue, false, false, 0, true),
+                        "IDR ${formatDecimalWithNull(_brokerCollect!.data[index].totalBuyAvg, 1, 2)}",
+                        "${formatIntWithNull(_brokerCollect!.data[index].countBuy, false, false, 0, false)}x",
+                      ]
+                    ),
+                    MyTableItem(
+                      title: "SELL (LOT)",
+                      color: secondaryColor,
+                      content: <String>[
+                        formatIntWithNull(_brokerCollect!.data[index].totalSell, false, false, 0, false),
+                        formatIntWithNull(_brokerCollect!.data[index].totalSellValue, false, false, 0, true),
+                        "IDR ${formatDecimalWithNull(_brokerCollect!.data[index].totalSellAvg, 1, 2)}",
+                        "${formatIntWithNull(_brokerCollect!.data[index].countSell, false, false, 0, false)}x",
+                      ]
+                    ),
+                    MyTableItem(
+                      title: "LEFT (LOT)",
+                      color: Colors.blue[400]!,
+                      content: <String>[
+                        formatIntWithNull(_brokerCollect!.data[index].totalLeft, false, false, 0, false),
+                        formatIntWithNull(_brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue, false, false, 0, true),
+                        "IDR ${formatDecimalWithNull((_brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue) / (_brokerCollect!.data[index].totalLeft * 100), 1, 2)}",
+                        "${formatDecimalWithNull(_brokerCollect!.data[index].totalPercentage, 100, 2)} %",
+                      ]
+                    ),
+                  ]),
+                ],
+              ),
+            ),
+          );
+        }),
+      )
+    );
+  }
+
+  Future<void> _showCalendar() async {
+    DateTimeRange? result = await showDateRangePicker(
+      context: context,
+      firstDate: _minBrokerDate!.toLocal(),
+      lastDate: _maxBrokerDate!.toLocal(),
+      initialDateRange: DateTimeRange(start: _fromDate!.toLocal(), end: _toDate!.toLocal()),
+      confirmText: 'Done',
+      currentDate: _maxBrokerDate!.toLocal(),
+    );
+
+    // check if we got the result or not?
+    if (result != null) {
+      // check whether the result start and end is different date, if different then we need to get new broker summary data.
+      if ((result.start.compareTo(_fromDate!) != 0) || (result.end.compareTo(_toDate!) != 0)) {                      
+        // set the broker from and to date
+        setState(() {
+          _fromDate = result.start;
+          _toDate = result.end;
+        });
+      }
+    }
+  }
+
+  Future<void> _getBrokerCollect() async {
+    // get the transaction
+    await _insightAPI.getBrokerCollect(_brokerCode, _accumRate, _fromDate, _toDate).then((resp) async {
+      // put the response to the broker collect
+      _brokerCollect = resp;
+      
+      // stre the broker collection query result to the shared preferences
+      await InsightSharedPreferences.setBrokerCollect(_brokerCollect!, _brokerCode, _fromDate!, _toDate!, _accumRate);
+    }).onError((error, stackTrace) {
+      // show the error
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+    });
+  }
+}

@@ -83,6 +83,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   double? _avgDaily;
   int _avgCount = 0;
   int _dateOffset = 3;
+  String _graphSelection = "s";
 
   @override
   void initState() {
@@ -1056,80 +1057,138 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     );
   }
 
+  Widget _selectedGraph() {
+    switch(_graphSelection) {
+      case "a":
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text(
+                "Asset Under Management",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5,),
+            LineChart(
+              data: _assetData!,
+              height: 250,
+              watchlist: _watchlistDetail,
+              showLegend: false,
+            ),
+          ],
+        );
+      case "t":
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text(
+                "Total Unit",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5,),
+            LineChart(
+              data: _unitData!,
+              height: 250,
+              watchlist: _watchlistDetail,
+              showLegend: false,
+            ),
+          ],
+        );
+      case "m":
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text(
+                "Percentage Movement",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5,),
+            MultiLineChart(
+              height: 250,
+              data: _movementData,
+              color: const [Colors.orange, Colors.red, Colors.green, Colors.blue],
+              legend: const ["Daily", "Weekly", "Monthly", "Yearly"],
+              dateOffset: _dateOffset,
+            ),
+          ],
+        );
+      case "s":
+      default:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text(
+                "Price",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5,),
+            LineChart(
+              data: _graphData!,
+              height: 250,
+              watchlist: _watchlistDetail,
+            ),
+          ],
+        );
+    }
+  }
+
   Widget _showGraph() {
-    return SingleChildScrollView(
-      controller: _graphScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(height: 10,),
-          const Center(
-            child: Text(
-              "Price",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 10,),
+        SizedBox(
+          width: double.infinity,
+          child: CupertinoSegmentedControl(
+            children: const {
+              "s": Text("Price"),
+              "a": Text("AUM"),
+              "t": Text("Total"),
+              "m": Text("Movement"),
+            },
+            onValueChanged: ((value) {
+              String selectedValue = value.toString();
+    
+              setState(() {
+                _graphSelection = selectedValue;
+              });
+            }),
+            groupValue: _graphSelection,
+            selectedColor: secondaryColor,
+            borderColor: secondaryDark,
+            pressedColor: primaryDark,
           ),
-          const SizedBox(height: 5,),
-          LineChart(
-            data: _graphData!,
-            height: 250,
-            watchlist: _watchlistDetail,
+        ),
+        const SizedBox(height: 10,),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _graphScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: _selectedGraph(),
           ),
-          const SizedBox(height: 10,),
-          const Center(
-            child: Text(
-              "Asset Under Management",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 5,),
-          LineChart(
-            data: _assetData!,
-            height: 250,
-            watchlist: _watchlistDetail,
-            showLegend: false,
-          ),
-          const SizedBox(height: 10,),
-          const Center(
-            child: Text(
-              "Total Unit",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 5,),
-          LineChart(
-            data: _unitData!,
-            height: 250,
-            watchlist: _watchlistDetail,
-            showLegend: false,
-          ),
-          const SizedBox(height: 10,),
-          const Center(
-            child: Text(
-              "Movement",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 5,),
-          MultiLineChart(
-            height: 250,
-            data: _movementData,
-            color: const [Colors.orange, Colors.red, Colors.green, Colors.blue],
-            legend: const ["Daily", "Weekly", "Monthly", "Yearly"],
-            dateOffset: _dateOffset,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 15,),
+      ],
     );
   }
 

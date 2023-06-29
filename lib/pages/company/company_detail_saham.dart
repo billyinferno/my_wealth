@@ -112,6 +112,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   int _bodyPage = 0;
   int _quarterSelection = 5;
   String _quarterSelectionText = "Every Quarter";
+  String _graphSelection = "s";
 
   double? _minPrice;
   double? _maxPrice;
@@ -2367,69 +2368,112 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     );
   }
 
+  Widget _selectedGraph() {
+    switch(_graphSelection) {
+      case "m":
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text("Monthly Price Movement"),
+            ),
+            MultiLineChart(
+              height: 250,
+              data: _priceMovementData,
+              color: const [Colors.orange, Colors.red, Colors.green],
+              legend: const ["Average", "Minimum", "Maximum"],
+            ),
+          ],
+        );
+      case "c":
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text("Candlestick and Trade Volume"),
+            ),
+            const SizedBox(height: 10,),
+            SizedBox(
+              height: 160,
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: StockCandleStickPainter(
+                  stockData: _infoSahamPrice,
+                  maxHigh: _maxHigh!,
+                  minLow: _minLow!,
+                ),
+              ),
+            ),
+            const SizedBox(height: 15,),
+            SizedBox(
+              height: 30,
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: StockVolumePainter(
+                  stockData: _infoSahamPrice,
+                  maxVolume: _maxVolume!,
+                ),
+              ),
+            ),
+          ],
+        );
+      case "s":
+      default:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text("Stock Price"),
+            ),
+            LineChart(
+              data: _graphData!,
+              height: 250,
+              watchlist: _watchlistDetail,
+            ),
+          ],
+        );
+    }
+  }
+
   Widget _showGraph() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
+        const SizedBox(height: 10,),
+        SizedBox(
+          width: double.infinity,
+          child: CupertinoSegmentedControl(
+            children: const {
+              "s": Text("Daily"),
+              "m": Text("Monthly"),
+              "c": Text("Candlestick"),
+            },
+            onValueChanged: ((value) {
+              String selectedValue = value.toString();
+    
+              setState(() {
+                _graphSelection = selectedValue;
+              });
+            }),
+            groupValue: _graphSelection,
+            selectedColor: secondaryColor,
+            borderColor: secondaryDark,
+            pressedColor: primaryDark,
+          ),
+        ),
+        const SizedBox(height: 10,),
         Expanded(
           child: SingleChildScrollView(
             controller: _graphScrollController,
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Center(
-                  child: Text("Stock Price"),
-                ),
-                LineChart(
-                  data: _graphData!,
-                  height: 250,
-                  watchlist: _watchlistDetail,
-                ),
-                const SizedBox(height: 5,),
-                const Center(
-                  child: Text("Monthly Price Movement"),
-                ),
-                MultiLineChart(
-                  height: 250,
-                  data: _priceMovementData,
-                  color: const [Colors.orange, Colors.red, Colors.green],
-                  legend: const ["Average", "Minimum", "Maximum"],
-                ),
-                const SizedBox(height: 5,),
-                const Center(
-                  child: Text("Candlestick and Trade Volume"),
-                ),
-                const SizedBox(height: 10,),
-                SizedBox(
-                  height: 160,
-                  child: CustomPaint(
-                    size: Size.infinite,
-                    painter: StockCandleStickPainter(
-                      stockData: _infoSahamPrice,
-                      maxHigh: _maxHigh!,
-                      minLow: _minLow!,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15,),
-                SizedBox(
-                  height: 30,
-                  child: CustomPaint(
-                    size: Size.infinite,
-                    painter: StockVolumePainter(
-                      stockData: _infoSahamPrice,
-                      maxVolume: _maxVolume!,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15,),
-              ],
-            ),
+            child: _selectedGraph(),
           ),
-        )
+        ),
+        const SizedBox(height: 15,),
       ],
     );
   }

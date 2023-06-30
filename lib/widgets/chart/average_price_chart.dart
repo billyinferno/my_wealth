@@ -425,6 +425,13 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
       _ma30 = _ma30 ~/ widget.price.length;
     }
 
+    // if _max == _min
+    if (_max == _min) {
+      // make _min into 0, so we will not gen NaN when we calculate the flex
+      // for the average price below
+      _min = 0;
+    }
+
     // calculate the flex for current price
     _currentFlexLeft = (((widget.company.companyNetAssetValue! - _min) / (_max - _min)) * 100).toInt();
     _currentFlexRight = (((_max - widget.company.companyNetAssetValue!) / (_max - _min)) * 100).toInt();

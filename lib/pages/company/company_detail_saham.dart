@@ -9,6 +9,7 @@ import 'package:my_wealth/api/info_sahams_api.dart';
 import 'package:my_wealth/api/price_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/broker/broker_summary_accumulation_model.dart';
+import 'package:my_wealth/model/broker/broker_summary_daily_stat_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_model.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
@@ -85,6 +86,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late Map<DateTime, int> _watchlistDetail;
   late String? _otherCompanyCode;
   late List<SeasonalityModel> _seasonality;
+  late BrokerSummaryDailyStatModel _brokerSummaryDailyStat;
+  late List<Map<String, double>> _brokerSummaryDailyData;
+  late String _brokerSummaryDailyTypeSelected;
+  late String _brokerSummaryDailyValueSelected;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -2370,6 +2375,97 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
   Widget _selectedGraph() {
     switch(_graphSelection) {
+      case "b":
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Center(
+              child: Text("Broker Buy Sell"),
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                const Text(
+                  "Type",
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Expanded(
+                  child: CupertinoSegmentedControl(
+                    children: const {
+                      "a": Text("All"),
+                      "d": Text("Domestic"),
+                      "f": Text("Foreign"),
+                    },
+                    onValueChanged: ((value) {
+                      String selectedValue = value.toString();
+            
+                      setState(() {
+                        _brokerSummaryDailyTypeSelected = selectedValue;
+                        _setBrokerSummaryDailyData();
+                      });
+                    }),
+                    groupValue: _brokerSummaryDailyTypeSelected,
+                    selectedColor: secondaryColor,
+                    borderColor: secondaryDark,
+                    pressedColor: primaryDark,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                const Text(
+                  "Data",
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Expanded(
+                  child: CupertinoSegmentedControl(
+                    children: const {
+                      "l": Text("Lot"),
+                      "v": Text("Value"),
+                    },
+                    onValueChanged: ((value) {
+                      String selectedValue = value.toString();
+            
+                      setState(() {
+                        _brokerSummaryDailyValueSelected = selectedValue;
+                        _setBrokerSummaryDailyData();
+                      });
+                    }),
+                    groupValue: _brokerSummaryDailyValueSelected,
+                    selectedColor: secondaryColor,
+                    borderColor: secondaryDark,
+                    pressedColor: primaryDark,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            MultiLineChart(
+              height: 250,
+              data: _brokerSummaryDailyData,
+              color: const [Colors.green, secondaryDark],
+              legend: const ["Buy", "Sell"],
+              dateOffset: 20,
+            ),
+          ],
+        );
       case "m":
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2450,7 +2546,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             children: const {
               "s": Text("Daily"),
               "m": Text("Monthly"),
-              "c": Text("Candlestick"),
+              "c": Text("Candle"),
+              "b": Text("Broker"),
             },
             onValueChanged: ((value) {
               String selectedValue = value.toString();
@@ -2735,6 +2832,51 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _totalSellAverage = totalSellAverage;
   }
 
+  void _setBrokerSummaryDailyData() {
+    // check what data we got?
+    BrokerSummaryDailyStatItem currentItem;
+    switch(_brokerSummaryDailyTypeSelected) {
+      case "d":
+        currentItem = _brokerSummaryDailyStat.domestic;
+        break;
+      case "f":
+        currentItem = _brokerSummaryDailyStat.foreign;
+        break;
+      case "a":
+      default:
+        currentItem = _brokerSummaryDailyStat.all;
+        break;
+    }
+
+    // init the broker summary daily data
+    _brokerSummaryDailyData.clear();
+
+    // loop thru all the _brokerSummaryDailyStat.all
+    Map<String, double> buyData = {};
+    for (BrokerSummaryDailyStatBuySell data in currentItem.buy) {
+      if (_brokerSummaryDailyValueSelected == "v") {
+        buyData[data.date] = data.totalValue.toDouble();
+      }
+      else {
+        buyData[data.date] = data.totalLot.toDouble();
+      }
+    }
+
+    Map<String, double> sellData = {};
+    for (BrokerSummaryDailyStatBuySell data in currentItem.sell) {
+      if (_brokerSummaryDailyValueSelected == "v") {
+        sellData[data.date] = data.totalValue.toDouble();
+      }
+      else {
+        sellData[data.date] = data.totalLot.toDouble();
+      }
+    }
+
+    // add buy and sell data to dail data
+    _brokerSummaryDailyData.add(buyData);
+    _brokerSummaryDailyData.add(sellData);
+  }
+
   Future<void> _getBrokerSummary() async {
     // show loader dialog
     showLoaderDialog(context);
@@ -2996,6 +3138,35 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         debugPrint("Error on Get getSeasonality");
         debugPrintStack(stackTrace: stackTrace);
       });
+
+      await _brokerSummaryAPI.getBrokerSummaryDailyStat(_companyData.companyCode).then((resp) {
+        _brokerSummaryDailyStat = resp;
+
+        // init the broker summary daily data
+        _brokerSummaryDailyData = [];
+
+        // assuming that we will get the all lot data
+        _brokerSummaryDailyTypeSelected = "a";
+        _brokerSummaryDailyValueSelected = "l";
+
+        // loop thru all the _brokerSummaryDailyStat.all
+        Map<String, double> buyData = {};
+        for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.buy) {
+          buyData[data.date] = data.totalLot.toDouble();
+        }
+
+        Map<String, double> sellData = {};
+        for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.sell) {
+          sellData[data.date] = data.totalLot.toDouble();
+        }
+
+        // add buy and sell data to dail data
+        _brokerSummaryDailyData.add(buyData);
+        _brokerSummaryDailyData.add(sellData);
+      }).onError((error, stackTrace) {
+        debugPrint("Error on Get getBrokerSummaryDailyStat");
+        debugPrintStack(stackTrace: stackTrace);
+      });;
     }
     catch(error) {
       // Navigator.pop(context);

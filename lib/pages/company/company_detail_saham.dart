@@ -88,8 +88,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late List<SeasonalityModel> _seasonality;
   late BrokerSummaryDailyStatModel _brokerSummaryDailyStat;
   late List<Map<String, double>> _brokerSummaryDailyData;
-  late String _brokerSummaryDailyTypeSelected;
-  late String _brokerSummaryDailyValueSelected;
+  late BrokerSummaryDailyStatModel _brokerSummaryMonthlyStat;
+  late List<Map<String, double>> _brokerSummaryMonthlyData;
+  late String _brokerSummaryDailyMonthlyDataSelected; 
+  late String _brokerSummaryDailyMonthlyTypeSelected;
+  late String _brokerSummaryDailyMonhtlyValueSelected;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -2388,12 +2391,54 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
+                const SizedBox(width: 20,),
+                const SizedBox(
+                  width: 50,
+                  child: Text(
+                    "Period",
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: CupertinoSegmentedControl(
+                    children: const {
+                      "d": Text("Daily"),
+                      "m": Text("Monthly"),
+                    },
+                    onValueChanged: ((value) {
+                      String selectedValue = value.toString();
+            
+                      setState(() {
+                        _brokerSummaryDailyMonthlyDataSelected = selectedValue;
+                        _setBrokerSummaryDailyMonthlyData();
+                      });
+                    }),
+                    groupValue: _brokerSummaryDailyMonthlyDataSelected,
+                    selectedColor: Colors.purple,
+                    borderColor: Colors.purple[900]!,
+                    pressedColor: Colors.purple[900]!,
+                  ),
+                ),
                 const SizedBox(width: 10,),
-                const Text(
-                  "Type",
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontWeight: FontWeight.bold,
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 20,),
+                const SizedBox(
+                  width: 50,
+                  child: Text(
+                    "Type",
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -2407,14 +2452,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       String selectedValue = value.toString();
             
                       setState(() {
-                        _brokerSummaryDailyTypeSelected = selectedValue;
-                        _setBrokerSummaryDailyData();
+                        _brokerSummaryDailyMonthlyTypeSelected = selectedValue;
+                        _setBrokerSummaryDailyMonthlyData();
                       });
                     }),
-                    groupValue: _brokerSummaryDailyTypeSelected,
-                    selectedColor: secondaryColor,
-                    borderColor: secondaryDark,
-                    pressedColor: primaryDark,
+                    groupValue: _brokerSummaryDailyMonthlyTypeSelected,
+                    selectedColor: const Color(0xff40826d),
+                    borderColor: const Color.fromARGB(255, 24, 49, 41),
+                    pressedColor: const Color.fromARGB(255, 24, 49, 41),
                   ),
                 ),
                 const SizedBox(width: 10,),
@@ -2425,12 +2470,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(width: 10,),
-                const Text(
-                  "Data",
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 20,),
+                const SizedBox(
+                  width: 50,
+                  child: Text(
+                    "Data",
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -2443,14 +2491,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                       String selectedValue = value.toString();
             
                       setState(() {
-                        _brokerSummaryDailyValueSelected = selectedValue;
-                        _setBrokerSummaryDailyData();
+                        _brokerSummaryDailyMonhtlyValueSelected = selectedValue;
+                        _setBrokerSummaryDailyMonthlyData();
                       });
                     }),
-                    groupValue: _brokerSummaryDailyValueSelected,
-                    selectedColor: secondaryColor,
-                    borderColor: secondaryDark,
-                    pressedColor: primaryDark,
+                    groupValue: _brokerSummaryDailyMonhtlyValueSelected,
+                    selectedColor: const Color(0xff007ba7),
+                    borderColor: const Color.fromARGB(255, 0, 56, 77),
+                    pressedColor: const Color.fromARGB(255, 0, 56, 77),
                   ),
                 ),
                 const SizedBox(width: 10,),
@@ -2462,7 +2510,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               data: _brokerSummaryDailyData,
               color: const [Colors.green, secondaryDark],
               legend: const ["Buy", "Sell"],
-              dateOffset: 20,
+              dateOffset: (_brokerSummaryDailyMonthlyDataSelected == 'd' ? 20 : 4),
             ),
           ],
         );
@@ -2832,19 +2880,29 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _totalSellAverage = totalSellAverage;
   }
 
-  void _setBrokerSummaryDailyData() {
+  void _setBrokerSummaryDailyMonthlyData() {
+    // check whether this is daily or monthly
+    BrokerSummaryDailyStatModel currentData;
+    switch (_brokerSummaryDailyMonthlyDataSelected) {
+      case "m":
+        currentData = _brokerSummaryMonthlyStat;
+        break;
+      case "d":
+      default:
+        currentData = _brokerSummaryDailyStat;
+    }
     // check what data we got?
     BrokerSummaryDailyStatItem currentItem;
-    switch(_brokerSummaryDailyTypeSelected) {
+    switch(_brokerSummaryDailyMonthlyTypeSelected) {
       case "d":
-        currentItem = _brokerSummaryDailyStat.domestic;
+        currentItem = currentData.domestic;
         break;
       case "f":
-        currentItem = _brokerSummaryDailyStat.foreign;
+        currentItem = currentData.foreign;
         break;
       case "a":
       default:
-        currentItem = _brokerSummaryDailyStat.all;
+        currentItem = currentData.all;
         break;
     }
 
@@ -2854,7 +2912,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     // loop thru all the _brokerSummaryDailyStat.all
     Map<String, double> buyData = {};
     for (BrokerSummaryDailyStatBuySell data in currentItem.buy) {
-      if (_brokerSummaryDailyValueSelected == "v") {
+      if (_brokerSummaryDailyMonhtlyValueSelected == "v") {
         buyData[data.date] = data.totalValue.toDouble();
       }
       else {
@@ -2864,7 +2922,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     Map<String, double> sellData = {};
     for (BrokerSummaryDailyStatBuySell data in currentItem.sell) {
-      if (_brokerSummaryDailyValueSelected == "v") {
+      if (_brokerSummaryDailyMonhtlyValueSelected == "v") {
         sellData[data.date] = data.totalValue.toDouble();
       }
       else {
@@ -3146,8 +3204,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _brokerSummaryDailyData = [];
 
         // assuming that we will get the all lot data
-        _brokerSummaryDailyTypeSelected = "a";
-        _brokerSummaryDailyValueSelected = "l";
+        _brokerSummaryDailyMonthlyDataSelected = "d";
+        _brokerSummaryDailyMonthlyTypeSelected = "a";
+        _brokerSummaryDailyMonhtlyValueSelected = "l";
 
         // loop thru all the _brokerSummaryDailyStat.all
         Map<String, double> buyData = {};
@@ -3166,7 +3225,32 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       }).onError((error, stackTrace) {
         debugPrint("Error on Get getBrokerSummaryDailyStat");
         debugPrintStack(stackTrace: stackTrace);
-      });;
+      });
+
+      await _brokerSummaryAPI.getBrokerSummaryMonthlyStat(_companyData.companyCode).then((resp) {
+        _brokerSummaryMonthlyStat = resp;
+
+        // init the broker summary daily data
+        _brokerSummaryMonthlyData = [];
+
+        // loop thru all the _brokerSummaryDailyStat.all
+        Map<String, double> buyData = {};
+        for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.buy) {
+          buyData[data.date] = data.totalLot.toDouble();
+        }
+
+        Map<String, double> sellData = {};
+        for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.sell) {
+          sellData[data.date] = data.totalLot.toDouble();
+        }
+
+        // add buy and sell data to dail data
+        _brokerSummaryMonthlyData.add(buyData);
+        _brokerSummaryMonthlyData.add(sellData);
+      }).onError((error, stackTrace) {
+        debugPrint("Error on Get getBrokerSummaryMonthlyStat");
+        debugPrintStack(stackTrace: stackTrace);
+      });
     }
     catch(error) {
       // Navigator.pop(context);

@@ -67,12 +67,28 @@ class WatchlistSubSummary extends StatelessWidget {
                       fontSize: 10,
                     ),
                   ),
-                  Text(
-                    formatCurrencyWithNull(isUserVisible ? (value - cost) : null),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        formatCurrencyWithNull(isUserVisible ? (value - cost) : null),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Visibility(
+                        visible: (cost > 0),
+                        child: Text(
+                          (isUserVisible ? "(${formatDecimalWithNull((cost > 0 ? (value - cost) / cost : 0), 100, 2)}%)" : ""),
+                          style: TextStyle(
+                            color: riskColor(value, cost, riskFactor)
+                          ),
+                        )
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 5,),
                   Row(

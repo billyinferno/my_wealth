@@ -88,12 +88,28 @@ class WatchlistSummary extends StatelessWidget {
                                   fontSize: 10,
                                 ),
                               ),
-                              Text(
-                                _totalGain(),
-                                style: const TextStyle(
-                                  fontSize: 35,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    _totalGain(),
+                                    style: const TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Visibility(
+                                    visible: (cost > 0),
+                                    child: Text(
+                                      "(${formatDecimalWithNull((cost > 0 ? (value - cost) / cost : 0), 100, 2)}%)",
+                                      style: TextStyle(
+                                        color: riskColor(value, cost, riskFactor),
+                                      ),
+                                    )
+                                  ),
+                                ],
                               ),
                             ],
                           ),

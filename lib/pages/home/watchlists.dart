@@ -469,7 +469,18 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     return const Center(child: Text("Error while get gold watchlist"));
   }
 
-  Widget _generateWatchlistItem({required String type, List<WatchlistListModel>? data, List<ComputeWatchlistResult>? result, required double dayGain, required double cost, required double value, required bool isInLot, required String shareTitle, required bool checkThousandOnPrice, required ScrollController scrollController}) {
+  Widget _generateWatchlistItem({
+    required String type,
+    List<WatchlistListModel>? data,
+    List<ComputeWatchlistResult>? result,
+    required double dayGain,
+    required double cost,
+    required double value, 
+    required bool isInLot,
+    required String shareTitle,
+    required bool checkThousandOnPrice,
+    required ScrollController scrollController
+  }) {
     return RefreshIndicator(
       onRefresh: (() async {
         await _refreshWatchlist();

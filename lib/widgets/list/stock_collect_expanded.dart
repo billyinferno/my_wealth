@@ -8,158 +8,189 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
-import 'package:my_wealth/widgets/list/my_table_view.dart';
 
-class StockCollectExpanded extends StatefulWidget {
+class StockCollectExpanded extends StatelessWidget {
   final InsightStockCollectModel data;
   const StockCollectExpanded({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<StockCollectExpanded> createState() => _StockCollectExpandedState();
-}
-
-class _StockCollectExpandedState extends State<StockCollectExpanded> {
-  final CompanyAPI _companyAPI = CompanyAPI();
-  final TextStyle headerStyle = const TextStyle(
-    fontSize: 10,
-  );
-  final BorderSide borderStyle = const BorderSide(
-    color: primaryLight,
-    style: BorderStyle.solid,
-    width: 1.0,
-  );
-
-  late bool isOpen;
-
-  @override
-  void initState() {
-    // initialize the variable
-    isOpen = false;
-
-    super.initState();
-  }
-  
-  @override
   Widget build(BuildContext context) {
+    final CompanyAPI companyAPI = CompanyAPI();
+    
+    return Slidable(
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.15,
+        children: <Widget>[
+          SlidableAction(
+            onPressed: ((BuildContext context) async {
+              showLoaderDialog(context);
+              await companyAPI.getCompanyByCode(data.code, 'saham').then((resp) {
+                CompanyDetailArgs args = CompanyDetailArgs(
+                  companyId: resp.companyId,
+                  companyName: resp.companyName,
+                  companyCode: data.code,
+                  companyFavourite: (resp.companyFavourites ?? false),
+                  favouritesId: (resp.companyFavouritesId ?? -1),
+                  type: "saham",
+                );
+                
+                // remove the loader dialog
+                Navigator.pop(context);
+
+                // go to the company page
+                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+              }).onError((error, stackTrace) {
+                // remove the loader dialog
+                Navigator.pop(context);
+
+                // show the error message
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+              });
+            }),
+            icon: Ionicons.business_outline,
+            backgroundColor: primaryColor,
+            foregroundColor: extendedLight,
+          ),
+        ],
+      ),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.all(0),
+        childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+        backgroundColor: primaryColor,
+        collapsedBackgroundColor: primaryColor,
+        iconColor: primaryLight,
+        collapsedIconColor: primaryLight,
+        collapsedTextColor: textPrimary,
+        textColor: textPrimary,
+        title: _stockCollectHeader(),
+        children: <Widget>[
+          _stockCollectItemHeader(),
+          ...List<Widget>.generate(data.data.length, (index) {
+            return _stockCollectItem(
+              item: data.data[index],
+            );          
+          })
+        ],
+      ),
+    );
+  }
+
+  Widget _stockCollectHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          data.code,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 5,),
+        Text(
+          "Total Broker ${data.data.length}",
+          style: const TextStyle(
+            fontSize: 10,
+          ),
+        ),
+        const SizedBox(height: 5,),
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _itemSubText(
+                header: "BUY (LOT)",
+                headerColor: Colors.green,
+                headerWeight: FontWeight.bold,
+                value: formatIntWithNull(data.summaryTotalBuy, false, false, 0, false),
+                subText: "${formatIntWithNull(data.summaryCountBuy, false, false, 0, false)} times",
+              ),
+              const SizedBox(width: 10,),
+              _itemSubText(
+                header: "SELL (LOT)",
+                headerColor: secondaryColor,
+                headerWeight: FontWeight.bold,
+                value: formatIntWithNull(data.summaryTotalSell, false, false, 0, false),
+                subText: "${formatIntWithNull(data.summaryCountSell, false, false, 0, false)} times",
+              ),
+              const SizedBox(width: 10,),
+              _itemSubText(
+                header: "LEFT (LOT)",
+                headerColor: Colors.blue,
+                headerWeight: FontWeight.bold,
+                value: formatIntWithNull(data.summaryTotalLeft, false, false, 0, false),
+                subText: "${formatDecimalWithNull(data.summaryTotalLeft / data.summaryTotalBuy, 100, 2)} %",
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _stockCollectItemHeader() {
     return Container(
-      padding: const EdgeInsets.all(5),
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: primaryLight,
-          style: BorderStyle.solid,
-          width: 1.0,
+      padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          )
         )
       ),
-      child: Column(
+      child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Slidable(
-            endActionPane: ActionPane(
-              motion: const ScrollMotion(),
-              extentRatio: 0.15,
-              children: <Widget>[
-                SlidableAction(
-                  onPressed: ((BuildContext context) async {
-                    showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(widget.data.code, 'saham').then((resp) {
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: resp.companyId,
-                        companyName: resp.companyName,
-                        companyCode: widget.data.code,
-                        companyFavourite: (resp.companyFavourites ?? false),
-                        favouritesId: (resp.companyFavouritesId ?? -1),
-                        type: "saham",
-                      );
-                      
-                      // remove the loader dialog
-                      Navigator.pop(context);
-
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                    }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
-
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                    });
-                  }),
-                  icon: Ionicons.business_outline,
-                  backgroundColor: primaryColor,
-                  foregroundColor: extendedLight,
+          SizedBox(
+            width: 35,
+            child: Center(
+              child: Text(
+                "ID",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
                 ),
-              ],
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    widget.data.code,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5,),
-                  Text(
-                    "Total Broker ${widget.data.data.length}",
-                    style: const TextStyle(
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
-          const SizedBox(height: 5,),
-          MyTableView(data: [
-            MyTableItem(
-              title: "BUY (LOT)",
-              color: Colors.green[900]!,
-              content: <String>[
-                formatIntWithNull(widget.data.summaryTotalBuy, false, false, 0, false),
-                "${formatIntWithNull(widget.data.summaryCountBuy, false, false, 0, false)} times",
-              ]
-            ),
-            MyTableItem(
-              title: "SELL (LOT)",
-              color: secondaryDark,
-              content: <String>[
-                formatIntWithNull(widget.data.summaryTotalSell, false, false, 0, false),
-                "${formatIntWithNull(widget.data.summaryCountSell, false, false, 0, false)} times",
-              ]
-            ),
-            MyTableItem(
-              title: "LEFT (LOT)",
-              color: Colors.blue[800]!,
-              content: <String>[
-                formatIntWithNull(widget.data.summaryTotalLeft, false, false, 0, false),
-                "${formatDecimalWithNull(widget.data.summaryTotalLeft / widget.data.summaryTotalBuy, 100, 2)} %",
-              ]
-            ),
-          ]),
-          InkWell(
-            onTap: (() {
-              setState(() {
-                isOpen = !isOpen;
-              });
-            }),
-            child: Container(
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: primaryDark,
-                border: Border(
-                  left: borderStyle,
-                  right: borderStyle,
-                  bottom: borderStyle,
-                )
+          SizedBox(width: 5,),
+          Expanded(
+            child: Text(
+              "BUY (LOT)",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
               ),
-              width: double.infinity,
-              child: (isOpen ? _showDataList() : _showArrowIcon()),
+            ),
+          ),
+          SizedBox(width: 5,),
+          Expanded(
+            child: Text(
+              "SELL (LOT)",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: secondaryColor,
+              ),
+            ),
+          ),
+          SizedBox(width: 5,),
+          Expanded(
+            child: Text(
+              "LEFT (LOT)",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
             ),
           ),
         ],
@@ -167,36 +198,16 @@ class _StockCollectExpandedState extends State<StockCollectExpanded> {
     );
   }
 
-  Widget _showDataList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        ...List<Widget>.generate(widget.data.data.length, (index) {
-          return _itemList(index: index);
-        }),
-        const SizedBox(height: 5,),
-        const Center(
-          child: Icon(
-            Ionicons.caret_up,
-            color: textPrimary,
-            size: 11,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _itemList({required int index}) {
+  Widget _stockCollectItem({required InsightStockCollectItem item}) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.orange,
-        border: Border.all(
-          color: primaryLight,
-          style: BorderStyle.solid,
-          width: 1.0,
+      padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          )
         )
       ),
       child: Row(
@@ -204,65 +215,106 @@ class _StockCollectExpandedState extends State<StockCollectExpanded> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            width: 40,
+            width: 35,
             child: Center(
               child: Text(
-                widget.data.data[index].brokerSummaryId,
+                item.brokerSummaryId,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
+                  color: Colors.orange,
                 ),
               ),
             ),
           ),
-          Expanded(
-            child: Container(
-              color: primaryDark,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  MyTableView(data: [
-                    MyTableItem(
-                      title: "BUY (LOT)",
-                      color: Colors.green[600]!,
-                      content: <String>[
-                        formatIntWithNull(widget.data.data[index].totalBuy, false, false, 0, false),
-                        "${formatIntWithNull(widget.data.data[index].countBuy, false, false, 0, false)} times",
-                      ]
-                    ),
-                    MyTableItem(
-                      title: "SELL (LOT)",
-                      color: secondaryColor,
-                      content: <String>[
-                        formatIntWithNull(widget.data.data[index].totalSell, false, false, 0, false),
-                        "${formatIntWithNull(widget.data.data[index].countSell, false, false, 0, false)} times",
-                      ]
-                    ),
-                    MyTableItem(
-                      title: "LEFT (LOT)",
-                      color: Colors.blue[400]!,
-                      content: <String>[
-                        formatIntWithNull(widget.data.data[index].totalLeft, false, false, 0, false),
-                        "${formatDecimalWithNull(widget.data.data[index].totalPercentage, 100, 2)} %",
-                      ]
-                    ),
-                  ]),
-                ],
-              ),
-            ),
-          ),
+          const SizedBox(width: 5,),
+          _itemSubItem(value: [
+            formatIntWithNull(item.totalBuy, false, false, 0, false),
+            "${formatIntWithNull(item.countBuy, false, false, 0, false)} times",
+          ]),
+          const SizedBox(width: 5,),
+          _itemSubItem(value: [
+            formatIntWithNull(item.totalSell, false, false, 0, false),
+            "${formatIntWithNull(item.countSell, false, false, 0, false)} times",
+          ]),
+          const SizedBox(width: 5,),
+          _itemSubItem(value: [
+            formatIntWithNull(item.totalLeft, false, false, 0, false),
+            "${formatDecimalWithNull(item.totalPercentage, 100, 2)} %",
+          ]),
         ],
       ),
     );
   }
 
-  Widget _showArrowIcon() {
-    return const Center(
-      child: Icon(
-        Ionicons.caret_down,
-        color: textPrimary,
-        size: 11,
+  Widget _itemSubText({
+    required String header,
+    Color? headerColor,
+    FontWeight? headerWeight,
+    required String value,
+    String? subText
+  }) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                )
+              ),
+            ),
+            child: Text(
+              header,
+              style: TextStyle(
+                fontSize: 12,
+                color: (headerColor ?? textPrimary),
+                fontWeight: (headerWeight ?? FontWeight.normal)
+              ),
+            )
+          ),
+          const SizedBox(height: 5,),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 10,
+            ),
+          ),
+          const SizedBox(height: 2,),
+          Visibility(
+            visible: (subText != null),
+            child: Text(
+              (subText ?? ''),
+              style: const TextStyle(
+                fontSize: 10,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _itemSubItem({required List<String> value}) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: List<Widget>.generate(value.length, (index) {
+          return Text(
+            value[index],
+            style: const TextStyle(
+              fontSize: 10,
+            ),
+          );
+        }),
       ),
     );
   }

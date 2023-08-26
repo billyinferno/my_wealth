@@ -172,6 +172,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
+                                  height: 1.0,
                                 ),
                               ),
                               const SizedBox(width: 10,),
@@ -375,7 +376,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                         textAlign: TextAlign.right,
                       ),
                     ),
-                    const SizedBox(width: 10,),
+                    const SizedBox(width: 5,),
                     CompanyInfoBox(
                       header: "Monthly",
                       headerAlign: MainAxisAlignment.end,
@@ -441,6 +442,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 Expanded(
                   flex: 3,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -463,6 +465,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -485,6 +488,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -507,6 +511,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(

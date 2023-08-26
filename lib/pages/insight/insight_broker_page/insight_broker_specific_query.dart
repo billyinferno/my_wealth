@@ -865,6 +865,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       initialDateRange: DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
       confirmText: 'Done',
       currentDate: _dateCurrent.toLocal(),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
 
     // check if we got the result or not?

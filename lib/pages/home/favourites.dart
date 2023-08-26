@@ -77,6 +77,11 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
                   TabBar(
                     controller: _tabController,
                     isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    indicatorColor: accentColor,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelColor: textPrimary,
+                    unselectedLabelColor: textPrimary,
                     tabs: const <Widget>[
                       Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),
@@ -190,7 +195,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
                   ),
                 ],
               ),
-              child: FavouriteList(
+              child: SimpleListItem(
                 name: _generateName(type, fave.favouritesCompanyName, fave.favouritesSymbol),
                 date: df.format(fave.favouritesLastUpdate.toLocal()),
                 price: fave.favouritesNetAssetValue,

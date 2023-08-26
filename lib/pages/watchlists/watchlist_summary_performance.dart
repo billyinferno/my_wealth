@@ -204,7 +204,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                               _rowItem(text: "VALUE", value: _totalValue),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -216,7 +216,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                               _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -436,7 +436,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
               fontSize: 10,
             ),
           ),
-          const SizedBox(height: 2,),
           Text(
             formatCurrency(value, false, true, true, 2),
             style: TextStyle(

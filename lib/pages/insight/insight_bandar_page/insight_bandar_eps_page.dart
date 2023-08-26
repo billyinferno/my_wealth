@@ -305,6 +305,7 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               _epsList[index].code,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                height: 1.2,
                               ),
                             ),
                             const SizedBox(width: 5,),
@@ -425,7 +426,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
               fontSize: 10,
             ),
           ),
-          const SizedBox(height: 2,),
           Text(
             value,
             style: TextStyle(

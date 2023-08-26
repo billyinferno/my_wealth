@@ -172,7 +172,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                               ),
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(8),
                                   color: primaryDark,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +184,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(height: 5,),
+                                      const SizedBox(height: 2,),
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -244,7 +244,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                               ),
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(8),
                                   color: primaryDark,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +256,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(height: 5,),
+                                      const SizedBox(height: 2,),
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -359,7 +359,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 5,),
                   Center(
                     child: Text(
                       _df.format(_brokerTopList!.brokerSummaryDate.toLocal()),
@@ -370,7 +370,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 8,),
                   SizedBox(
                     width: double.infinity,
                     child: CupertinoSegmentedControl(
@@ -440,7 +440,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 5,),
                   Center(
                     child: Text(
                       _df.format(_brokerTopTransaction.brokerSummaryDate.toLocal()),
@@ -451,7 +451,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 8,),
                   SizedBox(
                     width: double.infinity,
                     child: CupertinoSegmentedControl(
@@ -520,7 +520,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 8,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,

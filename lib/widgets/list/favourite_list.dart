@@ -3,7 +3,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 
-class FavouriteList extends StatelessWidget {
+class SimpleListItem extends StatelessWidget {
   final String name;
   final String date;
   final double price;
@@ -11,7 +11,7 @@ class FavouriteList extends StatelessWidget {
   final double priceChange;
   final int riskFactor;
 
-  const FavouriteList({ Key? key, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor }) : super(key: key);
+  const SimpleListItem({ Key? key, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class FavouriteList extends StatelessWidget {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 5,),
                   const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -96,7 +96,6 @@ class FavouriteList extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 5,),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,

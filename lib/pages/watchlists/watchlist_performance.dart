@@ -192,7 +192,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -241,7 +240,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 8,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -253,7 +252,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                               _rowChild(headerText: "VALUE", valueText: formatCurrency(_watchlistComputation.totalValue)),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -265,7 +264,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                               _rowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -552,7 +551,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
               ),
             ),
           ),
-          const SizedBox(height: 2,),
           Text(
             valueText,
             style: TextStyle(

@@ -218,7 +218,6 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
               fontWeight: FontWeight.bold,
               color: extendedLight,
             ),
-            const SizedBox(height: 5,),
             _text(
               text: text,
               color: colorUse

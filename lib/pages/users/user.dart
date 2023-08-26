@@ -72,7 +72,7 @@ class _UserPageState extends State<UserPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 25,),
+            const SizedBox(height: 12,),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

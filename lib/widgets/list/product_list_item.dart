@@ -106,7 +106,7 @@ class ProductListItem extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 5,),
+                                  const SizedBox(height: 2,),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -117,7 +117,7 @@ class ProductListItem extends StatelessWidget {
                                           fontSize: 12,
                                         ),
                                       ),
-                                      const SizedBox(width: 5,),
+                                      const SizedBox(width: 2,),
                                       Visibility(
                                         visible: (subTitle == null ? false : true),
                                         child: Row(
@@ -140,7 +140,7 @@ class ProductListItem extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 5,),
+                                  const SizedBox(height: 2,),
                                   _priceItem(netAssetValue: netAssetValue, oneDay: oneDay),
                                 ],
                               ),
@@ -153,7 +153,7 @@ class ProductListItem extends StatelessWidget {
                                 Text(
                                   formatCurrencyWithNull(value, false, false, false),
                                 ),
-                                const SizedBox(height: 5,),
+                                const SizedBox(height: 2,),
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -174,7 +174,7 @@ class ProductListItem extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 5,),
+                                const SizedBox(height: 2,),
                                 _productItem(
                                   icon: Ionicons.wallet_outline,
                                   iconColor: realisedColor,

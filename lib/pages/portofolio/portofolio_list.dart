@@ -226,125 +226,167 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Text(
                         "Total Value",
                         style: TextStyle(
                           fontSize: 12,
                         ),
                       ),
-                      const SizedBox(height: 5,),
-                      Text(
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "Unrealised Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Text(
                         formatCurrency(_args.value, false, false, false),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
                         ),
                       ),
-                      const SizedBox(height: 5,),
-                      const Text(
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                trendIcon,
+                                size: 15,
+                                color: trendColor,
+                              ),
+                              const SizedBox(width: 5,),
+                              Text(
+                                formatCurrency((_args.unrealised ?? 0), false, false, false),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: trendColor
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "${(_args.unrealised ?? 0) > 0 ? '+' : ''}${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 2)}%",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                              color: trendColor
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 5),
+                const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Text(
                         "Total Cost",
                         style: TextStyle(
                           fontSize: 12,
                         ),
                       ),
-                      const SizedBox(height: 5,),
-                      Text(
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "Realised Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Text(
                         formatCurrency(_args.cost, false, false, false),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "Unrealised Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            trendIcon,
-                            size: 15,
-                            color: trendColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrency((_args.unrealised ?? 0), false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: trendColor
-                            ),
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Ionicons.wallet_outline,
+                                size: 15,
+                                color: realisedColor,
+                              ),
+                              const SizedBox(width: 5,),
+                              Text(
+                                formatCurrencyWithNull(_args.realised, false, false, false),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: realisedColor
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      Text(
-                        "${(_args.unrealised ?? 0) > 0 ? '+' : ''}${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 2)}%",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                          color: trendColor
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      const Text(
-                        "Realised Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Ionicons.wallet_outline,
-                            size: 15,
-                            color: realisedColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrencyWithNull(_args.realised, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: realisedColor
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           BarChart(
             data: _barChartData,

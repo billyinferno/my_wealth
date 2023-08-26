@@ -200,7 +200,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               Text(_df.format(_index.indexLastUpdate.toLocal())),
                             ],
                           ),
-                          const SizedBox(height: 20,),
+                          const SizedBox(height: 8,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -233,7 +233,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 3,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -266,7 +266,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 3,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -299,7 +299,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 3,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -557,7 +557,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(width: 10,),
+        const SizedBox(width: 3,),
         Expanded(
           child: Container(
             color: primaryColor,
@@ -569,6 +569,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -590,6 +591,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                 Expanded(
                   flex: 1,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -612,6 +614,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                 Expanded(
                   flex: 1,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -634,6 +637,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                 Expanded(
                   flex: 1,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(

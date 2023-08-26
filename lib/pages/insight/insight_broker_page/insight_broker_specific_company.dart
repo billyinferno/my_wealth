@@ -435,6 +435,11 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                   ),
                   TabBar(
                     controller: _tabController,
+                    tabAlignment: TabAlignment.start,
+                    indicatorColor: accentColor,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelColor: textPrimary,
+                    unselectedLabelColor: textPrimary,
                     tabs: const <Widget>[
                       Tab(text: 'BROKER SUMMARY'),
                       Tab(text: 'TOP BROKER',)
@@ -1009,6 +1014,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
           DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
       confirmText: 'Done',
       currentDate: _dateCurrent.toLocal(),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
 
     // check if we got the result or not?

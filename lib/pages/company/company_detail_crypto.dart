@@ -178,6 +178,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
+                                  height: 1.0,
                                 ),
                               ),
                               const SizedBox(width: 10,),
@@ -222,7 +223,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                               Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
                             ],
                           ),
-                          const SizedBox(height: 20,),
+                          const SizedBox(height: 10,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -255,7 +256,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -415,7 +416,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 3,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -439,7 +440,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 3,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -463,7 +464,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 3,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -487,7 +488,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 3,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -511,7 +512,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 3,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -544,7 +545,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 3,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -606,6 +607,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 Expanded(
                   flex: 3,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -628,6 +630,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -650,6 +653,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -672,6 +676,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
+                    height: 21,
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(

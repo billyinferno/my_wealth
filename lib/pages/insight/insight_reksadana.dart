@@ -403,7 +403,7 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
             });
           },
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

@@ -285,7 +285,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                             color: accentColor,
                           ),
                         ),
-                        const SizedBox(height: 5,),
+                        const SizedBox(height: 2,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -295,7 +295,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                             _columnInfo(title: "AVG Daily", value: "${formatDecimalWithNull(_sidewayList[index].avgDaily, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].avgDaily, 0)),
                           ],
                         ),
-                        const SizedBox(height: 5,),
+                        const SizedBox(height: 2,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -363,7 +363,6 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
               color: (titleColor ?? extendedLight),
             ),
           ),
-          const SizedBox(height: 2,),
           Text(
             value,
             style: TextStyle(

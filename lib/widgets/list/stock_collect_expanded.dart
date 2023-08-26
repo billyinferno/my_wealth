@@ -87,7 +87,6 @@ class StockCollectExpanded extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 5,),
         Text(
           "Total Broker ${data.data.length}",
           style: const TextStyle(
@@ -280,14 +279,12 @@ class StockCollectExpanded extends StatelessWidget {
               ),
             )
           ),
-          const SizedBox(height: 5,),
           Text(
             value,
             style: const TextStyle(
               fontSize: 10,
             ),
           ),
-          const SizedBox(height: 2,),
           Visibility(
             visible: (subText != null),
             child: Text(

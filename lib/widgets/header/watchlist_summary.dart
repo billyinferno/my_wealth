@@ -97,6 +97,7 @@ class WatchlistSummary extends StatelessWidget {
                                     style: const TextStyle(
                                       fontSize: 35,
                                       fontWeight: FontWeight.bold,
+                                      height: 0.9,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
@@ -187,6 +188,7 @@ class WatchlistSummary extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 35,
                               fontWeight: FontWeight.bold,
+                              height: 0.9,
                             ),
                           ),
                         ],

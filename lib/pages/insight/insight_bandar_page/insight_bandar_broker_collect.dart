@@ -550,6 +550,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       initialDateRange: DateTimeRange(start: _fromDate!.toLocal(), end: _toDate!.toLocal()),
       confirmText: 'Done',
       currentDate: _maxBrokerDate!.toLocal(),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
 
     // check if we got the result or not?

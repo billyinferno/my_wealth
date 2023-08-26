@@ -41,46 +41,49 @@ class ExpandedTileView extends StatelessWidget {
     Color headerRiskColor = (isVisible ? watchlistResult.headerRiskColor : Colors.white);
     Color subHeaderRiskColor = (isVisible ? watchlistResult.subHeaderRiskColor : Colors.white);
 
-    return ExpansionTile(
-      key: Key(key.toString() + isShowedLots.toString()),
-      tilePadding: const EdgeInsets.all(0),
-      childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-      backgroundColor: primaryColor,
-      collapsedBackgroundColor: primaryColor,
-      iconColor: primaryLight,
-      collapsedIconColor: primaryLight,
-      title: ExpandedTileTitle(
-        name: (watchlist.watchlistCompanySymbol!.isNotEmpty ? "(${watchlist.watchlistCompanySymbol}) ${watchlist.watchlistCompanyName}" : watchlist.watchlistCompanyName),
-        buy: watchlistResult.totalBuy,
-        sell: watchlistResult.totalSell,
-        share: (isInLot ? watchlistResult.totalShare / 100 : watchlistResult.totalShare),
-        shareTitle: (isInLot ? "Lot" : (shareTitle ?? "Shares")),
-        price: (watchlist.watchlistCompanyNetAssetValue ?? 0),
-        prevPrice: watchlist.watchlistCompanyPrevPrice,
-        gain: (isVisible ? watchlistResult.totalGain : null),
-        lastUpdate: (watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(watchlist.watchlistCompanyLastUpdate!.toLocal())),
-        riskColor: headerRiskColor,
-        checkThousandOnPrice: (checkThousandOnPrice ?? false),
-        subHeaderRiskColor: subHeaderRiskColor,
-        totalDayGain: (isVisible ? watchlistResult.totalDayGain : null),
-        totalValue: (isVisible ? watchlistResult.totalValue : null),
-        totalCost: (isVisible ? watchlistResult.totalCost : null),
-        averagePrice: (isVisible ? watchlistResult.averagePrice : null),
+    return ListTileTheme(
+      contentPadding: const EdgeInsets.all(0),
+      child: ExpansionTile(
+        key: Key(key.toString() + isShowedLots.toString()),
+        tilePadding: const EdgeInsets.all(0),
+        childrenPadding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+        backgroundColor: primaryColor,
+        collapsedBackgroundColor: primaryColor,
+        iconColor: primaryLight,
+        collapsedIconColor: primaryLight,
+        title: ExpandedTileTitle(
+          name: (watchlist.watchlistCompanySymbol!.isNotEmpty ? "(${watchlist.watchlistCompanySymbol}) ${watchlist.watchlistCompanyName}" : watchlist.watchlistCompanyName),
+          buy: watchlistResult.totalBuy,
+          sell: watchlistResult.totalSell,
+          share: (isInLot ? watchlistResult.totalShare / 100 : watchlistResult.totalShare),
+          shareTitle: (isInLot ? "Lot" : (shareTitle ?? "Shares")),
+          price: (watchlist.watchlistCompanyNetAssetValue ?? 0),
+          prevPrice: watchlist.watchlistCompanyPrevPrice,
+          gain: (isVisible ? watchlistResult.totalGain : null),
+          lastUpdate: (watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(watchlist.watchlistCompanyLastUpdate!.toLocal())),
+          riskColor: headerRiskColor,
+          checkThousandOnPrice: (checkThousandOnPrice ?? false),
+          subHeaderRiskColor: subHeaderRiskColor,
+          totalDayGain: (isVisible ? watchlistResult.totalDayGain : null),
+          totalValue: (isVisible ? watchlistResult.totalValue : null),
+          totalCost: (isVisible ? watchlistResult.totalCost : null),
+          averagePrice: (isVisible ? watchlistResult.averagePrice : null),
+        ),
+        initiallyExpanded: isShowedLots,
+        collapsedTextColor: textPrimary,
+        textColor: textPrimary,
+        children: List<Widget>.generate(watchlist.watchlistDetail.length, (index) {
+          return ExpandedTileChildren(
+            date: dt.format(watchlist.watchlistDetail[index].watchlistDetailDate),
+            shares: watchlist.watchlistDetail[index].watchlistDetailShare,
+            isInLot: isInLot,
+            price: watchlist.watchlistDetail[index].watchlistDetailPrice,
+            currentPrice: watchlist.watchlistCompanyNetAssetValue!,
+            averagePrice: watchlistResult.averagePrice,
+            risk: risk,
+          );
+        }),
       ),
-      initiallyExpanded: isShowedLots,
-      collapsedTextColor: textPrimary,
-      textColor: textPrimary,
-      children: List<Widget>.generate(watchlist.watchlistDetail.length, (index) {
-        return ExpandedTileChildren(
-          date: dt.format(watchlist.watchlistDetail[index].watchlistDetailDate),
-          shares: watchlist.watchlistDetail[index].watchlistDetailShare,
-          isInLot: isInLot,
-          price: watchlist.watchlistDetail[index].watchlistDetailPrice,
-          currentPrice: watchlist.watchlistCompanyNetAssetValue!,
-          averagePrice: watchlistResult.averagePrice,
-          risk: risk,
-        );
-      }),
     );
   }
 }

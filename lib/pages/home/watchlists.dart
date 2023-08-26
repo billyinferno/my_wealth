@@ -249,6 +249,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                   TabBar(
                     controller: _tabController,
                     isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    indicatorColor: accentColor,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelColor: textPrimary,
+                    unselectedLabelColor: textPrimary,
                     tabs: const <Widget>[
                       Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),

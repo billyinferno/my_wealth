@@ -179,7 +179,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                             ),
                             const SizedBox(width: 2,),
                             Text(
-                              "(${(priceDiff > 0 ? "+" : "-")}${formatIntWithNull(priceDiff, false, false)})",
+                              "(${(priceDiff > 0 ? "+" : (priceDiff == 0 ? "" : "-"))}${formatIntWithNull(priceDiff, false, false)})",
                               style: TextStyle(
                                 fontSize: 10,
                                 color: (priceDiff < 0 ? secondaryColor : (priceDiff > 0 ? Colors.green : textPrimary)),
@@ -187,7 +187,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(height: 5,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -237,10 +237,10 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
             header,
             style: const TextStyle(
               fontSize: 10,
+              fontWeight: FontWeight.bold,
             ),
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 5,),
           Text(
             "${formatDecimalWithNull(value, 100, 2)}%",
             style: TextStyle(

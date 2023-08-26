@@ -87,7 +87,7 @@ class MyTableView extends StatelessWidget {
           children: <Widget>[
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
               color: item.color,
               child: Center(
                 child: Text(
@@ -101,7 +101,7 @@ class MyTableView extends StatelessWidget {
             ...List<Widget>.generate(item.content.length, (index) {
               return Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(2),
+                padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
                 child: Align(
                   alignment: (item.textAlign ?? Alignment.center),
                   child: Text(
@@ -134,7 +134,7 @@ class MyTableView extends StatelessWidget {
             children: <Widget>[
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(2),
+                padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
                 color: item.color,
                 child: Center(
                   child: Text(
@@ -148,7 +148,7 @@ class MyTableView extends StatelessWidget {
               ...List<Widget>.generate(item.content.length, (index) {
                 return Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(2),
+                  padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
                   child: Align(
                     alignment: (item.textAlign ?? Alignment.center),
                     child: Text(

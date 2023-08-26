@@ -218,18 +218,19 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                   lastDate: _toDateMax,
                   initialDateRange: initialDateRange,
                   currentDate: DateTime.now().toLocal(),
+                  initialEntryMode: DatePickerEntryMode.calendarOnly,
                 );
-
+            
                 if (result != null) {
                   // means we got the result, ensure it's not the same with from date and to date
                   if ((result.start.compareTo(_fromDateCurrent) != 0) || (result.end.compareTo(_toDateCurrent) != 0)) {
                     // set the broker from and to date
                     _fromDateCurrent = result.start;
                     _toDateCurrent = result.end;
-
+            
                     // set the start back into 0
                     _start = 0;
-
+            
                     // get the broker summary
                     await _refreshTransactionList().onError((error, stackTrace) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));

@@ -68,7 +68,7 @@ class ExpandedTileTitle extends StatelessWidget {
           children: <Widget>[
             Container(
               width: 5,
-              height: 55,
+              height: 50,
               color: rColor,
             ),
             Expanded(
@@ -77,7 +77,7 @@ class ExpandedTileTitle extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,7 +248,7 @@ class ExpandedTileTitle extends StatelessWidget {
   Widget _subHeaderInformation({required String header, required String value}) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
         decoration: const BoxDecoration(
             border: Border(
           top: BorderSide(

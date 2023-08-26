@@ -68,7 +68,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
           alignment: Alignment.centerLeft,
           child: Container(
             width: 30,
-            height: 30,
+            height: 32,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,
@@ -85,7 +85,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
           alignment: Alignment.centerRight,
           child: Container(
             width: 30,
-            height: 30,
+            height: 32,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,

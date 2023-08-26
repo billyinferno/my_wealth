@@ -229,7 +229,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   const SizedBox(width: 10,),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
                       color: primaryColor,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,7 +317,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(height: 5,),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -508,6 +508,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         TabBar(
           controller: _tabController,
           isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorColor: accentColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelColor: textPrimary,
+          unselectedLabelColor: textPrimary,
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
             Tab(text: 'COMPARE'),
@@ -569,7 +574,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 ),
               ],
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 5,),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -602,7 +607,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 ),
               ],
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 5,),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -715,7 +720,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        CompareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
                         CompareFields(color: primaryDark, borderColor: primaryLight, text: "Type", fontWeight: FontWeight.bold),
                         CompareFields(color: primaryDark, borderColor: primaryLight, text: "Last Price", fontWeight: FontWeight.bold),
                         CompareFields(color: primaryDark, borderColor: primaryLight, text: "Daily", fontWeight: FontWeight.bold),
@@ -775,7 +779,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          const CompareFields(color: Colors.transparent, borderColor: Colors.transparent, text: "Info", fontWeight: FontWeight.bold),
           CompareFields(
             color: primaryDark,
             borderColor: color,
@@ -785,84 +788,83 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             color: primaryDark,
             borderColor: color,
             text: formatCurrencyWithNull((companyA?.companyNetAssetValue)),
-            isBigger: (companyB != null ? (companyA?.companyNetAssetValue ?? 0) > (companyB.companyNetAssetValue ?? 0) : true),
-            showCompare: (compare != null ? true : false),
+            showCompare: false,
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companyDailyReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companyDailyReturn ?? 0) > (companyB.companyDailyReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyDailyReturn ?? 0) - (companyB.companyDailyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companyWeeklyReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companyWeeklyReturn ?? 0) > (companyB.companyWeeklyReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyWeeklyReturn ?? 0) - (companyB.companyWeeklyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companyMonthlyReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companyMonthlyReturn ?? 0) > (companyB.companyMonthlyReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyMonthlyReturn ?? 0) - (companyB.companyMonthlyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companyQuarterlyReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companyQuarterlyReturn ?? 0) > (companyB.companyQuarterlyReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyQuarterlyReturn ?? 0) - (companyB.companyQuarterlyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companySemiAnnualReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companySemiAnnualReturn ?? 0) > (companyB.companySemiAnnualReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companySemiAnnualReturn ?? 0) - (companyB.companySemiAnnualReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companyYearlyReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companyYearlyReturn ?? 0) > (companyB.companyYearlyReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyYearlyReturn ?? 0) - (companyB.companyYearlyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: "${formatDecimalWithNull(companyA?.companyYtdReturn, 100)}%",
-            isBigger: (companyB != null ? (companyA?.companyYtdReturn ?? 0) > (companyB.companyYtdReturn ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyYtdReturn ?? 0) - (companyB.companyYtdReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: formatCurrencyWithNull(companyA?.companyAssetUnderManagement!),
-            isBigger: (companyB != null ? (companyA?.companyAssetUnderManagement ?? 0) > (companyB.companyAssetUnderManagement ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyAssetUnderManagement ?? 0) - (companyB.companyAssetUnderManagement ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: formatCurrencyWithNull(companyA?.companyTotalUnit!),
-            isBigger: (companyB != null ? (companyA?.companyTotalUnit ?? 0) > (companyB.companyTotalUnit ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyTotalUnit ?? 0) - (companyB.companyTotalUnit ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: ("${companyA != null ? companyA.companyYearlyRating! : '-'}"),
-            isBigger: (companyB != null ? (companyA?.companyYearlyRating ?? 0) > (companyB.companyYearlyRating ?? 0) : true),
+            isBigger: (companyB != null ? ((companyA?.companyYearlyRating ?? 0) - (companyB.companyYearlyRating ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
             text: ("${companyA != null ? companyA.companyYearlyRisk! : '-'}"),
-            isBigger: (companyB != null ? (companyA?.companyYearlyRisk ?? 0) < (companyB.companyYearlyRisk ?? 0) : true),
+            isBigger: (companyB != null ? ((companyB.companyYearlyRisk ?? 0) - (companyA?.companyYearlyRisk ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
         ],
@@ -891,6 +893,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     Expanded(
                       flex: 3,
                       child: Container(
+                        height: 21,
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
@@ -913,6 +916,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     Expanded(
                       flex: 2,
                       child: Container(
+                        height: 21,
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
@@ -935,6 +939,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     Expanded(
                       flex: 2,
                       child: Container(
+                        height: 21,
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
@@ -957,6 +962,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     Expanded(
                       flex: 2,
                       child: Container(
+                        height: 21,
                         decoration: const BoxDecoration(
                           border: Border(
                             bottom: BorderSide(

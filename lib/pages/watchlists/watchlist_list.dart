@@ -216,7 +216,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(height: 2,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -260,7 +260,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 10,),
+                                  const SizedBox(height: 2,),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -278,7 +278,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   )
                                 ],
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(height: 5,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -299,7 +299,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(height: 5,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -320,7 +320,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(height: 5,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -341,7 +341,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(height: 5,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,

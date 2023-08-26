@@ -131,8 +131,9 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       child: Text(
                         "AVG",
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -141,8 +142,9 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       child: Text(
                         "MA10",
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -151,8 +153,9 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       child: Text(
                         "MA20",
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -161,8 +164,9 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                       child: Text(
                         "MA30",
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),

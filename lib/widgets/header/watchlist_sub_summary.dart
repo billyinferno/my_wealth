@@ -44,7 +44,7 @@ class WatchlistSubSummary extends StatelessWidget {
       ),
       child: Container(
         width: double.infinity,
-        height: 86,
+        height: 94,
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,6 +76,7 @@ class WatchlistSubSummary extends StatelessWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
+                          height: 1.0,
                         ),
                       ),
                       const SizedBox(width: 5,),

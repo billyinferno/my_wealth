@@ -3,6 +3,7 @@ import 'package:my_wealth/pages/insight/insight_bandar.dart';
 import 'package:my_wealth/pages/insight/insight_broker.dart';
 import 'package:my_wealth/pages/insight/insight_reksadana.dart';
 import 'package:my_wealth/pages/insight/insight_stock.dart';
+import 'package:my_wealth/themes/colors.dart';
 
 class InsightPage extends StatefulWidget {
   const InsightPage({Key? key}) : super(key: key);
@@ -36,6 +37,11 @@ class InsightPageState extends State<InsightPage> with SingleTickerProviderState
         TabBar(
           controller: _tabController,
           isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorColor: accentColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelColor: textPrimary,
+          unselectedLabelColor: textPrimary,
           tabs: const <Widget>[
             Tab(text: 'BROKER',),
             Tab(text: 'STOCK',),

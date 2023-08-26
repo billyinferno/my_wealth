@@ -257,7 +257,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 5,),
                                 Center(
                                   child: Text(
                                     "${formatDecimal((sectorAverage * 100), 2)}%",
@@ -361,7 +360,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   size: 25,
                                   color: extendedLight,
                                 ),
-                                const SizedBox(height: 5,),
                                 Center(
                                   child: Text(
                                     _sectorNameList[index].sectorFriendlyname,
@@ -773,7 +771,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                 color: extendedLight,
               ),
             ),
-            const SizedBox(height: 5,),
             Text(
               value,
               style: const TextStyle(
@@ -897,7 +894,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
             });
           },
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

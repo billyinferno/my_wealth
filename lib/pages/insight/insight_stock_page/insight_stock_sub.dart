@@ -218,7 +218,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                   ),
                 ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 5,),
               _generateTopWorseList(type: 'top', codeColor: accentColor, gainColor: Colors.green),
               const SizedBox(height: 20,),
               const Center(
@@ -229,7 +229,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                   ),
                 ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 5,),
               _generateTopWorseList(type: 'worse', codeColor: accentColor, gainColor: secondaryColor),
             ],
           ),
@@ -357,7 +357,6 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                   ),
                 ),
               ),
-              const SizedBox(height: 5,),
               Center(
                 child: Text(
                   "${formatDecimal((sectorAverage * 100), 2)}%",
@@ -474,7 +473,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
             });
           },
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

@@ -271,81 +271,118 @@ class _PortofolioPageState extends State<PortofolioPage> {
             child: Container(
               color: bgColor,
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Row(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        _smallText("Total Value"),
-                        _largeText(formatCurrency(value, false, true, false), summarySize),
-                        const SizedBox(height: 5,),
-                        _smallText("Total Cost"),
-                        const SizedBox(height: 5,),
-                        Text(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 3,
+                        child: _smallText("Total Value"),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: _smallText("Total Unrealised")
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 3,
+                        child: _largeText(formatCurrency(value, false, true, false), summarySize),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Icon(
+                                trendIcon,
+                                color: trendColor,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 5,),
+                              Text(
+                                formatCurrency(gain, false, true, false),
+                                style: TextStyle(
+                                  color: trendColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 3,
+                        child: _smallText("Total Cost"),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: _smallText("Total Realised")
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 3,
+                        child: Text(
                           formatCurrency(cost, false, true, false),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        _smallText("Total Unrealised"),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Icon(
-                              trendIcon,
-                              color: trendColor,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 5,),
-                            Text(
-                              formatCurrency(gain, false, true, false),
-                              style: TextStyle(
-                                color: trendColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        _smallText("Total Realised"),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Icon(
-                              Ionicons.wallet_outline,
-                              color: realisedColor,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 5,),
-                            Text(
-                              formatCurrency(realised, false, true, false),
-                              style: TextStyle(
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Icon(
+                                Ionicons.wallet_outline,
                                 color: realisedColor,
-                                fontWeight: FontWeight.bold,
+                                size: 16,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 5,),
+                              Text(
+                                formatCurrency(realised, false, true, false),
+                                style: TextStyle(
+                                  color: realisedColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

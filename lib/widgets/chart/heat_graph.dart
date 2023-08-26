@@ -61,7 +61,7 @@ class HeatGraph extends StatelessWidget {
                       child: Text(
                         weekDayName[index],
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 9,
                         ),
                       ),
                     );
@@ -179,7 +179,7 @@ class HeatGraph extends StatelessWidget {
                 // "Week " + _weekNumber.toString() + " (" + _monthName[_month-1] + ")",
                 "${df.format(startDate)} - ${df.format(endDate!)}",
                 style: const TextStyle(
-                  fontSize: 10,
+                  fontSize: 9,
                 ),
               ),
             ),

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/model/broker/broker_model.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
@@ -11,6 +10,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:provider/provider.dart';
 
 class BrokerPage extends StatefulWidget {
@@ -26,8 +26,6 @@ class _BrokerPageState extends State<BrokerPage> {
   final BrokerAPI _brokerAPI = BrokerAPI();
   final TextEditingController _searchController = TextEditingController();
   final Map<String, String> _filterList = {};
-  final TextStyle _filterTypeSelected = const TextStyle(fontSize: 10, color: accentColor, fontWeight: FontWeight.bold);
-  final TextStyle _filterTypeUnselected = const TextStyle(fontSize: 10, color: primaryLight, fontWeight: FontWeight.normal);
 
   late List<BrokerModel> _brokerList;
   late List<BrokerModel> _filterBrokerList;
@@ -84,181 +82,22 @@ class _BrokerPageState extends State<BrokerPage> {
                 }),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-              color: primaryDark,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    "SORT",
-                    style: TextStyle(
-                      color: primaryLight,
-                      fontSize: 10,
-                    ),
-                  ),
-                  const SizedBox(width: 5,),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: (() {
-                        showModalBottomSheet<void>(
-                          context: context,
-                          backgroundColor: Colors.transparent,
-                          isDismissible: true,
-                          builder:(context) {
-                            return Container(
-                              height: 210,
-                              margin: const EdgeInsets.fromLTRB(10, 10, 10, 25),
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  const Center(
-                                    child: Text("Select Filter"),
-                                  ),
-                                  ..._filterList.entries.map((e) => GestureDetector(
-                                    onTap: (() {
-                                      setState(() {
-                                        _filterMode = e.key;
-                                        _sortedBrokerList();
-                                      });
-                                      // remove the modal sheet
-                                      Navigator.pop(context);
-                                    }),
-                                    child: Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: primaryLight,
-                                            width: 1.0,
-                                            style: BorderStyle.solid,
-                                          )
-                                        )
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 20,
-                                            height: 20,
-                                            decoration: BoxDecoration(
-                                              color: (_filterMode == e.key ? accentDark : Colors.transparent),
-                                              borderRadius: BorderRadius.circular(2),
-                                              border: Border.all(
-                                                color: accentDark,
-                                                width: 1.0,
-                                                style: BorderStyle.solid,
-                                              )
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                e.key,
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: (_filterMode == e.key ? textPrimary : accentColor),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10,),
-                                          Text(
-                                            e.value,
-                                            style: TextStyle(
-                                              color: (_filterMode == e.key ? accentColor : textPrimary),
-                                              fontWeight: (_filterMode == e.key ? FontWeight.bold : FontWeight.normal),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )).toList(),
-                                ],
-                              )
-                            );
-                          },
-                        );
-                      }),
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(_filterList[_filterMode] ?? 'Code'),
-                            ),
-                            const SizedBox(width: 5,),
-                            const Icon(
-                              Ionicons.caret_down,
-                              color: accentColor,
-                              size: 15,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 5,),
-                  GestureDetector(
-                    onTap: (() {
-                      if (_filterSort != "ASC") {
-                        // set state
-                        setState(() {
-                          _filterSort = "ASC";
-                          _sortedBrokerList();
-                        });
-                      }
-                    }),
-                    child: SizedBox(
-                      width: 35,
-                      child: Center(
-                        child: Text(
-                          "ASC",
-                          style: (_filterSort == "ASC" ? _filterTypeSelected : _filterTypeUnselected),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2,),
-                  GestureDetector(
-                    onTap: (() {
-                      if (_filterSort != "DESC") {
-                        // set state
-                        setState(() {
-                          _filterSort = "DESC";
-                          _sortedBrokerList();
-                        });
-                      }
-                    }),
-                    child: SizedBox(
-                      width: 35,
-                      child: Center(
-                        child: Text(
-                          "DESC",
-                          style: (_filterSort == "DESC" ? _filterTypeSelected : _filterTypeUnselected),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            SearchBox(
+              filterList: _filterList,
+              filterMode: _filterMode,
+              filterSort: _filterSort,
+              onFilterSelect: ((value) {
+                setState(() {
+                  _filterMode = value;
+                  _sortedBrokerList();
+                });
+              }),
+              onSortSelect: ((value) {
+                setState(() {
+                  _filterSort = value;
+                  _sortedBrokerList();
+                });
+              }),
             ),
             const SizedBox(height: 10,),
             Expanded(
@@ -323,7 +162,7 @@ class _BrokerPageState extends State<BrokerPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10,),
+                            const SizedBox(height: 3,),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,

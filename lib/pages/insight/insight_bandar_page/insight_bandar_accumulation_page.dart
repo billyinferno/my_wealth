@@ -715,6 +715,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
       initialDateRange: DateTimeRange(start: _fromDate.toLocal(), end: _toDate.toLocal()),
       confirmText: 'Done',
       currentDate: _currentDate.toLocal(),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
 
     // check if we got the result or not?

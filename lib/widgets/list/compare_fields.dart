@@ -9,7 +9,7 @@ class CompareFields extends StatelessWidget {
   final FontWeight? fontWeight;
   final TextAlign? textAlign;
   final bool? showCompare;
-  final bool? isBigger;
+  final double? isBigger;
   const CompareFields({
     Key? key,
     required this.color,
@@ -24,7 +24,18 @@ class CompareFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool currentShowCompare = (showCompare ?? false);
-    bool currentIsBigger = (isBigger ?? false);
+    double currentIsBigger = (isBigger ?? 0);
+
+    IconData currentIcon = Ionicons.remove;
+    Color currentColor = textPrimary;
+    if (currentIsBigger < 0) {
+      currentIcon = Ionicons.caret_down;
+      currentColor = secondaryLight;
+    }
+    if (currentIsBigger > 0) {
+      currentIcon = Ionicons.caret_up;
+      currentColor = Colors.green;
+    }
 
     return Container(
       width: double.infinity,
@@ -39,7 +50,7 @@ class CompareFields extends StatelessWidget {
         )
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
@@ -56,9 +67,9 @@ class CompareFields extends StatelessWidget {
           Visibility(
             visible: currentShowCompare,
             child: Icon(
-              (currentIsBigger ? Ionicons.caret_up : Ionicons.caret_down),
+              currentIcon,
               size: 10,
-              color: (currentIsBigger ? Colors.green : secondaryLight),
+              color: currentColor,
             )
           )
         ],

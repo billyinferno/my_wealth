@@ -505,7 +505,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                               onPressed: ((context) async {
                                 await ShowMyDialog(
                                   title: "Delete Detail",
-                                  text: "Are you sure to delete this detail?\nDate: ${_df.format(_watchlist.watchlistDetail[index].watchlistDetailDate)}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
+                                  text: "Are you sure to delete this detail?\nDate: ${_df.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
                                   confirmLabel: "Delete",
                                   cancelLabel: "Cancel"
                                 ).show(context).then((resp) async {

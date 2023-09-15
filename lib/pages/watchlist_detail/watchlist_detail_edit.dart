@@ -58,9 +58,9 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
       _txn = "s";
     }
     
-    _selectedDate = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailDate;
+    _selectedDate = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailDate.toLocal();
 
-    _prevDate = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailDate;
+    _prevDate = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailDate.toLocal();
     _prevShares = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailShare;
     // check if previous shares is less than zero, if so then we will make it positive
     if (_prevShares < 0) {

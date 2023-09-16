@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
@@ -362,10 +363,10 @@ class LoginPageState extends State<LoginPage> {
           debugPrint("3️⃣ Update user information");
         });
       }
-    }).onError((error, stackTrace) async {
-      debugPrint("⛔ $error");
+    }).onError((ClientException error, stackTrace) async {
+      debugPrint("⛔ ${error.message}");
 
-      if(error.toString() == "Exception: UnableToAccessAPI") {
+      if(error.message.toLowerCase() == "xmlhttprequest error.") {
         // show no connection to API
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to connect to API"));
       }

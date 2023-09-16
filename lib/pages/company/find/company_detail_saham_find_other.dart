@@ -73,10 +73,8 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
     if (_isLoading) return Container(color: primaryColor,);
 
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: (() async {
-          return false;
-        }),
+      child: PopScope(
+        canPop: false,
         child: Scaffold(
           appBar: AppBar(
             title: const Center(

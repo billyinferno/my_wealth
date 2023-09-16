@@ -50,7 +50,7 @@ class WatchlistListModel {
         "watchlist_company_symbol": watchlistCompanySymbol,
         "watchlist_company_net_asset_value": watchlistCompanyNetAssetValue!,
         "watchlist_company_prev_price": watchlistCompanyPrevPrice!,
-        "watchlist_company_last_update": (watchlistCompanyLastUpdate == null ? null : watchlistCompanyLastUpdate!.toIso8601String()),
+        "watchlist_company_last_update": (watchlistCompanyLastUpdate ?? watchlistCompanyLastUpdate!.toIso8601String()),
         "watchlist_favourite_id": watchlistFavouriteId,
         "watchlist_detail": List<dynamic>.from(watchlistDetail.map((x) => x.toJson())),
     };

@@ -139,7 +139,7 @@ class InfoFundamentalsModel {
         "debt_totalcap": debtTotalcap,
         "debt_ebitda": debtEbitda,
         "ebitda_interestexpense": ebitdaInterestexpense,
-        "created_at": (createdAt == null ? null : createdAt!.toIso8601String()),
-        "updated_at": (updatedAt == null ? null : updatedAt!.toIso8601String()),
+        "created_at": (createdAt ?? createdAt!.toIso8601String()),
+        "updated_at": (updatedAt ?? updatedAt!.toIso8601String()),
     };
 }

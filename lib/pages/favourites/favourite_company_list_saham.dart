@@ -60,10 +60,8 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: (() async {
-          return false;
-        }),
+      child: PopScope(
+        canPop: false,
         child: Scaffold(
           appBar: AppBar(
             title: const Center(

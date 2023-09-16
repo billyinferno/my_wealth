@@ -114,10 +114,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       currentIcon = Ionicons.caret_down;
     }
     // generate the actual page
-    return WillPopScope(
-      onWillPop: (() async {
-        return false;
-      }),
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           title: const Center(
@@ -232,7 +230,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Market Cap",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull((_companyDetail.companyMarketCap == null ? null : _companyDetail.companyMarketCap!.toDouble())),
+                                  formatCurrencyWithNull(_companyDetail.companyMarketCap?.toDouble()),
                                   textAlign: TextAlign.right,
                                 ),
                               ),

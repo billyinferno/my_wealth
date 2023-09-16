@@ -60,10 +60,8 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: (() async {
-          return false;
-        }),
+      child: PopScope(
+        canPop: false,
         child: Scaffold(
           appBar: AppBar(
             title: const Center(

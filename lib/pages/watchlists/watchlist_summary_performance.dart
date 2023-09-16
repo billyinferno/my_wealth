@@ -140,10 +140,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   }
 
   Widget _generatePage() {
-    return WillPopScope(
-      onWillPop: (() async {
-        return false;
-      }),
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(

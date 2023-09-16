@@ -108,10 +108,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
       currentIcon = Ionicons.caret_down;
     }
     
-    return WillPopScope(
-      onWillPop: (() async {
-        return false;
-      }),
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           title: const Center(

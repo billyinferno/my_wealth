@@ -58,10 +58,8 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
   }
 
   Widget _generatePage() {
-    return WillPopScope(
-      onWillPop: (() async {
-        return false;
-      }),
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           title: Center(

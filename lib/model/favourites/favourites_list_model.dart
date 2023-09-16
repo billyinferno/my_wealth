@@ -51,7 +51,7 @@ class FavouritesListModel {
         "favourites_symbol": favouritesSymbol,
         "favourites_company_type": favouritesCompanyType,
         "favourites_net_asset_value": favouritesNetAssetValue,
-        "favourites_last_update": (favouritesLastUpdate ?? favouritesLastUpdate!.toIso8601String()),
+        "favourites_last_update": (favouritesLastUpdate?.toIso8601String()),
         "favourites_id": favouritesId,
         "favourites_user_id": favouritesUserId,
     };

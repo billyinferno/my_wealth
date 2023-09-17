@@ -158,58 +158,63 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                   callback: (() {
                     showCupertinoModalPopup<void>(
                       context: context,
-                      builder: (BuildContext context) => CupertinoActionSheet(
-                        title: const Text(
-                          "Add Watchlist",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                          ),
-                        ),
-                        actions: <CupertinoActionSheetAction>[
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // navigate to reksadana
-                              WatchlistAddArgs args = WatchlistAddArgs(type: "reksadana");
-                              Navigator.popAndPushNamed(context, '/watchlist/add', arguments: args);
-                            }),
-                            child: const Text(
-                              "Mutual Fund",
+                      builder: ((BuildContext context) {
+                        return Container(
+                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                          child: CupertinoActionSheet(
+                            title: const Text(
+                              "Add Watchlist",
                               style: TextStyle(
                                 fontFamily: '--apple-system',
-                                color: textPrimary,
                               ),
                             ),
+                            actions: <CupertinoActionSheetAction>[
+                              CupertinoActionSheetAction(
+                                onPressed: (() {
+                                  // navigate to reksadana
+                                  WatchlistAddArgs args = WatchlistAddArgs(type: "reksadana");
+                                  Navigator.popAndPushNamed(context, '/watchlist/add', arguments: args);
+                                }),
+                                child: const Text(
+                                  "Mutual Fund",
+                                  style: TextStyle(
+                                    fontFamily: '--apple-system',
+                                    color: textPrimary,
+                                  ),
+                                ),
+                              ),
+                              CupertinoActionSheetAction(
+                                onPressed: (() {
+                                  // navigate to reksadana
+                                  WatchlistAddArgs args = WatchlistAddArgs(type: "saham");
+                                  Navigator.popAndPushNamed(context, '/watchlist/add', arguments: args);
+                                }),
+                                child: const Text(
+                                  "Stock",
+                                  style: TextStyle(
+                                    fontFamily: '--apple-system',
+                                    color: textPrimary,
+                                  ),
+                                ),
+                              ),
+                              CupertinoActionSheetAction(
+                                onPressed: (() {
+                                  // navigate to reksadana
+                                  WatchlistAddArgs args = WatchlistAddArgs(type: "crypto");
+                                  Navigator.popAndPushNamed(context, '/watchlist/add', arguments: args);
+                                }),
+                                child: const Text(
+                                  "Crypto",
+                                  style: TextStyle(
+                                    fontFamily: '--apple-system',
+                                    color: textPrimary,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // navigate to reksadana
-                              WatchlistAddArgs args = WatchlistAddArgs(type: "saham");
-                              Navigator.popAndPushNamed(context, '/watchlist/add', arguments: args);
-                            }),
-                            child: const Text(
-                              "Stock",
-                              style: TextStyle(
-                                fontFamily: '--apple-system',
-                                color: textPrimary,
-                              ),
-                            ),
-                          ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // navigate to reksadana
-                              WatchlistAddArgs args = WatchlistAddArgs(type: "crypto");
-                              Navigator.popAndPushNamed(context, '/watchlist/add', arguments: args);
-                            }),
-                            child: const Text(
-                              "Crypto",
-                              style: TextStyle(
-                                fontFamily: '--apple-system',
-                                color: textPrimary,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                        );
+                      }),
                     );
                   }),
                 ),

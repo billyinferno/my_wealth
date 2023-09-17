@@ -80,55 +80,60 @@ class HomePageState extends State<HomePage> {
               onPressed: (() {
                 showCupertinoModalPopup<void>(
                   context: context,
-                  builder: (BuildContext context) => CupertinoActionSheet(
-                    title: const Text(
-                      "Search Symbol",
-                      style: TextStyle(
-                        fontFamily: '--apple-system',
-                      ),
-                    ),
-                    actions: <CupertinoActionSheetAction>[
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          // navigate to reksadana
-                          Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
-                        }),
-                        child: const Text(
-                          "Mutual Fund",
+                  builder: ((BuildContext context) {
+                    return Container(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                      child: CupertinoActionSheet(
+                        title: const Text(
+                          "Search Symbol",
                           style: TextStyle(
                             fontFamily: '--apple-system',
-                            color: textPrimary,
                           ),
                         ),
+                        actions: <CupertinoActionSheetAction>[
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              // navigate to reksadana
+                              Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
+                            }),
+                            child: const Text(
+                              "Mutual Fund",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
+                              ),
+                            ),
+                          ),
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              // navigate to reksadana
+                              Navigator.popAndPushNamed(context, '/favourites/list/saham');
+                            }),
+                            child: const Text(
+                              "Stock",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
+                              ),
+                            ),
+                          ),
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              // navigate to reksadana
+                              Navigator.popAndPushNamed(context, '/favourites/list/crypto');
+                            }),
+                            child: const Text(
+                              "Crypto",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          // navigate to reksadana
-                          Navigator.popAndPushNamed(context, '/favourites/list/saham');
-                        }),
-                        child: const Text(
-                          "Stock",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      ),
-                      CupertinoActionSheetAction(
-                        onPressed: (() {
-                          // navigate to reksadana
-                          Navigator.popAndPushNamed(context, '/favourites/list/crypto');
-                        }),
-                        child: const Text(
-                          "Crypto",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
-                            color: textPrimary,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                    );
+                  }),
                 );
               }),
               icon: const Icon(Ionicons.search_outline)

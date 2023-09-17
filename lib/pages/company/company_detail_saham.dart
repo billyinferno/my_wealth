@@ -953,81 +953,86 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                   int? quarter;
                   await showCupertinoModalPopup<void>(
                     context: context,
-                    builder: (BuildContext context) => CupertinoActionSheet(
-                      title: const Text(
-                        "Select Period",
-                        style: TextStyle(
-                          fontFamily: '--apple-system',
-                        ),
-                      ),
-                      actions: <CupertinoActionSheetAction>[
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 5;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "Every Quarter",
+                    builder: ((BuildContext context) {
+                      return Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                        child: CupertinoActionSheet(
+                          title: const Text(
+                            "Select Period",
                             style: TextStyle(
                               fontFamily: '--apple-system',
-                              color: textPrimary,
                             ),
                           ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 1;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "3 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
+                          actions: <CupertinoActionSheetAction>[
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                quarter = 5;
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "Every Quarter",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system',
+                                  color: textPrimary,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 2;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "6 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                quarter = 1;
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "3 Month",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system',
+                                  color: textPrimary,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 3;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "9 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                quarter = 2;
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "6 Month",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system',
+                                  color: textPrimary,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: (() {
-                            quarter = 4;
-                            Navigator.pop(context);
-                          }),
-                          child: const Text(
-                            "12 Month",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
-                              color: textPrimary,
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                quarter = 3;
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "9 Month",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system',
+                                  color: textPrimary,
+                                ),
+                              ),
                             ),
-                          ),
+                            CupertinoActionSheetAction(
+                              onPressed: (() {
+                                quarter = 4;
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "12 Month",
+                                style: TextStyle(
+                                  fontFamily: '--apple-system',
+                                  color: textPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    }),
                   );
       
                   // check if quarter is null or not?

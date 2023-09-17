@@ -11,7 +11,9 @@ class FavouriteCompanyList extends StatelessWidget {
   final double value;
   final bool isFavourite;
   final VoidCallback onPress;
-  const FavouriteCompanyList({ Key? key, required this.companyId, required this.name, required this.type, required this.date, required this.value, required this.isFavourite, required this.onPress }) : super(key: key);
+  final double? subWidgetSpace;
+  final Widget? subWidget;
+  const FavouriteCompanyList({ Key? key, required this.companyId, required this.name, required this.type, required this.date, required this.value, required this.isFavourite, required this.onPress, this.subWidgetSpace, this.subWidget }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +82,8 @@ class FavouriteCompanyList extends StatelessWidget {
                       ),
                     ],
                   ),
+                  (subWidget == null ? const SizedBox.shrink() : SizedBox(height: (subWidgetSpace ?? 5),)),
+                  (subWidget ?? const SizedBox.shrink()),
                 ],
               ),
             ),

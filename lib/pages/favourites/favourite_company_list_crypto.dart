@@ -66,7 +66,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
           appBar: AppBar(
             title: const Center(
               child: Text(
-                "Add Favourites Crypto",
+                "Search Crypto",
                 style: TextStyle(
                   color: secondaryColor,
                 ),

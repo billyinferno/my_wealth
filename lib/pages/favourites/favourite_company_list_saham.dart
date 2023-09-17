@@ -66,7 +66,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
           appBar: AppBar(
             title: const Center(
               child: Text(
-                "Add Favourites Stock",
+                "Search Stock",
                 style: TextStyle(
                   color: secondaryColor,
                 ),

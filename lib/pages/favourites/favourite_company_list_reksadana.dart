@@ -8,6 +8,7 @@ import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
@@ -37,6 +38,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
   bool _isSaham = true;
   bool _isPasarUang = true;
   bool _isPendapatanTetap = true;
+  bool _isShowAll = true;
   int _currentRatingNum = 0;
   int _currentRiskNum = 0;
 
@@ -79,7 +81,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
           appBar: AppBar(
             title: const Center(
               child: Text(
-                "Add Favourites Mutual Fund",
+                "Search Mutual Fund",
                 style: TextStyle(
                   color: secondaryColor,
                 ),
@@ -283,6 +285,26 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                                     filterData();
                                   }),
                                 ),
+                                const SizedBox(height: 10,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Transform.scale(
+                                      scale: 1,
+                                      child: CupertinoSwitch(
+                                        value: _isShowAll,
+                                        onChanged: ((val) {
+                                          _isShowAll = val;
+                                          filterData();
+                                        }),
+                                        activeColor: accentDark,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5,),
+                                    const Text("Show All"),
+                                  ],
+                                )
                               ],
                             ),
                           ],
@@ -331,6 +353,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                         date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
                         value: _filterList[index].favouritesNetAssetValue,
                         isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        subWidget: _subInfoWidget(_filterList[index]),
                         onPress: (() async {
                           await setFavourite(index);
                         }),
@@ -346,29 +369,209 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     );
   }
 
+  Widget _subInfoWidget(FavouritesListModel data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              _ratingRiskWidget(
+                header: "Rating",
+                value: data.favouritesCompanyYearlyRating,
+                iconData: Ionicons.star,
+                iconColor: Colors.yellow,
+              ),
+              _ratingRiskWidget(
+                header: "Risk",
+                value: data.favouritesCompanyYearlyRating,
+                iconData: Ionicons.alert,
+                iconColor: secondaryColor,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 5,),
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _infoWidget(
+                header: "1d",
+                value: data.favouritesCompanyDailyReturn,
+              ),
+              _infoWidget(
+                header: "1w",
+                value: data.favouritesCompanyWeeklyReturn,
+              ),
+              _infoWidget(
+                header: "1m",
+                value: data.favouritesCompanyMonthlyReturn,
+              ),
+              _infoWidget(
+                header: "3m",
+                value: data.favouritesCompanyQuarterlyReturn,
+              ),
+              _infoWidget(
+                header: "6m",
+                value: data.favouritesCompanySemiAnnualReturn,
+              ),
+              _infoWidget(
+                header: "ytd",
+                value: data.favouritesCompanyYTDReturn,
+              ),
+              _infoWidget(
+                header: "1y",
+                value: data.favouritesCompanyYearlyReturn,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _infoWidget({required String header, double? value}) {
+    Color valueColor = textPrimary;
+    if (value != null) {
+      if (value < 0) {
+        valueColor = secondaryColor;
+      }
+      if (value > 0) {
+        valueColor = Colors.green;
+      }
+    }
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            header,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            "${formatDecimalWithNull(value, 100, 2)}%",
+            style: TextStyle(
+              fontSize: 10,
+              color: valueColor
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _ratingRiskWidget({required String header, double? value, required IconData iconData, required Color iconColor}) {
+    int numRating = 0;
+    if (value != null) {
+      numRating = value.toInt();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          width: 50,
+          child: Text(
+            header,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 100,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: _generateRatingIcon(
+              numRating: numRating,
+              iconData: iconData,
+              iconColor: iconColor
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _generateRatingIcon({required int numRating, required IconData iconData, required Color iconColor}) {
+    if (numRating <= 0) {
+      return List<Widget>.generate(1, (index) {
+        return const Icon(
+          Ionicons.remove,
+          color: textPrimary,
+          size: 10,
+        );
+      });
+    }
+
+    return List<Widget>.generate(numRating, (index) {
+      return Icon(
+        iconData,
+        color: iconColor,
+        size: 10,
+      );
+    });
+  }
+
   void filterData() {
     // create a temporary list to hold resulted filter list
     List<FavouritesListModel> result = [];
     String find = _textController.text;
+    bool isAdd = false;
 
     // first let's filter all the type needed
     for (FavouritesListModel fave in _faveList) {
       if (_isCampuran && _isPendapatanTetap && _isPasarUang && _isSaham) {
-        result.add(fave);
+        // check whether we want to show all or not?
+        if (_isShowAll) {
+          result.add(fave);
+        }
+        else {
+          if (fave.favouritesId! < 0) {
+            result.add(fave);
+          }
+        }
       }
       else {
         // check the type first
+        isAdd = false;
         if(fave.favouritesCompanyType == "reksadanacampuran" && _isCampuran) {
-          result.add(fave);
+          isAdd = true;
         }
         if(fave.favouritesCompanyType == "reksadanapendapatantetap" && _isPendapatanTetap) {
-          result.add(fave);
+          isAdd = true;
         }
         if(fave.favouritesCompanyType == "reksadanapasaruang" && _isPasarUang) {
-          result.add(fave);
+          isAdd = true;
         }
         if(fave.favouritesCompanyType == "reksadanasaham" && _isSaham) {
-          result.add(fave);
+          isAdd = true;
+        }
+
+        if (isAdd) {
+          if (_isShowAll) {
+            result.add(fave);
+          }
+          else {
+            if (fave.favouritesId! < 0) {
+              result.add(fave);
+            }
+          }
         }
       }
     }

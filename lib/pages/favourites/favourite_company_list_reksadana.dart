@@ -12,6 +12,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
+import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:my_wealth/widgets/components/stepper_selector.dart';
 import 'package:my_wealth/widgets/components/stepper_selector_controller.dart';
@@ -32,8 +33,13 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
   final StepperSelectorController _stepperControllerRating = StepperSelectorController();
   final StepperSelectorController _stepperControllerRisk = StepperSelectorController();
 
+  late String _filterMode;
+  late String _filterSort;
+  final Map<String, String> _filterList = {};
+
   List<FavouritesListModel> _faveList = [];
-  List<FavouritesListModel> _filterList = [];
+  List<FavouritesListModel> _filterFaveList = [];
+  List<FavouritesListModel> _sortedFaveList = [];
   bool _isCampuran = true;
   bool _isSaham = true;
   bool _isPasarUang = true;
@@ -45,6 +51,20 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
   @override
   void initState() {
     super.initState();
+
+    // list all the filter that we want to put here
+    _filterList["nm"] = "Name";
+    _filterList["1d"] = "One Day";
+    _filterList["1w"] = "One Week";
+    _filterList["1m"] = "One Month";
+    _filterList["3m"] = "Three Month";
+    _filterList["6m"] = "Six Month";
+    _filterList["yt"] = "Year To Date";
+    _filterList["1y"] = "One Year";
+
+    // default filter mode to Code and ASC
+    _filterMode = "nm";
+    _filterSort = "ASC";
 
     Future.microtask(() async {
       // once widget all load, showed the loader dialog since we will
@@ -113,6 +133,23 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              SearchBox(
+                filterMode: _filterMode,
+                filterList: _filterList,
+                filterSort: _filterSort, 
+                onFilterSelect: ((value) {
+                  setState(() {
+                    _filterMode = value;
+                    sortedFaveList();
+                  });
+                }),
+                onSortSelect: ((value) {
+                  setState(() {
+                    _filterSort = value;
+                    sortedFaveList();
+                  });
+                })
+              ),
               const SizedBox(height: 10,),
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -319,7 +356,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Text(
-                  "Showed ${_filterList.length} company(s)",
+                  "Showed ${_filterFaveList.length} company(s)",
                   style: const TextStyle(
                     color: primaryLight,
                     fontSize: 12,
@@ -331,29 +368,29 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                 child: ListView.builder(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _filterList.length,
+                  itemCount: _sortedFaveList.length,
                   itemBuilder: ((context, index) {
                     return InkWell(
                       onTap: (() {
                         CompanyDetailArgs args = CompanyDetailArgs(
-                          companyId: _filterList[index].favouritesCompanyId,
-                          companyName: _filterList[index].favouritesCompanyName,
-                          companyCode: _filterList[index].favouritesSymbol,
-                          companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                          favouritesId: (_filterList[index].favouritesId ?? -1),
+                          companyId: _sortedFaveList[index].favouritesCompanyId,
+                          companyName: _sortedFaveList[index].favouritesCompanyName,
+                          companyCode: _sortedFaveList[index].favouritesSymbol,
+                          companyFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                          favouritesId: (_sortedFaveList[index].favouritesId ?? -1),
                           type: "reksadana",
                         );
       
                         Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
                       }),
                       child: FavouriteCompanyList(
-                        companyId: _filterList[index].favouritesCompanyId,
-                        name: _filterList[index].favouritesCompanyName,
-                        type: Globals.reksadanaCompanyTypeEnum[_filterList[index].favouritesCompanyType]!,
-                        date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
-                        value: _filterList[index].favouritesNetAssetValue,
-                        isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                        subWidget: _subInfoWidget(_filterList[index]),
+                        companyId: _sortedFaveList[index].favouritesCompanyId,
+                        name: _sortedFaveList[index].favouritesCompanyName,
+                        type: Globals.reksadanaCompanyTypeEnum[_sortedFaveList[index].favouritesCompanyType]!,
+                        date: (_sortedFaveList[index].favouritesLastUpdate == null ? "-" : _dt.format(_sortedFaveList[index].favouritesLastUpdate!.toLocal())),
+                        value: _sortedFaveList[index].favouritesNetAssetValue,
+                        isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        subWidget: _subInfoWidget(_sortedFaveList[index]),
                         onPress: (() async {
                           await setFavourite(index);
                         }),
@@ -626,37 +663,91 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     setFilterList(result);
   }
 
+  void sortedFaveList() {
+    // clear the current code list as we will rebuild t his
+    _sortedFaveList.clear();
+
+    // if the filter mode is "nm" which is name, then just copy from the _filterFaveList
+    if (_filterMode == "nm") {
+      // check the sort methode?
+      if (_filterSort == "ASC") {
+        _sortedFaveList = List<FavouritesListModel>.from(_filterFaveList);
+      }
+      else {
+        _sortedFaveList = List<FavouritesListModel>.from(_filterFaveList.reversed);
+      }
+    }
+    else {
+      List<FavouritesListModel> tempFilter = List<FavouritesListModel>.from(_filterFaveList);
+      switch(_filterMode) {
+        case "1d":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyDailyReturn ?? 0).compareTo((b.favouritesCompanyDailyReturn ?? 0))));
+          break;
+        case "1w":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyWeeklyReturn ?? 0).compareTo((b.favouritesCompanyWeeklyReturn ?? 0))));
+          break;
+        case "1m":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyMonthlyReturn ?? 0).compareTo((b.favouritesCompanyMonthlyReturn ?? 0))));
+          break;
+        case "3m":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyQuarterlyReturn ?? 0).compareTo((b.favouritesCompanyQuarterlyReturn ?? 0))));
+          break;
+        case "6m":
+          tempFilter.sort(((a, b) => (a.favouritesCompanySemiAnnualReturn ?? 0).compareTo((b.favouritesCompanySemiAnnualReturn ?? 0))));
+          break;
+        case "yt":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyYTDReturn ?? 0).compareTo((b.favouritesCompanyYTDReturn ?? 0))));
+          break;
+        case "1y":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyYearlyReturn ?? 0).compareTo((b.favouritesCompanyYearlyReturn ?? 0))));
+          break;
+        default:
+          tempFilter.sort(((a, b) => (a.favouritesCompanyDailyReturn ?? 0).compareTo((b.favouritesCompanyDailyReturn ?? 0))));
+          break;
+      }
+
+      // check the filter type
+      if (_filterSort == "ASC") {
+        _sortedFaveList = List<FavouritesListModel>.from(tempFilter);
+      }
+      else {
+        _sortedFaveList = List<FavouritesListModel>.from(tempFilter.reversed);
+      }
+    }
+  }
+
   void updateFaveList(int index, FavouritesListModel resp) {
     setState(() {
-      _filterList[index] = resp;
+      _filterFaveList[index] = resp;
       for (var i = 0; i < _faveList.length; i++) {
-        if (_faveList[i].favouritesCompanyId == _filterList[index].favouritesCompanyId) {
+        if (_faveList[i].favouritesCompanyId == _filterFaveList[index].favouritesCompanyId) {
           // update this fave list
           _faveList[i] = resp;
           return;
         }
       }
+      sortedFaveList();
     });
   }
 
   Future<void> setFavourite(int index) async {
     // check if this is already favourite or not?
-    int faveUserId = _filterList[index].favouritesUserId ?? -1;
-    int faveId = _filterList[index].favouritesId ?? -1;
+    int faveUserId = _filterFaveList[index].favouritesUserId ?? -1;
+    int faveId = _filterFaveList[index].favouritesId ?? -1;
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
       await _faveAPI.delete(faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID $faveId for reksadana company ${_filterList[index].favouritesCompanyName}");
+        debugPrint("🧹 Delete Favourite ID $faveId for reksadana company ${_filterFaveList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
         FavouritesListModel resp = FavouritesListModel(
-          favouritesCompanyId: _filterList[index].favouritesCompanyId,
-          favouritesCompanyName: _filterList[index].favouritesCompanyName,
-          favouritesSymbol: _filterList[index].favouritesSymbol,
-          favouritesCompanyType: _filterList[index].favouritesCompanyType,
-          favouritesNetAssetValue: _filterList[index].favouritesNetAssetValue,
-          favouritesLastUpdate: _filterList[index].favouritesLastUpdate
+          favouritesCompanyId: _filterFaveList[index].favouritesCompanyId,
+          favouritesCompanyName: _filterFaveList[index].favouritesCompanyName,
+          favouritesSymbol: _filterFaveList[index].favouritesSymbol,
+          favouritesCompanyType: _filterFaveList[index].favouritesCompanyType,
+          favouritesNetAssetValue: _filterFaveList[index].favouritesNetAssetValue,
+          favouritesLastUpdate: _filterFaveList[index].favouritesLastUpdate
         );
 
         // update the list and re-render the page
@@ -667,8 +758,8 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
       });
     }
     else {
-      await _faveAPI.add(_filterList[index].favouritesCompanyId, "reksadana").then((resp) {
-        debugPrint("➕ Add reksadana company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
+      await _faveAPI.add(_filterFaveList[index].favouritesCompanyId, "reksadana").then((resp) {
+        debugPrint("➕ Add reksadana company ID: ${_filterFaveList[index].favouritesCompanyId} for company ${_filterFaveList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         updateFaveList(index, resp);
       }).onError((error, stackTrace) {
@@ -687,8 +778,9 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
 
   void setFilterList(List<FavouritesListModel> list) {
     setState(() {
-      _filterList.clear();
-      _filterList = List<FavouritesListModel>.from(list);
+      _filterFaveList.clear();
+      _filterFaveList = List<FavouritesListModel>.from(list);
+      sortedFaveList();
     });
   }
 

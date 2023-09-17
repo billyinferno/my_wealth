@@ -718,36 +718,53 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
 
   void updateFaveList(int index, FavouritesListModel resp) {
     setState(() {
-      _filterFaveList[index] = resp;
+      _sortedFaveList[index] = resp;
       for (var i = 0; i < _faveList.length; i++) {
-        if (_faveList[i].favouritesCompanyId == _filterFaveList[index].favouritesCompanyId) {
+        if (_faveList[i].favouritesCompanyId == _sortedFaveList[index].favouritesCompanyId) {
           // update this fave list
           _faveList[i] = resp;
           return;
         }
       }
-      sortedFaveList();
+      for (var i = 0; i < _filterFaveList.length; i++) {
+        if (_filterFaveList[i].favouritesCompanyId == _sortedFaveList[index].favouritesCompanyId) {
+          // update this fave list
+          _filterFaveList[i] = resp;
+          return;
+        }
+      }
     });
   }
 
   Future<void> setFavourite(int index) async {
     // check if this is already favourite or not?
-    int faveUserId = _filterFaveList[index].favouritesUserId ?? -1;
-    int faveId = _filterFaveList[index].favouritesId ?? -1;
+    int faveUserId = _sortedFaveList[index].favouritesUserId ?? -1;
+    int faveId = _sortedFaveList[index].favouritesId ?? -1;
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
       await _faveAPI.delete(faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID $faveId for reksadana company ${_filterFaveList[index].favouritesCompanyName}");
+        debugPrint("🧹 Delete Favourite ID $faveId for reksadana company ${_sortedFaveList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
         FavouritesListModel resp = FavouritesListModel(
-          favouritesCompanyId: _filterFaveList[index].favouritesCompanyId,
-          favouritesCompanyName: _filterFaveList[index].favouritesCompanyName,
-          favouritesSymbol: _filterFaveList[index].favouritesSymbol,
-          favouritesCompanyType: _filterFaveList[index].favouritesCompanyType,
-          favouritesNetAssetValue: _filterFaveList[index].favouritesNetAssetValue,
-          favouritesLastUpdate: _filterFaveList[index].favouritesLastUpdate
+          favouritesCompanyId: _sortedFaveList[index].favouritesCompanyId,
+          favouritesCompanyName: _sortedFaveList[index].favouritesCompanyName,
+          favouritesSymbol: _sortedFaveList[index].favouritesSymbol,
+          favouritesCompanyType: _sortedFaveList[index].favouritesCompanyType,
+          favouritesNetAssetValue: _sortedFaveList[index].favouritesNetAssetValue,
+          favouritesCompanyYearlyRating: _sortedFaveList[index].favouritesCompanyYearlyRating,
+          favouritesCompanyYearlyRisk: _sortedFaveList[index].favouritesCompanyYearlyRisk,
+          favouritesCompanyDailyReturn: _sortedFaveList[index].favouritesCompanyDailyReturn,
+          favouritesCompanyWeeklyReturn: _sortedFaveList[index].favouritesCompanyWeeklyReturn,
+          favouritesCompanyMonthlyReturn: _sortedFaveList[index].favouritesCompanyMonthlyReturn,
+          favouritesCompanyQuarterlyReturn: _sortedFaveList[index].favouritesCompanyQuarterlyReturn,
+          favouritesCompanySemiAnnualReturn: _sortedFaveList[index].favouritesCompanySemiAnnualReturn,
+          favouritesCompanyYTDReturn: _sortedFaveList[index].favouritesCompanyYTDReturn,
+          favouritesCompanyYearlyReturn: _sortedFaveList[index].favouritesCompanyYearlyReturn,
+          favouritesLastUpdate: _sortedFaveList[index].favouritesLastUpdate,
+          favouritesId: -1,
+          favouritesUserId: -1,
         );
 
         // update the list and re-render the page
@@ -758,10 +775,31 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
       });
     }
     else {
-      await _faveAPI.add(_filterFaveList[index].favouritesCompanyId, "reksadana").then((resp) {
-        debugPrint("➕ Add reksadana company ID: ${_filterFaveList[index].favouritesCompanyId} for company ${_filterFaveList[index].favouritesCompanyName}");
+      await _faveAPI.add(_sortedFaveList[index].favouritesCompanyId, "reksadana").then((resp) {
+        debugPrint("➕ Add reksadana company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
+        
+        FavouritesListModel ret = FavouritesListModel(
+          favouritesCompanyId: _sortedFaveList[index].favouritesCompanyId,
+          favouritesCompanyName: _sortedFaveList[index].favouritesCompanyName,
+          favouritesSymbol: _sortedFaveList[index].favouritesSymbol,
+          favouritesCompanyType: _sortedFaveList[index].favouritesCompanyType,
+          favouritesNetAssetValue: _sortedFaveList[index].favouritesNetAssetValue,
+          favouritesCompanyYearlyRating: _sortedFaveList[index].favouritesCompanyYearlyRating,
+          favouritesCompanyYearlyRisk: _sortedFaveList[index].favouritesCompanyYearlyRisk,
+          favouritesCompanyDailyReturn: _sortedFaveList[index].favouritesCompanyDailyReturn,
+          favouritesCompanyWeeklyReturn: _sortedFaveList[index].favouritesCompanyWeeklyReturn,
+          favouritesCompanyMonthlyReturn: _sortedFaveList[index].favouritesCompanyMonthlyReturn,
+          favouritesCompanyQuarterlyReturn: _sortedFaveList[index].favouritesCompanyQuarterlyReturn,
+          favouritesCompanySemiAnnualReturn: _sortedFaveList[index].favouritesCompanySemiAnnualReturn,
+          favouritesCompanyYTDReturn: _sortedFaveList[index].favouritesCompanyYTDReturn,
+          favouritesCompanyYearlyReturn: _sortedFaveList[index].favouritesCompanyYearlyReturn,
+          favouritesLastUpdate: resp.favouritesLastUpdate,
+          favouritesId: resp.favouritesId,
+          favouritesUserId: resp.favouritesUserId,
+        );
+
         // update the list with the updated response and re-render the page
-        updateFaveList(index, resp);
+        updateFaveList(index, ret);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));

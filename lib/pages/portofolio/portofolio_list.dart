@@ -6,9 +6,10 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/chart/bar_chart.dart';
 import 'package:my_wealth/widgets/list/product_list_item.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class PortofolioListPage extends StatefulWidget {
   final Object? args;
@@ -27,6 +28,8 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   late List<BarChartData> _barChartData;
   late List<PortofolioSummaryModel> _portofolioList;
   late List<PortofolioSummaryModel> _portofolioFiltered;
+  late Future<bool> _getData;
+
   final Map<String, String> _sortMap = {
     "type": "Type",
     "total": "Total Product(s)",
@@ -38,11 +41,14 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   };
   final List<String> _sortList = ["type", "total", "share", "cost", "value", "realized", "unrealized"];
 
-  Color trendColor = Colors.white;
-  Color realisedColor = Colors.white;
-  IconData trendIcon = Ionicons.remove;
-  bool _isLoading = true;
+  Color _trendColor = Colors.white;
+  Color _realisedColor = Colors.white;
+  Color _totalGainColor = Colors.white;
+  Color _totalDayGainColor = Colors.white;
+  IconData _trendIcon = Ionicons.remove;
   double _portofolioTotalValue = 0;
+  double _totalGain = 0;
+  double _totalDayGain = 0;
   String _sortType = "type";
   bool _sortAscending = true;
 
@@ -58,51 +64,30 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
     // check realised and unrealised to determine the trend color and icon
     if((_args.unrealised ?? 0) > 0) {
-      trendColor = Colors.green;
-      trendIcon = Ionicons.trending_up;
+      _trendColor = Colors.green;
+      _trendIcon = Ionicons.trending_up;
     }
     else if((_args.unrealised ?? 0) < 0) {
-      trendColor = secondaryColor;
-      trendIcon = Ionicons.trending_down;
+      _trendColor = secondaryColor;
+      _trendIcon = Ionicons.trending_down;
     }
 
     if((_args.realised ?? 0) > 0) {
-      realisedColor = Colors.green;
+      _realisedColor = Colors.green;
     }
     else if((_args.realised ?? 0) < 0) {
-      realisedColor = secondaryColor;
+      _realisedColor = secondaryColor;
     }
 
-    Future.microtask(() async {
-      showLoaderDialog(context);
+    _totalGain = (_args.realised ?? 0) + (_args.unrealised ?? 0);
+    if (_totalGain > 0) {
+      _totalGainColor = Colors.green;
+    }
+    else if (_totalGain < 0) {
+      _totalGainColor = secondaryColor;
+    }
 
-      await _portofolioAPI.getPortofolioSummary(_args.type).then((resp) {
-        _portofolioList = resp;
-
-        // filter the data
-        _filterList();
-
-        // generate the _barChartData based on response
-        _portofolioTotalValue = 0;
-        for (PortofolioSummaryModel porto in resp) {
-          _portofolioTotalValue += porto.portofolioTotalValue;
-        }
-
-        int index = 0;
-        for (PortofolioSummaryModel porto in resp) {
-          _barChartData.add(BarChartData(title: porto.portofolioCompanyDescription, value: porto.portofolioTotalValue, total: _portofolioTotalValue, color: Globals.colorList[index]));
-          index = index + 1;
-        }
-      }).whenComplete(() {
-        // remove the loader
-        Navigator.pop(context);
-        
-        // set the is loading into false
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    });
+    _getData = _getPortofolioSummary();
 
     super.initState();
   }
@@ -115,11 +100,23 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if still loading then just throw a blank container
-    if (_isLoading) {
-      return Container();
-    }
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return CommonErrorPage(errorText: 'Error loading portofolio list of ${_args.title}');
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      })
+    );
+  }
 
+  Widget _generatePage() {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -228,162 +225,170 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            child: Column(
+            width: double.infinity,
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Text(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
                         "Total Value",
                         style: TextStyle(
                           fontSize: 12,
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "Unrealised Gain",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Text(
+                      Text(
                         formatCurrency(_args.value, false, false, false),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      const SizedBox(height: 2,),
+                      const Text(
+                        "Unrealised Gain",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(
-                                trendIcon,
-                                size: 15,
-                                color: trendColor,
-                              ),
-                              const SizedBox(width: 5,),
-                              Text(
-                                formatCurrency((_args.unrealised ?? 0), false, false, false),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: trendColor
-                                ),
-                              ),
-                            ],
+                          Icon(
+                            _trendIcon,
+                            size: 13,
+                            color: _trendColor,
                           ),
+                          const SizedBox(width: 5,),
                           Text(
-                            "${(_args.unrealised ?? 0) > 0 ? '+' : ''}${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 2)}%",
+                            formatCurrency((_args.unrealised ?? 0), false, false, false),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: _trendColor
+                            ),
+                          ),
+                          const SizedBox(width: 2,),
+                          Text(
+                            "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 10,
-                              color: trendColor
+                              color: _trendColor
                             ),
                           ),
                         ],
                       ),
-                    )
-                  ],
+                      const SizedBox(height: 2,),
+                      const Text(
+                        "Realised Gain",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Ionicons.wallet_outline,
+                            size: 13,
+                            color: _realisedColor,
+                          ),
+                          const SizedBox(width: 5,),
+                          Text(
+                            formatCurrencyWithNull(_args.realised, false, false, false),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: _realisedColor
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 5),
-                const Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Text(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
                         "Total Cost",
                         style: TextStyle(
                           fontSize: 12,
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "Realised Gain",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Text(
+                      Text(
                         formatCurrency(_args.cost, false, false, false),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontSize: 22,
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                      const SizedBox(height: 2,),
+                      const Text(
+                        "Total Gain",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 2,),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(
-                                Ionicons.wallet_outline,
-                                size: 15,
-                                color: realisedColor,
-                              ),
-                              const SizedBox(width: 5,),
-                              Text(
-                                formatCurrencyWithNull(_args.realised, false, false, false),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: realisedColor
-                                ),
-                              ),
-                            ],
+                        children: [
+                          Icon(
+                            Ionicons.stats_chart,
+                            size: 13,
+                            color: _totalGainColor,
+                          ),
+                          const SizedBox(width: 5,),
+                          Text(
+                            formatCurrency(_totalGain, false, false, false),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: _totalGainColor
+                            ),
                           ),
                         ],
                       ),
-                    )
-                  ],
+                      const SizedBox(height: 2,),
+                      const Text(
+                        "Day Gain",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(
+                            Ionicons.today,
+                            size: 13,
+                            color: _totalDayGainColor,
+                          ),
+                          const SizedBox(width: 5,),
+                          Text(
+                            formatCurrencyWithNull(_totalDayGain, false, false, false),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: _totalDayGainColor
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -417,6 +422,8 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                         type: _args.type,
                         subType: _portofolioFiltered[index].portofolioCompanyType
                       );
+
+                      debugPrint("${_portofolioFiltered[index].portofolioTotalDayGain}");
             
                       Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
                     }
@@ -427,6 +434,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                   value: _portofolioFiltered[index].portofolioTotalValue,
                   cost: _portofolioFiltered[index].portofolioTotalCost,
                   realised: _portofolioFiltered[index].portofolioTotalRealised,
+                  dayGain: _portofolioFiltered[index].portofolioTotalDayGain,
                   total: _portofolioTotalValue,
                 );
               },
@@ -517,5 +525,45 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
     if (!_sortAscending) {
       _portofolioFiltered = _portofolioFiltered.reversed.toList();
     }
+  }
+
+  Future<bool> _getPortofolioSummary() async {
+    try {
+      await _portofolioAPI.getPortofolioSummary(_args.type).then((resp) {
+        _portofolioList = resp;
+
+        // filter the data
+        _filterList();
+
+        _portofolioTotalValue = 0;
+        int index = 0;
+        // generate the _barChartData based on response
+        for (PortofolioSummaryModel porto in resp) {
+          // calculate total portofolio value
+          _portofolioTotalValue += porto.portofolioTotalValue;
+          
+          // add bar chart for this portotolio
+          _barChartData.add(BarChartData(title: porto.portofolioCompanyDescription, value: porto.portofolioTotalValue, total: _portofolioTotalValue, color: Globals.colorList[index]));
+          index = index + 1;
+
+          // calculate total day gain
+          _totalDayGain += porto.portofolioTotalDayGain;
+        }
+
+        // get the total day gain color
+        if (_totalDayGain > 0) {
+          _totalDayGainColor = Colors.green;
+        }
+        else if(_totalDayGain < 0) {
+          _totalDayGainColor = secondaryColor;
+        }
+      });
+    }
+    catch(error) {
+      debugPrint(error.toString());
+      throw 'Error when try to get the data from server';
+    }
+
+    return true;
   }
 }

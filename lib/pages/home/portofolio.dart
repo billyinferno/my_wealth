@@ -107,6 +107,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       cost: _watchlistAll!.totalCostReksadana,
                       total: _watchlistAll!.totalValue,
                       realised: _watchlistAll!.totalRealisedReksadana,
+                      dayGain: _watchlistAll!.totalDayGainReksadana,
                       onTap: (() {
                         PortofolioListArgs args = PortofolioListArgs(
                           title: "Reksadana",
@@ -126,6 +127,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       cost: _watchlistAll!.totalCostSaham,
                       total: _watchlistAll!.totalValue,
                       realised: _watchlistAll!.totalRealisedSaham,
+                      dayGain: _watchlistAll!.totalDayGainSaham,
                       onTap: (() {
                         PortofolioListArgs args = PortofolioListArgs(
                           title: "Stock",
@@ -145,6 +147,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       cost: _watchlistAll!.totalCostCrypto,
                       total: _watchlistAll!.totalValue,
                       realised: _watchlistAll!.totalRealisedCrypto,
+                      dayGain: _watchlistAll!.totalDayGainCrypto,
                       onTap: (() {
                         // check whether we can navigate to detail page, or just do nothing
                         if (_watchlistCrypto!.isNotEmpty) {
@@ -170,6 +173,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                       cost: _watchlistAll!.totalCostGold,
                       total: _watchlistAll!.totalValue,
                       realised: _watchlistAll!.totalRealisedGold,
+                      dayGain: _watchlistAll!.totalDayGainGold,
                       onTap: (() {
                         // do nothing, we just want to showed the chevron icon here
                       })

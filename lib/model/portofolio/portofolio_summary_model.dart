@@ -18,6 +18,7 @@ class PortofolioSummaryModel {
         required this.portofolioTotalValue,
         required this.portofolioTotalRealised,
         required this.portofolioTotalUnrealised,
+        required this.portofolioTotalDayGain,
     });
 
     final String portofolioCompanyDescription;
@@ -28,6 +29,7 @@ class PortofolioSummaryModel {
     final double portofolioTotalValue;
     final double portofolioTotalRealised;
     final double portofolioTotalUnrealised;
+    final double portofolioTotalDayGain;
 
     factory PortofolioSummaryModel.fromJson(Map<String, dynamic> json) => PortofolioSummaryModel(
         portofolioCompanyDescription: json["portofolio_company_description"],
@@ -37,7 +39,8 @@ class PortofolioSummaryModel {
         portofolioTotalCost: json["portofolio_total_cost"].toDouble(),
         portofolioTotalValue: json["portofolio_total_value"].toDouble(),
         portofolioTotalRealised: json["portofolio_total_realised"].toDouble(),
-        portofolioTotalUnrealised: json["portofolio_total_unrealised"].toDouble()
+        portofolioTotalUnrealised: json["portofolio_total_unrealised"].toDouble(),
+        portofolioTotalDayGain: json["portofolio_total_day_gain"].toDouble()
     );
 
     Map<String, dynamic> toJson() => {
@@ -49,5 +52,6 @@ class PortofolioSummaryModel {
         "portofolio_total_value": portofolioTotalValue,
         "portofolio_total_realised": portofolioTotalRealised,
         "portofolio_total_unrealised": portofolioTotalUnrealised,
+        "portofolio_total_day_gain": portofolioTotalDayGain,
     };
 }

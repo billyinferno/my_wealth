@@ -12,19 +12,20 @@ class ProductListItem extends StatelessWidget {
   final double total;
   final double? realised;
   final double? unrealised;
+  final double? dayGain;
   final double? netAssetValue;
   final double? oneDay;
   final VoidCallback? onTap;
 
-  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.netAssetValue, this.oneDay, this.onTap}) : super(key: key);
+  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.dayGain, this.netAssetValue, this.oneDay, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double? itemPercentage;
-    double gain = (unrealised ?? value - cost);
-    Color trendColor = Colors.white;
+    double unrealisedGain = (unrealised ?? value - cost);
+    Color unrealisedColor = Colors.white;
     Color realisedColor = Colors.white;
-    IconData trendIcon = Ionicons.remove;
+    Color dayColor = Colors.white;
     double gainPercentage = 0;
 
     // if we got total then we can compute the percentage, otherwise we should avoid divisio by zero
@@ -35,17 +36,15 @@ class ProductListItem extends StatelessWidget {
     // check if we got cost or not?
     if (cost > 0) {
       // calculate the gain percentage
-      gainPercentage = gain / cost;
+      gainPercentage = unrealisedGain / cost;
     }
 
     // check if gain if more than 0 or not?
-    if (gain > 0) {
-      trendColor = Colors.green;
-      trendIcon = Ionicons.trending_up;
+    if (unrealisedGain > 0) {
+      unrealisedColor = Colors.green;
     }
-    else if(gain < 0) {
-      trendColor = secondaryColor;
-      trendIcon = Ionicons.trending_down;
+    else if(unrealisedGain < 0) {
+      unrealisedColor = secondaryColor;
     }
 
     if (realised != null) {
@@ -54,6 +53,15 @@ class ProductListItem extends StatelessWidget {
       }
       else if (realised! > 0) {
         realisedColor = Colors.green;
+      }
+    }
+
+    if (dayGain != null) {
+      if (dayGain! < 0) {
+        dayColor = secondaryColor;
+      }
+      else if (dayGain! > 0) {
+        dayColor = Colors.green;
       }
     }
 
@@ -84,124 +92,168 @@ class ProductListItem extends StatelessWidget {
               ),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 5, 10),
-                  child: Row(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 2, 10),
+                  width: double.infinity,
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      // main container
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    title,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2,),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 2,),
-                                      Visibility(
-                                        visible: (subTitle == null ? false : true),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: <Widget>[
-                                            const Icon(
-                                              Ionicons.ellipse,
-                                              size: 5,
-                                            ),
-                                            const SizedBox(width: 5,),
-                                            Text(
-                                              subTitle ?? '',
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 2,),
-                                  _priceItem(netAssetValue: netAssetValue, oneDay: oneDay),
-                                ],
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 4,
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            const SizedBox(width: 5,),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                formatCurrencyWithNull(value, false, false, false),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
+                            style: const TextStyle(
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(width: 5,),
+                          Visibility(
+                            visible: (subTitle == null ? false : true),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
+                                const Icon(
+                                  Ionicons.ellipse,
+                                  size: 5,
+                                ),
+                                const SizedBox(width: 5,),
                                 Text(
-                                  formatCurrencyWithNull(value, false, false, false),
-                                ),
-                                const SizedBox(height: 2,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    _productItem(
-                                      icon: trendIcon,
-                                      iconColor: trendColor,
-                                      text: formatCurrencyWithNull(gain, false, false, false),
-                                      textColor: trendColor
-                                    ),
-                                    const SizedBox(width: 2,),
-                                    Text(
-                                      "(${formatDecimalWithNull(gainPercentage, 100, 0)}%)",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: trendColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 2,),
-                                _productItem(
-                                  icon: Ionicons.wallet_outline,
-                                  iconColor: realisedColor,
-                                  text: formatCurrencyWithNull((realised ?? 0), false, false, false),
-                                  textColor: realisedColor
+                                  subTitle ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                      Visibility(
-                        visible: (onTap != null),
-                        child: const SizedBox(
-                          width: 20,
-                          child: Center(
-                            child: Icon(
-                              Ionicons.chevron_forward,
-                              color: primaryLight,
+                          ),
+                          const SizedBox(width: 5,),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: _priceItem(netAssetValue: netAssetValue, oneDay: oneDay)
                             ),
                           ),
-                        ),
-                      )
+                        ],
+                      ),
+                      const SizedBox(height: 5,),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 6,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                _subHeader(header: "UNREALISED GAIN"),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      formatCurrency(unrealisedGain, false, false, false),
+                                      style: TextStyle(
+                                        color: unrealisedColor,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2,),
+                                    Text(
+                                      "(${formatDecimalWithNull((gainPercentage < 0 ? gainPercentage * -1 : gainPercentage), 100, 0)}%)",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: unrealisedColor,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 15,),
+                          Expanded(
+                            flex: 5,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                _subHeader(header: "REALISED GAIN"),
+                                Text(
+                                  formatCurrencyWithNull((realised ?? 0), false, false, false),
+                                  style: TextStyle(
+                                    color: realisedColor,
+                                    fontSize: 12,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 15,),
+                          Expanded(
+                            flex: 4,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                _subHeader(header: "DAY GAIN", align: Alignment.centerRight),
+                                Text(
+                                  formatCurrency((dayGain ?? 0), false, false, false),
+                                  style: TextStyle(
+                                    color: dayColor,
+                                    fontSize: 12,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
+              Visibility(
+                visible: (onTap != null),
+                child: const SizedBox(
+                  width: 20,
+                  child: Center(
+                    child: Icon(
+                      Ionicons.chevron_forward,
+                      color: primaryLight,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5,),
             ],
           ),
         ),
@@ -227,19 +279,19 @@ class ProductListItem extends StatelessWidget {
 
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Icon(
             priceIcon,
             color: priceColor,
-            size: 15,
+            size: 13,
           ),
           const SizedBox(width: 5,),
           Text(
             formatCurrencyWithNull(netAssetValue, false, true, false, 2),
             style: const TextStyle(
               color: textPrimary,
-              fontSize: 12,
+              fontSize: 10,
             ),
           ),
           const SizedBox(width: 5,),
@@ -247,7 +299,7 @@ class ProductListItem extends StatelessWidget {
             "(${formatDecimalWithNull(oneDay, 100, 2)}%)",
             style: TextStyle(
               color: priceColor,
-              fontSize: 12,
+              fontSize: 10,
             ),
           ),
         ],
@@ -258,25 +310,19 @@ class ProductListItem extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _productItem({required IconData icon, required Color iconColor, required String text, required Color textColor}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        Icon(
-          icon,
-          color: iconColor,
-          size: 15,
-        ),
-        const SizedBox(width: 5,),
-        Text(
-          text,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 12,
+  Widget _subHeader({required String header, Alignment? align}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+      child: Align(
+        alignment: (align ?? Alignment.centerLeft),
+        child: Text(
+          header,
+          style: const TextStyle(
+            fontSize: 10,
           ),
         ),
-      ],
+      ),
     );
   }
 }

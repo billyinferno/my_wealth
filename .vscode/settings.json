@@ -19,5 +19,6 @@
         "titleBar.inactiveForeground": "#e7e7e799",
         "commandCenter.border": "#e7e7e799"
     },
-    "peacock.color": "#b61827"
+    "peacock.color": "#b61827",
+    "cmake.sourceDirectory": "E:/Project/my_wealth/windows"
 }

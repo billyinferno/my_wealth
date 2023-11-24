@@ -51,6 +51,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   double _totalDayGain = 0;
   String _sortType = "type";
   bool _sortAscending = true;
+  bool _showSort = true;
 
   @override
   void initState() {
@@ -87,7 +88,11 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
       _totalGainColor = secondaryColor;
     }
 
+    // get portofolio summary
     _getData = _getPortofolioSummary();
+
+    // get show sort
+    _showSort = (_args.showSort ?? true);
 
     super.initState();
   }
@@ -137,68 +142,71 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
           )
         ),
         actions: <Widget>[
-          IconButton(
-            onPressed: (() {
-              // show the modal dialog for what to filter
-              // code/name, total investment, share left, realized pl, unrealized pl, one day
-              showModalBottomSheet(
-                context: context,
-                isDismissible: true,
-                builder: (context) {
-                  return SizedBox(
-                    height: 250,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: _sortList.length,
-                            itemBuilder: ((context, index) {
-                              return InkWell(
-                                onTap: (() {
-                                  setState(() {
-                                    _sortType = _sortList[index];
-                                    _filterList();
-                                  });
-                                  // dismiss the bottom sheet
-                                  Navigator.pop(context);
-                                }),
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: primaryLight,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    )
-                                  ),
+          Visibility(
+            visible: _showSort,
+            child: IconButton(
+              onPressed: (() {
+                // show the modal dialog for what to filter
+                // code/name, total investment, share left, realized pl, unrealized pl, one day
+                showModalBottomSheet(
+                  context: context,
+                  isDismissible: true,
+                  builder: (context) {
+                    return SizedBox(
+                      height: 250,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: _sortList.length,
+                              itemBuilder: ((context, index) {
+                                return InkWell(
+                                  onTap: (() {
+                                    setState(() {
+                                      _sortType = _sortList[index];
+                                      _filterList();
+                                    });
+                                    // dismiss the bottom sheet
+                                    Navigator.pop(context);
+                                  }),
                                   child: Container(
-                                    padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
-                                    child: Text(
-                                      (_sortMap[_sortList[index]] ?? _sortList[index]),
-                                      style: const TextStyle(
-                                        color: textPrimary,
-                                        fontWeight: FontWeight.bold,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: primaryLight,
+                                          width: 1.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                      child: Text(
+                                        (_sortMap[_sortList[index]] ?? _sortList[index]),
+                                        style: const TextStyle(
+                                          color: textPrimary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              }),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 30,),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }),
-            icon: const Icon(
-              Ionicons.filter_circle_outline,
-              color: textPrimary,
+                          const SizedBox(height: 30,),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }),
+              icon: const Icon(
+                Ionicons.filter_circle_outline,
+                color: textPrimary,
+              ),
             ),
           ),
           InkWell(
@@ -404,7 +412,8 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: _portofolioFiltered.length,
               itemBuilder: (context, index) {
-                int colorMap = (index % Globals.colorList.length);
+                int colorMap = _getColorMap(_portofolioFiltered[index].portofolioCompanyDescription, index);
+                
                 return ProductListItem(
                   onTap: (() {
                     // convert the total product
@@ -420,10 +429,9 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                         realised: _portofolioFiltered[index].portofolioTotalRealised,
                         unrealised: _portofolioFiltered[index].portofolioTotalUnrealised,
                         type: _args.type,
-                        subType: _portofolioFiltered[index].portofolioCompanyType
+                        subType: _portofolioFiltered[index].portofolioCompanyType,
+                        showSort: true,
                       );
-
-                      debugPrint("${_portofolioFiltered[index].portofolioTotalDayGain}");
             
                       Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
                     }
@@ -444,6 +452,21 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         ],
       ),
     );
+  }
+
+  int _getColorMap(String name, int index) {
+    switch(name.toLowerCase()) {
+      case "campuran":
+        return 0;
+      case "pasar uang":
+        return 1;
+      case "pendapatan tetap":
+        return 2;
+      case "saham":
+        return 3;
+      default:
+        return (index % Globals.colorList.length);
+    }
   }
 
   Widget _ascendingIcon() {
@@ -537,13 +560,16 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
         _portofolioTotalValue = 0;
         int index = 0;
-        // generate the _barChartData based on response
+
+        // calculate the total value
         for (PortofolioSummaryModel porto in resp) {
-          // calculate total portofolio value
           _portofolioTotalValue += porto.portofolioTotalValue;
-          
+        }
+
+        // generate the _barChartData based on response
+        for (PortofolioSummaryModel porto in resp) {          
           // add bar chart for this portotolio
-          _barChartData.add(BarChartData(title: porto.portofolioCompanyDescription, value: porto.portofolioTotalValue, total: _portofolioTotalValue, color: Globals.colorList[index]));
+          _barChartData.add(BarChartData(title: porto.portofolioCompanyDescription, value: porto.portofolioTotalValue, total: _portofolioTotalValue, color: Globals.colorList[_getColorMap(porto.portofolioCompanyDescription, index)]));
           index = index + 1;
 
           // calculate total day gain

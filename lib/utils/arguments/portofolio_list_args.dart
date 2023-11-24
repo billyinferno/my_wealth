@@ -7,6 +7,7 @@ class PortofolioListArgs {
   final double? daygain;
   final String type;
   String? subType;
+  bool? showSort;
 
-  PortofolioListArgs({required this.title, required this.value, required this.cost, this.realised, this.unrealised, this.daygain, required this.type, this.subType});
+  PortofolioListArgs({required this.title, required this.value, required this.cost, this.realised, this.unrealised, this.daygain, required this.type, this.subType, this.showSort});
 }

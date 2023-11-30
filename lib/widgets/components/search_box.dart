@@ -124,7 +124,7 @@ class _SearchBoxState extends State<SearchBox> {
                                 ],
                               ),
                             ),
-                          )).toList(),
+                          )),
                         ],
                       )
                     );

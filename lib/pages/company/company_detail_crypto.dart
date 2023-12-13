@@ -230,7 +230,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Market Cap",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(_companyDetail.companyMarketCap?.toDouble()),
+                                  formatCurrencyWithNull(_companyDetail.companyMarketCap),
                                   textAlign: TextAlign.right,
                                 ),
                               ),

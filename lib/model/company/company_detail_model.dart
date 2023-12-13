@@ -114,7 +114,7 @@ class CompanyDetailModel {
     final double? companyPcfrAnnualized;
     final String? companySymbol;
     final double? companyCurrentPriceUsd;
-    final int? companyMarketCap;
+    final double? companyMarketCap;
     final int? companyMarketCapRank;
     final double? companyFullyDilutedValuation;
     final double? companyHigh24H;
@@ -177,7 +177,7 @@ class CompanyDetailModel {
         companyPcfrAnnualized: (json["company_pcfr_annualized"] == null ? null : json["company_pcfr_annualized"].toDouble()),
         companySymbol: json["company_symbol"],
         companyCurrentPriceUsd: (json["company_current_price_usd"] == null ? null : json["company_current_price_usd"].toDouble()),
-        companyMarketCap: json["company_market_cap"],
+        companyMarketCap: (json["company_market_cap"] == null ? null : json["company_market_cap"].toDouble()),
         companyMarketCapRank: json["company_market_cap_rank"],
         companyFullyDilutedValuation: (json["company_fully_diluted_valuation"] == null ? null : json["company_fully_diluted_valuation"].toDouble()),
         companyHigh24H: (json["company_high_24_h"] == null ? null : json["company_high_24_h"].toDouble()),

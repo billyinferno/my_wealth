@@ -634,7 +634,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                   header: "Capitalization",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    formatIntWithNull(_companyDetail.companyMarketCap),
+                    formatCurrencyWithNull(_companyDetail.companyMarketCap),
                     textAlign: TextAlign.right,
                   ),
                 ),

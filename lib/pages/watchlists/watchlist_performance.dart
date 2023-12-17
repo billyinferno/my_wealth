@@ -10,6 +10,7 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/list/row_child.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/chart/performance_chart.dart';
@@ -232,7 +233,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                   ),
                                   const SizedBox(width: 5,),
                                   Text(
-                                    _df.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!),
+                                    _df.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
                                   ),
                                 ],
                               ),
@@ -243,11 +244,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _rowChild(headerText: "AVG PRICE", valueText: (_watchlistComputation.totalCurrentShares > 0 ? formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) : "-")),
+                              RowChild(headerText: "AVG PRICE", valueText: (_watchlistComputation.totalCurrentShares > 0 ? formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) : "-")),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "COST", valueText: formatCurrency(_watchlistComputation.totalCost)),
+                              RowChild(headerText: "COST", valueText: formatCurrency(_watchlistComputation.totalCost)),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "VALUE", valueText: formatCurrency(_watchlistComputation.totalValue)),
+                              RowChild(headerText: "VALUE", valueText: formatCurrency(_watchlistComputation.totalValue)),
                             ],
                           ),
                           const SizedBox(height: 5,),
@@ -255,11 +256,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _rowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
+                              RowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain), valueColor: _unrealisedColor),
+                              RowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain), valueColor: _unrealisedColor),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
+                              RowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
                             ],
                           ),
                           const SizedBox(height: 5,),
@@ -267,11 +268,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _rowChild(headerText: "MAX", valueText: formatCurrencyWithNull(_max), valueColor: _maxColor),
+                              RowChild(headerText: "MAX", valueText: formatCurrencyWithNull(_max), valueColor: _maxColor),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "MIN", valueText: formatCurrencyWithNull(_min), valueColor: _minColor),
+                              RowChild(headerText: "MIN", valueText: formatCurrencyWithNull(_min), valueColor: _minColor),
                               const SizedBox(width: 10,),
-                              _rowChild(headerText: "AVERAGE", valueText: formatCurrencyWithNull(_avg), valueColor: _avgColor),
+                              RowChild(headerText: "AVERAGE", valueText: formatCurrencyWithNull(_avg), valueColor: _avgColor),
                             ],
                           ),
                         ],
@@ -530,32 +531,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             const SizedBox(height: 25,), // safe area
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _rowChild({required String headerText, Color? headerColor, required String valueText, Color? valueColor}) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              headerText,
-              style: _smallFont.copyWith(
-                color: (headerColor ?? textPrimary)
-              ),
-            ),
-          ),
-          Text(
-            valueText,
-            style: TextStyle(
-              color: (valueColor ?? textPrimary),
-            ),
-          ),
-        ],
       ),
     );
   }

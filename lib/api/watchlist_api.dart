@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:my_wealth/model/common/common_array_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_history_model.dart';
+import 'package:my_wealth/model/watchlist/watchlist_performance_year_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_summary_performance_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
@@ -324,6 +325,78 @@ class WatchlistAPI {
         List<WatchlistPerformanceModel> listWatchlistPerformance = [];
         for (var data in commonModel.data) {
           WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
+          listWatchlistPerformance.add(watchlist);
+        }
+        return listWatchlistPerformance;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceMonthYear(String type, int id, int month, int year) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/watchlists/performance/$type/$id/month/$month/year/$year'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<WatchlistPerformanceModel> listWatchlistPerformance = [];
+        for (var data in commonModel.data) {
+          WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
+          listWatchlistPerformance.add(watchlist);
+        }
+        return listWatchlistPerformance;
+      }
+
+      // status code is not 200, means we got error
+      throw Exception(parseError(response.body).error.message);
+    }
+    else {
+      throw Exception("No bearer token");
+    }
+  }
+
+  Future<List<WatchlistPerformanceYearModel>> getWatchlistPerformanceYear(String type, int id, int year) async {
+    // if empty then we try to get again the bearer token from user preferences
+    if (_bearerToken.isEmpty) {
+      getJwt();
+    }
+
+    // check if we have bearer token or not?
+    if (_bearerToken.isNotEmpty) {
+      final response = await http.get(
+        Uri.parse('${Globals.apiURL}api/watchlists/performance/$type/$id/year/$year'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // check if we got 200 response or not?
+      if (response.statusCode == 200) {
+        // parse the response to get the data and process each one
+        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
+        List<WatchlistPerformanceYearModel> listWatchlistPerformance = [];
+        for (var data in commonModel.data) {
+          WatchlistPerformanceYearModel watchlist = WatchlistPerformanceYearModel.fromJson(data['attributes']);
           listWatchlistPerformance.add(watchlist);
         }
         return listWatchlistPerformance;

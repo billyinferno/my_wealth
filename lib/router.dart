@@ -28,6 +28,7 @@ import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_sell.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_add.dart';
+import 'package:my_wealth/pages/watchlists/watchlist_calendar.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_list.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_performance.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_summary_performance.dart';
@@ -182,6 +183,10 @@ class RouterPageState extends State<RouterPage> {
       case '/watchlist/performance':
       {
         return createAnimationRoute(WatchlistPerformancePage(args: settings.arguments,));
+      }
+      case '/watchlist/calendar':
+      {
+        return createAnimationRoute(WatchlistCalendarPage(args: settings.arguments,));
       }
       case '/watchlist/summary/performance':
       {

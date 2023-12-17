@@ -546,7 +546,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 return Slidable(
                   endActionPane: ActionPane(
                     motion: const ScrollMotion(),
-                    extentRatio: 0.875,
+                    extentRatio: 1,
                     children: <Widget>[
                       SlidableAction(
                         onPressed: ((BuildContext context) {
@@ -580,6 +580,16 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         icon: Ionicons.pulse_outline,
                         backgroundColor: primaryColor,
                         foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
+                      ),
+                      SlidableAction(
+                        onPressed: ((BuildContext context) {
+                          if(data[idx].watchlistDetail.isNotEmpty) {
+                            Navigator.pushNamed(context, '/watchlist/calendar', arguments: watchlistArgs);
+                          }
+                        }),
+                        icon: Ionicons.calendar_outline,
+                        backgroundColor: primaryColor,
+                        foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.pink[300] : primaryLight),
                       ),
                       SlidableAction(
                         onPressed: ((BuildContext context) {

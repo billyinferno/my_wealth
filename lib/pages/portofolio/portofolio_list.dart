@@ -158,6 +158,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
+                          const SizedBox(height: 25,),
                           Expanded(
                             child: ListView.builder(
                               itemCount: _sortList.length,

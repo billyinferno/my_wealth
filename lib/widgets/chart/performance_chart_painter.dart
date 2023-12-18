@@ -6,8 +6,9 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 class PerformanceData {
   final DateTime date;
   final double gain;
+  final double total;
 
-  PerformanceData({required this.date, required this.gain});
+  PerformanceData({required this.date, required this.gain, required this.total});
 }
 class ChartProperties {
   final double min;

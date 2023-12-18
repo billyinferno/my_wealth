@@ -99,7 +99,11 @@ class _PerformanceChartState extends State<PerformanceChart> {
         }
 
         // create the performance data
-        PerformanceData dt = PerformanceData(date: perf.buyDate, gain: gain);
+        PerformanceData dt = PerformanceData(
+          date: perf.buyDate,
+          gain: gain,
+          total: perf.buyAmount
+        );
 
         // add the performance data to the list
         _data.add(dt);
@@ -113,7 +117,11 @@ class _PerformanceChartState extends State<PerformanceChart> {
           _maxInvestment = value;
         }
 
-        PerformanceData iv = PerformanceData(date: perf.buyDate, gain: value);
+        PerformanceData iv = PerformanceData(
+          date: perf.buyDate,
+          gain: value,
+          total: perf.buyAmount,
+        );
 
         // add the investment data to the list
         _investment.add(iv);

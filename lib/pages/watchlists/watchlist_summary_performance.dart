@@ -295,6 +295,25 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                     ),
                   ),
                 ),
+                Container(
+                  width: 50,
+                  padding: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
+                      color: primaryDark,
+                      border: Border(
+                          bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      )
+                    )
+                  ),
+                  child: Text(
+                    "%",
+                    textAlign: TextAlign.center,
+                    style: _smallFont,
+                  ),
+                ),
               ],
             ),
             Expanded(
@@ -375,6 +394,19 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
+                        ),
+                      ),
+                      Container(
+                        width: 75,
+                        color: (isMinMax ? plColor : Colors.transparent),
+                        padding: const EdgeInsets.all(5),
+                        child: Text(
+                          "${formatDecimalWithNull(_perfData[index].gain / _perfData[index].total, 100, 2)}%",
+                          textAlign: TextAlign.center,
+                          style: _smallFont.copyWith(
+                            color: (isMinMax ? Colors.white : plColor),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -502,14 +534,16 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
           // loop thru the list of dates
           double prevValue = 0;
+          double prevAmount = 0;
           for(int i=0; i < listDates.length; i++) {
             // check if this date is available or not on the tmpPerfData
             if (tmpPerfData.containsKey(listDates[i])) {
               // just add the data
               prevValue = tmpPerfData[listDates[i]]!.plValue;
+              prevAmount = tmpPerfData[listDates[i]]!.totalAmount;
             }
 
-            // add this prevValue to the tmpSummaryPerfData
+            // add this prevValue and totalAmount to the tmpSummaryPerfData
             // first check if exists or not on the tmpSummaryPerfData
             if (tmpSummaryPerfData.containsKey(listDates[i])) {
               // get the current value
@@ -517,13 +551,18 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
               // create the next data
               tmpNextSummaryPerfModel = SummaryPerformanceModel(
                 plDate: listDates[i],
-                plValue: tmpCurrentSummaryPerfModel.plValue + prevValue
+                plValue: tmpCurrentSummaryPerfModel.plValue + prevValue,
+                totalAmount: tmpCurrentSummaryPerfModel.totalAmount + prevAmount,
               );
               // add to the tmpSummaryPerfData
               tmpSummaryPerfData[listDates[i]] = tmpNextSummaryPerfModel;
             }
             else {
-              tmpSummaryPerfData[listDates[i]] = SummaryPerformanceModel(plDate: listDates[i], plValue: prevValue);
+              tmpSummaryPerfData[listDates[i]] = SummaryPerformanceModel(
+                plDate: listDates[i],
+                plValue: prevValue,
+                totalAmount: prevAmount,
+              );
             }
           }
         });
@@ -561,7 +600,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       SummaryPerformanceModel dt = _summaryPerfData[i];
 
       // add this data to the performance data
-      _perfData.add(PerformanceData(date: dt.plDate, gain: dt.plValue));
+      _perfData.add(
+        PerformanceData(
+          date: dt.plDate,
+          gain: dt.plValue,
+          total: dt.totalAmount,
+        )
+      );
 
       // got data, so now check if this is max or not
       _totalData++;

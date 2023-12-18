@@ -6,8 +6,6 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_performance_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_performance_year_model.dart';
-import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
@@ -29,6 +27,7 @@ class WatchlistCalendarPage extends StatefulWidget {
 
 class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollYearController = ScrollController();
   
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   final DateFormat _df2 = DateFormat('yyyy/MM');
@@ -40,6 +39,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   late UserLoginInfoModel _userInfo;
   late DateTime _firstDate;
   late DateTime _endDate;
+  late int _totalYear;
   late WatchlistListArgs _watchlistArgs;
   late WatchlistComputationResult _watchlistComputation;
   late CompanyDetailArgs _companyArgs;
@@ -52,7 +52,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
   late Future<bool> _getData;
   late Map<DateTime, WatchlistPerformanceModel> _watchlistMapPerformance;
-  late Map<DateTime, WatchlistPerformanceYearModel> _watchlistMapYearPerformance;
   late List<CalendarDatePL> _monthYearCalendarPL;
   late List<CalendarDatePL> _yearCalendarPL;
 
@@ -73,11 +72,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     // get the user information
     _userInfo = UserSharedPreferences.getUserInfo()!;
 
-    // get the first and last date from broker, well assume that this is the
-    // same as price date so we don't need to call another API just to get the
-    // first and last date
-    _firstDate = BrokerSharedPreferences.getBrokerMinDate()!;
-    _endDate = BrokerSharedPreferences.getBrokerMaxDate()!;
+    // Initialize first and end date as today's date.
+    // we will assign the correct first and end date after we received the
+    // response from API.
+    _firstDate = DateTime.now();
+    _endDate = DateTime.now();
+    _totalYear = 1;
 
     // convert the args to watchlist args
     _watchlistArgs = widget.args as WatchlistListArgs;
@@ -134,7 +134,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // initialize the map
     _watchlistMapPerformance = {};
-    _watchlistMapYearPerformance = {};
     
     // initialize the calendar PL
     _monthYearCalendarPL = [];
@@ -147,6 +146,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _scrollYearController.dispose();
     super.dispose();
   }
   
@@ -316,28 +316,23 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
               children: <Widget>[
                 SizedBox(
                   width: 150,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: const Text("Select Month")
-                  ),
-                  // TODO: unremark once the API fixed
-                  // child: CupertinoSegmentedControl(
-                  //   children: const {
-                  //     "m": Text("Month"),
-                  //     "y": Text("Year"),
-                  //   },
-                  //   onValueChanged: ((value) {
-                  //     String selectedValue = value.toString();
+                  child: CupertinoSegmentedControl(
+                    children: const {
+                      "m": Text("Month"),
+                      "y": Text("Year"),
+                    },
+                    onValueChanged: ((value) {
+                      String selectedValue = value.toString();
                       
-                  //     setState(() {
-                  //       _calendarSelection = selectedValue;
-                  //     });
-                  //   }),
-                  //   groupValue: _calendarSelection,
-                  //   selectedColor: secondaryColor,
-                  //   borderColor: secondaryDark,
-                  //   pressedColor: primaryDark,
-                  // ),
+                      setState(() {
+                        _calendarSelection = selectedValue;
+                      });
+                    }),
+                    groupValue: _calendarSelection,
+                    selectedColor: secondaryColor,
+                    borderColor: secondaryDark,
+                    pressedColor: primaryDark,
+                  ),
                 ),
                 _dateSelector(),
               ],
@@ -366,8 +361,15 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ).then((newDate) {
               if (newDate != null) {
                 setState(() {
-                  _currentDate = newDate;
-                  _getData = _getInitData();
+                  // check if the new date same as the current date or not?
+                  if (_currentDate.month == newDate.month && _currentDate.year == newDate.year) {
+                    // skip
+                  }
+                  else {
+                    // set the new date and get the data
+                    _currentDate = newDate;
+                    _getData = _getInitData();
+                  }
                 });
               }
             });
@@ -395,8 +397,78 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: GestureDetector(
           onTap: (() {
-            // TODO: show year only
-            debugPrint("Show year selection");
+            showModalBottomSheet(
+              context: context,
+              isDismissible: true,
+              builder: (context) {
+                return SizedBox(
+                  height: 250,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(height: 30,),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: _scrollYearController,
+                          itemCount: _totalYear,
+                          itemBuilder: ((context, index) {
+                            return InkWell(
+                              onTap: (() {
+                                setState(() {
+                                  // check what is the year selected if not the
+                                  // same then we can get the data.
+                                  // otherwise just skip the API fetch
+                                  if (_firstDate.year + index == _currentDate.year) {
+                                    // skip
+                                  }
+                                  else {
+                                    // set the current date with the selected
+                                    // year.
+                                    _currentDate = DateTime(
+                                      _firstDate.year + index,
+                                      _currentDate.month,
+                                      _currentDate.day
+                                    );
+
+                                    // and get the data
+                                    _getData = _getInitData();
+                                  }
+                                });
+                                // dismiss the bottom sheet
+                                Navigator.pop(context);
+                              }),
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    )
+                                  )
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
+                                  child: Text(
+                                    "${_firstDate.year + index}",
+                                    style: const TextStyle(
+                                      color: textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                      const SizedBox(height: 30,),
+                    ],
+                  ),
+                );
+              },
+            );
           }),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -641,6 +713,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         _monthYearCalendarPL.clear();
         _monthYearCalendarPL = _generateDateMonthYear();
       }),
+
       // get the performance year
       _watchlistAPI.getWatchlistPerformanceYear(
         _watchlistArgs.type,
@@ -648,11 +721,9 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         _currentDate.year
       ).then((resp) {
         // pl calculation helper
-        double? plBefore;
         double plCurrent;
         double plCurrentRatio;
-        double? prevTotalAmount;
-        double? prevTotalShare;
+        double? plBefore;
         DateTime priceDate;
 
         // initialize pl total and pl ratio
@@ -661,102 +732,53 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         _plTotalYearColor = primaryLight;
         _plRatioYearColor = primaryLight;
 
-        // generate the map for the watchlist performance, as we will pass this
+        // generate the year performance PL calendar list, as we will pass this
         // to the performance calendar so it can generate the correct P/L in
         // the performance calendar widget
-        _watchlistMapYearPerformance.clear();
-        
-        // generate year calendar here
         _yearCalendarPL.clear();
         _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
           return CalendarDatePL(
-            date: _df4.format(DateTime(_currentDate.year, index, 1)),
+            date: _df4.format(DateTime(_currentDate.year, (index+1), 1)),
             pl: null,
             plRatio: null,
           );
         });
 
         for (int i = 0; i < resp.length; i++) {
-          // generate the price date
-          priceDate = DateTime.parse("${resp[i].priceDate}-01");
-
-          // ensure that the share is not null
-          if (resp[i].watchlistTotalShare != null) {
-            // get the previous total amount
-            prevTotalAmount = resp[i].watchlistTotalAmount!;
-            prevTotalShare = resp[i].watchlistTotalShare!;
-            
-            // we got data, check whether this is first data or not?
-            if (plBefore == null) {
-              // this is first data
-              plBefore = (resp[i].watchlistTotalShare! * resp[i].priceAvg) - (resp[i].watchlistTotalAmount!);
-            }
-            else {
-              // this is not the first data, we can calculate the current pl here.
-              plCurrent = (resp[i].watchlistTotalShare! * resp[i].priceAvg) - (resp[i].watchlistTotalAmount!);
-
-              // then we can get the pl total year
-              _plTotalYear += (plCurrent - plBefore);
-              
-              // check the buy amount ensure not null and more than zero
-              if ((resp[i].watchlistTotalAmount ?? 0) > 0) {
-                plCurrentRatio = (plCurrent - plBefore) / resp[i].watchlistTotalAmount!; 
-              }
-              else {
-                plCurrentRatio = 0;
-              }
-              _plRatioYear += plCurrentRatio;
-
-              // update year calendar PL
-              _yearCalendarPL[priceDate.month-1] = CalendarDatePL(
-                date: _df4.format(priceDate),
-                pl: (plCurrent - plBefore),
-                plRatio: (plCurrentRatio * 100),
-              );
-
-              // set pl before as pl current
-              plBefore = plCurrent;
-            }
+          // check if we already have pl before?
+          // if don't have, it means that it was the 1st data which we will
+          // ignore as this will be used as base to calculate the rest.
+          if (plBefore == null) {
+            // calculate the plBefore
+            plBefore = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
           }
           else {
-            // the total share is null, check if we already have plBefore?
-            // if got it means that we can use plBefore as plCurrent
-            if (plBefore != null) {
-              // pl before is not null means we already have data previously
-              plCurrent = ((prevTotalShare ?? 0) * resp[i].priceAvg) - (prevTotalAmount ?? 0);
-              
-              _plTotalYear += (plCurrent - plBefore);
-              
-              // check the buy amount ensure not null and more than zero
-              if ((prevTotalAmount ?? 0) > 0) {
-                plCurrentRatio = (plCurrent - plBefore) / prevTotalAmount!; 
-              }
-              else {
-                plCurrentRatio = 0;
-              }
-              _plRatioYear += plCurrentRatio;
+            // we already have pl before, so we can perform the calculation
+            // for the current pl and pl ratio.
 
-              // update year calendar
-              _yearCalendarPL[priceDate.month-1] = CalendarDatePL(
-                date: _df4.format(priceDate),
-                pl: (plCurrent - plBefore),
-                plRatio: (plCurrentRatio * 100),
-              );
+            // generate the price date
+            priceDate = DateTime(resp[i].buyDate.year, resp[i].buyDate.month, 1);
 
-              // set pl before as pl current
-              plBefore = plCurrent;
+            // no need to perform sophisticated calculation for this as
+            // we can just perform normal pl calculation
+            plCurrent = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
+            _plTotalYear += (plCurrent - plBefore);
+
+            plCurrentRatio = 0;
+            if (resp[i].buyAmount > 0) {
+              plCurrentRatio = (plCurrent - plBefore) / resp[i].buyAmount;
             }
-          }
+            _plRatioYear += plCurrentRatio;
 
-          // date shouldn't be duplicate, but if duplicate then API is fucked
-          // up, just throw some error here if we found the date is duplicate
-          if (_watchlistMapYearPerformance.containsKey(priceDate)) {
-            debugPrint("[ERROR] duplicate date in the API result");
-            throw 'Duplicate Key found in the API Result';
-          }
-          else {
-            // this is new data
-            _watchlistMapYearPerformance[priceDate] = resp[i];
+            // update the year calendar PL list for this month
+            _yearCalendarPL[resp[i].buyDate.month-1] = CalendarDatePL(
+              date: _df4.format(priceDate),
+              pl: (plCurrent - plBefore),
+              plRatio: (plCurrentRatio * 100),
+            );
+
+            // set pl before as pl current
+            plBefore = plCurrent;
           }
         }
 
@@ -777,6 +799,19 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         else if (_plRatioYear < 0) {
           _plRatioYearColor = secondaryColor;
         }
+      }),
+
+      // get first and last date
+      _watchlistAPI.findFirstLastDate(
+        _watchlistArgs.type, 
+        _watchlistArgs.watchList.watchlistId
+      ).then((resp) {
+        // set the first and end date
+        _firstDate = resp.firstdate;
+        _endDate = resp.enddate;
+
+        // calculate the total year
+        _totalYear = (_endDate.year - _firstDate.year) + 1;
       }),
     ]).onError((error, stackTrace) {
       debugPrint(error.toString());

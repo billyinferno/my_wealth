@@ -652,8 +652,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
       useDate = currentDate;
     }
 
-    debugPrint("Get Month Year for $useDate");
-
     // if not then fetch the data
     await _watchlistAPI.getWatchlistPerformanceMonthYear(
       _watchlistArgs.type,
@@ -752,8 +750,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     else {
       useDate = currentDate;
     }
-
-    debugPrint("Get Year for $useDate");
 
     // get the performance year
     await _watchlistAPI.getWatchlistPerformanceYear(
@@ -865,7 +861,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     DateTime? newDate,
     bool? firstRun,
   }) async {
-    debugPrint("AAAA");
     await Future.wait([
       _getMonthYearData(currentDate: currentDate, newDate: newDate),
       _getYearData(currentDate: currentDate, newDate: newDate),

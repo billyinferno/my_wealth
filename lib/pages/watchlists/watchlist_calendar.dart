@@ -140,7 +140,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     _yearCalendarPL = [];
 
     // get the data from API
-    _getData = _getInitData();
+    _getData = _getInitData(currentDate: _currentDate, newDate: null, firstRun: true);
   }
 
   @override
@@ -361,15 +361,15 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ).then((newDate) {
               if (newDate != null) {
                 setState(() {
-                  // check if the new date same as the current date or not?
-                  if (_currentDate.month == newDate.month && _currentDate.year == newDate.year) {
-                    // skip
-                  }
-                  else {
-                    // set the new date and get the data
-                    _currentDate = newDate;
-                    _getData = _getInitData();
-                  }
+                  // get the data
+                  _getData = _getInitData(
+                    currentDate: _currentDate,
+                    newDate: newDate
+                  );
+
+                  // set new date as current date, in case the same it will not
+                  // matter also.
+                  _currentDate = newDate;
                 });
               }
             });
@@ -415,25 +415,21 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                           itemBuilder: ((context, index) {
                             return InkWell(
                               onTap: (() {
+                                DateTime newDate = DateTime(
+                                  _firstDate.year + index,
+                                  _currentDate.month,
+                                  _currentDate.day
+                                );
+                                
                                 setState(() {
-                                  // check what is the year selected if not the
-                                  // same then we can get the data.
-                                  // otherwise just skip the API fetch
-                                  if (_firstDate.year + index == _currentDate.year) {
-                                    // skip
-                                  }
-                                  else {
-                                    // set the current date with the selected
-                                    // year.
-                                    _currentDate = DateTime(
-                                      _firstDate.year + index,
-                                      _currentDate.month,
-                                      _currentDate.day
-                                    );
+                                  // get the data
+                                  _getData = _getInitData(
+                                    currentDate: _currentDate,
+                                    newDate: newDate);
 
-                                    // and get the data
-                                    _getData = _getInitData();
-                                  }
+                                  // set the current date with the selected
+                                  // year.
+                                  _currentDate = newDate;
                                 });
                                 // dismiss the bottom sheet
                                 Navigator.pop(context);
@@ -635,174 +631,222 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     );
   }
 
-  Future<bool> _getInitData() async {
-    await Future.wait([
-      _watchlistAPI.getWatchlistPerformanceMonthYear(
-        _watchlistArgs.type,
-        _watchlistArgs.watchList.watchlistId,
-        _currentDate.month,
-        _currentDate.year
-      ).then((resp) {
-        // pl calculation helper
-        double? plBefore;
-        double plCurrent;
+  Future<void> _getMonthYearData({
+    required DateTime currentDate,
+    DateTime? newDate
+  }) async {
+    // create variable to knew which date to use 
+    DateTime useDate = currentDate;
 
-        // initialize pl total and pl ratio
-        _plTotal = 0;
-        _plRatio = 0;
-        _plTotalColor = primaryLight;
-        _plRatioColor = primaryLight;
+    // check whether this is the same month and year or not?
+    // if same then skip
+    if (newDate != null) {
+      if (currentDate.year == newDate.year && currentDate.month == newDate.month) {
+        return;
+      }
+      else {
+        useDate = newDate;
+      }
+    }
+    else {
+      useDate = currentDate;
+    }
 
-        // generate the map for the watchlist performance, as we will pass this
-        // to the performance calendar so it can generate the correct P/L in
-        // the performance calendar widget
-        _watchlistMapPerformance.clear();
-        for (int i = 0; i < resp.length; i++) {
-          // calculate pl
-          plCurrent = (resp[i].buyTotal * resp[i].currentPrice) - (resp[i].buyTotal * resp[i].buyAvg);
+    debugPrint("Get Month Year for $useDate");
 
-          // check if pl before is null? if null then assign current pl
-          if (plBefore == null) {
-            plBefore = plCurrent;
+    // if not then fetch the data
+    await _watchlistAPI.getWatchlistPerformanceMonthYear(
+      _watchlistArgs.type,
+      _watchlistArgs.watchList.watchlistId,
+      useDate.month,
+      useDate.year
+    ).then((resp) {
+      // pl calculation helper
+      double? plBefore;
+      double plCurrent;
+
+      // initialize pl total and pl ratio
+      _plTotal = 0;
+      _plRatio = 0;
+      _plTotalColor = primaryLight;
+      _plRatioColor = primaryLight;
+
+      // generate the map for the watchlist performance, as we will pass this
+      // to the performance calendar so it can generate the correct P/L in
+      // the performance calendar widget
+      _watchlistMapPerformance.clear();
+      for (int i = 0; i < resp.length; i++) {
+        // calculate pl
+        plCurrent = (resp[i].buyTotal * resp[i].currentPrice) - (resp[i].buyTotal * resp[i].buyAvg);
+
+        // check if pl before is null? if null then assign current pl
+        if (plBefore == null) {
+          plBefore = plCurrent;
+        }
+        else {
+          // if already here it means we already have both previous and
+          // current pl, so we can calculate the pl difference
+          _plTotal += (plCurrent - plBefore);
+          
+          // calculate the _plRatio
+          if (resp[i].buyAmount > 0) {
+            _plRatio += ((plCurrent - plBefore) / resp[i].buyAmount);
           }
-          else {
-            // if already here it means we already have both previous and
-            // current pl, so we can calculate the pl difference
-            _plTotal += (plCurrent - plBefore);
-            
-            // calculate the _plRatio
-            if (resp[i].buyAmount > 0) {
-              _plRatio += ((plCurrent - plBefore) / resp[i].buyAmount);
-            }
 
-            // set pl before to pl current
-            plBefore = plCurrent;
+          // set pl before to pl current
+          plBefore = plCurrent;
+        }
+
+        // date shouldn't be duplicate, but if duplicate then API is fucked
+        // up, just throw some error here if we found the date is duplicate
+        if (_watchlistMapPerformance.containsKey(resp[i].buyDate)) {
+          debugPrint("[ERROR] duplicate date in the API result");
+          throw 'Duplicate Key found in the API Result';
+        }
+        else {
+          // this is new data
+          _watchlistMapPerformance[resp[i].buyDate] = resp[i];
+        }
+      }
+
+      // divide the pl ratio with the total data - 1
+      _plRatio = (_plRatio / (resp.length - 1)) * 100;
+
+      // get the correct pl color
+      if (_plTotal > 0) {
+        _plTotalColor = Colors.green;
+      }
+      else if (_plTotal < 0) {
+        _plTotalColor = secondaryColor;
+      }
+
+      if (_plRatio > 0) {
+        _plRatioColor = Colors.green;
+      }
+      else if (_plRatio < 0) {
+        _plRatioColor = secondaryColor;
+      }
+
+      // generate the calendar PL
+      _monthYearCalendarPL.clear();
+      _monthYearCalendarPL = _generateDateMonthYear();
+    });
+  }
+
+  Future<void> _getYearData({
+    required DateTime currentDate,
+    DateTime? newDate
+  }) async {
+    // create variable to knew which date to use 
+    DateTime useDate = currentDate;
+
+    // check if the year is the same or not? if the same then no need to do.
+    if (newDate != null) {
+      if (currentDate.year == newDate.year) {
+        return;
+      }
+      else {
+        useDate = newDate;
+      }
+    }
+    else {
+      useDate = currentDate;
+    }
+
+    debugPrint("Get Year for $useDate");
+
+    // get the performance year
+    await _watchlistAPI.getWatchlistPerformanceYear(
+      _watchlistArgs.type,
+      _watchlistArgs.watchList.watchlistId,
+      useDate.year
+    ).then((resp) {
+      // pl calculation helper
+      double plCurrent;
+      double plCurrentRatio;
+      double? plBefore;
+      DateTime priceDate;
+
+      // initialize pl total and pl ratio
+      _plTotalYear = 0;
+      _plRatioYear = 0;
+      _plTotalYearColor = primaryLight;
+      _plRatioYearColor = primaryLight;
+
+      // generate the year performance PL calendar list, as we will pass this
+      // to the performance calendar so it can generate the correct P/L in
+      // the performance calendar widget
+      _yearCalendarPL.clear();
+      _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
+        return CalendarDatePL(
+          date: _df4.format(DateTime(useDate.year, (index+1), 1)),
+          pl: null,
+          plRatio: null,
+        );
+      });
+
+      for (int i = 0; i < resp.length; i++) {
+        // check if we already have pl before?
+        // if don't have, it means that it was the 1st data which we will
+        // ignore as this will be used as base to calculate the rest.
+        if (plBefore == null) {
+          // calculate the plBefore
+          plBefore = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
+        }
+        else {
+          // we already have pl before, so we can perform the calculation
+          // for the current pl and pl ratio.
+
+          // generate the price date
+          priceDate = DateTime(resp[i].buyDate.year, resp[i].buyDate.month, 1);
+
+          // no need to perform sophisticated calculation for this as
+          // we can just perform normal pl calculation
+          plCurrent = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
+          _plTotalYear += (plCurrent - plBefore);
+
+          plCurrentRatio = 0;
+          if (resp[i].buyAmount > 0) {
+            plCurrentRatio = (plCurrent - plBefore) / resp[i].buyAmount;
           }
+          _plRatioYear += plCurrentRatio;
 
-          // date shouldn't be duplicate, but if duplicate then API is fucked
-          // up, just throw some error here if we found the date is duplicate
-          if (_watchlistMapPerformance.containsKey(resp[i].buyDate)) {
-            debugPrint("[ERROR] duplicate date in the API result");
-            throw 'Duplicate Key found in the API Result';
-          }
-          else {
-            // this is new data
-            _watchlistMapPerformance[resp[i].buyDate] = resp[i];
-          }
-        }
-
-        // divide the pl ratio with the total data - 1
-        _plRatio = (_plRatio / (resp.length - 1)) * 100;
-
-        // get the correct pl color
-        if (_plTotal > 0) {
-          _plTotalColor = Colors.green;
-        }
-        else if (_plTotal < 0) {
-          _plTotalColor = secondaryColor;
-        }
-
-        if (_plRatio > 0) {
-          _plRatioColor = Colors.green;
-        }
-        else if (_plRatio < 0) {
-          _plRatioColor = secondaryColor;
-        }
-
-        // generate the calendar PL
-        _monthYearCalendarPL.clear();
-        _monthYearCalendarPL = _generateDateMonthYear();
-      }),
-
-      // get the performance year
-      _watchlistAPI.getWatchlistPerformanceYear(
-        _watchlistArgs.type,
-        _watchlistArgs.watchList.watchlistId,
-        _currentDate.year
-      ).then((resp) {
-        // pl calculation helper
-        double plCurrent;
-        double plCurrentRatio;
-        double? plBefore;
-        DateTime priceDate;
-
-        // initialize pl total and pl ratio
-        _plTotalYear = 0;
-        _plRatioYear = 0;
-        _plTotalYearColor = primaryLight;
-        _plRatioYearColor = primaryLight;
-
-        // generate the year performance PL calendar list, as we will pass this
-        // to the performance calendar so it can generate the correct P/L in
-        // the performance calendar widget
-        _yearCalendarPL.clear();
-        _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
-          return CalendarDatePL(
-            date: _df4.format(DateTime(_currentDate.year, (index+1), 1)),
-            pl: null,
-            plRatio: null,
+          // update the year calendar PL list for this month
+          _yearCalendarPL[resp[i].buyDate.month-1] = CalendarDatePL(
+            date: _df4.format(priceDate),
+            pl: (plCurrent - plBefore),
+            plRatio: (plCurrentRatio * 100),
           );
-        });
 
-        for (int i = 0; i < resp.length; i++) {
-          // check if we already have pl before?
-          // if don't have, it means that it was the 1st data which we will
-          // ignore as this will be used as base to calculate the rest.
-          if (plBefore == null) {
-            // calculate the plBefore
-            plBefore = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
-          }
-          else {
-            // we already have pl before, so we can perform the calculation
-            // for the current pl and pl ratio.
-
-            // generate the price date
-            priceDate = DateTime(resp[i].buyDate.year, resp[i].buyDate.month, 1);
-
-            // no need to perform sophisticated calculation for this as
-            // we can just perform normal pl calculation
-            plCurrent = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
-            _plTotalYear += (plCurrent - plBefore);
-
-            plCurrentRatio = 0;
-            if (resp[i].buyAmount > 0) {
-              plCurrentRatio = (plCurrent - plBefore) / resp[i].buyAmount;
-            }
-            _plRatioYear += plCurrentRatio;
-
-            // update the year calendar PL list for this month
-            _yearCalendarPL[resp[i].buyDate.month-1] = CalendarDatePL(
-              date: _df4.format(priceDate),
-              pl: (plCurrent - plBefore),
-              plRatio: (plCurrentRatio * 100),
-            );
-
-            // set pl before as pl current
-            plBefore = plCurrent;
-          }
+          // set pl before as pl current
+          plBefore = plCurrent;
         }
+      }
 
-        // divide the pl ratio with the total data - 1
-        _plRatioYear = (_plRatioYear / (resp.length - 1)) * 100;
+      // divide the pl ratio with the total data - 1
+      _plRatioYear = (_plRatioYear / (resp.length - 1)) * 100;
 
-        // get the correct pl color
-        if (_plTotalYear > 0) {
-          _plTotalYearColor = Colors.green;
-        }
-        else if (_plTotalYear < 0) {
-          _plTotalYearColor = secondaryColor;
-        }
+      // get the correct pl color
+      if (_plTotalYear > 0) {
+        _plTotalYearColor = Colors.green;
+      }
+      else if (_plTotalYear < 0) {
+        _plTotalYearColor = secondaryColor;
+      }
 
-        if (_plRatioYear > 0) {
-          _plRatioYearColor = Colors.green;
-        }
-        else if (_plRatioYear < 0) {
-          _plRatioYearColor = secondaryColor;
-        }
-      }),
+      if (_plRatioYear > 0) {
+        _plRatioYearColor = Colors.green;
+      }
+      else if (_plRatioYear < 0) {
+        _plRatioYearColor = secondaryColor;
+      }
+    });
+  }
 
+  Future<void> _getFirstAndLastDate(bool firstRun) async {
+    if (firstRun) {
       // get first and last date
-      _watchlistAPI.findFirstLastDate(
+      await _watchlistAPI.findFirstLastDate(
         _watchlistArgs.type, 
         _watchlistArgs.watchList.watchlistId
       ).then((resp) {
@@ -812,7 +856,20 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
         // calculate the total year
         _totalYear = (_endDate.year - _firstDate.year) + 1;
-      }),
+      });
+    }
+  }
+
+  Future<bool> _getInitData({
+    required DateTime currentDate,
+    DateTime? newDate,
+    bool? firstRun,
+  }) async {
+    debugPrint("AAAA");
+    await Future.wait([
+      _getMonthYearData(currentDate: currentDate, newDate: newDate),
+      _getYearData(currentDate: currentDate, newDate: newDate),
+      _getFirstAndLastDate((firstRun ?? false)),
     ]).onError((error, stackTrace) {
       debugPrint(error.toString());
       throw 'Error when try to get the data from server';

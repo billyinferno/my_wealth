@@ -34,6 +34,70 @@ class ComputeWatchlistAllResult {
     required this.totalDayGainCrypto, required this.totalValueCrypto, required this.totalCostCrypto, required this.totalRealisedCrypto,
     required this.totalDayGainGold, required this.totalValueGold, required this.totalCostGold, required this.totalRealisedGold,
   });
+
+  double getTotalDayGain({required String type}) {
+    switch(type.toLowerCase()) {
+      case 'reksadana':
+        return totalDayGainReksadana;
+      case 'saham':
+        return totalDayGainSaham;
+      case 'crypto':
+        return totalDayGainCrypto;
+      case 'gold':
+        return totalDayGainGold;
+      case 'all':
+      default:
+        return totalDayGain;
+    }
+  }
+
+  double getTotalValue({required String type}) {
+    switch(type.toLowerCase()) {
+      case 'reksadana':
+        return totalValueReksadana;
+      case 'saham':
+        return totalValueSaham;
+      case 'crypto':
+        return totalValueCrypto;
+      case 'gold':
+        return totalValueGold;
+      case 'all':
+      default:
+        return totalValue;
+    }
+  }
+
+  double getTotalCost({required String type}) {
+    switch(type.toLowerCase()) {
+      case 'reksadana':
+        return totalCostReksadana;
+      case 'saham':
+        return totalCostSaham;
+      case 'crypto':
+        return totalCostCrypto;
+      case 'gold':
+        return totalCostGold;
+      case 'all':
+      default:
+        return totalCost;
+    }
+  }
+
+  double getTotalRealised({required String type}) {
+    switch(type.toLowerCase()) {
+      case 'reksadana':
+        return totalRealisedReksadana;
+      case 'saham':
+        return totalRealisedSaham;
+      case 'crypto':
+        return totalRealisedCrypto;
+      case 'gold':
+        return totalRealisedGold;
+      case 'all':
+      default:
+        return totalRealised;
+    }
+  }
 }
 
 ComputeWatchlistAllResult computeWatchlistAll(List<WatchlistListModel> watchlistsMutualfund, List<WatchlistListModel> watchlistsStock, List<WatchlistListModel> watchlistsCrypto, List<WatchlistListModel> watchlistsGold) {

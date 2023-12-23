@@ -68,50 +68,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     // from the args we will knew the type and and the daygain, realised, and unrealised
     // value, so we don't need to calculate or compute again, as this already compute on
     // the watchlist page.
-    switch(_args.type) {
-      case 'all':
-        _totalDayGain = _args.computeResult!.totalDayGainReksadana + _args.computeResult!.totalDayGainSaham + _args.computeResult!.totalDayGainGold + _args.computeResult!.totalDayGainCrypto;
-        _totalCost = _args.computeResult!.totalCostReksadana + _args.computeResult!.totalCostSaham + _args.computeResult!.totalCostGold + _args.computeResult!.totalCostCrypto;
-        _totalValue = _args.computeResult!.totalValueReksadana + _args.computeResult!.totalValueSaham + _args.computeResult!.totalValueGold + _args.computeResult!.totalValueCrypto;
-        _totalRealised = _args.computeResult!.totalRealisedReksadana + _args.computeResult!.totalRealisedSaham + _args.computeResult!.totalRealisedGold + _args.computeResult!.totalRealisedCrypto;
-        _totalUnrealised = _totalValue - _totalCost;
-        break;
-      case 'reksadana':
-        _totalDayGain = _args.computeResult!.totalDayGainReksadana;
-        _totalCost = _args.computeResult!.totalCostReksadana;
-        _totalValue = _args.computeResult!.totalValueReksadana;
-        _totalRealised = _args.computeResult!.totalRealisedReksadana;
-        _totalUnrealised = _args.computeResult!.totalValueReksadana - _args.computeResult!.totalCostReksadana;
-        break;
-      case 'saham':
-        _totalDayGain = _args.computeResult!.totalDayGainSaham;
-        _totalCost = _args.computeResult!.totalCostSaham;
-        _totalValue = _args.computeResult!.totalValueSaham;
-        _totalRealised = _args.computeResult!.totalRealisedSaham;
-        _totalUnrealised = _args.computeResult!.totalValueSaham - _args.computeResult!.totalCostSaham;
-        break;
-      case 'gold':
-        _totalDayGain = _args.computeResult!.totalDayGainGold;
-        _totalCost = _args.computeResult!.totalCostGold;
-        _totalValue = _args.computeResult!.totalValueGold;
-        _totalRealised = _args.computeResult!.totalRealisedGold;
-        _totalUnrealised = _args.computeResult!.totalValueGold - _args.computeResult!.totalCostGold;
-        break;
-      case 'crypto':
-        _totalDayGain = _args.computeResult!.totalDayGainCrypto;
-        _totalCost = _args.computeResult!.totalCostCrypto;
-        _totalValue = _args.computeResult!.totalValueCrypto;
-        _totalRealised = _args.computeResult!.totalRealisedCrypto;
-        _totalUnrealised = _args.computeResult!.totalValueCrypto - _args.computeResult!.totalCostCrypto;
-        break;
-      default:
-        _totalRealised = 0;
-        _totalDayGain = 0;
-        _totalCost = 0;
-        _totalValue = 0;
-        _totalUnrealised = 0;
-        break;
-    }
+    _totalDayGain = _args.computeResult!.getTotalDayGain(type: _args.type);
+    _totalCost = _args.computeResult!.getTotalCost(type: _args.type);
+    _totalValue = _args.computeResult!.getTotalValue(type: _args.type);
+    _totalRealised = _args.computeResult!.getTotalRealised(type: _args.type);
+    _totalUnrealised = _totalValue - _totalCost;
 
     // once calculation finished we can try to calculate the potential PL
     _totalPotentialPL = _totalRealised + _totalUnrealised;

@@ -43,7 +43,7 @@ class WatchlistSummary extends StatelessWidget {
       child: Slidable(
         endActionPane: ActionPane(
         motion: const ScrollMotion(),
-        extentRatio: 0.21875,
+        extentRatio: 0.43,
         children: <Widget>[
             SlidableAction(
               onPressed: ((BuildContext context) {
@@ -53,6 +53,15 @@ class WatchlistSummary extends StatelessWidget {
               icon: Ionicons.pulse_outline,
               backgroundColor: primaryDark,
               foregroundColor: Colors.purple,
+            ),
+            SlidableAction(
+              onPressed: ((BuildContext context) {
+                WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: 'all', computeResult: compResult!);
+                Navigator.pushNamed(context, '/watchlist/summary/calendar', arguments: args);
+              }),
+              icon: Ionicons.calendar_outline,
+              backgroundColor: primaryDark,
+              foregroundColor: Colors.pink[300],
             ),
           ],
         ),

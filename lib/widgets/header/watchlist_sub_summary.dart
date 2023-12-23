@@ -26,19 +26,29 @@ class WatchlistSubSummary extends StatelessWidget {
     return Slidable(
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
-        extentRatio: 0.21875,
+        extentRatio: 0.42,
         children: <Widget>[
           SlidableAction(
             onPressed: ((BuildContext context) {
-              if (totalData! > 0) {
+              if ((totalData ?? 0) > 0) {
                 WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: type, computeResult: compResult!);
-                // debugPrint("Show performance summary for $type");
                 Navigator.pushNamed(context, '/watchlist/summary/performance', arguments: args);
               }
             }),
             icon: Ionicons.pulse_outline,
             backgroundColor: primaryColor,
-            foregroundColor: (totalData! > 0 ? Colors.purple : primaryLight),
+            foregroundColor: ((totalData ?? 0) > 0 ? Colors.purple : primaryLight),
+          ),
+          SlidableAction(
+            onPressed: ((BuildContext context) {
+              if ((totalData ?? 0) > 0) {
+                WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: type, computeResult: compResult!);
+                Navigator.pushNamed(context, '/watchlist/summary/calendar', arguments: args);
+              }
+            }),
+            icon: Ionicons.calendar_outline,
+            backgroundColor: primaryColor,
+            foregroundColor: ((totalData ?? 0) > 0 ? Colors.pink[300] : primaryLight),
           ),
         ],
       ),

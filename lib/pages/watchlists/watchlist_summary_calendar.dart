@@ -1,0 +1,1138 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:my_wealth/api/watchlist_api.dart';
+import 'package:my_wealth/model/user/user_login.dart';
+import 'package:my_wealth/model/watchlist/watchlist_summary_performance_model.dart';
+import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/wacthlist_summary_performance_args.dart';
+import 'package:my_wealth/utils/extensions/string.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/map_sorted.dart';
+import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/components/performance_calendar.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
+
+class WatchlistSummaryCalendarPage extends StatefulWidget {
+  final Object? args;
+  const WatchlistSummaryCalendarPage({Key? key, required this.args}) : super(key: key);
+
+  @override
+  State<WatchlistSummaryCalendarPage> createState() => _WatchlistSummaryCalendarPageState();
+}
+
+class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarPage> {
+  final ScrollController _pageScrollController = ScrollController();
+  final ScrollController _scrollYearController = ScrollController();
+
+  final WatchlistAPI _watchlistAPI = WatchlistAPI();
+
+  final DateFormat _df2 = DateFormat('yyyy/MM');
+  final DateFormat _df3 = DateFormat('MMM yyyy');
+  final DateFormat _df4 = DateFormat('MMM');
+
+  late WatchlistSummaryPerformanceArgs _args;
+  late List<CalendarDatePL> _monthYearCalendarPL;
+  late List<CalendarDatePL> _yearCalendarPL;
+
+  late UserLoginInfoModel? _userInfo;
+  late DateTime _currentDate;
+  
+  // calendar first and end date
+  late DateTime _firstDate;
+  late DateTime _endDate;
+  late int _totalYear;
+
+  late double _totalDayGain;
+  late double _totalCost;
+  late double _totalValue;
+  late double _totalRealised;
+  late double _totalUnrealised;
+  late double _totalPotentialPL;
+
+  late double _plTotal;
+  late double _plRatio;
+  late Color _plTotalColor;
+  late Color _plRatioColor;
+  late double _plTotalYear;
+  late double _plRatioYear;
+  late Color _plTotalYearColor;
+  late Color _plRatioYearColor;
+
+  late String _calendarSelection;
+
+  late Future<bool> _getData;
+
+  @override
+  void initState() {
+    // convert args to watchlist summary performance args
+    _args = widget.args as WatchlistSummaryPerformanceArgs;
+
+    // get the shared date
+    _userInfo = UserSharedPreferences.getUserInfo();
+    
+    // initialize variable
+    _currentDate = DateTime.now();
+    _calendarSelection = 'm'; // calendar selected as month
+    
+    // initialize pl month and year
+    _plTotal = 0;
+    _plRatio = 0;
+    _plTotalColor = primaryLight;
+    _plRatioColor = primaryLight;
+
+    // initialize pl year
+    _plTotalYear = 0;
+    _plRatioYear = 0;
+    _plTotalYearColor = primaryLight;
+    _plRatioYearColor = primaryLight;
+
+    // initialize the map for generating performance and calendar
+    _monthYearCalendarPL = [];
+    _yearCalendarPL = [];
+
+    // perform calculation for known data
+    _totalDayGain = _args.computeResult!.getTotalDayGain(type: _args.type);
+    _totalCost = _args.computeResult!.getTotalCost(type: _args.type);
+    _totalValue = _args.computeResult!.getTotalValue(type: _args.type);
+    _totalRealised = _args.computeResult!.getTotalRealised(type: _args.type);
+    _totalUnrealised = _totalValue - _totalCost;
+    _totalPotentialPL = _totalRealised + _totalUnrealised;
+
+    // get the performance summary for this data
+    _getData = _getPerformanceData(
+      type: _args.type,
+      currentDate: _currentDate,
+      firstRun: true
+    );
+    
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageScrollController.dispose();
+    _scrollYearController.dispose();
+    
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading watchlist performance');
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      })
+    );
+  }
+
+  Widget _generatePage() {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: ((() {
+            // return back to the previous page
+            Navigator.pop(context);
+          })),
+          icon: const Icon(
+            Ionicons.arrow_back,
+          )
+        ),
+        title: Center(
+          child: Text(
+            "Performance ${_args.type.toTitleCase()}",
+            style: const TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
+      ),
+      body: SingleChildScrollView(
+        controller: _pageScrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              color: riskColor(
+                _totalValue,
+                _totalCost,
+                _userInfo!.risk
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                          bottom: BorderSide(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          )
+                        )
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "COST", value: _totalCost),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "VALUE", value: _totalValue),
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                SizedBox(
+                  width: 150,
+                  child: CupertinoSegmentedControl(
+                    children: const {
+                      "m": Text("Month"),
+                      "y": Text("Year"),
+                    },
+                    onValueChanged: ((value) {
+                      String selectedValue = value.toString();
+                      
+                      setState(() {
+                        _calendarSelection = selectedValue;
+                      });
+                    }),
+                    groupValue: _calendarSelection,
+                    selectedColor: secondaryColor,
+                    borderColor: secondaryDark,
+                    pressedColor: primaryDark,
+                  ),
+                ),
+                _dateSelector(),
+              ],
+            ),
+            const SizedBox(height: 15,),
+            _getSubPage(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _dateSelector() {
+    if (_calendarSelection == "m") {
+      return _dateSelectorMonthYear();
+    }
+    else {
+      return _dateSelectorYear();
+    }
+  }
+
+  Widget _dateSelectorMonthYear() {
+    return Container(
+      width: 100,
+      height: 20,
+      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+      child: GestureDetector(
+        onTap: (() {
+          showMonthPicker(
+            context: context,
+            initialDate: _currentDate,
+            firstDate: _firstDate,
+            lastDate: _endDate,
+          ).then((newDate) {
+            if (newDate != null) {
+              setState(() {
+                // show loader dialog
+                showLoaderDialog(context);
+
+                // get the data
+                _getData = _getPerformanceData(
+                  type: _args.type,
+                  currentDate: _currentDate,
+                  newDate: newDate
+                );
+
+                // once finished remove the loader dialog
+                _getData.then((value) {
+                  Navigator.pop(context);
+                });
+
+                // set new date as current date, in case the same it will not
+                // matter also.
+                _currentDate = newDate;
+              });
+            }
+          });
+        }),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Text(_df2.format(_currentDate)),
+            const SizedBox(width: 5,),
+            const Icon(
+              Ionicons.caret_down_sharp,
+              color: primaryLight,
+              size: 10,
+            ),
+          ],
+        ),
+      )
+    );
+  }
+
+  Widget _dateSelectorYear() {
+    return Container(
+      width: 100,
+      height: 20,
+      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+      child: GestureDetector(
+        onTap: (() {
+          showModalBottomSheet(
+            context: context,
+            isDismissible: true,
+            builder: (context) {
+              return SizedBox(
+                height: 250,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(height: 30,),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollYearController,
+                        itemCount: _totalYear,
+                        itemBuilder: ((context, index) {
+                          return InkWell(
+                            onTap: (() {
+                              DateTime newDate = DateTime(
+                                _firstDate.year + index,
+                                _currentDate.month,
+                                _currentDate.day
+                              );
+                              
+                              setState(() {
+                                // show loader dialog
+                                showLoaderDialog(context);
+
+                                // get the data
+                                _getData = _getPerformanceData(
+                                  type: _args.type,
+                                  currentDate: _currentDate,
+                                  newDate: newDate);
+
+                                // once finished remove loader dialog
+                                _getData.then((value) {
+                                  Navigator.pop(context);
+                                });
+                                
+                                // set the current date with the selected
+                                // year.
+                                _currentDate = newDate;
+                              });
+                              // dismiss the bottom sheet
+                              Navigator.pop(context);
+                            }),
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Text(
+                                      "${_firstDate.year + index}",
+                                      style: const TextStyle(
+                                        color: textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  Visibility(
+                                    visible: (_currentDate.year == (_firstDate.year + index)),
+                                    child: const Icon(
+                                      Ionicons.checkmark_circle,
+                                      color: Colors.green,
+                                      size: 15,
+                                    )
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                    const SizedBox(height: 30,),
+                  ],
+                ),
+              );
+            },
+          );
+        }),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Text("${_currentDate.year}"),
+            const SizedBox(width: 5,),
+            const Icon(
+              Ionicons.caret_down_sharp,
+              color: primaryLight,
+              size: 10,
+            ),
+          ],
+        ),
+      )
+    );
+  }
+
+  Widget _getSubPage() {
+    if (_calendarSelection == "m") {
+      return _getSubPageMonthYear();
+    }
+    else {
+      return _getSubPageYear();
+    }
+  }
+
+  Widget _getSubPageMonthYear() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: primaryDark,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          width: double.infinity,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "${_df3.format(_currentDate)} P&L",
+                    style: const TextStyle(
+                      color: textPrimary,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    formatCurrency(_plTotal, false, true, false, 2),
+                    style: TextStyle(
+                      color: _plTotalColor,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "P&L Ratio",
+                    style: TextStyle(
+                      color: textPrimary,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    "${formatDecimal(_plRatio, 2)}%",
+                    style: TextStyle(
+                      color: _plRatioColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10,),
+        PerformanceCalendar(
+          month: _currentDate.month,
+          year: _currentDate.year,
+          data: _monthYearCalendarPL,
+          type: PerformanceCalendarType.monthYear,
+        ),
+      ],
+    );
+  }
+
+  Widget _getSubPageYear() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: primaryDark,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          width: double.infinity,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "${_currentDate.year} P&L",
+                    style: const TextStyle(
+                      color: textPrimary,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    formatCurrency(_plTotalYear, false, true, false, 2),
+                    style: TextStyle(
+                      color: _plTotalYearColor,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "P&L Ratio",
+                    style: TextStyle(
+                      color: textPrimary,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    "${formatDecimal(_plRatioYear, 2)}%",
+                    style: TextStyle(
+                      color: _plRatioYearColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10,),
+        PerformanceCalendar(
+          month: _currentDate.month,
+          year: _currentDate.year,
+          data: _yearCalendarPL,
+          type: PerformanceCalendarType.year,
+        ),
+      ],
+    );
+  }
+
+  Widget _rowItem({required String text, required double value, bool? needColor}) {
+    bool isNeedColor = (needColor ?? false);    
+    Color textColor = textPrimary;
+
+    if (isNeedColor) {
+      if (value < 0) {
+        textColor = secondaryColor;
+      }
+      if (value > 0) {
+        textColor = Colors.green;
+      }
+    }
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 10,
+            ),
+          ),
+          Text(
+            formatCurrency(value, false, true, true, 2),
+            style: TextStyle(
+              color: textColor
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _getPerformanceDataMonthYear({
+    required String type,
+    required DateTime currentDate,
+    DateTime? newDate
+  }) async {
+    DateTime useDate = currentDate;
+    // check if new date is not null
+    if (newDate != null) {
+      // check and ensure that this is not the same as the current date
+      if (currentDate.month == newDate.month && currentDate.year == newDate.month) {
+        // just return
+        return;
+      }
+      else {
+        useDate = newDate;
+      }
+    }
+
+    // create the map that we will use for computation later on once we got
+    // all the data
+    Map<String, List<SummaryPerformanceModel>> perfData = {};
+
+    // if not then we can get the data
+    if (type.toLowerCase() == 'all') {
+      await Future.wait([
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('reksadana', useDate.month, useDate.year).then((resp) {
+          perfData['reksadana'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('saham', useDate.month, useDate.year).then((resp) {
+          perfData['saham'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('gold', useDate.month, useDate.year).then((resp) {
+          perfData['gold'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('crypto', useDate.month, useDate.year).then((resp) {
+          perfData['crypto'] = resp;
+        }),
+      ]);
+    }
+    else {
+      await _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(type.toLowerCase(), useDate.month, useDate.year).then((resp) {
+        perfData[type.toLowerCase()] = resp;
+      });
+    }
+
+    Map<DateTime, SummaryPerformanceModel> watchlistMapPerformance = {};
+
+    // for type all, we need to fill the gap, because gold have price on saturday
+    // but other doesn't have, so it will not counting the pl that we got
+    // for other during saturday, which causing odd issue when calculating the
+    // calendar PL.
+    if (type == 'all') {
+      DateTime firstDate = DateTime(_currentDate.year, _currentDate.month, 1).subtract(const Duration(days: 1));
+      DateTime endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+      
+      // check end date, whether end date is more than end date that we got
+      // from API or not? This is to avoid we put the data until end of month,
+      // where we don't reach that date yet.
+      if (endDate.isAfter(_endDate)) {
+        // set end date as today date + 1
+        endDate = _endDate;
+      }
+
+      Map<String, Map<DateTime, SummaryPerformanceModel>> combPerf = {};
+      Map<DateTime, SummaryPerformanceModel> tmpPerf = {};
+      
+      // first generate all the date from first to end date
+      while(firstDate.isBefore(endDate)) {
+        tmpPerf[firstDate] = SummaryPerformanceModel(
+          plDate: firstDate,
+          plValue: double.negativeInfinity,
+          totalAmount: double.negativeInfinity
+        );
+        firstDate = firstDate.add(const Duration(days: 1));
+      }
+
+      // add tp combPerf list per their key
+      combPerf['reksadana'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
+      combPerf['saham'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
+      combPerf['crypto'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
+      combPerf['gold'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
+
+      // now we can add all the data
+      perfData.forEach((key, perfList) {
+        Map<DateTime, SummaryPerformanceModel> tmpPerf = combPerf[key]!;
+
+        // check if we got perf list, in case no data, it means we need to
+        // default it to all 0
+        if (perfList.isNotEmpty) {
+          // loop thru perf list
+          for (int i=0; i<perfList.length; i++) {
+            tmpPerf[perfList[i].plDate] = perfList[i];
+          }
+        }
+        else {
+          tmpPerf.forEach((key, value) {
+            tmpPerf.update(key, (_) {
+              return SummaryPerformanceModel(
+                plDate: key,
+                plValue: 0,
+                totalAmount: 0
+              );
+            });
+          });
+        }
+
+        // set the comb perf
+        combPerf[key] = tmpPerf;
+      });
+
+      // fill the gap of the data in the comb perf
+      combPerf.forEach((key, value) {
+        // get the current perf data
+        Map<DateTime, SummaryPerformanceModel> tmpData = combPerf[key]!;
+        SummaryPerformanceModel? before;
+
+        // loop thru tmp data
+        tmpData.forEach((date, data) {
+          if (data.plValue != double.negativeInfinity && data.totalAmount != double.negativeInfinity) {
+            // set this as before
+            before = data;
+          }
+          else {
+            // ensure before is not null
+            if (before != null) {
+              tmpData[date] = before!;
+            }
+            else {
+              tmpData[date] = SummaryPerformanceModel(
+                plDate: date,
+                plValue: 0,
+                totalAmount: 0
+              );
+            }
+          }
+        });
+      });
+
+      // now combine all the data in the comb perf to the watchlistMapPerformance
+      watchlistMapPerformance.clear();
+      combPerf.forEach((type, list) {
+        list.forEach((date, data) {
+          // check whether we got this date on the watchlist performance or not?
+          if(watchlistMapPerformance.containsKey(date)) {
+            // extract the data and update it
+            SummaryPerformanceModel before = watchlistMapPerformance[date]!;
+
+            // update the watchlist map performance
+            watchlistMapPerformance.update(date, (_) {
+              return SummaryPerformanceModel(
+                plDate: date,
+                plValue: before.plValue + data.plValue,
+                totalAmount: before.totalAmount + data.totalAmount
+              );
+            });
+          }
+          else {
+            // first data, yay
+            watchlistMapPerformance[date] = data;
+          }
+        });
+      });
+    }
+    else {
+      // loop thru all the keys and generate the watchlist performance map
+      perfData.forEach((key, perfList) {
+        // loop thru perfList
+        for (int i=0; i<perfList.length; i++) {
+          // check if we got this date already or not?
+          if (watchlistMapPerformance.containsKey(perfList[i].plDate)) {
+            // exists already, extract the performance data, and combine it
+            SummaryPerformanceModel tmp = watchlistMapPerformance[perfList[i].plDate]!;
+            SummaryPerformanceModel newData = SummaryPerformanceModel(
+              plDate: perfList[i].plDate,
+              plValue: tmp.plValue + perfList[i].plValue,
+              totalAmount: tmp.totalAmount + perfList[i].totalAmount
+            );
+
+            // put the new data in the map
+            watchlistMapPerformance[perfList[i].plDate] = newData;
+          }
+          else {
+            // not exists, we can create new data here
+            watchlistMapPerformance[perfList[i].plDate] = perfList[i];
+          }
+        }
+      });
+    }
+    
+
+    // sort the map based on the keys
+    watchlistMapPerformance = sortedMap<DateTime, SummaryPerformanceModel>(data: watchlistMapPerformance);
+
+    // once sorted we can calculate the pl total and pl ratio
+    // initialize pl total and pl ratio
+    double? plBefore;
+    _plTotal = 0;
+    _plRatio = 0;
+    _plTotalColor = primaryLight;
+    _plRatioColor = primaryLight;
+
+    // loop thru the sorted watchlist performance
+    watchlistMapPerformance.forEach((key, value) {
+      // check if pl before is null, if null, then this is means that this
+      // is the first date so ignore this.
+      if (plBefore == null) {
+        plBefore = value.plValue;
+      }
+      else {
+        _plTotal += value.plValue - plBefore!;
+        if (value.totalAmount > 0) {
+          _plRatio += (value.plValue - plBefore!) / value.totalAmount;
+        }
+      }
+
+      // set the pl before as current pl value
+      plBefore = value.plValue;
+    });
+
+    // divide the pl ratio with the total data - 1
+    _plRatio = (_plRatio / (watchlistMapPerformance.length - 1)) * 100;
+
+    // get the correct pl color
+    if (_plTotal > 0) {
+      _plTotalColor = Colors.green;
+    }
+    else if (_plTotal < 0) {
+      _plTotalColor = secondaryColor;
+    }
+
+    if (_plRatio > 0) {
+      _plRatioColor = Colors.green;
+    }
+    else if (_plRatio < 0) {
+      _plRatioColor = secondaryColor;
+    }
+
+    // generate the calendar PL
+    _monthYearCalendarPL.clear();
+    _monthYearCalendarPL = _generateDateMonthYear(data: watchlistMapPerformance);
+  }
+
+  List<CalendarDatePL> _generateDateMonthYear({required Map<DateTime, SummaryPerformanceModel> data}) {
+    // generate 42 string of list
+    List<CalendarDatePL> dateList = List<CalendarDatePL>.generate(42, (index) {
+      return const CalendarDatePL(
+        date: "",
+        pl: null,
+        plRatio: null,
+      );
+    });
+
+    // generate the first and last date
+    DateTime firstDate = DateTime(_currentDate.year, _currentDate.month, 1);
+    DateTime beforeDate;
+    DateTime endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+
+    // first row
+    int row = 0;
+    double? pl;
+    double? plRatio;
+    double? plBefore;
+    double plCurrent;
+
+    // loop from 1st date to end date
+    while (firstDate.isBefore(endDate)) {
+      // initialize default pl and plRatio
+      pl = null;
+      plRatio = null;
+
+      // get the pl and pl ratio for this by checking if this date is exists
+      // in the watchlist map performance.
+      beforeDate = firstDate.subtract(const Duration(days: 1));
+      if (data.containsKey(beforeDate)) {
+        plBefore = data[beforeDate]!.plValue;
+      }
+
+      if (data.containsKey(firstDate) && plBefore != null) {
+        plCurrent = data[firstDate]!.plValue;
+
+        // calculate pl and pl ratio
+        pl = plCurrent - plBefore;
+        if (data[firstDate]!.totalAmount > 0) {
+          plRatio = (pl / data[firstDate]!.totalAmount);
+        }
+        else {
+          plRatio = 0;
+        }
+
+        // set pl current as pl before
+        plBefore = plCurrent;
+      }
+
+      // calculate this and add to the according date array
+      dateList[(row + (firstDate.weekday - 1))] = CalendarDatePL(
+        date: firstDate.day.toString(),
+        pl: pl,
+        plRatio: plRatio,
+      );
+      
+      // check if this is sunday
+      if (firstDate.weekday == 7) {
+        // add row + 7, since we will need go to the next row in calendar
+        row += 7;
+      }
+      
+      // move to the next day
+      firstDate = firstDate.add(const Duration(days: 1));
+    }
+
+    return dateList;
+  }
+
+  Future<void> _getPerformanceDataYear({
+    required String type,
+    required DateTime currentDate,
+    DateTime? newDate
+  }) async {
+    DateTime useDate = currentDate;
+    // check if new date is not null
+    if (newDate != null) {
+      // check and ensure that this is not the same as the current date
+      if (currentDate.year == newDate.year) {
+        // just return
+        return;
+      }
+      else {
+        useDate = newDate;
+      }
+    }
+
+    // create the map that we will use for computation later on once we got
+    // all the data
+    Map<String, List<SummaryPerformanceModel>> perfData = {};
+
+    // if not then we can get the data
+    if (type.toLowerCase() == 'all') {
+      await Future.wait([
+        _watchlistAPI.getWatchlistPerformanceSummaryYear('reksadana', useDate.year).then((resp) {
+          perfData['reksadana'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummaryYear('saham', useDate.year).then((resp) {
+          perfData['saham'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummaryYear('gold', useDate.year).then((resp) {
+          perfData['gold'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummaryYear('crypto', useDate.year).then((resp) {
+          perfData['crypto'] = resp;
+        }),
+      ]);
+    }
+    else {
+      await _watchlistAPI.getWatchlistPerformanceSummaryYear(type.toLowerCase(), useDate.year).then((resp) {
+        perfData[type.toLowerCase()] = resp;
+      });
+    }
+
+    // create variable to combine all the performance data
+    Map<DateTime, SummaryPerformanceModel> watchlistMapPerformance = {};
+
+    // loop thru all the keys and generate teh watchlist performance map
+    perfData.forEach((key, perfList) {
+      // loop thru perfList
+      for (int i=0; i<perfList.length; i++) {
+        // create the performance date, as each reksadna, saham, etc.
+        // will have different end day based on their price. 
+        DateTime perfDate = DateTime(perfList[i].plDate.year, perfList[i].plDate.month, 1);
+        
+        // check if we got this date already or not?
+        if (watchlistMapPerformance.containsKey(perfDate)) {
+          // exists already, extract the performance data, and combine it
+          SummaryPerformanceModel tmp = watchlistMapPerformance[perfDate]!;
+          SummaryPerformanceModel newData = SummaryPerformanceModel(
+            plDate: perfDate,
+            plValue: tmp.plValue + perfList[i].plValue,
+            totalAmount: tmp.totalAmount + perfList[i].totalAmount
+          );
+
+          // put the new data in the map
+          watchlistMapPerformance[perfDate] = newData;
+        }
+        else {
+          // not exists, we can create new data here
+          watchlistMapPerformance[perfDate] = perfList[i];
+        }
+      }
+    });
+
+    // sort the map based on the keys
+    watchlistMapPerformance = sortedMap<DateTime, SummaryPerformanceModel>(data: watchlistMapPerformance);
+
+    // pl calculation helper
+    double plCurrent;
+    double plCurrentRatio;
+    double? plBefore;
+    DateTime priceDate;
+
+    // initialize pl total and pl ratio
+    _plTotalYear = 0;
+    _plRatioYear = 0;
+    _plTotalYearColor = primaryLight;
+    _plRatioYearColor = primaryLight;
+
+    // generate the year performance PL calendar list, as we will pass this
+    // to the performance calendar so it can generate the correct P/L in
+    // the performance calendar widget
+    _yearCalendarPL.clear();
+    _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
+      return CalendarDatePL(
+        date: _df4.format(DateTime(useDate.year, (index+1), 1)),
+        pl: null,
+        plRatio: null,
+      );
+    });
+
+    // loop thru all the response data, as this response data should have
+    // all the 12 month + 1 last year one
+    watchlistMapPerformance.forEach((key, value) {
+      // check if we already have pl before?
+      // if don't have, it means that it was the 1st data which we will
+      // ignore as this will be used as base to calculate the rest.
+      if (plBefore == null) {
+        // calculate the plBefore
+        plBefore = value.plValue;
+      }
+      else {
+        // we already have pl before, so we can perform the calculation
+        // for the current pl and pl ratio.
+
+        // generate the price date
+        priceDate = DateTime(key.year, key.month, 1);
+
+        // no need to perform sophisticated calculation for this as
+        // we can just perform normal pl calculation
+        plCurrent = value.plValue;
+        _plTotalYear += (plCurrent - plBefore!);
+
+        plCurrentRatio = 0;
+        if (value.totalAmount > 0) {
+          plCurrentRatio = (plCurrent - plBefore!) / value.totalAmount;
+        }
+        _plRatioYear += plCurrentRatio;
+
+        // update the year calendar PL list for this month
+        _yearCalendarPL[key.month-1] = CalendarDatePL(
+          date: _df4.format(priceDate),
+          pl: (plCurrent - plBefore!),
+          plRatio: (plCurrentRatio * 100),
+        );
+
+        // set pl before as pl current
+        plBefore = plCurrent;
+      }
+    });
+
+    // divide the pl ratio with the total data - 1
+    _plRatioYear = (_plRatioYear / (watchlistMapPerformance.length - 1)) * 100;
+
+    // get the correct pl color
+    if (_plTotalYear > 0) {
+      _plTotalYearColor = Colors.green;
+    }
+    else if (_plTotalYear < 0) {
+      _plTotalYearColor = secondaryColor;
+    }
+
+    if (_plRatioYear > 0) {
+      _plRatioYearColor = Colors.green;
+    }
+    else if (_plRatioYear < 0) {
+      _plRatioYearColor = secondaryColor;
+    }
+  }
+
+  Future<void> _getFirstAndLastDate(bool firstRun) async {
+    if (firstRun) {
+      // get first and last date
+      await _watchlistAPI.findFirstLastDate(
+        _args.type, 
+        (_args.type != 'all' ? -1 : null)
+      ).then((resp) {
+        // set the first and end date
+        _firstDate = resp.firstdate;
+        _endDate = resp.enddate;
+
+        // calculate the total year
+        _totalYear = (_endDate.year - _firstDate.year) + 1;
+      });
+    }
+  }
+
+  Future<bool> _getPerformanceData({
+    required String type,
+    required DateTime currentDate,
+    DateTime? newDate,
+    bool? firstRun
+  }) async {
+    await Future.wait([
+      _getPerformanceDataMonthYear(type: type, currentDate: currentDate, newDate: newDate),
+      _getPerformanceDataYear(type: type, currentDate: currentDate, newDate: newDate),
+      _getFirstAndLastDate((firstRun ?? false)),
+    ]).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
+      throw 'Error when try to get the data from server';
+    });
+
+    return true;
+  }
+}

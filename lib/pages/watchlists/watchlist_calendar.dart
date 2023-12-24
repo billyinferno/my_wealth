@@ -12,6 +12,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/performance_calendar.dart';
 import 'package:my_wealth/widgets/list/row_child.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -361,11 +362,19 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ).then((newDate) {
               if (newDate != null) {
                 setState(() {
+                  // show loader dialog
+                  showLoaderDialog(context);
+
                   // get the data
                   _getData = _getInitData(
                     currentDate: _currentDate,
                     newDate: newDate
                   );
+
+                  // once finished remove the loader dialog
+                  _getData.then((value) {
+                    Navigator.pop(context);
+                  });
 
                   // set new date as current date, in case the same it will not
                   // matter also.
@@ -422,10 +431,18 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                                 );
                                 
                                 setState(() {
+                                  // show the loader dialog
+                                  showLoaderDialog(context);
+
                                   // get the data
                                   _getData = _getInitData(
                                     currentDate: _currentDate,
                                     newDate: newDate);
+                                  
+                                  // once finished remove the loader dialog
+                                  _getData.then((value) {
+                                    Navigator.pop(context);
+                                  });
 
                                   // set the current date with the selected
                                   // year.

@@ -40,7 +40,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   late UserLoginInfoModel _userInfo;
   late DateTime _firstDate;
   late DateTime _endDate;
-  late int _totalYear;
   late WatchlistListArgs _watchlistArgs;
   late WatchlistComputationResult _watchlistComputation;
   late CompanyDetailArgs _companyArgs;
@@ -78,7 +77,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     // response from API.
     _firstDate = DateTime.now();
     _endDate = DateTime.now();
-    _totalYear = 1;
 
     // convert the args to watchlist args
     _watchlistArgs = widget.args as WatchlistListArgs;
@@ -200,148 +198,156 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
           )
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              color: _watchlistComputation.riskColor,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      color: primaryDark,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            _watchlistArgs.watchList.watchlistCompanyName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            color: _watchlistComputation.riskColor,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    color: primaryDark,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          _watchlistArgs.watchList.watchlistCompanyName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    formatCurrencyWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, false, true, false, 2),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  (_watchlistComputation.priceDiff == 0 ? const Icon(Ionicons.remove_outline, color: textPrimary, size: 15,) : (_watchlistComputation.priceDiff > 0 ? const Icon(Ionicons.caret_up, color: Colors.green, size: 12,) : const Icon(Ionicons.caret_down, color: secondaryColor, size: 12,))),
-                                  const SizedBox(width: 5,),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: (_watchlistComputation.priceDiff == 0 ? textPrimary : (_watchlistComputation.priceDiff > 0 ? Colors.green : secondaryColor)),
-                                          width: 2.0,
-                                          style: BorderStyle.solid,
-                                        )
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  formatCurrencyWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, false, true, false, 2),
+                                ),
+                                const SizedBox(width: 5,),
+                                (_watchlistComputation.priceDiff == 0 ? const Icon(Ionicons.remove_outline, color: textPrimary, size: 15,) : (_watchlistComputation.priceDiff > 0 ? const Icon(Ionicons.caret_up, color: Colors.green, size: 12,) : const Icon(Ionicons.caret_down, color: secondaryColor, size: 12,))),
+                                const SizedBox(width: 5,),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: (_watchlistComputation.priceDiff == 0 ? textPrimary : (_watchlistComputation.priceDiff > 0 ? Colors.green : secondaryColor)),
+                                        width: 2.0,
+                                        style: BorderStyle.solid,
                                       )
-                                    ),
-                                    child: Text(
-                                      formatCurrencyWithNull(_watchlistComputation.priceDiff, false, true, false, 2),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const Expanded(child: SizedBox()),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  const Icon(
-                                    Ionicons.time_outline,
-                                    color: primaryLight,
-                                    size: 15,
+                                    )
                                   ),
-                                  const SizedBox(width: 5,),
-                                  Text(
-                                    _df.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
+                                  child: Text(
+                                    formatCurrencyWithNull(_watchlistComputation.priceDiff, false, true, false, 2),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              RowChild(headerText: "AVG PRICE", valueText: (_watchlistComputation.totalCurrentShares > 0 ? formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) : "-")),
-                              const SizedBox(width: 10,),
-                              RowChild(headerText: "COST", valueText: formatCurrency(_watchlistComputation.totalCost)),
-                              const SizedBox(width: 10,),
-                              RowChild(headerText: "VALUE", valueText: formatCurrency(_watchlistComputation.totalValue)),
-                            ],
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              RowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
-                              const SizedBox(width: 10,),
-                              RowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain), valueColor: _unrealisedColor),
-                              const SizedBox(width: 10,),
-                              RowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
-                            ],
-                          ),
-                        ],
-                      ),
+                                )
+                              ],
+                            ),
+                            const Expanded(child: SizedBox()),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                const Icon(
+                                  Ionicons.time_outline,
+                                  color: primaryLight,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 5,),
+                                Text(
+                                  _df.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            RowChild(headerText: "AVG PRICE", valueText: (_watchlistComputation.totalCurrentShares > 0 ? formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) : "-")),
+                            const SizedBox(width: 10,),
+                            RowChild(headerText: "COST", valueText: formatCurrency(_watchlistComputation.totalCost)),
+                            const SizedBox(width: 10,),
+                            RowChild(headerText: "VALUE", valueText: formatCurrency(_watchlistComputation.totalValue)),
+                          ],
+                        ),
+                        const SizedBox(height: 5,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            RowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
+                            const SizedBox(width: 10,),
+                            RowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain), valueColor: _unrealisedColor),
+                            const SizedBox(width: 10,),
+                            RowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 15,),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 150,
+                        child: CupertinoSegmentedControl(
+                          children: const {
+                            "m": Text("Month"),
+                            "y": Text("Year"),
+                          },
+                          onValueChanged: ((value) {
+                            String selectedValue = value.toString();
+                            
+                            setState(() {
+                              _calendarSelection = selectedValue;
+                            });
+                          }),
+                          groupValue: _calendarSelection,
+                          selectedColor: secondaryColor,
+                          borderColor: secondaryDark,
+                          pressedColor: primaryDark,
+                        ),
+                      ),
+                      _dateSelector(),
+                    ],
+                  ),
+                  const SizedBox(height: 15,),
+                  _getSubPage(),
                 ],
               ),
             ),
-            const SizedBox(height: 15,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                SizedBox(
-                  width: 150,
-                  child: CupertinoSegmentedControl(
-                    children: const {
-                      "m": Text("Month"),
-                      "y": Text("Year"),
-                    },
-                    onValueChanged: ((value) {
-                      String selectedValue = value.toString();
-                      
-                      setState(() {
-                        _calendarSelection = selectedValue;
-                      });
-                    }),
-                    groupValue: _calendarSelection,
-                    selectedColor: secondaryColor,
-                    borderColor: secondaryDark,
-                    pressedColor: primaryDark,
-                  ),
-                ),
-                _dateSelector(),
-              ],
-            ),
-            const SizedBox(height: 15,),
-            _getSubPage(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -362,19 +368,11 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ).then((newDate) {
               if (newDate != null) {
                 setState(() {
-                  // show loader dialog
-                  showLoaderDialog(context);
-
                   // get the data
                   _getData = _getInitData(
                     currentDate: _currentDate,
                     newDate: newDate
                   );
-
-                  // once finished remove the loader dialog
-                  _getData.then((value) {
-                    Navigator.pop(context);
-                  });
 
                   // set new date as current date, in case the same it will not
                   // matter also.
@@ -406,81 +404,49 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: GestureDetector(
           onTap: (() {
-            showModalBottomSheet(
+            showDialog(
               context: context,
-              isDismissible: true,
-              builder: (context) {
-                return SizedBox(
-                  height: 250,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(height: 30,),
-                      Expanded(
-                        child: ListView.builder(
-                          controller: _scrollYearController,
-                          itemCount: _totalYear,
-                          itemBuilder: ((context, index) {
-                            return InkWell(
-                              onTap: (() {
-                                DateTime newDate = DateTime(
-                                  _firstDate.year + index,
-                                  _currentDate.month,
-                                  _currentDate.day
-                                );
-                                
-                                setState(() {
-                                  // show the loader dialog
-                                  showLoaderDialog(context);
+              builder: ((context) {
+                return AlertDialog(
+                  title: const Text("Select Year"),
+                  content: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: YearPicker(
+                      firstDate: _firstDate,
+                      lastDate: _endDate,
+                      selectedDate: _currentDate,
+                      onChanged: ((newDate) {
+                        // remove the dialog
+                        Navigator.pop(context);
 
-                                  // get the data
-                                  _getData = _getInitData(
-                                    currentDate: _currentDate,
-                                    newDate: newDate);
-                                  
-                                  // once finished remove the loader dialog
-                                  _getData.then((value) {
-                                    Navigator.pop(context);
-                                  });
+                        // check the new date year and current date year
+                        // if different then process to get the data
+                        if (newDate.year == _currentDate.year) {
+                          // check month whether same or not??
+                          if (newDate.month == _currentDate.month) {
+                            // all the same, no need to fetch the data
+                            return;
+                          }
+                        }
 
-                                  // set the current date with the selected
-                                  // year.
-                                  _currentDate = newDate;
-                                });
-                                // dismiss the bottom sheet
-                                Navigator.pop(context);
-                              }),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    )
-                                  )
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
-                                  child: Text(
-                                    "${_firstDate.year + index}",
-                                    style: const TextStyle(
-                                      color: textPrimary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                      const SizedBox(height: 30,),
-                    ],
+                        // set state and get the data if the selected year is
+                        // different with current year.
+                        setState(() {
+                          // get the data
+                          _getData = _getInitData(
+                            currentDate: _currentDate,
+                            newDate: newDate);
+                          
+                          // set the current date with the selected
+                          // year.
+                          _currentDate = newDate;
+                        });
+                      }),
+                    ),
                   ),
                 );
-              },
+              })
             );
           }),
           child: Row(
@@ -867,8 +833,11 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         _firstDate = resp.firstdate;
         _endDate = resp.enddate;
 
-        // calculate the total year
-        _totalYear = (_endDate.year - _firstDate.year) + 1;
+        // check if current date is after end date
+        // if so then set current date as end
+        if (_currentDate.isAfter(_endDate)) {
+          _currentDate = _endDate;
+        }
       });
     }
   }
@@ -878,6 +847,11 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     DateTime? newDate,
     bool? firstRun,
   }) async {
+    // if this is not a first run then show the loader dialog
+    if((firstRun ?? false) == false) {
+      showLoaderDialog(context);
+    }
+
     await Future.wait([
       _getMonthYearData(currentDate: currentDate, newDate: newDate),
       _getYearData(currentDate: currentDate, newDate: newDate),
@@ -885,6 +859,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     ]).onError((error, stackTrace) {
       debugPrint(error.toString());
       throw 'Error when try to get the data from server';
+    }).then((_) {
+      // if this is not the  first run, it means that the loader dialog is being
+      // called on top, close the loader dialog.
+      if((firstRun ?? false) == false) {
+        Navigator.pop(context);
+      }
     });
 
     return true;

@@ -46,7 +46,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
   // calendar first and end date
   late DateTime _firstDate;
   late DateTime _endDate;
-  late int _totalYear;
 
   late double _totalDayGain;
   late double _totalCost;
@@ -161,104 +160,112 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           )
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _pageScrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              color: riskColor(
-                _totalValue,
-                _totalCost,
-                _userInfo!.risk
-              ),
-              child: Row(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            color: riskColor(
+              _totalValue,
+              _totalCost,
+              _userInfo!.risk
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: primaryDark,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
+                            const SizedBox(width: 10,),
+                            _rowItem(text: "COST", value: _totalCost),
+                            const SizedBox(width: 10,),
+                            _rowItem(text: "VALUE", value: _totalValue),
+                          ],
+                        ),
+                        const SizedBox(height: 5,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
+                            const SizedBox(width: 10,),
+                            _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
+                            const SizedBox(width: 10,),
+                            _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 15,),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _pageScrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          )
-                        )
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 150,
+                        child: CupertinoSegmentedControl(
+                          children: const {
+                            "m": Text("Month"),
+                            "y": Text("Year"),
+                          },
+                          onValueChanged: ((value) {
+                            String selectedValue = value.toString();
+                            
+                            setState(() {
+                              _calendarSelection = selectedValue;
+                            });
+                          }),
+                          groupValue: _calendarSelection,
+                          selectedColor: secondaryColor,
+                          borderColor: secondaryDark,
+                          pressedColor: primaryDark,
+                        ),
                       ),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "COST", value: _totalCost),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "VALUE", value: _totalValue),
-                            ],
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                      _dateSelector(),
+                    ],
                   ),
+                  const SizedBox(height: 15,),
+                  _getSubPage(),
                 ],
               ),
             ),
-            const SizedBox(height: 15,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                SizedBox(
-                  width: 150,
-                  child: CupertinoSegmentedControl(
-                    children: const {
-                      "m": Text("Month"),
-                      "y": Text("Year"),
-                    },
-                    onValueChanged: ((value) {
-                      String selectedValue = value.toString();
-                      
-                      setState(() {
-                        _calendarSelection = selectedValue;
-                      });
-                    }),
-                    groupValue: _calendarSelection,
-                    selectedColor: secondaryColor,
-                    borderColor: secondaryDark,
-                    pressedColor: primaryDark,
-                  ),
-                ),
-                _dateSelector(),
-              ],
-            ),
-            const SizedBox(height: 15,),
-            _getSubPage(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -287,20 +294,12 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           ).then((newDate) {
             if (newDate != null) {
               setState(() {
-                // show loader dialog
-                showLoaderDialog(context);
-
                 // get the data
                 _getData = _getPerformanceData(
                   type: _args.type,
                   currentDate: _currentDate,
                   newDate: newDate
                 );
-
-                // once finished remove the loader dialog
-                _getData.then((value) {
-                  Navigator.pop(context);
-                });
 
                 // set new date as current date, in case the same it will not
                 // matter also.
@@ -333,97 +332,44 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
       padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
       child: GestureDetector(
         onTap: (() {
-          showModalBottomSheet(
+          showDialog(
             context: context,
-            isDismissible: true,
-            builder: (context) {
-              return SizedBox(
-                height: 250,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(height: 30,),
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollYearController,
-                        itemCount: _totalYear,
-                        itemBuilder: ((context, index) {
-                          return InkWell(
-                            onTap: (() {
-                              DateTime newDate = DateTime(
-                                _firstDate.year + index,
-                                _currentDate.month,
-                                _currentDate.day
-                              );
-                              
-                              setState(() {
-                                // show loader dialog
-                                showLoaderDialog(context);
+            builder: ((context) {
+              return AlertDialog(
+                title: const Text("Select Year"),
+                content: SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: YearPicker(
+                    firstDate: _firstDate,
+                    lastDate: _endDate,
+                    selectedDate: _currentDate,
+                    onChanged: ((newDate) {
+                      // remove the dialog
+                      Navigator.pop(context);
 
-                                // get the data
-                                _getData = _getPerformanceData(
-                                  type: _args.type,
-                                  currentDate: _currentDate,
-                                  newDate: newDate);
+                      // check the new date year and current date year
+                      // if different then process to get the data
+                      if (newDate.year != _currentDate.year) {
+                        // set state and get the data if the selected year is
+                        // different with current year.
+                        setState(() {
+                          // get the data
+                          _getData = _getPerformanceData(
+                            type: _args.type,
+                            currentDate: _currentDate,
+                            newDate: newDate);
 
-                                // once finished remove loader dialog
-                                _getData.then((value) {
-                                  Navigator.pop(context);
-                                });
-                                
-                                // set the current date with the selected
-                                // year.
-                                _currentDate = newDate;
-                              });
-                              // dismiss the bottom sheet
-                              Navigator.pop(context);
-                            }),
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Text(
-                                      "${_firstDate.year + index}",
-                                      style: const TextStyle(
-                                        color: textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  Visibility(
-                                    visible: (_currentDate.year == (_firstDate.year + index)),
-                                    child: const Icon(
-                                      Ionicons.checkmark_circle,
-                                      color: Colors.green,
-                                      size: 15,
-                                    )
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
-                    const SizedBox(height: 30,),
-                  ],
+                          // set the current date with the selected
+                          // year.
+                          _currentDate = newDate;
+                        });
+                      }
+                    }),
+                  ),
                 ),
               );
-            },
+            })
           );
         }),
         child: Row(
@@ -1111,8 +1057,11 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
         _firstDate = resp.firstdate;
         _endDate = resp.enddate;
 
-        // calculate the total year
-        _totalYear = (_endDate.year - _firstDate.year) + 1;
+        // check if _endDate is lesser than end date
+        // if so, then set current date as end date
+        if (_currentDate.isAfter(_endDate)) {
+          _currentDate = _endDate;
+        }
       });
     }
   }
@@ -1123,6 +1072,13 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     DateTime? newDate,
     bool? firstRun
   }) async {
+    // check if this is first run or not?
+    // if not first run, then show the loader dialog
+    if ((firstRun ?? false) == false) {
+      showLoaderDialog(context);
+    }
+
+    // get the data
     await Future.wait([
       _getPerformanceDataMonthYear(type: type, currentDate: currentDate, newDate: newDate),
       _getPerformanceDataYear(type: type, currentDate: currentDate, newDate: newDate),
@@ -1131,6 +1087,11 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
       throw 'Error when try to get the data from server';
+    }).then((value) {
+      // if not first run, remove the loader dialog
+      if ((firstRun ?? false) == false) {
+        Navigator.pop(context);
+      }
     });
 
     return true;

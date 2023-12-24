@@ -27,7 +27,7 @@ import 'package:my_wealth/pages/users/user.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_create.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_edit.dart';
 import 'package:my_wealth/pages/watchlist_detail/watchlist_detail_sell.dart';
-import 'package:my_wealth/pages/watchlists/watchlish_summary_calendar.dart';
+import 'package:my_wealth/pages/watchlists/watchlist_summary_calendar.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_add.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_calendar.dart';
 import 'package:my_wealth/pages/watchlists/watchlist_list.dart';

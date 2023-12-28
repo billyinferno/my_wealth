@@ -124,28 +124,46 @@ class StockCandleStickPainter extends CustomPainter {
     int candleHigh, candleLow;
     bool samePrice;
     String dateText = "";
+    int adjustedOpenPrice;
     for(int i = 0; i < totalData!; i++) {
       dateText = "";
       samePrice = false;
       candleColor = _neutralPaint;
 
+      // get the adjusted open price
+      adjustedOpenPrice = stockData[i].adjustedOpenPrice;
+      // check if this is 0, if this is 0, then we can use the previous
+      // closing price as the adjusted open price for today
+      if (adjustedOpenPrice <= 0) {
+        // ensure that previous closing price is more than 0
+        if ((stockData[i].prevClosingPrice ?? 0) > 0) {
+          adjustedOpenPrice = stockData[i].prevClosingPrice!;
+        }
+        else {
+          // if even previous closing price is 0, then we can use the
+          // adjusted closing price, assuming opening and closing will have
+          // the same price.
+          adjustedOpenPrice = stockData[i].adjustedClosingPrice;
+        }
+      }
+
       // instead checking with previous data (as the order is descending)
       // we can just check what is the open price and the close price?
       // if close price > open price, then it means that we got some gain
-      if (stockData[i].adjustedOpenPrice < stockData[i].lastPrice) {
+      if (adjustedOpenPrice < stockData[i].lastPrice) {
         candleColor = _gainPaint;
       }
-      else if (stockData[i].adjustedOpenPrice > stockData[i].lastPrice) {
+      else if (adjustedOpenPrice > stockData[i].lastPrice) {
         candleColor = _lossPaint;
       }
 
-      if (stockData[i].adjustedOpenPrice > stockData[i].adjustedClosingPrice) {
-        candleHigh = stockData[i].adjustedOpenPrice - minLow;
+      if (adjustedOpenPrice > stockData[i].adjustedClosingPrice) {
+        candleHigh = adjustedOpenPrice - minLow;
         candleLow = stockData[i].adjustedClosingPrice - minLow;
       }
       else {
         candleHigh = stockData[i].adjustedClosingPrice - minLow;
-        candleLow = stockData[i].adjustedOpenPrice - minLow;
+        candleLow = adjustedOpenPrice - minLow;
       }
       // check if high and low is the same, if the same we need to at least paint a "-"
       if (candleHigh == candleLow) {

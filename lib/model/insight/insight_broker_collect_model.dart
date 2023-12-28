@@ -59,6 +59,7 @@ class InsightBrokerCollectModel {
 class Datum {
     final String code;
     final String name;
+    final int lastPrice;
     final int totalBuy;
     final int totalBuyValue;
     final double totalBuyAvg;
@@ -73,6 +74,7 @@ class Datum {
     Datum({
         required this.code,
         required this.name,
+        required this.lastPrice,
         required this.totalBuy,
         required this.totalBuyValue,
         required this.totalBuyAvg,
@@ -88,6 +90,7 @@ class Datum {
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         code: json["code"],
         name: json["name"],
+        lastPrice: (json["last_price"] ?? 0),
         totalBuy: json["total_buy"],
         totalBuyValue: json["total_buy_value"],
         totalBuyAvg: (json["total_buy_avg"] != null ? json["total_buy_avg"]?.toDouble() : 0),
@@ -103,6 +106,7 @@ class Datum {
     Map<String, dynamic> toJson() => {
         "code": code,
         "name": name,
+        "last_price": lastPrice,
         "total_buy": totalBuy,
         "total_buy_value": totalBuyValue,
         "total_buy_avg": totalBuyAvg,

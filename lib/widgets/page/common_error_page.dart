@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/themes/colors.dart';
 
 class CommonErrorPage extends StatelessWidget {
@@ -31,12 +32,17 @@ class CommonErrorPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(height: 5,),
+            const Icon(
+              Ionicons.alert_circle,
+              color: secondaryColor,
+              size: 20,
+            ),
+            const SizedBox(height: 10,),
             Text(
               errorText,
               style: const TextStyle(
                 color: secondaryColor,
-                fontSize: 10,
+                fontSize: 15,
               ),
             ),
           ],

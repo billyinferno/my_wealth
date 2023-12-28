@@ -11,6 +11,8 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/list/product_list_item.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class PortofolioDetailPage extends StatefulWidget {
   final Object? args;
@@ -35,8 +37,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   Color _totalGainColor = Colors.white;
   Color _totalDayGainColor = Colors.white;
 
-  IconData _trendIcon = Ionicons.remove;  
-  bool _isLoading = true;
+  IconData _trendIcon = Ionicons.remove;
   double _portofolioTotalValue = 0;
   double _totalGain = 0;
   double _totalDayGain = 0;
@@ -52,6 +53,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   };
   final List<String> _sortList = ["code", "total", "left", "realizedpl", "unrealizedpl", "oneday"];
   bool _sortAscending = true;
+
+  late Future<bool> _getData;
 
   @override
   void initState() {
@@ -87,41 +90,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
       _totalGainColor = secondaryColor;
     }
 
-    Future.microtask(() async {
-      showLoaderDialog(context);
-
-      await _portofolioAPI.getPortofolioDetail(_args.type, _args.subType!).then((resp) {
-        _portofolioList = resp;
-        
-        // generate the _barChartData based on response
-        _portofolioTotalValue = 0;
-        for (PortofolioDetailModel porto in resp) {
-          _portofolioTotalValue += porto.watchlistSubTotalValue;
-
-          // calculate total day gain
-          _totalDayGain += porto.watchlistSubTotalDayGain;
-        }
-
-        // get the total day gain color
-        if (_totalDayGain > 0) {
-          _totalDayGainColor = Colors.green;
-        }
-        else if(_totalDayGain < 0) {
-          _totalDayGainColor = secondaryColor;
-        }
-
-        // call filter
-        _filterList();
-      }).whenComplete(() {
-        // remove the loader
-        Navigator.pop(context);
-        
-        // set the is loading into false
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    });
+    // fetch the data from API
+    _getData = _fetchData();
 
     super.initState();
   }
@@ -134,11 +104,23 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if still loading then just throw a blank container
-    if (_isLoading) {
-      return Container();
-    }
+    return FutureBuilder(
+      future: _getData,      
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return CommonErrorPage(errorText: 'Error loading portofolio list of ${_args.title}');
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      }),
+    );
+  }
 
+  Widget _generatePage() {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -543,5 +525,37 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     if (!_sortAscending) {
       _portofolioFiltered = _portofolioFiltered.reversed.toList();
     }
+  }
+
+  Future<bool> _fetchData() async {
+    await _portofolioAPI.getPortofolioDetail(_args.type, _args.subType!).then((resp) {
+      _portofolioList = resp;
+      
+      // generate the _barChartData based on response
+      _portofolioTotalValue = 0;
+      for (PortofolioDetailModel porto in resp) {
+        _portofolioTotalValue += porto.watchlistSubTotalValue;
+
+        // calculate total day gain
+        _totalDayGain += porto.watchlistSubTotalDayGain;
+      }
+
+      // get the total day gain color
+      if (_totalDayGain > 0) {
+        _totalDayGainColor = Colors.green;
+      }
+      else if(_totalDayGain < 0) {
+        _totalDayGainColor = secondaryColor;
+      }
+
+      // call filter
+      _filterList();
+    }).onError((error, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+      throw Exception("Error when get portofolio detail");
+    });
+
+    // return true if coming here 
+    return false;
   }
 }

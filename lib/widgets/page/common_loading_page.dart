@@ -3,12 +3,41 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:my_wealth/themes/colors.dart';
 
 class CommonLoadingPage extends StatelessWidget {
-  const CommonLoadingPage({Key? key}) : super(key: key);
+  final bool? isNeedScaffold;
+  const CommonLoadingPage({Key? key, this.isNeedScaffold}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    if ((isNeedScaffold ?? true)) {
+      return Scaffold(
+        body: Container(
+          width: double.infinity,
+          color: primaryColor,
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SpinKitCubeGrid(
+                color: secondaryColor,
+                size: 25,
+              ),
+              SizedBox(height: 5,),
+              Text(
+                "Loading data...",
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+        )
+      );
+    }
+    else {
+      // no need scaffold as this is probably coming from embeded page like
+      // from insight that already have scaffold inside.
+      return Container(
         width: double.infinity,
         color: primaryColor,
         child: const Column(
@@ -29,7 +58,7 @@ class CommonLoadingPage extends StatelessWidget {
             ),
           ],
         ),
-      )
-    );
+      );
+    }
   }
 }

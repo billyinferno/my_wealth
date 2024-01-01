@@ -10,6 +10,9 @@ import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/widgets/components/search_box.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class InsightBandarIndexBeaterPage extends StatefulWidget {
   const InsightBandarIndexBeaterPage({Key? key}) : super(key: key);
@@ -22,36 +25,38 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
 
-  late List<IndexBeaterModel> _indexBeaterList;
-  bool _isLoading = true;
+  // sort helper
+  late String _filterMode;
+  late String _filterSort;
+  final Map<String, String> _filterList = {};
 
+  late List<IndexBeaterModel> _indexBeaterList;
+  late List<IndexBeaterModel> _sortedBeaterList;
+  late Future<bool> _getData;
+  
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     _indexBeaterList = InsightSharedPreferences.getIndexBeater();
 
-    // check if the list is empty, if empty it means we haven't inquiry any data to server
-    if (_indexBeaterList.isEmpty) {
-      Future.microtask(() async {
-        showLoaderDialog(context);
+    // list all the filter that we want to put here
+    _filterList["nm"] = "Name";
+    _filterList["pr"] = "Price";
+    _filterList["1d"] = "One Day";
+    _filterList["1w"] = "One Week";
+    _filterList["mt"] = "Month To Date";
+    _filterList["1m"] = "One Month";
+    _filterList["3m"] = "Three Month";
+    _filterList["6m"] = "Six Month";
+    _filterList["yt"] = "Year To Date";
+    _filterList["1y"] = "One Year";
 
-        await _insightAPI.getIndexBeater().then((resp) {
-          _indexBeaterList = resp;
+    // default filter mode to Code and ASC
+    _filterMode = "nm";
+    _filterSort = "ASC";
 
-          InsightSharedPreferences.setIndexBeater(resp);
-        });
-      }).whenComplete(() {
-        // remove loader dialog
-        Navigator.pop(context);
-        // set loading into false
-        _setLoading(false);
-      });
-    }
-    else {
-      // already got data, just set loading into false
-      _setLoading(false);
-    }
+    // get the data from the API or shared storage
+    _getData = _fetchData();
   }
 
   @override
@@ -61,11 +66,24 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
 
   @override
   Widget build(BuildContext context) {
-    // if loading show this
-    if (_isLoading) {
-      return const Center(child: Text("Load Index Beater data..."),);
-    }
+    // use future builder to get the data
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error when get index beater data');
+        }
+        else if (snapshot.hasData) {
+          return _generateBody();
+        }
+        else {
+          return const CommonLoadingPage(isNeedScaffold: false,);
+        }
+      })
+    );
+  }
 
+  Widget _generateBody() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,20 +118,37 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
             ),
           ),
           const SizedBox(height: 10,),
+          SearchBox(
+            filterMode: _filterMode,
+            filterList: _filterList,
+            filterSort: _filterSort,
+            bgColor: Colors.transparent,
+            onFilterSelect: ((value) {
+              setState(() {
+                _sortedIndexBeater(newFilterMode: value, newSortMode: _filterSort);
+              });
+            }),
+            onSortSelect: ((value) {
+              setState(() {
+                _sortedIndexBeater(newFilterMode: _filterMode, newSortMode: value);
+              });
+            })
+          ),
+          const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
-              itemCount: _indexBeaterList.length,
+              itemCount: _sortedBeaterList.length,
               itemBuilder: ((context, index) {
-                int priceDiff = (_indexBeaterList[index].lastPrice - _indexBeaterList[index].prevClosingPrice!);
+                int priceDiff = (_sortedBeaterList[index].lastPrice - _sortedBeaterList[index].prevClosingPrice!);
     
                 return InkWell(
                   onTap: (() async {
                     showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_indexBeaterList[index].code, 'saham').then((resp) {
+                    await _companyAPI.getCompanyByCode(_sortedBeaterList[index].code, 'saham').then((resp) {
                       CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: resp.companyId,
                         companyName: resp.companyName,
-                        companyCode: _indexBeaterList[index].code,
+                        companyCode: _sortedBeaterList[index].code,
                         companyFavourite: (resp.companyFavourites ?? false),
                         favouritesId: (resp.companyFavouritesId ?? -1),
                         type: "saham",
@@ -152,29 +187,26 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "(${_indexBeaterList[index].code})",
+                              "(${_sortedBeaterList[index].code})",
                               style: const TextStyle(
                                 color: accentColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 12,
                               ),
                             ),
                             const SizedBox(width: 5,),
                             Expanded(
                               child: Text(
-                                _indexBeaterList[index].name,
+                                _sortedBeaterList[index].name,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            const SizedBox(width: 5,),
+                            const SizedBox(width: 10,),
                             Text(
-                              formatIntWithNull(_indexBeaterList[index].lastPrice, false, false),
+                              formatIntWithNull(_sortedBeaterList[index].lastPrice, false, false),
                               style: const TextStyle(
-                                fontSize: 12,
                               ),
                             ),
                             const SizedBox(width: 2,),
@@ -192,13 +224,13 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnText(header: "One Day", value: _indexBeaterList[index].oneDay),
+                            _columnText(header: "One Day", value: _sortedBeaterList[index].oneDay),
                             const SizedBox(width: 10,),
-                            _columnText(header: "One Week", value: _indexBeaterList[index].oneWeek),
+                            _columnText(header: "One Week", value: _sortedBeaterList[index].oneWeek),
                             const SizedBox(width: 10,),
-                            _columnText(header: "MTD", value: _indexBeaterList[index].mtd),
+                            _columnText(header: "MTD", value: _sortedBeaterList[index].mtd),
                             const SizedBox(width: 10,),
-                            _columnText(header: "One Month", value: _indexBeaterList[index].oneMonth),
+                            _columnText(header: "One Month", value: _sortedBeaterList[index].oneMonth),
                           ],
                         ),
                         const SizedBox(height: 5,),
@@ -206,13 +238,13 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnText(header: "Three Month", value: _indexBeaterList[index].threeMonth),
+                            _columnText(header: "Three Month", value: _sortedBeaterList[index].threeMonth),
                             const SizedBox(width: 10,),
-                            _columnText(header: "Six Month", value: _indexBeaterList[index].sixMonth),
+                            _columnText(header: "Six Month", value: _sortedBeaterList[index].sixMonth),
                             const SizedBox(width: 10,),
-                            _columnText(header: "YTD", value: _indexBeaterList[index].ytd),
+                            _columnText(header: "YTD", value: _sortedBeaterList[index].ytd),
                             const SizedBox(width: 10,),
-                            _columnText(header: "One Year", value: _indexBeaterList[index].oneYear),
+                            _columnText(header: "One Year", value: _sortedBeaterList[index].oneYear),
                           ],
                         ),
                       ],
@@ -237,14 +269,13 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
             header,
             style: const TextStyle(
               fontSize: 10,
-              fontWeight: FontWeight.bold,
+              color: Colors.grey,
             ),
             overflow: TextOverflow.ellipsis,
           ),
           Text(
             "${formatDecimalWithNull(value, 100, 2)}%",
             style: TextStyle(
-              fontSize: 10,
               color: (value == 0 ? Colors.white : (value > 0 ? Colors.green : secondaryColor)),
             ),
           ),
@@ -253,9 +284,94 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
     );
   }
 
-  void _setLoading(bool value) {
-    setState(() {
-      _isLoading = value;
-    });
+  Future<bool> _fetchData() async {
+    // check if we got data from the shared preferences or not?
+    if (_indexBeaterList.isEmpty) {
+      // if not then get the data from API
+      await _insightAPI.getIndexBeater().then((resp) {
+        _indexBeaterList = resp;
+
+        // set the shared preferences for the index beater
+        InsightSharedPreferences.setIndexBeater(resp);
+      }).onError((error, stackTrace) {
+        throw Exception('Error when get index beater');
+      });
+    }
+
+    // return true regardless
+    _sortedBeaterList = List<IndexBeaterModel>.from(_indexBeaterList);
+    return true;
+  }
+
+  void _sortedIndexBeater({required String newFilterMode, required String newSortMode}) {
+    // check if the new filter is same as previous or not?
+    if ((newFilterMode != _filterMode)) {
+      _filterMode = newFilterMode;
+
+      // clear the current code list as we will rebuild t his
+      _sortedBeaterList.clear();
+
+      // if the filter mode is "nm" which is name, then just copy from the _filterFaveList
+      if (_filterMode == "nm") {
+        // check the sort methode?
+        if (_filterSort == "ASC") {
+          _sortedBeaterList = List<IndexBeaterModel>.from(_indexBeaterList);
+        }
+        else {
+          _sortedBeaterList = List<IndexBeaterModel>.from(_indexBeaterList.reversed);
+        }
+      }
+      else {
+        List<IndexBeaterModel> tempFilter = List<IndexBeaterModel>.from(_indexBeaterList);
+        switch(_filterMode) {
+          case "pr":
+            tempFilter.sort(((a, b) => (a.lastPrice).compareTo((b.lastPrice))));
+            break;
+          case "1d":
+            tempFilter.sort(((a, b) => (a.oneDay).compareTo((b.oneDay))));
+            break;
+          case "1w":
+            tempFilter.sort(((a, b) => (a.oneWeek).compareTo((b.oneWeek))));
+            break;
+          case "1m":
+            tempFilter.sort(((a, b) => (a.oneMonth).compareTo((b.oneMonth))));
+            break;
+          case "mt":
+            tempFilter.sort(((a, b) => (a.mtd).compareTo((b.mtd))));
+            break;
+          case "3m":
+            tempFilter.sort(((a, b) => (a.threeMonth).compareTo((b.threeMonth))));
+            break;
+          case "6m":
+            tempFilter.sort(((a, b) => (a.sixMonth).compareTo((b.sixMonth))));
+            break;
+          case "yt":
+            tempFilter.sort(((a, b) => (a.ytd).compareTo((b.ytd))));
+            break;
+          case "1y":
+            tempFilter.sort(((a, b) => (a.oneYear).compareTo((b.oneYear))));
+            break;
+          default:
+            tempFilter.sort(((a, b) => (a.oneDay).compareTo((b.oneDay))));
+            break;
+        }
+
+        // check the filter type
+        if (_filterSort == "ASC") {
+          _sortedBeaterList = List<IndexBeaterModel>.from(tempFilter);
+        }
+        else {
+          _sortedBeaterList = List<IndexBeaterModel>.from(tempFilter.reversed);
+        }
+      }
+    }
+
+    // check if this is new sort mode or not?
+    if ((newSortMode != _filterSort)) {
+      _filterSort = newSortMode;
+
+      // just reversed the current sorted list
+      _sortedBeaterList = List<IndexBeaterModel>.from(_sortedBeaterList.reversed);
+    }
   }
 }

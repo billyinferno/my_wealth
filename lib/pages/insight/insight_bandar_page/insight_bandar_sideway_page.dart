@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
+import 'package:my_wealth/widgets/components/search_box.dart';
 
 class InsightBandarSidewayPage extends StatefulWidget {
   const InsightBandarSidewayPage({Key? key}) : super(key: key);
@@ -25,7 +26,13 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
   final TextStyle _headerStyle = const TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 12, overflow: TextOverflow.ellipsis);
   final ScrollController _scrollController = ScrollController();
 
+  // sort helper
+  late String _filterMode;
+  late String _filterSort;
+  final Map<String, String> _filterList = {};
+
   late List<InsightSidewayModel> _sidewayList;
+  late List<InsightSidewayModel> _sortedList;
   late int _maxOneDay;
   late int _avgOneDay;
   late int _avgOneWeek;
@@ -34,6 +41,20 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
   @override
   void initState() {
+    // list all the filter that we want to put here
+    _filterList["nm"] = "Name";
+    _filterList["pr"] = "Price";
+    _filterList["pv"] = "Previous Price";
+    _filterList["ad"] = "AVG Daily";
+    _filterList["aw"] = "AVG Weekly";
+    _filterList["1d"] = "One Day";
+    _filterList["1w"] = "One Week";
+    _filterList["1m"] = "One Month";
+
+    // default filter mode to Code and ASC
+    _filterMode = "nm";
+    _filterSort = "ASC";
+
     // initialize all the default variable
     _maxOneDay = InsightSharedPreferences.getSidewayOneDayRate();
     _avgOneDay = InsightSharedPreferences.getSidewayAvgOneDay();
@@ -55,13 +76,16 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
         });
       }).whenComplete(() {
         Navigator.pop(context);
-        setLoading(false);
+        // set the sorted from side way
+        _sortedList = List<InsightSidewayModel>.from(_sidewayList);
+        _setLoading(false);
       });
     }
     else {
       // already got result, just set the loading into false
       // so we can render the page automatically
-      setLoading(false);
+      _sortedList = List<InsightSidewayModel>.from(_sidewayList);
+      _setLoading(false);
     }
 
     super.initState();
@@ -194,7 +218,13 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
             onTap: (() async {
               showLoaderDialog(context);
               await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
+                // clear the sideway list and set response as sidewaylist
+                _sidewayList.clear();
                 _sidewayList = resp;
+                
+                // clear the sorted list and copy from the sideway list
+                _sortedList.clear();
+                _sortedList = List<InsightSidewayModel>.from(_sidewayList);
 
                 // stored the sideway result to shared preferences
                 await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
@@ -232,19 +262,45 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
             ),
           ),
           const SizedBox(height: 10,),
+          Visibility(
+            visible: (_sortedList.isNotEmpty),
+            child: SearchBox(
+              bgColor: Colors.transparent,
+              filterMode: _filterMode,
+              filterList: _filterList,
+              filterSort: _filterSort,
+              onFilterSelect: ((newMode) {
+                if (newMode != _filterMode) {
+                  setState(() {
+                    _filterMode = newMode;
+                    _filterData();
+                  });
+                }
+              }),
+              onSortSelect: ((newSort) {
+                if (newSort != _filterSort) {
+                  setState(() {
+                    _filterSort = newSort;
+                    _sortData();
+                  });
+                }
+              })
+            ),
+          ),
+          const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: _sidewayList.length,
+              itemCount: _sortedList.length,
               itemBuilder: ((context, index) {
                 return InkWell(
                   onTap: (() async {
                     showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_sidewayList[index].code, 'saham').then((resp) {
+                    await _companyAPI.getCompanyByCode(_sortedList[index].code, 'saham').then((resp) {
                       CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: resp.companyId,
                         companyName: resp.companyName,
-                        companyCode: _sidewayList[index].code,
+                        companyCode: _sortedList[index].code,
                         companyFavourite: (resp.companyFavourites ?? false),
                         favouritesId: (resp.companyFavouritesId ?? -1),
                         type: "saham",
@@ -278,21 +334,25 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          _sidewayList[index].code,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: accentColor,
-                          ),
-                        ),
-                        const SizedBox(height: 2,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(title: "Price", value: formatCurrency(_sidewayList[index].lastPrice.toDouble(), false, false, false), valueColor: _getValueColorInt(_sidewayList[index].lastPrice, _sidewayList[index].prevClosingPrice)),
-                            _columnInfo(title: "Prev Price", value: formatCurrency(_sidewayList[index].prevClosingPrice.toDouble(), false, false, false)),
-                            _columnInfo(title: "AVG Daily", value: "${formatDecimalWithNull(_sidewayList[index].avgDaily, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].avgDaily, 0)),
+                            Text(
+                              _sortedList[index].code,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              _sortedList[index].name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            )
                           ],
                         ),
                         const SizedBox(height: 2,),
@@ -300,9 +360,19 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(title: "One Day", value: "${formatDecimalWithNull(_sidewayList[index].oneDay, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneDay, 0)),
-                            _columnInfo(title: "One Week", value: "${formatDecimalWithNull(_sidewayList[index].oneWeek, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneWeek,  0)),
-                            _columnInfo(title: "One Month", value: "${formatDecimalWithNull(_sidewayList[index].oneMonth, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneMonth, 0)),
+                            _columnInfo(title: "Price", value: formatCurrency(_sortedList[index].lastPrice.toDouble(), false, false, false), valueColor: _getValueColorInt(_sortedList[index].lastPrice, _sortedList[index].prevClosingPrice)),
+                            _columnInfo(title: "Prev Price", value: formatCurrency(_sortedList[index].prevClosingPrice.toDouble(), false, false, false)),
+                            _columnInfo(title: "AVG Daily", value: "${formatDecimalWithNull(_sortedList[index].avgDaily, 100, 2)}%", valueColor: _getValueColorDouble(_sortedList[index].avgDaily, 0)),
+                          ],
+                        ),
+                        const SizedBox(height: 2,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            _columnInfo(title: "One Day", value: "${formatDecimalWithNull(_sortedList[index].oneDay, 100, 2)}%", valueColor: _getValueColorDouble(_sortedList[index].oneDay, 0)),
+                            _columnInfo(title: "One Week", value: "${formatDecimalWithNull(_sortedList[index].oneWeek, 100, 2)}%", valueColor: _getValueColorDouble(_sortedList[index].oneWeek,  0)),
+                            _columnInfo(title: "One Month", value: "${formatDecimalWithNull(_sortedList[index].oneMonth, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneMonth, 0)),
                           ],
                         ),
                       ],
@@ -375,9 +445,58 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     );
   }
 
-  void setLoading(bool value) {
+  void _setLoading(bool value) {
     setState(() {
       _isLoading = value;
     });
+  }
+  
+  void _filterData() {
+    // create a temporary list to contain all the result from filter
+    List<InsightSidewayModel> tempFilter = List<InsightSidewayModel>.from(_sidewayList);
+    
+    // check which filter mode is being selected
+    switch(_filterMode) {
+      case "pr":
+        tempFilter.sort(((a, b) => (a.lastPrice).compareTo((b.lastPrice))));
+        break;
+      case "pv":
+        tempFilter.sort(((a, b) => ((a.prevClosingPrice)).compareTo((b.prevClosingPrice))));
+        break;
+      case "ad":
+        tempFilter.sort(((a, b) => ((a.avgDaily ?? 0)).compareTo((b.oneDay ?? 0))));
+        break;
+      case "aw":
+        tempFilter.sort(((a, b) => ((a.avgWeekly ?? 0)).compareTo((b.avgWeekly ?? 0))));
+        break;
+      case "1d":
+        tempFilter.sort(((a, b) => ((a.oneDay ?? 0)).compareTo((b.oneDay ?? 0))));
+        break;
+      case "1w":
+        tempFilter.sort(((a, b) => (a.oneWeek ?? 0).compareTo((b.oneWeek ?? 0))));
+        break;
+      case "1m":
+        tempFilter.sort(((a, b) => (a.oneMonth ?? 0).compareTo((b.oneMonth ?? 0))));
+        break;
+      default:
+        // nothing to do as we already copy it from the sideway list
+        break;
+    }
+
+    // clear the sorted list
+    _sortedList.clear();
+
+    // check the filter type
+    if (_filterSort == "ASC") {
+      _sortedList = List<InsightSidewayModel>.from(tempFilter);
+    }
+    else {
+      _sortedList = List<InsightSidewayModel>.from(tempFilter.reversed);
+    }
+  }
+
+  void _sortData() {
+    // regardless the data just reverse the current result
+    _sortedList = _sortedList.reversed.toList();
   }
 }

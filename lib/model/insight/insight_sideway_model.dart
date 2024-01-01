@@ -13,6 +13,7 @@ String insightSidewayModelToJson(InsightSidewayModel data) => json.encode(data.t
 class InsightSidewayModel {
     InsightSidewayModel({
         required this.code,
+        required this.name,
         required this.lastPrice,
         required this.prevClosingPrice,
         this.oneDay,
@@ -22,17 +23,19 @@ class InsightSidewayModel {
         this.avgWeekly,
     });
 
-    String code;
-    int lastPrice;
-    int prevClosingPrice;
-    double? oneDay;
-    double? oneWeek;
-    double? oneMonth;
-    double? avgDaily;
-    double? avgWeekly;
+    final String code;
+    final String name;
+    final int lastPrice;
+    final int prevClosingPrice;
+    final double? oneDay;
+    final double? oneWeek;
+    final double? oneMonth;
+    final double? avgDaily;
+    final double? avgWeekly;
 
     factory InsightSidewayModel.fromJson(Map<String, dynamic> json) => InsightSidewayModel(
         code: json["code"],
+        name: (json["name"] ?? ''),
         lastPrice: json["last_price"],
         prevClosingPrice: json["prev_closing_price"],
         oneDay: (json["one_day"] == null ? null : json["one_day"].toDouble()),
@@ -44,6 +47,7 @@ class InsightSidewayModel {
 
     Map<String, dynamic> toJson() => {
         "code": code,
+        "name": name,
         "last_price": lastPrice,
         "prev_closing_price": prevClosingPrice,
         "one_day": oneDay,

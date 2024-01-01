@@ -4,6 +4,7 @@ import 'package:my_wealth/api/portofolio_api.dart';
 import 'package:my_wealth/model/portofolio/portofolio_summary_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
+import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/widgets/chart/bar_chart.dart';
@@ -30,17 +31,17 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   late List<PortofolioSummaryModel> _portofolioFiltered;
   late Future<bool> _getData;
 
+  String _sortType = "ty";
   final Map<String, String> _sortMap = {
-    "type": "Type",
-    "total": "Total Product(s)",
-    "share": "Total Share",
-    "cost": "Total Cost",
-    "value": "Total Value",
-    "realized": "Total Realized P/L",
-    "unrealized": "Total Unrealized P/L",
+    "ty": "Type",
+    "tl": "Total Product(s)",
+    "sh": "Total Share",
+    "co": "Total Cost",
+    "vl": "Total Value",
+    "rp": "Total Realized P/L",
+    "up": "Total Unrealized P/L",
   };
-  final List<String> _sortList = ["type", "total", "share", "cost", "value", "realized", "unrealized"];
-
+  
   Color _trendColor = Colors.white;
   Color _realisedColor = Colors.white;
   Color _totalGainColor = Colors.white;
@@ -49,7 +50,6 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   double _portofolioTotalValue = 0;
   double _totalGain = 0;
   double _totalDayGain = 0;
-  String _sortType = "type";
   bool _sortAscending = true;
   bool _showSort = true;
 
@@ -147,62 +147,17 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
             child: IconButton(
               onPressed: (() {
                 // show the modal dialog for what to filter
-                // code/name, total investment, share left, realized pl, unrealized pl, one day
-                showModalBottomSheet(
+                ShowMyModalBottomSheet(
                   context: context,
-                  isDismissible: true,
-                  builder: (context) {
-                    return SizedBox(
-                      height: 250,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const SizedBox(height: 25,),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: _sortList.length,
-                              itemBuilder: ((context, index) {
-                                return InkWell(
-                                  onTap: (() {
-                                    setState(() {
-                                      _sortType = _sortList[index];
-                                      _filterList();
-                                    });
-                                    // dismiss the bottom sheet
-                                    Navigator.pop(context);
-                                  }),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: primaryLight,
-                                          width: 1.0,
-                                          style: BorderStyle.solid,
-                                        )
-                                      )
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
-                                      child: Text(
-                                        (_sortMap[_sortList[index]] ?? _sortList[index]),
-                                        style: const TextStyle(
-                                          color: textPrimary,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ),
-                          const SizedBox(height: 30,),
-                        ],
-                      ),
-                    );
-                  },
-                );
+                  filterList: _sortMap,
+                  filterMode: _sortType,
+                  onFilterSelect: ((value) {
+                    setState(() {
+                      _sortType = value;
+                      _filterList();
+                    });
+                  })
+                ).show();
               }),
               icon: const Icon(
                 Ionicons.filter_circle_outline,
@@ -520,24 +475,23 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
     _portofolioFiltered = _portofolioList.toList();
 
     // check what kind of sort type is being implemented
-    // "total", "share", "cost", "value", "realized", "unrealized"
     switch(_sortType) {
-      case "total":
+      case "tl":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalProduct.compareTo(b.portofolioTotalProduct));
         break;
-      case "share":
+      case "sh":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalShare.compareTo(b.portofolioTotalShare));
         break;
-      case "cost":
+      case "co":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalCost.compareTo(b.portofolioTotalCost));
         break;
-      case "value":
+      case "vl":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalValue.compareTo(b.portofolioTotalValue));
         break;
-      case "realized":
+      case "rp":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalRealised.compareTo(b.portofolioTotalRealised));
         break;
-      case "unrealized":
+      case "up":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalUnrealised.compareTo(b.portofolioTotalUnrealised));
         break;
       default:

@@ -7,6 +7,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -42,16 +43,15 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   double _totalGain = 0;
   double _totalDayGain = 0;
 
-  String _sortType = "code";
+  String _sortType = "cd";
   final Map<String, String> _sortMap = {
-    "code": "Code/Name",
-    "total": "Total Value",
-    "left": "Share Left",
-    "realizedpl": "Realized P/L",
-    "unrealizedpl": "Unrealizd P/L",
-    "oneday": "Daily Gain (%)",
+    "cd": "Code/Name",
+    "tl": "Total Value",
+    "lf": "Share Left",
+    "rp": "Realized P/L",
+    "up": "Unrealizd P/L",
+    "1d": "Daily Gain (%)",
   };
-  final List<String> _sortList = ["code", "total", "left", "realizedpl", "unrealizedpl", "oneday"];
   bool _sortAscending = true;
 
   late Future<bool> _getData;
@@ -145,61 +145,17 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
             onPressed: (() {
               // show the modal dialog for what to filter
               // code/name, total investment, share left, realized pl, unrealized pl, one day
-              showModalBottomSheet(
+              ShowMyModalBottomSheet(
                 context: context,
-                isDismissible: true,
-                builder: (context) {
-                  return SizedBox(
-                    height: 250,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const SizedBox(height: 25,),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: _sortList.length,
-                            itemBuilder: ((context, index) {
-                              return InkWell(
-                                onTap: (() {
-                                  setState(() {
-                                    _sortType = _sortList[index];
-                                    _filterList();
-                                  });
-                                  // dismiss the bottom sheet
-                                  Navigator.pop(context);
-                                }),
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: primaryLight,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    )
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
-                                    child: Text(
-                                      (_sortMap[_sortList[index]] ?? _sortList[index]),
-                                      style: const TextStyle(
-                                        color: textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
-                          ),
-                        ),
-                        const SizedBox(height: 30,),
-                      ],
-                    ),
-                  );
-                },
-              );
+                filterList: _sortMap,
+                filterMode: _sortType,
+                onFilterSelect: ((value) {
+                  setState(() {
+                    _sortType = value;
+                    _filterList();
+                  });
+                })
+              ).show();
             }),
             icon: const Icon(
               Ionicons.filter_circle_outline,
@@ -501,19 +457,19 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     // check what kind of sort type is being implemented
     // total investment, share left, realized pl, unrealized pl, one day
     switch(_sortType) {
-      case "total":
+      case "tl":
         _portofolioFiltered.sort((a, b) => a.watchlistSubTotalValue.compareTo(b.watchlistSubTotalValue));
         break;
-      case "left":
+      case "lf":
         _portofolioFiltered.sort((a, b) => a.watchlistSubTotalShare.compareTo(b.watchlistSubTotalShare));
         break;
-      case "realizedpl":
+      case "rp":
         _portofolioFiltered.sort((a, b) => a.watchlistSubTotalRealised.compareTo(b.watchlistSubTotalRealised));
         break;
-      case "unrealizedpl":
+      case "up":
         _portofolioFiltered.sort((a, b) => a.watchlistSubTotalUnrealised.compareTo(b.watchlistSubTotalUnrealised));
         break;
-      case "oneday":
+      case "1d":
         _portofolioFiltered.sort((a, b) => a.companyDailyReturn!.compareTo(b.companyDailyReturn!));
         break;
       default:

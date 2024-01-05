@@ -320,7 +320,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                     });
                   }),
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
                     decoration: const BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -355,24 +355,59 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                             )
                           ],
                         ),
-                        const SizedBox(height: 2,),
+                        const SizedBox(height: 5,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(title: "Price", value: formatCurrency(_sortedList[index].lastPrice.toDouble(), false, false, false), valueColor: _getValueColorInt(_sortedList[index].lastPrice, _sortedList[index].prevClosingPrice)),
-                            _columnInfo(title: "Prev Price", value: formatCurrency(_sortedList[index].prevClosingPrice.toDouble(), false, false, false)),
-                            _columnInfo(title: "AVG Daily", value: "${formatDecimalWithNull(_sortedList[index].avgDaily, 100, 2)}%", valueColor: _getValueColorDouble(_sortedList[index].avgDaily, 0)),
+                            _columnInfo(
+                              title: "Price",
+                              titleColor: Colors.grey,
+                              value: formatCurrency(_sortedList[index].lastPrice.toDouble(), false, false, false),
+                              valueColor: _getValueColorInt(_sortedList[index].lastPrice, _sortedList[index].prevClosingPrice),
+                              valueSize: 15,
+                            ),
+                            _columnInfo(
+                              title: "Prev Price",
+                              titleColor: Colors.grey,
+                              value: formatCurrency(_sortedList[index].prevClosingPrice.toDouble(), false, false, false),
+                              valueSize: 15,
+                            ),
+                            _columnInfo(
+                              title: "AVG Daily",
+                              titleColor: Colors.grey,
+                              value: "${formatDecimalWithNull(_sortedList[index].avgDaily, 100, 2)}%",
+                              valueColor: _getValueColorDouble(_sortedList[index].avgDaily, 0),
+                              valueSize: 15,
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 2,),
+                        const SizedBox(height: 5,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(title: "One Day", value: "${formatDecimalWithNull(_sortedList[index].oneDay, 100, 2)}%", valueColor: _getValueColorDouble(_sortedList[index].oneDay, 0)),
-                            _columnInfo(title: "One Week", value: "${formatDecimalWithNull(_sortedList[index].oneWeek, 100, 2)}%", valueColor: _getValueColorDouble(_sortedList[index].oneWeek,  0)),
-                            _columnInfo(title: "One Month", value: "${formatDecimalWithNull(_sortedList[index].oneMonth, 100, 2)}%", valueColor: _getValueColorDouble(_sidewayList[index].oneMonth, 0)),
+                            _columnInfo(
+                              title: "One Day",
+                              titleColor: Colors.grey,
+                              value: "${formatDecimalWithNull(_sortedList[index].oneDay, 100, 2)}%",
+                              valueColor: _getValueColorDouble(_sortedList[index].oneDay, 0),
+                              valueSize: 15,
+                            ),
+                            _columnInfo(
+                              title: "One Week",
+                              titleColor: Colors.grey,
+                              value: "${formatDecimalWithNull(_sortedList[index].oneWeek, 100, 2)}%",
+                              valueColor: _getValueColorDouble(_sortedList[index].oneWeek,  0),
+                              valueSize: 15,
+                            ),
+                            _columnInfo(
+                              title: "One Month",
+                              titleColor: Colors.grey,
+                              value: "${formatDecimalWithNull(_sortedList[index].oneMonth, 100, 2)}%",
+                              valueColor: _getValueColorDouble(_sidewayList[index].oneMonth, 0),
+                              valueSize: 15,
+                            ),
                           ],
                         ),
                       ],
@@ -419,7 +454,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     }
   }
 
-  Widget _columnInfo({required String title, Color? titleColor, required String value, Color? valueColor}) {
+  Widget _columnInfo({required String title, Color? titleColor, double? titleSize, required String value, Color? valueColor, double? valueSize}) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,14 +464,14 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
             title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 10,
+              fontSize: (titleSize ?? 10),
               color: (titleColor ?? extendedLight),
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: (valueSize ?? 10),
               color: (valueColor ?? textPrimary)
             ),
           ),

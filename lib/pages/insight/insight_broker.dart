@@ -531,7 +531,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           no: (index + 1),
                           code: _marketCap[index].code,
                           price: _marketCap[index].lastPrice,
-                          marketCap: _marketCap[index].capitalization,
+                          marketCap: _marketCap[index].capitalization.toInt(),
                           shareOut: _marketCap[index].shareOut
                         );
                       }),

@@ -18,13 +18,13 @@ class MarketCapModel {
 
     String code;
     int lastPrice;
-    int capitalization;
+    double capitalization;
     int shareOut;
 
     factory MarketCapModel.fromJson(Map<String, dynamic> json) => MarketCapModel(
         code: json["code"],
         lastPrice: json["last_price"],
-        capitalization: json["capitalization"],
+        capitalization: (json["capitalization"] == null ? 0 : json["capitalization"].toDouble()),
         shareOut: json["share_out"],
     );
 

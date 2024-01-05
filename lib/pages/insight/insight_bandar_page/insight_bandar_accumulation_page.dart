@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
+import 'package:my_wealth/widgets/list/column_info.dart';
 
 class InsightBandarAccumulationPage extends StatefulWidget {
   const InsightBandarAccumulationPage({Key? key}) : super(key: key);
@@ -288,412 +289,111 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
             ),
           ),
           const SizedBox(height: 10,),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                width: 50,
-                padding: const EdgeInsets.all(2),
-                decoration: const BoxDecoration(
-                  color: secondaryColor,
-                  border: Border(
-                    top: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                    left: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                    bottom: BorderSide(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    "CODE",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    color: secondaryColor,
-                      border: Border(
-                      top: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      left: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "ONE DAY",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    color: secondaryColor,
-                      border: Border(
-                      top: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      left: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "PRICE",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    color: secondaryColor,
-                      border: Border(
-                      top: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      left: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "BUY",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    color: secondaryColor,
-                      border: Border(
-                      top: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      left: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                      bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "SELL",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: secondaryColor,
-                    border: Border.all(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "DIFF",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
           Expanded(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  ...List.generate(
-                    _listAccumulation.length,
-                    (index) {
-                      return InkWell(
-                        onTap: (() async {
-                          showLoaderDialog(context);
-                          await _companyAPI.getCompanyByCode(_listAccumulation[index].code, 'saham').then((resp) {
-                            CompanyDetailArgs args = CompanyDetailArgs(
-                              companyId: resp.companyId,
-                              companyName: resp.companyName,
-                              companyCode: _listAccumulation[index].code,
-                              companyFavourite: (resp.companyFavourites ?? false),
-                              favouritesId: (resp.companyFavouritesId ?? -1),
-                              type: "saham",
-                            );
-                            
-                            // remove the loader dialog
-                            Navigator.pop(context);
+            child: ListView.builder(
+              itemCount: _listAccumulation.length,
+              itemBuilder: ((context, index) {
+                return InkWell(
+                  onTap: (() async {
+                    showLoaderDialog(context);
+                    await _companyAPI.getCompanyByCode(_listAccumulation[index].code, 'saham').then((resp) {
+                      CompanyDetailArgs args = CompanyDetailArgs(
+                        companyId: resp.companyId,
+                        companyName: resp.companyName,
+                        companyCode: _listAccumulation[index].code,
+                        companyFavourite: (resp.companyFavourites ?? false),
+                        favouritesId: (resp.companyFavouritesId ?? -1),
+                        type: "saham",
+                      );
+                      
+                      // remove the loader dialog
+                      Navigator.pop(context);
 
-                            // go to the company page
-                            Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                          }).onError((error, stackTrace) {
-                            // remove the loader dialog
-                            Navigator.pop(context);
+                      // go to the company page
+                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                    }).onError((error, stackTrace) {
+                      // remove the loader dialog
+                      Navigator.pop(context);
 
-                            // show the error message
-                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                          });
-                        }),
-                        child: Row(
+                      // show the error message
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                    });
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Container(
-                              width: 50,
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: primaryDark,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                  left: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                _listAccumulation[index].code,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10,
-                                ),
+                            Text(
+                              _listAccumulation[index].code,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
                               ),
                             ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: primaryDark,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                    left: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  '${formatDecimalWithNull(_listAccumulation[index].oneDay, 100, 3)}%',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
+                            const Expanded(child: SizedBox()),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Text(
+                              formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
                             ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: primaryDark,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                      left: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: primaryDark,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                      left: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  formatIntWithNull(_listAccumulation[index].buyLot, false, false),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: primaryDark,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                      left: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  formatIntWithNull(_listAccumulation[index].sellLot, false, false),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: primaryDark,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                      left: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                    right: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    )
-                                  ),
-                                ),
-                                child: Text(
-                                  formatIntWithNull(_listAccumulation[index].diff, false, false),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              '(${formatDecimalWithNull(_listAccumulation[index].oneDay, 100, 2)}%)',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.green
                               ),
                             ),
                           ],
                         ),
-                      );
-                    }
+                        const SizedBox(height: 5,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            ColumnInfo(
+                              title: 'Buy',
+                              titleColor: Colors.green,
+                              value: formatIntWithNull(_listAccumulation[index].buyLot, false, false, 0, false),
+                              valueSize: 15,
+                            ),
+                            ColumnInfo(
+                              title: 'Sell',
+                              titleColor: secondaryColor,
+                              value: formatIntWithNull(_listAccumulation[index].sellLot, false, false, 0, false),
+                              valueSize: 15,
+                            ),
+                            ColumnInfo(
+                              title: 'Diff',
+                              value: formatIntWithNull(_listAccumulation[index].diff, false, false, 0, false),
+                              valueSize: 15,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 10,),
-                ],
-              ),
+                );
+              })
             ),
           ),
         ],

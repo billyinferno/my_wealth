@@ -12,6 +12,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
+import 'package:my_wealth/widgets/list/column_info.dart';
 
 class InsightBandarSidewayPage extends StatefulWidget {
   const InsightBandarSidewayPage({Key? key}) : super(key: key);
@@ -360,20 +361,20 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(
+                            ColumnInfo(
                               title: "Price",
                               titleColor: Colors.grey,
                               value: formatCurrency(_sortedList[index].lastPrice.toDouble(), false, false, false),
                               valueColor: _getValueColorInt(_sortedList[index].lastPrice, _sortedList[index].prevClosingPrice),
                               valueSize: 15,
                             ),
-                            _columnInfo(
+                            ColumnInfo(
                               title: "Prev Price",
                               titleColor: Colors.grey,
                               value: formatCurrency(_sortedList[index].prevClosingPrice.toDouble(), false, false, false),
                               valueSize: 15,
                             ),
-                            _columnInfo(
+                            ColumnInfo(
                               title: "AVG Daily",
                               titleColor: Colors.grey,
                               value: "${formatDecimalWithNull(_sortedList[index].avgDaily, 100, 2)}%",
@@ -387,21 +388,21 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _columnInfo(
+                            ColumnInfo(
                               title: "One Day",
                               titleColor: Colors.grey,
                               value: "${formatDecimalWithNull(_sortedList[index].oneDay, 100, 2)}%",
                               valueColor: _getValueColorDouble(_sortedList[index].oneDay, 0),
                               valueSize: 15,
                             ),
-                            _columnInfo(
+                            ColumnInfo(
                               title: "One Week",
                               titleColor: Colors.grey,
                               value: "${formatDecimalWithNull(_sortedList[index].oneWeek, 100, 2)}%",
                               valueColor: _getValueColorDouble(_sortedList[index].oneWeek,  0),
                               valueSize: 15,
                             ),
-                            _columnInfo(
+                            ColumnInfo(
                               title: "One Month",
                               titleColor: Colors.grey,
                               value: "${formatDecimalWithNull(_sortedList[index].oneMonth, 100, 2)}%",
@@ -452,32 +453,6 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     else {
       return textPrimary;
     }
-  }
-
-  Widget _columnInfo({required String title, Color? titleColor, double? titleSize, required String value, Color? valueColor, double? valueSize}) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: (titleSize ?? 10),
-              color: (titleColor ?? extendedLight),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: (valueSize ?? 10),
-              color: (valueColor ?? textPrimary)
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void _setLoading(bool value) {

@@ -38,7 +38,8 @@ class ColumnInfo extends StatelessWidget {
             value,
             style: TextStyle(
               fontSize: (valueSize ?? 10),
-              color: (valueColor ?? textPrimary)
+              color: (valueColor ?? textPrimary),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

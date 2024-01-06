@@ -11,6 +11,7 @@ String insightAcquisitionModelToJson(InsightAccumulationModel data) => json.enco
 class InsightAccumulationModel {
     InsightAccumulationModel({
         required this.code,
+        required this.name,
         required this.oneDay,
         required this.lastPrice,
         required this.buyLot,
@@ -19,6 +20,7 @@ class InsightAccumulationModel {
     });
 
     String code;
+    String name;
     double oneDay;
     int lastPrice;
     int buyLot;
@@ -27,6 +29,7 @@ class InsightAccumulationModel {
 
     factory InsightAccumulationModel.fromJson(Map<String, dynamic> json) => InsightAccumulationModel(
         code: json["code"],
+        name: (json["name"] ?? ''),
         oneDay: json["one_day"].toDouble(),
         lastPrice: json["last_price"],
         buyLot: json["buy_lot"],
@@ -36,6 +39,7 @@ class InsightAccumulationModel {
 
     Map<String, dynamic> toJson() => {
         "code": code,
+        "name": name,
         "one_day": oneDay,
         "last_price": lastPrice,
         "buy_lot": buyLot,

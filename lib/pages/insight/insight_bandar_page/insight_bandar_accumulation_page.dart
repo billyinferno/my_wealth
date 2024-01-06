@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
+import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
 
 class InsightBandarAccumulationPage extends StatefulWidget {
@@ -30,6 +31,11 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
   final DateFormat _df = DateFormat('yyyy-MM-dd');
   final ScrollController _scrollController = ScrollController();
 
+  // sort helper
+  late String _filterMode;
+  late String _filterSort;
+  final Map<String, String> _filterList = {};
+
   late int _oneDayRate;
   late DateTime _fromDate;
   late DateTime _toDate;
@@ -41,14 +47,23 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
   @override
   void initState() {
-    super.initState();
-
     // initialize the data we will use for query the accumulation
     _oneDayRate = InsightSharedPreferences.getTopAccumulationRate(); // default 8%
     _toDate = InsightSharedPreferences.getTopAccumulationToDate(); // today date
     _currentDate = _toDate; // today date
     _fromDate = InsightSharedPreferences.getTopAccumulationFromDate(); // 7 days before today
     _listAccumulation = InsightSharedPreferences.getTopAccumulationResult(); // empty list accumulation
+
+    // list all the filter that we want to put here
+    _filterList["pr"] = "Price";
+    _filterList["1d"] = "One Day";
+    _filterList["by"] = "Buy Lot";
+    _filterList["sl"] = "Sell Lot";
+    _filterList["df"] = "Diff";
+
+    // default filter mode to Code and ASC
+    _filterMode = "df";
+    _filterSort = "DESC";
 
     // once got then check if we got result or not? if got result then no need to query to server
     // we can display the one that already stored on the cache.
@@ -109,6 +124,8 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
       // then set the isloading state into false
       _setLoading(false);
     }
+
+    super.initState();
   }
 
   @override
@@ -289,6 +306,32 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
             ),
           ),
           const SizedBox(height: 10,),
+          Visibility(
+            visible: _listAccumulation.isNotEmpty,
+            child: SearchBox(
+              filterMode: _filterMode,
+              filterList: _filterList,
+              filterSort: _filterSort,
+              bgColor: Colors.transparent,
+              onFilterSelect: ((newFilter) {
+                if (newFilter != _filterMode) {
+                  setState(() {
+                    _filterMode = newFilter;
+                    _filterData();
+                  });
+                }
+              }),
+              onSortSelect: ((newSort) {
+                if (newSort != _filterSort) {
+                  setState(() {
+                    _filterSort = newSort;
+                    _sortData();
+                  });
+                }
+              }),
+            ),
+          ),
+          const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
               itemCount: _listAccumulation.length,
@@ -345,22 +388,38 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                                 color: accentColor,
                               ),
                             ),
-                            const Expanded(child: SizedBox()),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Text(
-                              formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
-                            ),
                             const SizedBox(width: 5,),
-                            Text(
-                              '(${formatDecimalWithNull(_listAccumulation[index].oneDay, 100, 2)}%)',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.green
+                            Expanded(
+                              child: Text(
+                                _listAccumulation[index].name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: primaryDark,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
+                                  ),
+                                  Text(
+                                    '(${formatDecimalWithNull(_listAccumulation[index].oneDay, 100, 2)}%)',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.green
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -429,5 +488,46 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
         });
       }
     }
+  }
+
+  void _filterData() {
+    // create a temporary list to contain all the result from filter
+    List<InsightAccumulationModel> tempFilter = List<InsightAccumulationModel>.from(_listAccumulation);
+    
+    // check which filter mode is being selected
+    switch(_filterMode) {
+      case "1d":
+        tempFilter.sort(((a, b) => ((a.oneDay)).compareTo((b.oneDay))));
+        break;
+      case "by":
+        tempFilter.sort(((a, b) => ((a.buyLot)).compareTo((b.buyLot))));
+        break;
+      case "sl":
+        tempFilter.sort(((a, b) => ((a.sellLot)).compareTo((b.sellLot))));
+        break;
+      case "df":
+        tempFilter.sort(((a, b) => ((a.diff)).compareTo((b.diff))));
+        break;
+      case "pr":
+      default:
+        tempFilter.sort(((a, b) => (a.lastPrice).compareTo((b.lastPrice))));
+        break;
+    }
+
+    // clear the sorted list
+    _listAccumulation.clear();
+
+    // check the filter type
+    if (_filterSort == "ASC") {
+      _listAccumulation = List<InsightAccumulationModel>.from(tempFilter);
+    }
+    else {
+      _listAccumulation = List<InsightAccumulationModel>.from(tempFilter.reversed);
+    }
+  }
+
+  void _sortData() {
+    // regardless the data just reverse the current result
+    _listAccumulation = _listAccumulation.reversed.toList();
   }
 }

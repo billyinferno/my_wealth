@@ -30,14 +30,14 @@ class ColumnInfo extends StatelessWidget {
             title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: (titleSize ?? 10),
+              fontSize: (titleSize ?? 12),
               color: (titleColor ?? extendedLight),
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              fontSize: (valueSize ?? 10),
+              fontSize: (valueSize ?? 12),
               color: (valueColor ?? textPrimary),
               overflow: TextOverflow.ellipsis,
             ),

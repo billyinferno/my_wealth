@@ -8,6 +8,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/list/column_info.dart';
 
 class InsightBandarAtlPage extends StatefulWidget {
   final String title;
@@ -131,14 +132,12 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: 60,
-                  child: _text(
-                    text: "(${data.code})",
-                    color: secondaryLight,
-                    fontWeight: FontWeight.bold,
-                  ),
+                _text(
+                  text: "(${data.code})",
+                  color: secondaryLight,
+                  fontWeight: FontWeight.bold,
                 ),
+                const SizedBox(width: 5,),
                 Expanded(
                   child: _text(
                     text: data.name
@@ -153,10 +152,33 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                _column(title: "Volume", text: formatIntWithNull(int.tryParse(data.volume))),
-                _column(title: "High", text: formatIntWithNull(data.adjustedHighPrice)),
-                _column(title: "Low", text: formatIntWithNull(data.adjustedLowPrice)),
-                _column(title: "Min30", text: formatIntWithNull(data.min30Price)),
+                ColumnInfo(
+                  title: "Volume",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(int.tryParse(data.volume)),
+                  valueSize: 15,
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "High",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.adjustedHighPrice),
+                  valueSize: 15,
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "Low",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.adjustedLowPrice),
+                  valueSize: 15,
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "Min30",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.min30Price),
+                  valueSize: 15,
+                ),
               ],
             ),
             const SizedBox(height: 5,),
@@ -164,10 +186,37 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                _column(title: "MA5", text: formatIntWithNull(data.ma5), color: (data.ma5 < data.lastPrice ? secondaryColor : textPrimary)),
-                _column(title: "MA8", text: formatIntWithNull(data.ma8), color: (data.ma8 < data.lastPrice ? secondaryColor : textPrimary)),
-                _column(title: "MA13", text: formatIntWithNull(data.ma13), color: (data.ma13 < data.lastPrice ? secondaryColor : textPrimary)),
-                _column(title: "MA20", text: formatIntWithNull(data.ma20), color: (data.ma20 < data.lastPrice ? secondaryColor : textPrimary)),
+                ColumnInfo(
+                  title: "MA5",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.ma5),
+                  valueSize: 15,
+                  valueColor: (data.ma5 < data.lastPrice ? secondaryColor : textPrimary),
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "MA8",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.adjustedHighPrice),
+                  valueSize: 15,
+                  valueColor: (data.ma8 < data.lastPrice ? secondaryColor : textPrimary),
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "MA13",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.ma13),
+                  valueSize: 15,
+                  valueColor: (data.ma13 < data.lastPrice ? secondaryColor : textPrimary),
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "MA20",
+                  titleColor: Colors.grey,
+                  value: formatIntWithNull(data.ma20),
+                  valueSize: 15,
+                  valueColor: (data.ma20 < data.lastPrice ? secondaryColor : textPrimary),
+                ),
               ],
             ),
             const SizedBox(height: 5,),
@@ -175,10 +224,37 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                _column(title: "1 day", text: formatDecimalWithNull(data.oneDay, 100, 2), color: (data.oneDay < 0 ? secondaryColor : textPrimary)),
-                _column(title: "1 week", text: formatDecimalWithNull(data.oneWeek, 100, 2), color: (data.oneWeek < 0 ? secondaryColor : textPrimary)),
-                _column(title: "1 month", text: formatDecimalWithNull(data.oneMonth, 100, 2), color: (data.oneMonth < 0 ? secondaryColor : textPrimary)),
-                _column(title: "ytd", text: formatDecimalWithNull(data.ytd, 100, 2), color: (data.ytd < 0 ? secondaryColor : textPrimary)),
+                ColumnInfo(
+                  title: "1 Day",
+                  titleColor: Colors.grey,
+                  value: formatDecimalWithNull(data.oneDay, 100, 2),
+                  valueSize: 15,
+                  valueColor: (data.oneDay < 0 ? secondaryColor : textPrimary),
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "1 Week",
+                  titleColor: Colors.grey,
+                  value: formatDecimalWithNull(data.oneWeek, 100, 2),
+                  valueSize: 15,
+                  valueColor: (data.oneWeek < 0 ? secondaryColor : textPrimary),
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "1 Month",
+                  titleColor: Colors.grey,
+                  value: formatDecimalWithNull(data.oneMonth, 100, 2),
+                  valueSize: 15,
+                  valueColor: (data.oneMonth < 0 ? secondaryColor : textPrimary),
+                ),
+                const SizedBox(width: 5,),
+                ColumnInfo(
+                  title: "YTD",
+                  titleColor: Colors.grey,
+                  value: formatDecimalWithNull(data.ytd, 100, 2),
+                  valueSize: 15,
+                  valueColor: (data.ytd < 0 ? secondaryColor : textPrimary),
+                ),
               ],
             ),
             const SizedBox(height: 5,),
@@ -191,7 +267,7 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
   Widget _text({required String text, FontWeight? fontWeight, Color? color, double? fontSize}) {
     FontWeight currentFontWeight = (fontWeight ?? FontWeight.normal);
     Color currentColor = (color ?? textPrimary);
-    double currentFontSize = (fontSize ?? 12);
+    double currentFontSize = (fontSize ?? 15);
 
     return Text(
       text,
@@ -201,30 +277,6 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
         fontSize: currentFontSize,
       ),
       overflow: TextOverflow.ellipsis,
-    );
-  }
-
-  Widget _column({required String title, required String text, Color? color}) {
-    Color colorUse = (color ?? textPrimary);
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _text(
-              text: title,
-              fontWeight: FontWeight.bold,
-              color: extendedLight,
-            ),
-            _text(
-              text: text,
-              color: colorUse
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

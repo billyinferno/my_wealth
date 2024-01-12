@@ -21,7 +21,6 @@ class _PerformanceChartState extends State<PerformanceChart> {
   late List<WatchlistPerformanceModel> _watchlistData;
   late List<PerformanceData> _data;
   late ChartProperties _dataProperties;
-  late List<PerformanceData> _investment;
   late ChartProperties _investmentProperties;
   final Map<DateTime, int> _watchlist = {};
 
@@ -41,11 +40,6 @@ class _PerformanceChartState extends State<PerformanceChart> {
     // check if we already got performance data or not?
     // if got, then we can just put the performance data there
     _data = (widget.perfData ?? []);
-
-    // initialize the investment data with empty data
-    // we will only compute this, if the watchlist is available
-    // since we will need the full data, not just performance data
-    _investment = [];
 
     // put the watchlist performance data into watchlistData
     _watchlistData = (widget.data ?? []);
@@ -68,7 +62,7 @@ class _PerformanceChartState extends State<PerformanceChart> {
       painter: PerformanceChartPainter(
         data: _data,
         dataProperties: _dataProperties,
-        investment: _investment,
+        showInvestment: true,
         investmentProperties: _investmentProperties,
         watchlist: _watchlist,
       ),
@@ -80,7 +74,9 @@ class _PerformanceChartState extends State<PerformanceChart> {
 
   void _compute() {
     double gain;
-    double value;
+
+    // always clear the watchlist before we perform computation
+    _watchlist.clear();
 
     // check if we already got performance data or not?
     if (_data.isEmpty) {
@@ -109,22 +105,12 @@ class _PerformanceChartState extends State<PerformanceChart> {
         _data.add(dt);
 
         // calculate the investment value at this date
-        value = (perf.buyAvg * perf.buyTotal);
-        if (value < _minInvestment) {
-          _minInvestment = value;
+        if (perf.buyAmount < _minInvestment) {
+          _minInvestment = perf.buyAmount;
         }
-        if (value > _maxInvestment) {
-          _maxInvestment = value;
+        if (perf.buyAmount > _maxInvestment) {
+          _maxInvestment = perf.buyAmount;
         }
-
-        PerformanceData iv = PerformanceData(
-          date: perf.buyDate,
-          gain: value,
-          total: perf.buyAmount,
-        );
-
-        // add the investment data to the list
-        _investment.add(iv);
       }
     }
     else {
@@ -135,6 +121,16 @@ class _PerformanceChartState extends State<PerformanceChart> {
         }
         if (perf.gain > _max) {
           _max = perf.gain;
+        }
+
+        // since investment also coming from performance data, just add the
+        // performance data to the investment, we just need to check what is
+        // the maximum and minimum of the investment to generate the data.
+        if (perf.total < _minInvestment) {
+          _minInvestment = perf.total;
+        }
+        if (perf.total > _maxInvestment) {
+          _maxInvestment = perf.total;
         }
       }
     }

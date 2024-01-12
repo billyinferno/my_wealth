@@ -22,8 +22,8 @@ class ChartProperties {
 class PerformanceChartPainter extends CustomPainter {
   final List<PerformanceData> data;
   final ChartProperties dataProperties;
-  final List<PerformanceData> investment;
-  final ChartProperties investmentProperties;
+  final bool? showInvestment;
+  final ChartProperties? investmentProperties;
   final Map<DateTime, int>? watchlist;
   // final double min;
   // final double max;
@@ -33,7 +33,7 @@ class PerformanceChartPainter extends CustomPainter {
   PerformanceChartPainter({
     required this.data,
     required this.dataProperties,
-    required this.investment,
+    required this.showInvestment,
     required this.investmentProperties,
     this.watchlist,
   });
@@ -78,12 +78,12 @@ class PerformanceChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // at least investment or data shouldn't be empty
-    if (investment.isNotEmpty || data.isNotEmpty) {
+    if (data.isNotEmpty) {
       _drawBorder(canvas, size);
     }
     
     // if we have investment data, draw the investment data
-    if (investment.isNotEmpty) {
+    if ((showInvestment ?? false) && (investmentProperties != null)) {
       _drawInvestmentLine(canvas, size);
     }
 
@@ -163,16 +163,17 @@ class PerformanceChartPainter extends CustomPainter {
       if (i % datePrintOffset == 0 && i > 0) {
         // canvas.drawLine(p1, p2, graphRectBorderWhite);
         _drawText(
-            canvas: canvas,
-            position: Offset(xLeft, graphRect.bottom),
-            width: 60,
-            text: formatDate(date: data[i].date, format: "dd/MM"),
-            left: -15,
-            top: 5,
-            minHeight: 0,
-            maxHeight: graphRect.height + 20,
-            minWidth: 0,
-            maxWidth: graphRect.width + 20);
+          canvas: canvas,
+          position: Offset(xLeft, graphRect.bottom),
+          width: 60,
+          text: formatDate(date: data[i].date, format: "dd/MM"),
+          left: -15,
+          top: 5,
+          minHeight: 0,
+          maxHeight: graphRect.height + 20,
+          minWidth: 0,
+          maxWidth: graphRect.width + 20
+        );
       }
 
       // next
@@ -184,30 +185,32 @@ class PerformanceChartPainter extends CustomPainter {
     for (int i = 0; i < 4; i++) {
       double currVal = dataProperties.min + (((dataProperties.max - dataProperties.min) / 4.0) * i.toDouble());
       _drawText(
-          canvas: canvas,
-          position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
-          width: 60,
-          text: formatCurrency(currVal),
-          left: 0,
-          top: -5,
-          minHeight: 10,
-          maxHeight: graphRect.height,
-          minWidth: 10,
-          maxWidth: graphRect.width);
-    }
-
-    // put the max price
-    _drawText(
         canvas: canvas,
-        position: Offset(graphRect.left, graphRect.top),
+        position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
         width: 60,
-        text: formatCurrency(dataProperties.max),
+        text: formatCurrency(currVal),
         left: 0,
         top: -5,
         minHeight: 10,
         maxHeight: graphRect.height,
         minWidth: 10,
-        maxWidth: graphRect.width);
+        maxWidth: graphRect.width
+      );
+    }
+
+    // put the max price
+    _drawText(
+      canvas: canvas,
+      position: Offset(graphRect.left, graphRect.top),
+      width: 60,
+      text: formatCurrency(dataProperties.max),
+      left: 0,
+      top: -5,
+      minHeight: 10,
+      maxHeight: graphRect.height,
+      minWidth: 10,
+      maxWidth: graphRect.width
+    );
 
     Path pUp = Path();
     Path pDown = Path();
@@ -311,23 +314,24 @@ class PerformanceChartPainter extends CustomPainter {
     // check if min and max is the same?
     // if the same then we can just draw the line on the bottom
     // and just draw the text on the right side
-    if (investmentProperties.min == investmentProperties.max) {
+    if (investmentProperties!.min == investmentProperties!.max) {
       _drawText(
-              canvas: canvas,
-              position: Offset(graphRect.left, graphRect.bottom),
-              width: 60,
-              text: formatCurrency(investmentProperties.max),
-              left: graphRect.right,
-              top: -5,
-              minHeight: 10,
-              maxHeight: graphRect.height,
-              minWidth: 10,
-              maxWidth: graphRect.width);
+        canvas: canvas,
+        position: Offset(graphRect.left, graphRect.bottom),
+        width: 60,
+        text: formatCurrency(investmentProperties!.max),
+        left: graphRect.right,
+        top: -5,
+        minHeight: 10,
+        maxHeight: graphRect.height,
+        minWidth: 10,
+        maxWidth: graphRect.width
+      );
     }
     else {
       double yD = graphRect.size.height / 4;
       for (int i = 0; i < 4; i++) {    
-        double currVal = investmentProperties.min + (((investmentProperties.max - investmentProperties.min) / 4.0) * i.toDouble());
+        double currVal = investmentProperties!.min + (((investmentProperties!.max - investmentProperties!.min) / 4.0) * i.toDouble());
         _drawText(
           canvas: canvas,
           position: Offset(graphRect.left, graphRect.bottom - (yD * i) - 5),
@@ -348,7 +352,7 @@ class PerformanceChartPainter extends CustomPainter {
         canvas: canvas,
         position: Offset(graphRect.left, graphRect.top),
         width: 60,
-        text: formatCurrency(investmentProperties.max),
+        text: formatCurrency(investmentProperties!.max),
         left: graphRect.right,
         top: -5,
         minHeight: 10,
@@ -367,16 +371,16 @@ class PerformanceChartPainter extends CustomPainter {
     double ratio = 0;
     double w = graphRect.width / (data.length.toDouble() - 1);
 
-    if (investmentProperties.gap > 0) {
-      ratio = graphRect.height / investmentProperties.gap;
+    if (investmentProperties!.gap > 0) {
+      ratio = graphRect.height / investmentProperties!.gap;
     }
 
     x = graphRect.left;
     y = 0;
 
     // loop thru data
-    for (PerformanceData value in investment) {
-      y = 10 + graphRect.height - ((value.gain + investmentProperties.norm) * ratio);
+    for (PerformanceData value in data) {
+      y = 10 + graphRect.height - ((value.total + investmentProperties!.norm) * ratio);
 
       // check whether this is the first data?
       if (isFirst) {

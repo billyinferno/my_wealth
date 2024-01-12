@@ -100,50 +100,50 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
               await _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksdana Saham");
                 await InsightSharedPreferences.setTopReksadanaList('saham', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
               });
               await _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Campuran");
                 await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
               });
               await _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Pasar Uang");
                 await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
               });
               await _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
                 await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
               });
               // get worse list
               await _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
                 debugPrint("🔃 Refresh Reksdana Saham");
                 await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
               });
               await _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Campuran");
                 await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
               });
               await _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Pasar Uang");
                 await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
               });
               await _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
                 debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
                 await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
               });
             }).onError((error, stackTrace) {

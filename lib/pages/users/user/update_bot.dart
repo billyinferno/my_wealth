@@ -110,7 +110,7 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                           await UserSharedPreferences.setUserInfo(resp);
 
                           // update the provider to notify the user page
-                          if (!mounted) return;
+                          if (!context.mounted) return;
                           Provider.of<UserProvider>(context, listen: false)
                               .setUserLoginInfo(resp);
 

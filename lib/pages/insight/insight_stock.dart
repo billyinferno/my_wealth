@@ -111,19 +111,19 @@ class _InsightStockPageState extends State<InsightStockPage> {
               await _insightAPI.getSectorSummary().then((resp) async {
                 debugPrint("🔃 Refresh Sector Summary");
                 await InsightSharedPreferences.setSectorSummaryList(resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
               });
               await _insightAPI.getTopWorseCompany('top').then((resp) async {
                 debugPrint("🔃 Refresh Top Company Summary");
                 await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
               });
               await _insightAPI.getTopWorseCompany('worse').then((resp) async {
                 debugPrint("🔃 Refresh Worse Company Summary");
                 await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
               });
 

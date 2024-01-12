@@ -89,7 +89,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               await _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
                 debugPrint("🔃 Refresh Broker Summary Top");
                 await BrokerSharedPreferences.setBroketTopList(resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
@@ -100,7 +100,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               await _insightAPI.getBrokerTopTransaction().then((resp) async {
                 debugPrint("🔃 Refresh Broker Top Transaction List");
                 await InsightSharedPreferences.setBrokerTopTxn(resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
@@ -111,7 +111,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               await _insightAPI.getMarketToday().then((resp) async {
                 debugPrint("🔃 Refresh Broker Market Today");
                 await InsightSharedPreferences.setBrokerMarketToday(resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
@@ -122,7 +122,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               await _insightAPI.getMarketCap().then((resp) async {
                 debugPrint("🔃 Refresh Broker Market Cap");
                 await InsightSharedPreferences.setMarketCap(resp);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar

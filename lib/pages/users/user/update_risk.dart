@@ -136,7 +136,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                       await UserSharedPreferences.setUserInfo(resp);
     
                       // update the provider to notify the user page
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
     
                       // once finished, then pop out from this page

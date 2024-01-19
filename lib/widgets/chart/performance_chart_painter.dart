@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
@@ -25,10 +26,7 @@ class PerformanceChartPainter extends CustomPainter {
   final bool? showInvestment;
   final ChartProperties? investmentProperties;
   final Map<DateTime, int>? watchlist;
-  // final double min;
-  // final double max;
-  // final double gap;
-  // final double norm;
+
 
   PerformanceChartPainter({
     required this.data,
@@ -97,8 +95,9 @@ class PerformanceChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(PerformanceChartPainter oldDelegate) {
+    // check if the data is the same or not?
+    return listEquals<PerformanceData>(oldDelegate.data, data);
   }
 
   void _drawBorder(Canvas canvas, Size size) {

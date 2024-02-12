@@ -50,15 +50,19 @@ class PerformanceChart extends StatelessWidget {
     );
 
     // get the date print offset based on the data length
-    int datePrintOffset = (data.length ~/ 10);
+    // try to calculate the datePrintOffset by checking from 2-10, which one
+    // is the better date print offset
+    int datePrintOffset = 1;
     if (dateOffset != null) {
       datePrintOffset = dateOffset!;
     }
     else {
-      // check if date print offset is lesser than current data length
-      if ((datePrintOffset * 10) > data.length) {
-        // if so just add another 10
-        datePrintOffset += 10;
+      for(int i=2; i<=10; i++) {
+        datePrintOffset = (data.length ~/ i);
+        if (datePrintOffset <= 10) {
+          // exit from loop
+          break;
+        }
       }
     }
 

@@ -112,19 +112,23 @@ class PerformanceChartPainter extends CustomPainter {
     // one point to another point in the graph.
     int count = data.length;
     double xLeft = graphRect.left;
-    double guideW = graphRect.size.width / count;
+    double guideW = graphRect.size.width / (count - 1);
 
     // check for the date print offset
-    int datePrintOffset = 10;
-    if (count < datePrintOffset) {
-      datePrintOffset = count - 1;
+    int currentDatePrintOffset = (datePrintOffset ?? 10);
+    // check if data length is less or equal to 10, if so then just make the
+    // curent date print offset into 1, which means we will print all the
+    // date offset, since the graph will allow at least to have 10 data to be
+    // presented on the graph.
+    if (count <= 10) {
+      currentDatePrintOffset = 1;
     }
 
     for (int i = 0; i < data.length; i++) {
       Offset p1 = Offset(xLeft, graphRect.bottom);
       Offset p2 = Offset(xLeft, graphRect.top);
 
-      if (i % datePrintOffset == 0 && i > 0) {
+      if (i % currentDatePrintOffset == 0 && i > 0) {
         canvas.drawLine(p1, p2, graphRectBorderWhite);
       } else {
         canvas.drawLine(p1, p2, graphRectBorder);
@@ -146,6 +150,7 @@ class PerformanceChartPainter extends CustomPainter {
   void _drawLine(Canvas canvas, Size size) {
     double x;
     double y;
+    double left;
 
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
@@ -154,29 +159,49 @@ class PerformanceChartPainter extends CustomPainter {
     // one point to another point in the graph.
     int count = data.length;
     double xLeft = graphRect.left;
-    double guideW = graphRect.size.width / count;
+    double guideW = graphRect.size.width / (count - 1);
 
     // check for the date print offset
     int currentDatePrintOffset = (datePrintOffset ?? 10);
-    if (count < currentDatePrintOffset) {
-      currentDatePrintOffset = count - 1;
+    // check if data length is less or equal to 10, if so then just make the
+    // curent date print offset into 1, which means we will print all the
+    // date offset, since the graph will allow at least to have 10 data to be
+    // presented on the graph.
+    if (count <= 10) {
+      currentDatePrintOffset = 1;
     }
 
     for (int i = 0; i < data.length; i++) {
       if (i % currentDatePrintOffset == 0 && i > 0) {
-        // canvas.drawLine(p1, p2, graphRectBorderWhite);
-        _drawText(
-          canvas: canvas,
-          position: Offset(xLeft, graphRect.bottom),
-          width: 60,
-          text: formatDate(date: data[i].date, format: (dateFormat ?? "dd/MM")),
-          left: -15,
-          top: 5,
-          minHeight: 0,
-          maxHeight: graphRect.height + 20,
-          minWidth: 0,
-          maxWidth: graphRect.width + 20
-        );
+        
+        // calculate the left here
+        // defaulted to -15, this is middle of the line
+        left = -15;
+        if (i == (data.length - 1)) {
+          // if this is in the end, then instead of -15, put it as -30
+          left = -30;
+        }
+
+        // now check if the data length is > 10, and i is equal to end of data
+        // then no need to print the text
+        if (i == (data.length - 1) && i > 10) {
+          // skip
+        }
+        else {
+          // canvas.drawLine(p1, p2, graphRectBorderWhite);
+          _drawText(
+            canvas: canvas,
+            position: Offset(xLeft, graphRect.bottom),
+            width: 60,
+            text: formatDate(date: data[i].date, format: (dateFormat ?? "dd/MM")),
+            left: left,
+            top: 5,
+            minHeight: 0,
+            maxHeight: graphRect.height + 20,
+            minWidth: 0,
+            maxWidth: graphRect.width + 20
+          );
+        }
       }
 
       // next
@@ -444,7 +469,7 @@ class PerformanceChartPainter extends CustomPainter {
     final TextPainter textPainter = TextPainter(
       text: textSpan,
       textDirection: TextDirection.ltr,
-      textAlign: TextAlign.left,
+      textAlign: TextAlign.center,
     );
 
     textPainter.layout(minWidth: 0, maxWidth: width);

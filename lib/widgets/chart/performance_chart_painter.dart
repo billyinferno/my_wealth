@@ -26,6 +26,8 @@ class PerformanceChartPainter extends CustomPainter {
   final bool? showInvestment;
   final ChartProperties? investmentProperties;
   final Map<DateTime, int>? watchlist;
+  final int? datePrintOffset;
+  final String? dateFormat;
 
 
   PerformanceChartPainter({
@@ -33,6 +35,8 @@ class PerformanceChartPainter extends CustomPainter {
     required this.dataProperties,
     required this.showInvestment,
     required this.investmentProperties,
+    this.datePrintOffset,
+    this.dateFormat,
     this.watchlist,
   });
 
@@ -153,19 +157,19 @@ class PerformanceChartPainter extends CustomPainter {
     double guideW = graphRect.size.width / count;
 
     // check for the date print offset
-    int datePrintOffset = 10;
-    if (count < datePrintOffset) {
-      datePrintOffset = count - 1;
+    int currentDatePrintOffset = (datePrintOffset ?? 10);
+    if (count < currentDatePrintOffset) {
+      currentDatePrintOffset = count - 1;
     }
 
     for (int i = 0; i < data.length; i++) {
-      if (i % datePrintOffset == 0 && i > 0) {
+      if (i % currentDatePrintOffset == 0 && i > 0) {
         // canvas.drawLine(p1, p2, graphRectBorderWhite);
         _drawText(
           canvas: canvas,
           position: Offset(xLeft, graphRect.bottom),
           width: 60,
-          text: formatDate(date: data[i].date, format: "dd/MM"),
+          text: formatDate(date: data[i].date, format: (dateFormat ?? "dd/MM")),
           left: -15,
           top: 5,
           minHeight: 0,

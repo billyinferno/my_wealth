@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
@@ -27,6 +28,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
   final DateFormat _df = DateFormat('dd/MM/yyyy');
   final DateFormat _dfMMDD = DateFormat('dd/MM');
+  final DateFormat _dfMMYY = DateFormat('MM/yy');
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
   late WatchlistListArgs _watchlistArgs;
@@ -36,6 +38,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late Color _realisedColor;
   late Future<bool> _getData;
   late List<WatchlistPerformanceModel> _watchlistPerformance;
+  late List<WatchlistPerformanceModel> _watchlistPerformance90Day;
+  late List<WatchlistPerformanceModel> _watchlistPerformanceDaily;
+  late List<WatchlistPerformanceModel> _watchlistPerformanceMonth;
+  late List<WatchlistPerformanceModel> _watchlistPerformanceYear;
   late CompanyDetailArgs _companyArgs;
   late double? _max;
   late Color _maxColor;
@@ -46,6 +52,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late double? _maxPL;
   late double? _minPL;
   late int _totalData;
+  late String _graphSelection;
+  late String _dateFormat;
 
   @override
   void initState() {
@@ -98,6 +106,16 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     _avgColor = textPrimary;
     _maxPL = null;
     _minPL = null;
+
+    // set the graph selection as "9" (90 days)
+    _graphSelection = "9";
+    _dateFormat = "dd/MM";
+
+    // initialize the result watchlist performance
+    _watchlistPerformance90Day = [];
+    _watchlistPerformanceDaily = [];
+    _watchlistPerformanceMonth = [];
+    _watchlistPerformanceYear = [];
     
     // get initial data
     _getData = _getInitData();
@@ -282,12 +300,56 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 ],
               ),
             ),
+            const SizedBox(height: 10,),
+            SizedBox(
+              width: double.infinity,
+              child: CupertinoSegmentedControl(
+                children: const {
+                  "9": Text("90 Days"),
+                  "d": Text("Daily"),
+                  "m": Text("Monhtly"),
+                  "y": Text("Yearly"),
+                },
+                onValueChanged: ((value) {
+                  String selectedValue = value.toString();
+        
+                  setState(() {
+                    _graphSelection = selectedValue;
+
+                    switch(_graphSelection) {
+                      case "9":
+                        _watchlistPerformance = _watchlistPerformance90Day.toList();
+                        _dateFormat = "dd/MM";
+                        break;
+                      case "m":
+                        _watchlistPerformance = _watchlistPerformanceMonth.toList();
+                        _dateFormat = "MM/yy";
+                        break;
+                      case "y":
+                        _watchlistPerformance = _watchlistPerformanceYear.toList();
+                        _dateFormat = "MM/yy";
+                        break;
+                      default:
+                        _watchlistPerformance = _watchlistPerformanceDaily.toList();
+                        _dateFormat = "dd/MM";
+                        break;
+                    }
+                  });
+                }),
+                groupValue: _graphSelection,
+                selectedColor: secondaryColor,
+                borderColor: secondaryDark,
+                pressedColor: primaryDark,
+              ),
+            ),
             SizedBox(
               width: double.infinity,
               child: PerformanceChart(
-                data: _watchlistPerformance,
+                watchlistPerfData: _watchlistPerformance,
                 watchlist: _watchlistArgs.watchList.watchlistDetail,
                 height: 250,
+                dateOffset: (_watchlistPerformance.length > 10 ? null : 1),
+                dateFormat: _dateFormat,
               ),
             ),
             Row(
@@ -448,6 +510,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
                   }
 
+                  String dateText = _dfMMDD.format(_watchlistPerformance[index].buyDate);
+                  if (_graphSelection == "m" || _graphSelection == "y") {
+                    dateText = _dfMMYY.format(_watchlistPerformance[index].buyDate);
+                  }
+
 
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,7 +524,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         padding: const EdgeInsets.all(5),
                         width: 50,
                         child: Text(
-                          _dfMMDD.format(_watchlistPerformance[index].buyDate),
+                          dateText,
                           textAlign: TextAlign.center,
                           style: _smallFont,
                         ),
@@ -539,8 +606,62 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     try {
       // perform the get company detail information here
       await _watchlistAPI.getWatchlistPerformance(_watchlistArgs.type, _watchlistArgs.watchList.watchlistId).then((resp) {
-        // copy the response to watchlist performance
-        _watchlistPerformance = resp; 
+        // generate all the watchlist performance, 90 day, daily, monthly, yearly
+        _watchlistPerformance90Day.clear();
+        _watchlistPerformanceDaily.clear();
+        _watchlistPerformanceMonth.clear();
+        _watchlistPerformanceYear.clear();
+
+        // loop thru all the response
+        // for monthly and year, we will need help from MAP, so let's create
+        // helper variable here
+        Map<DateTime, WatchlistPerformanceModel> monthly = {};
+        Map<DateTime, WatchlistPerformanceModel> yearly = {};
+        
+        DateTime dtMonth;
+        DateTime dtYear;
+
+        for(int i=0; i< resp.length; i++) {
+          // first let's calculate the date
+          dtMonth = DateTime(resp[i].buyDate.year, resp[i].buyDate.month, 1);
+          dtYear = DateTime(resp[i].buyDate.year, 12, 31);
+
+          monthly[dtMonth] = resp[i];
+          yearly[dtYear] = resp[i];
+
+          // check if this is lesser than 90 day or not?
+          if (i >= (resp.length - 90)) {
+            // add this to the 90 day list
+            _watchlistPerformance90Day.add(resp[i]);
+          }
+
+          // for daily it seems that seeing 5 years should be enough
+          // otherwise it will be showed too many?
+          // 260 days is working day for a year
+          if (i > (resp.length - (260 * 5))) {
+            _watchlistPerformanceDaily.add(resp[i]);
+          }
+        }
+
+        // once got the monthly and yearly, convert this map to list
+        _watchlistPerformanceMonth = monthly.values.toList();
+        _watchlistPerformanceYear = yearly.values.toList();
+
+        // now check which one is being selected by user
+        switch(_graphSelection) {
+          case "9":
+            _watchlistPerformance = _watchlistPerformance90Day.toList();
+            break;
+          case "m":
+            _watchlistPerformance = _watchlistPerformanceMonth.toList();
+            break;
+          case "y":
+            _watchlistPerformance = _watchlistPerformanceYear.toList();
+            break;
+          default:
+            _watchlistPerformance = _watchlistPerformanceDaily.toList();
+            break;
+        }
 
         // get the maximum and minimum
         _totalData = 0;

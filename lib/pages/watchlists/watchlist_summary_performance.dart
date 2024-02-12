@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
@@ -33,6 +34,10 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late Future<bool> _getData;
   late List<SummaryPerformanceModel> _summaryPerfData;
   late List<PerformanceData> _perfData;
+  late List<PerformanceData> _perfData90D;
+  late List<PerformanceData> _perfDataDaily;
+  late List<PerformanceData> _perfDataMonhtly;
+  late List<PerformanceData> _perfDataYearly;
   late double _totalDayGain;
   late double _totalCost;
   late double _totalValue;
@@ -45,6 +50,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _maxPL;
   late double _minPL;
   late int _totalData;
+  late String _graphSelection;
 
   @override
   void initState() {
@@ -58,6 +64,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _totalData = 0;
 
     _perfData = [];
+    _perfData90D = [];
+    _perfDataDaily = [];
+    _perfDataMonhtly = [];
+    _perfDataYearly = [];
+
+    // defaulted the graph selection into 90 day
+    _graphSelection = '9';
 
     // get the arguments passed on this
     _args = widget.args as WatchlistSummaryPerformanceArgs;
@@ -195,6 +208,44 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
               ),
             ),
             _showChart(),
+            SizedBox(
+              width: double.infinity,
+              child: CupertinoSegmentedControl(
+                children: const {
+                  "9": Text("90 Days"),
+                  "d": Text("Daily"),
+                  "m": Text("Monhtly"),
+                  "y": Text("Yearly"),
+                },
+                onValueChanged: ((value) {
+                  String selectedValue = value.toString();
+        
+                  setState(() {
+                    _graphSelection = selectedValue;
+
+                    switch(_graphSelection) {
+                      case "9":
+                        _perfData = _perfData90D.toList();
+                        break;
+                      case "m":
+                        _perfData = _perfDataMonhtly.toList();
+                        break;
+                      case "y":
+                        _perfData = _perfDataYearly.toList();
+                        break;
+                      default:
+                        _perfData = _perfDataDaily.toList();
+                        break;
+                    }
+                  });
+                }),
+                groupValue: _graphSelection,
+                selectedColor: secondaryColor,
+                borderColor: secondaryDark,
+                pressedColor: primaryDark,
+              ),
+            ),
+            const SizedBox(height: 10,),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -531,7 +582,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         // once finished loop all the performance data, and combine it
         // extract the data from map to list of _summaryPerfData and _perfData
         _summaryPerfData = [];
-        tmpSummaryPerfData.forEach((key, data) {
+        tmpSummaryPerfData.forEach((key, data) {          
           // add this data to the summary perf data
           _summaryPerfData.add(data);
         });
@@ -554,23 +605,46 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       }
     }
 
-    // calculate the summary performance data
-    _totalData = 0;
+    // monthly and yearly performance data helper
+    Map<DateTime, PerformanceData> monthly = {};
+    Map<DateTime, PerformanceData> yearly = {};
+
+    // helper for get the month and year performance
+    DateTime dtMonth;
+    DateTime dtYear;
     
+    // loop thru all the summary performance data
     for(int i=0; i < _summaryPerfData.length; i++) {
       SummaryPerformanceModel dt = _summaryPerfData[i];
 
-      // add this data to the performance data
-      _perfData.add(
-        PerformanceData(
-          date: dt.plDate,
-          gain: dt.plValue,
-          total: dt.totalAmount,
-        )
+      // process the summary performance data by separate it into 90 day, daily,
+      // monthly, and yearly.
+
+      PerformanceData currData = PerformanceData(
+        date: dt.plDate,
+        gain: dt.plValue,
+        total: dt.totalAmount,
       );
 
-      // got data, so now check if this is max or not
-      _totalData++;
+      // for daily, we will only showed the latest 5 years, since if more than
+      // that it will be too many.
+      // 260 days is working day for a year
+      if (i >= (_summaryPerfData.length - (260 * 5))) {
+        _perfDataDaily.add(currData);
+      }
+
+      // check if this is last 90 day?
+      if (i >= (_summaryPerfData.length - 90)) {
+        _perfData90D.add(currData);
+      }
+
+      // get the month/year for this data
+      dtMonth = DateTime(dt.plDate.year, dt.plDate.month, 1);
+      dtYear = DateTime(dt.plDate.year, 12, 31);
+
+      // add the month and year to the helper map
+      monthly[dtMonth] = currData;
+      yearly[dtYear] = currData;
 
       // check if this is first PL or not?
       if (plBefore == null) {
@@ -605,6 +679,28 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       avg = avg + dt.plValue;
     }
 
+    // now put all the entried on the monhtly and yearly to the performance
+    // data list for monthly and yearly.
+    _perfDataMonhtly = monthly.values.toList();
+    _perfDataYearly = yearly.values.toList();
+
+    // get the performance data based on graph selection
+    switch(_graphSelection) {
+        case "9":
+          _perfData = _perfData90D.toList();
+          break;
+        case "m":
+          _perfData = _perfDataMonhtly.toList();
+          break;
+        case "y":
+          _perfData = _perfDataYearly.toList();
+          break;
+        default:
+          _perfData = _perfDataDaily.toList();
+          break;
+    }
+
+    _totalData = _perfData.length;
     if (_totalData > 0) {
       _max = max;
       _min = min;

@@ -51,6 +51,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _minPL;
   late int _totalData;
   late String _graphSelection;
+  late String _dateFormat;
 
   @override
   void initState() {
@@ -71,6 +72,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
     // defaulted the graph selection into 90 day
     _graphSelection = '9';
+
+    // defaulted the date format to dd/MM
+    _dateFormat = "dd/MM";
 
     // get the arguments passed on this
     _args = widget.args as WatchlistSummaryPerformanceArgs;
@@ -226,15 +230,19 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                     switch(_graphSelection) {
                       case "9":
                         _perfData = _perfData90D.toList();
+                        _dateFormat = "dd/MM";
                         break;
                       case "m":
                         _perfData = _perfDataMonhtly.toList();
+                        _dateFormat = "MM/yy";
                         break;
                       case "y":
                         _perfData = _perfDataYearly.toList();
+                        _dateFormat = "MM/yy";
                         break;
                       default:
                         _perfData = _perfDataDaily.toList();
+                        _dateFormat = "dd/MM";
                         break;
                     }
                   });
@@ -366,6 +374,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                     isPLMinMax = true;
                     plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
                   }
+
+                  String percentGain = "-";
+                  if (_perfData[index].total > 0) {
+                    percentGain = "${formatDecimalWithNull(_perfData[index].gain / _perfData[index].total, 100, 2)}%";
+                  }
                   
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,7 +426,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         color: (isMinMax ? plColor : Colors.transparent),
                         padding: const EdgeInsets.all(5),
                         child: Text(
-                          "${formatDecimalWithNull(_perfData[index].gain / _perfData[index].total, 100, 2)}%",
+                          percentGain,
                           textAlign: TextAlign.center,
                           style: _smallFont.copyWith(
                             color: (isMinMax ? Colors.white : plColor),
@@ -450,6 +463,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       child: PerformanceChart(
         perfData: _perfData,
         height: 250,
+        dateOffset: (_perfData.length > 10 ? null : 1),
+        dateFormat: _dateFormat,
       ),
     );
   }
@@ -688,15 +703,19 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     switch(_graphSelection) {
         case "9":
           _perfData = _perfData90D.toList();
+          _dateFormat = "dd/MM";
           break;
         case "m":
           _perfData = _perfDataMonhtly.toList();
+          _dateFormat = "MM/yy";
           break;
         case "y":
           _perfData = _perfDataYearly.toList();
+          _dateFormat = "MM/yy";
           break;
         default:
           _perfData = _perfDataDaily.toList();
+          _dateFormat = "dd/MM";
           break;
     }
 

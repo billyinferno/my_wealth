@@ -1552,172 +1552,176 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   Future<bool> _getInitData() async {
     try {
-      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
-        _companyDetail = resp;
+      await Future.wait([
+        _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+          _companyDetail = resp;
 
-        // calculate the average daily based on the daily, weekly, monthly, quarterly, semi annual, and yearly
-        _avgDaily = 0;
-        _avgCount = 0;
-        if (_companyDetail.companyDailyReturn != null) {
-          _avgDaily = _avgDaily! + _companyDetail.companyDailyReturn!;
-          _avgCount++;
-        }
-        if (_companyDetail.companyWeeklyReturn != null) {
-          _avgDaily = _avgDaily! + (_companyDetail.companyDailyReturn! / 5);
-          _avgCount++;
-        }
-        if (_companyDetail.companyMonthlyReturn != null) {
-          _avgDaily = _avgDaily! + (_companyDetail.companyMonthlyReturn! / 21.67);
-          _avgCount++;
-        }
-        if (_companyDetail.companyQuarterlyReturn != null) {
-          _avgDaily = _avgDaily! + (_companyDetail.companyQuarterlyReturn! / 65);
-          _avgCount++;
-        }
-        if (_companyDetail.companySemiAnnualReturn != null) {
-          _avgDaily = _avgDaily! + (_companyDetail.companySemiAnnualReturn! / 130);
-          _avgCount++;
-        }
-        if (_companyDetail.companyYearlyReturn != null) {
-          _avgDaily = _avgDaily! + (_companyDetail.companyYearlyReturn! / 260);
-          _avgCount++;
-        }
-        _avgDaily = (_avgDaily! / _avgCount);
-
-        // map the price date on company
-        List<GraphData> tempData = [];
-        int totalData = 0;
-        double totalPrice = 0;
-        int totalPriceData = 0;
-        _minPrice = double.maxFinite;
-        _maxPrice = double.minPositive;
-
-        // move the last update to friday
-        int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
-        DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
-
-        // then go 14 weeks before so we knew the start date
-        DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
-        // only get the 1st 64 data, since we will want to get the latest data
-        for (PriceModel price in _companyDetail.companyPrices) {
-          // ensure that all the data we will put is more than or equal with startdate
-          if(price.priceDate.compareTo(startDate) >= 0) {
-            tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
-            totalData += 1;
+          // calculate the average daily based on the daily, weekly, monthly, quarterly, semi annual, and yearly
+          _avgDaily = 0;
+          _avgCount = 0;
+          if (_companyDetail.companyDailyReturn != null) {
+            _avgDaily = _avgDaily! + _companyDetail.companyDailyReturn!;
+            _avgCount++;
           }
+          if (_companyDetail.companyWeeklyReturn != null) {
+            _avgDaily = _avgDaily! + (_companyDetail.companyDailyReturn! / 5);
+            _avgCount++;
+          }
+          if (_companyDetail.companyMonthlyReturn != null) {
+            _avgDaily = _avgDaily! + (_companyDetail.companyMonthlyReturn! / 21.67);
+            _avgCount++;
+          }
+          if (_companyDetail.companyQuarterlyReturn != null) {
+            _avgDaily = _avgDaily! + (_companyDetail.companyQuarterlyReturn! / 65);
+            _avgCount++;
+          }
+          if (_companyDetail.companySemiAnnualReturn != null) {
+            _avgDaily = _avgDaily! + (_companyDetail.companySemiAnnualReturn! / 130);
+            _avgCount++;
+          }
+          if (_companyDetail.companyYearlyReturn != null) {
+            _avgDaily = _avgDaily! + (_companyDetail.companyYearlyReturn! / 260);
+            _avgCount++;
+          }
+          _avgDaily = (_avgDaily! / _avgCount);
 
-          // count for minimum, maximum, and average
-          if(totalPriceData < 29) {
-            if(_minPrice! > price.priceValue) {
-              _minPrice = price.priceValue;
+          // map the price date on company
+          List<GraphData> tempData = [];
+          int totalData = 0;
+          double totalPrice = 0;
+          int totalPriceData = 0;
+          _minPrice = double.maxFinite;
+          _maxPrice = double.minPositive;
+
+          // move the last update to friday
+          int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
+          DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
+
+          // then go 14 weeks before so we knew the start date
+          DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+
+          // only get the 1st 64 data, since we will want to get the latest data
+          for (PriceModel price in _companyDetail.companyPrices) {
+            // ensure that all the data we will put is more than or equal with startdate
+            if(price.priceDate.compareTo(startDate) >= 0) {
+              tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+              totalData += 1;
             }
 
-            if(_maxPrice! < price.priceValue) {
-              _maxPrice = price.priceValue;
+            // count for minimum, maximum, and average
+            if(totalPriceData < 29) {
+              if(_minPrice! > price.priceValue) {
+                _minPrice = price.priceValue;
+              }
+
+              if(_maxPrice! < price.priceValue) {
+                _maxPrice = price.priceValue;
+              }
+
+              totalPrice += price.priceValue;
+              totalPriceData++;
             }
 
-            totalPrice += price.priceValue;
-            totalPriceData++;
+            // if total data already more than 64 break  the data, as heat map only will display 65 data
+            if(totalData >= 64) {
+              break;
+            }
           }
 
-          // if total data already more than 64 break  the data, as heat map only will display 65 data
-          if(totalData >= 64) {
-            break;
+          // add the current price which only in company
+          tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+
+          // check current price for minimum, maximum, and average
+          if(_minPrice! > _companyDetail.companyNetAssetValue!) {
+            _minPrice = _companyDetail.companyNetAssetValue!;
           }
-        }
 
-        // add the current price which only in company
-        tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+          if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
+            _maxPrice = _companyDetail.companyNetAssetValue!;
+          }
 
-        // check current price for minimum, maximum, and average
-        if(_minPrice! > _companyDetail.companyNetAssetValue!) {
-          _minPrice = _companyDetail.companyNetAssetValue!;
-        }
+          totalPrice += _companyDetail.companyNetAssetValue!;
+          totalPriceData++;
+          // compute average
+          _avgPrice = totalPrice / totalPriceData;
+          _numPrice = totalPriceData;
 
-        if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
-          _maxPrice = _companyDetail.companyNetAssetValue!;
-        }
+          // sort the temporary data
+          tempData.sort((a, b) {
+            return a.date.compareTo(b.date);
+          });
 
-        totalPrice += _companyDetail.companyNetAssetValue!;
-        totalPriceData++;
-        // compute average
-        _avgPrice = totalPrice / totalPriceData;
-        _numPrice = totalPriceData;
+          // once sorted, then we can put it on map
+          for (GraphData data in tempData) {
+            _graphData![data.date] = data;
+          }
+        }),
 
-        // sort the temporary data
-        tempData.sort((a, b) {
-          return a.date.compareTo(b.date);
-        });
-
-        // once sorted, then we can put it on map
-        for (GraphData data in tempData) {
-          _graphData![data.date] = data;
-        }
-      });
-
-      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
-        // if we got response then map it to the map, so later we can sent it
-        // to the graph for rendering the time when we buy the share
-        DateTime tempDate;
-        for(WatchlistDetailListModel data in resp) {
-          tempDate = data.watchlistDetailDate.toLocal();
-          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            // if exists get the current value of the _watchlistDetails and put into _bitData
-            _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
-            // check whether this is buy or sell
-            if (data.watchlistDetailShare >= 0) {
-              _bitData[15] = 1;
+        _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+          // if we got response then map it to the map, so later we can sent it
+          // to the graph for rendering the time when we buy the share
+          DateTime tempDate;
+          for(WatchlistDetailListModel data in resp) {
+            tempDate = data.watchlistDetailDate.toLocal();
+            if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+              // if exists get the current value of the _watchlistDetails and put into _bitData
+              _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+              // check whether this is buy or sell
+              if (data.watchlistDetailShare >= 0) {
+                _bitData[15] = 1;
+              }
+              else {
+                _bitData[14] = 1;
+              }
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
             }
             else {
-              _bitData[14] = 1;
-            }
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
-          }
-          else {
-            if (data.watchlistDetailShare >= 0) {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
-            }
-            else {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              if (data.watchlistDetailShare >= 0) {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+              }
+              else {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              }
             }
           }
-        }
-      });
+        }),
+        
+        _infoReksadanaAPI.getInfoReksadana(_companyData.companyId, 90).then((resp) {
+          // got all the reksadana information, we can split all the data and put it
+          // on the list
+          Map<String, double> daily = {};
+          Map<String, double> weekly = {};
+          Map<String, double> monhtly = {};
+          Map<String, double> yearly = {};
+          for (InfoReksadanaModel data in resp) {
+            daily[_dfShort.format(data.date)] = data.dailyReturn * 100;
+            weekly[_dfShort.format(data.date)] = data.weeklyReturn * 100;
+            monhtly[_dfShort.format(data.date)] = data.monthlyReturn * 100;
+            yearly[_dfShort.format(data.date)] = data.yearlyReturn * 100;
 
-      await _infoReksadanaAPI.getInfoReksadana(_companyData.companyId, 90).then((resp) {
-        // got all the reksadana information, we can split all the data and put it
-        // on the list
-        Map<String, double> daily = {};
-        Map<String, double> weekly = {};
-        Map<String, double> monhtly = {};
-        Map<String, double> yearly = {};
-        for (InfoReksadanaModel data in resp) {
-          daily[_dfShort.format(data.date)] = data.dailyReturn * 100;
-          weekly[_dfShort.format(data.date)] = data.weeklyReturn * 100;
-          monhtly[_dfShort.format(data.date)] = data.monthlyReturn * 100;
-          yearly[_dfShort.format(data.date)] = data.yearlyReturn * 100;
+            GraphData gdUnit = GraphData(date: data.date, price: data.totalUnit);
+            _unitData![data.date] = gdUnit;
 
-          GraphData gdUnit = GraphData(date: data.date, price: data.totalUnit);
-          _unitData![data.date] = gdUnit;
+            GraphData gdAsset = GraphData(date: data.date, price: data.totalUnit * data.netAssetValue);
+            _assetData![data.date] = gdAsset;
+          }
 
-          GraphData gdAsset = GraphData(date: data.date, price: data.totalUnit * data.netAssetValue);
-          _assetData![data.date] = gdAsset;
-        }
+          _movementData.add(daily);
+          _movementData.add(weekly);
+          _movementData.add(monhtly);
+          _movementData.add(yearly);
 
-        _movementData.add(daily);
-        _movementData.add(weekly);
-        _movementData.add(monhtly);
-        _movementData.add(yearly);
-
-        // calculate the date offset
-        _dateOffset = _movementData[0].length ~/ 10;
-        if (_dateOffset > 10) {
-          _dateOffset = 10;
-        }
-        if (_dateOffset < 3) {
-          _dateOffset = 3;
-        }
+          // calculate the date offset
+          _dateOffset = _movementData[0].length ~/ 10;
+          if (_dateOffset > 10) {
+            _dateOffset = 10;
+          }
+          if (_dateOffset < 3) {
+            _dateOffset = 3;
+          }
+        }),
+      ]).onError((error, stackTrace) {
+        throw Exception('Error when getting data from server');
       });
     }
     catch(error) {

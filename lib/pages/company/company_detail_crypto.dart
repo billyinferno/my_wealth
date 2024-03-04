@@ -876,42 +876,45 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
   Future<bool> _getInitData() async {
     try {
-      // perform the get company detail information here
-      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
-        // copy the response to company detail data
-        _companyDetail = resp;
+      await Future.wait([
+        _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+          // copy the response to company detail data
+          _companyDetail = resp;
+          
+          // generate map data
+          _generateGraphData(resp);        
+        }),
         
-        // generate map data
-        _generateGraphData(resp);        
-      });
-
-      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
-        // if we got response then map it to the map, so later we can sent it
-        // to the graph for rendering the time when we buy the share
-        DateTime tempDate;
-        for(WatchlistDetailListModel data in resp) {
-          tempDate = data.watchlistDetailDate.toLocal();
-          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            // if exists get the current value of the _watchlistDetails and put into _bitData
-            _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
-            // check whether this is buy or sell
-            if (data.watchlistDetailShare >= 0) {
-              _bitData[15] = 1;
+        _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+          // if we got response then map it to the map, so later we can sent it
+          // to the graph for rendering the time when we buy the share
+          DateTime tempDate;
+          for(WatchlistDetailListModel data in resp) {
+            tempDate = data.watchlistDetailDate.toLocal();
+            if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+              // if exists get the current value of the _watchlistDetails and put into _bitData
+              _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+              // check whether this is buy or sell
+              if (data.watchlistDetailShare >= 0) {
+                _bitData[15] = 1;
+              }
+              else {
+                _bitData[14] = 1;
+              }
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
             }
             else {
-              _bitData[14] = 1;
-            }
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
-          }
-          else {
-            if (data.watchlistDetailShare >= 0) {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
-            }
-            else {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              if (data.watchlistDetailShare >= 0) {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+              }
+              else {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              }
             }
           }
-        }
+        }),
+      ]).onError((error, stackTrace) {
+        throw Exception('Error while get data from server');
       });
     }
     catch(error) {

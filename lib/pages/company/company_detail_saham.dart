@@ -3069,18 +3069,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
   Future<bool> _getInitData() async {
     try {
-      // show the loader dialog
-      // showLoaderDialog(context);
-      
-      // get the min and max broker summary date
-      await _brokerSummaryAPI.getBrokerSummaryCodeDate(_companyData.companyCode).then((resp) {
-        _brokerSummaryDate = resp;
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryCodeDate");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      // get all the information needed
+      // get the data that refer as dependency by other API
+      // get company detail
       await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
           // copy the response to company detail data
           _companyDetail = resp;
@@ -3093,167 +3083,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           _topBrokerDateTo =  (_companyDetail.companyLastUpdate == null ? DateTime.now().toLocal() : _companyDetail.companyLastUpdate!.toLocal());
           _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
       }).onError((error, stackTrace) {
-        debugPrint("Error on getCompanyDetail");
+        debugPrint("Error while getting Company Detail");
+        debugPrint("Error: ${error.toString()}");
         debugPrintStack(stackTrace: stackTrace);
       });
 
-      await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
-        _brokerSummaryGross = resp;
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummary");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
-        _brokerSummary = resp;
-        _brokerSummaryNet = resp;
-        _brokerSummaryBuySell = resp.brokerSummaryAll;
-        _brokerSummarySelected = "a";
-
-        // calculate the broker summary
-        _calculateBrokerSummary();
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryNet");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _brokerSummaryAPI.getBrokerSummaryAccumulation('v1', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
-        _brokerSummaryAccumulation.add(resp);
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryAccumulation v1");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _brokerSummaryAPI.getBrokerSummaryAccumulation('v2', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
-        _brokerSummaryAccumulation.add(resp);
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getBrokerSummaryAccumulation v2");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo).then((resp) {
-        _topBroker = resp;
-        _topBrokerDateFrom = (resp.brokerMinDate ?? DateTime.now());
-        _topBrokerDateTo = (resp.brokerMaxDate ?? DateTime.now());
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getCompanyTopBroker");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
-        _priceMA = resp;
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getPriceMovingAverage");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _priceAPI.getPriceMovement(_companyData.companyCode).then((resp) {
-        _priceMovement = resp;
-
-        _priceMovementData = [];
-        Map<String, double> avgPrice = {};
-        Map<String, double> minPrice = {};
-        Map<String, double> maxPrice = {};
-        // loop thru the _priceMovement price
-        for (Price element in _priceMovement.prices) {
-          avgPrice[element.date] = element.avgPrice;
-          minPrice[element.date] = element.minPrice;
-          maxPrice[element.date] = element.maxPrice;
-        }
-        _priceMovementData.add(avgPrice);
-        _priceMovementData.add(minPrice);
-        _priceMovementData.add(maxPrice);
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getPriceMovement");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
-        _infoFundamental = resp;
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getInfoFundamental");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _infoSahamsAPI.getInfoSahamPrice(_companyData.companyCode).then((resp) {
-        _infoSahamPrice = resp;
-
-        // loop thru _infoSahamPrice to get the max volume
-        _maxVolume = -1;
-        _maxHigh = -1;
-        _minLow = 999999999;
-        
-        for (InfoSahamPriceModel price in _infoSahamPrice) {
-          if (price.volume > _maxVolume!) {
-            _maxVolume = price.volume;
-          }
-          if (price.adjustedHighPrice > _maxHigh!) {
-            _maxHigh = price.adjustedHighPrice;
-          }
-          if (price.adjustedLowPrice < _minLow!) {
-            _minLow = price.adjustedLowPrice;
-          }
-          if (price.lastPrice > _maxHigh!) {
-            _maxHigh = price.lastPrice;
-          }
-          if (price.lastPrice < _minLow!) {
-            _minLow = price.lastPrice;
-          }
-        }
-
-        // check if maxHigh, minLow is the same, if same then it probably because all the while
-        // the price is the same, so we don't have low and high, for this we can just ignore the maxHigh and minLow
-        // and add new ceiling for this.
-        if (_maxHigh == _minLow) {
-          _maxHigh = _maxHigh! + _maxHigh!;
-        }
-
-        // generate map data
-        _generateGraphData(_infoSahamPrice, _companyDetail);   
-      }).onError((error, stackTrace) {
-        debugPrint("Error on getInfoSahamPrice");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
-        // if we got response then map it to the map, so later we can sent it
-        // to the graph for rendering the time when we buy the share
-        DateTime tempDate;
-        for(WatchlistDetailListModel data in resp) {
-          tempDate = data.watchlistDetailDate.toLocal();
-          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            // if exists get the current value of the _watchlistDetails and put into _bitData
-            _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
-            // check whether this is buy or sell
-            if (data.watchlistDetailShare >= 0) {
-              _bitData[15] = 1;
-            }
-            else {
-              _bitData[14] = 1;
-            }
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
-          }
-          else {
-            if (data.watchlistDetailShare >= 0) {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
-            }
-            else {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
-            }
-          }
-        }
-      }).onError((error, stackTrace) {
-        debugPrint("Error on watchlist findDetail");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
-      await _companyApi.getSeasonality(_companyData.companyCode).then((resp) {
-        _seasonality = resp;
-      }).onError((error, stackTrace) {
-        debugPrint("Error on Get getSeasonality");
-        debugPrintStack(stackTrace: stackTrace);
-      });
-
+      // get broker summary daily stat
       await _brokerSummaryAPI.getBrokerSummaryDailyStat(_companyData.companyCode).then((resp) {
         _brokerSummaryDailyStat = resp;
 
@@ -3280,33 +3115,170 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _brokerSummaryDailyData.add(buyData);
         _brokerSummaryDailyData.add(sellData);
       }).onError((error, stackTrace) {
-        debugPrint("Error on Get getBrokerSummaryDailyStat");
+        debugPrint("Error while getting Broker Daily Stat");
+        debugPrint("Error: ${error.toString()}");
         debugPrintStack(stackTrace: stackTrace);
       });
 
-      await _brokerSummaryAPI.getBrokerSummaryMonthlyStat(_companyData.companyCode).then((resp) {
-        _brokerSummaryMonthlyStat = resp;
+      // for rest of the data we can call async to faster the process of loading
+      // the page.
+      await Future.wait([
+        _brokerSummaryAPI.getBrokerSummaryCodeDate(_companyData.companyCode).then((resp) {
+          _brokerSummaryDate = resp;
+        }),
 
-        // init the broker summary daily data
-        _brokerSummaryMonthlyData = [];
+        _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+          _brokerSummaryGross = resp;
+        }),
 
-        // loop thru all the _brokerSummaryDailyStat.all
-        Map<String, double> buyData = {};
-        for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.buy) {
-          buyData[data.date] = data.totalLot.toDouble();
-        }
+        _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+          _brokerSummary = resp;
+          _brokerSummaryNet = resp;
+          _brokerSummaryBuySell = resp.brokerSummaryAll;
+          _brokerSummarySelected = "a";
 
-        Map<String, double> sellData = {};
-        for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.sell) {
-          sellData[data.date] = data.totalLot.toDouble();
-        }
+          // calculate the broker summary
+          _calculateBrokerSummary();
+        }),
 
-        // add buy and sell data to dail data
-        _brokerSummaryMonthlyData.add(buyData);
-        _brokerSummaryMonthlyData.add(sellData);
-      }).onError((error, stackTrace) {
-        debugPrint("Error on Get getBrokerSummaryMonthlyStat");
+        _brokerSummaryAPI.getBrokerSummaryAccumulation('v1', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
+          _brokerSummaryAccumulation.add(resp);
+        }),
+
+        _brokerSummaryAPI.getBrokerSummaryAccumulation('v2', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
+          _brokerSummaryAccumulation.add(resp);
+        }),
+
+        _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo).then((resp) {
+          _topBroker = resp;
+          _topBrokerDateFrom = (resp.brokerMinDate ?? DateTime.now());
+          _topBrokerDateTo = (resp.brokerMaxDate ?? DateTime.now());
+        }),
+
+        _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
+          _priceMA = resp;
+        }),
+
+        _priceAPI.getPriceMovement(_companyData.companyCode).then((resp) {
+          _priceMovement = resp;
+
+          _priceMovementData = [];
+          Map<String, double> avgPrice = {};
+          Map<String, double> minPrice = {};
+          Map<String, double> maxPrice = {};
+          // loop thru the _priceMovement price
+          for (Price element in _priceMovement.prices) {
+            avgPrice[element.date] = element.avgPrice;
+            minPrice[element.date] = element.minPrice;
+            maxPrice[element.date] = element.maxPrice;
+          }
+          _priceMovementData.add(avgPrice);
+          _priceMovementData.add(minPrice);
+          _priceMovementData.add(maxPrice);
+        }),
+
+        _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
+          _infoFundamental = resp;
+        }),
+
+        _infoSahamsAPI.getInfoSahamPrice(_companyData.companyCode).then((resp) {
+          _infoSahamPrice = resp;
+
+          // loop thru _infoSahamPrice to get the max volume
+          _maxVolume = -1;
+          _maxHigh = -1;
+          _minLow = 999999999;
+          
+          for (InfoSahamPriceModel price in _infoSahamPrice) {
+            if (price.volume > _maxVolume!) {
+              _maxVolume = price.volume;
+            }
+            if (price.adjustedHighPrice > _maxHigh!) {
+              _maxHigh = price.adjustedHighPrice;
+            }
+            if (price.adjustedLowPrice < _minLow!) {
+              _minLow = price.adjustedLowPrice;
+            }
+            if (price.lastPrice > _maxHigh!) {
+              _maxHigh = price.lastPrice;
+            }
+            if (price.lastPrice < _minLow!) {
+              _minLow = price.lastPrice;
+            }
+          }
+
+          // check if maxHigh, minLow is the same, if same then it probably because all the while
+          // the price is the same, so we don't have low and high, for this we can just ignore the maxHigh and minLow
+          // and add new ceiling for this.
+          if (_maxHigh == _minLow) {
+            _maxHigh = _maxHigh! + _maxHigh!;
+          }
+
+          // generate map data
+          _generateGraphData(_infoSahamPrice, _companyDetail);   
+        }),
+
+        _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+          // if we got response then map it to the map, so later we can sent it
+          // to the graph for rendering the time when we buy the share
+          DateTime tempDate;
+          for(WatchlistDetailListModel data in resp) {
+            tempDate = data.watchlistDetailDate.toLocal();
+            if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+              // if exists get the current value of the _watchlistDetails and put into _bitData
+              _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+              // check whether this is buy or sell
+              if (data.watchlistDetailShare >= 0) {
+                _bitData[15] = 1;
+              }
+              else {
+                _bitData[14] = 1;
+              }
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
+            }
+            else {
+              if (data.watchlistDetailShare >= 0) {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+              }
+              else {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              }
+            }
+          }
+        }),
+
+        _companyApi.getSeasonality(_companyData.companyCode).then((resp) {
+          _seasonality = resp;
+        }),
+        
+        _brokerSummaryAPI.getBrokerSummaryMonthlyStat(_companyData.companyCode).then((resp) {
+          _brokerSummaryMonthlyStat = resp;
+
+          // init the broker summary daily data
+          _brokerSummaryMonthlyData = [];
+
+          // loop thru all the _brokerSummaryDailyStat.all
+          Map<String, double> buyData = {};
+          for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.buy) {
+            buyData[data.date] = data.totalLot.toDouble();
+          }
+
+          Map<String, double> sellData = {};
+          for (BrokerSummaryDailyStatBuySell data in _brokerSummaryDailyStat.all.sell) {
+            sellData[data.date] = data.totalLot.toDouble();
+          }
+
+          // add buy and sell data to dail data
+          _brokerSummaryMonthlyData.add(buyData);
+          _brokerSummaryMonthlyData.add(sellData);
+        })
+      ]).onError((error, stackTrace) {
+        debugPrint("Error when getting Company Data");
+        debugPrint("Error: ${error.toString()}");
         debugPrintStack(stackTrace: stackTrace);
+
+        // throw exception to the caller
+        throw Exception("Error when getting Company Data");
       });
     }
     catch(error) {

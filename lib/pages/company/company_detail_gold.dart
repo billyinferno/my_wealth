@@ -635,109 +635,112 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   Future<bool> _getInitData() async {
     try {
-      // perform the get company detail information here
-      await _companyApi.getCompanyDetail(-1, "gold").then((resp) {
-        _companyDetail = resp;
+      await Future.wait([
+        _companyApi.getCompanyDetail(-1, "gold").then((resp) {
+          _companyDetail = resp;
 
-        // map the price date on company
-        List<GraphData> tempData = [];
-        int totalData = 0;
-        double totalPrice = 0;
-        int totalPriceData = 0;
-        _minPrice = double.maxFinite;
-        _maxPrice = double.minPositive;
+          // map the price date on company
+          List<GraphData> tempData = [];
+          int totalData = 0;
+          double totalPrice = 0;
+          int totalPriceData = 0;
+          _minPrice = double.maxFinite;
+          _maxPrice = double.minPositive;
 
-        // move the last update to friday
-        int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
-        DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
+          // move the last update to friday
+          int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
+          DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
 
-        // then go 14 weeks before so we knew the start date
-        DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
+          // then go 14 weeks before so we knew the start date
+          DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
 
-        // only get the 1st 64 data, since we will want to get the latest data
-        for (PriceModel price in _companyDetail.companyPrices) {
-          // ensure that all the data we will put is more than or equal with startdate
-          if(price.priceDate.compareTo(startDate) >= 0) {
-            tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
-            totalData += 1;
-          }
-
-          // count for minimum, maximum, and average
-          if(totalPriceData < 29) {
-            if(_minPrice! > price.priceValue) {
-              _minPrice = price.priceValue;
+          // only get the 1st 64 data, since we will want to get the latest data
+          for (PriceModel price in _companyDetail.companyPrices) {
+            // ensure that all the data we will put is more than or equal with startdate
+            if(price.priceDate.compareTo(startDate) >= 0) {
+              tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+              totalData += 1;
             }
 
-            if(_maxPrice! < price.priceValue) {
-              _maxPrice = price.priceValue;
+            // count for minimum, maximum, and average
+            if(totalPriceData < 29) {
+              if(_minPrice! > price.priceValue) {
+                _minPrice = price.priceValue;
+              }
+
+              if(_maxPrice! < price.priceValue) {
+                _maxPrice = price.priceValue;
+              }
+
+              totalPrice += price.priceValue;
+              totalPriceData++;
             }
 
-            totalPrice += price.priceValue;
-            totalPriceData++;
+            // if total data already more than 64 break  the data, as heat map only will display 65 data
+            if(totalData >= 64) {
+              break;
+            }
           }
 
-          // if total data already more than 64 break  the data, as heat map only will display 65 data
-          if(totalData >= 64) {
-            break;
+          // add the current price which only in company
+          tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+
+          // check current price for minimum, maximum, and average
+          if(_minPrice! > _companyDetail.companyNetAssetValue!) {
+            _minPrice = _companyDetail.companyNetAssetValue!;
           }
-        }
 
-        // add the current price which only in company
-        tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+          if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
+            _maxPrice = _companyDetail.companyNetAssetValue!;
+          }
 
-        // check current price for minimum, maximum, and average
-        if(_minPrice! > _companyDetail.companyNetAssetValue!) {
-          _minPrice = _companyDetail.companyNetAssetValue!;
-        }
+          totalPrice += _companyDetail.companyNetAssetValue!;
+          totalPriceData++;
+          // compute average
+          _avgPrice = totalPrice / totalPriceData;
+          _numPrice = totalPriceData;
 
-        if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
-          _maxPrice = _companyDetail.companyNetAssetValue!;
-        }
+          // sort the temporary data
+          tempData.sort((a, b) {
+            return a.date.compareTo(b.date);
+          });
 
-        totalPrice += _companyDetail.companyNetAssetValue!;
-        totalPriceData++;
-        // compute average
-        _avgPrice = totalPrice / totalPriceData;
-        _numPrice = totalPriceData;
-
-        // sort the temporary data
-        tempData.sort((a, b) {
-          return a.date.compareTo(b.date);
-        });
-
-        // once sorted, then we can put it on map
-        for (GraphData data in tempData) {
-          _graphData![data.date] = data;
-        }
-      });
-
-      await _watchlistAPI.findDetail(-1).then((resp) {
-        // if we got response then map it to the map, so later we can sent it
-        // to the graph for rendering the time when we buy the share
-        DateTime tempDate;
-        for(WatchlistDetailListModel data in resp) {
-          tempDate = data.watchlistDetailDate.toLocal();
-          if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
-            // if exists get the current value of the _watchlistDetails and put into _bitData
-            _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
-            // check whether this is buy or sell
-            if (data.watchlistDetailShare >= 0) {
-              _bitData[15] = 1;
+          // once sorted, then we can put it on map
+          for (GraphData data in tempData) {
+            _graphData![data.date] = data;
+          }
+        }),
+        
+        _watchlistAPI.findDetail(-1).then((resp) {
+          // if we got response then map it to the map, so later we can sent it
+          // to the graph for rendering the time when we buy the share
+          DateTime tempDate;
+          for(WatchlistDetailListModel data in resp) {
+            tempDate = data.watchlistDetailDate.toLocal();
+            if (_watchlistDetail.containsKey(DateTime(tempDate.year, tempDate.month, tempDate.day))) {
+              // if exists get the current value of the _watchlistDetails and put into _bitData
+              _bitData.set(_watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)]!);
+              // check whether this is buy or sell
+              if (data.watchlistDetailShare >= 0) {
+                _bitData[15] = 1;
+              }
+              else {
+                _bitData[14] = 1;
+              }
+              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
             }
             else {
-              _bitData[14] = 1;
-            }
-            _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = _bitData.toInt();
-          }
-          else {
-            if (data.watchlistDetailShare >= 0) {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
-            }
-            else {
-              _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              if (data.watchlistDetailShare >= 0) {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 1;
+              }
+              else {
+                _watchlistDetail[DateTime(tempDate.year, tempDate.month, tempDate.day)] = 2;
+              }
             }
           }
-        }
+        }),
+      ]).onError((error, stackTrace) {
+        throw Exception('Error while getting data from server');
       });
     }
     catch(error) {

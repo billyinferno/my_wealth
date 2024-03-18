@@ -36,10 +36,8 @@ ThemeData themeData = ThemeData(
       letterSpacing: 1.0,
     ),
   ), colorScheme: const ColorScheme(
-    background: primaryColor,
     brightness: Brightness.dark,
     error: secondaryColor,
-    onBackground: textPrimary,
     onError: textPrimary,
     onPrimary: textPrimary,
     onSecondary: textPrimary,

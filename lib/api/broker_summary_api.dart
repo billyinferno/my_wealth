@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker/broker_summary_accumulation_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_daily_stat_model.dart';
@@ -10,415 +8,198 @@ import 'package:my_wealth/model/broker/broker_summary_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_top_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_txn_detail_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
-import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/net/netutils.dart';
 
 class BrokerSummaryAPI {
-  late String _bearerToken;
   final DateFormat _df = DateFormat('yyyy-MM-dd');
 
-  BrokerSummaryAPI() {
-    // get the bearer token from user shared secured box
-    getJwt();
-  }
-
-  void getJwt() {
-    _bearerToken = UserSharedPreferences.getUserJWT();
-  }
-
   Future<BrokerSummaryModel> getBrokerSummary(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the date we want to check
+    DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+    DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+    String dateFromString = _df.format(currentDateFrom);
+    String dateToString = _df.format(currentDateTo);
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // check if we got date or not?
-      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
-      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-      String dateFromString = _df.format(currentDateFrom);
-      String dateToString = _df.format(currentDateTo);
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/code/$stockCode/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/code/$stockCode/from/$dateFromString/to/$dateToString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(commonModel.data['attributes']);
-        return brokerSummary;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the body
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
   }
 
   Future<BrokerSummaryModel> getBrokerSummaryNet(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the date we want to check
+    // check if we got date or not?
+    DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+    DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+    String dateFromString = _df.format(currentDateFrom);
+    String dateToString = _df.format(currentDateTo);
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // check if we got date or not?
-      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
-      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-      String dateFromString = _df.format(currentDateFrom);
-      String dateToString = _df.format(currentDateTo);
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/net/code/$stockCode/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/net/code/$stockCode/from/$dateFromString/to/$dateToString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(commonModel.data['attributes']);
-        return brokerSummary;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the data and process each one
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
   }
 
   Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList(String brokerCode, int start, int limit, [DateTime? dateFrom, DateTime? dateTo]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // check if we got date or not?
+    DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+    DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+    String dateFromString = _df.format(currentDateFrom);
+    String dateToString = _df.format(currentDateTo);
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // check if we got date or not?
-      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
-      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-      String dateFromString = _df.format(currentDateFrom);
-      String dateToString = _df.format(currentDateTo);
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/broker/$brokerCode/from/$dateFromString/to/$dateToString/start/$start/limit/$limit'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/broker/$brokerCode/from/$dateFromString/to/$dateToString/start/$start/limit/$limit'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryBrokerTxnListModel brokerTxnList = BrokerSummaryBrokerTxnListModel.fromJson(commonModel.data['attributes']);
-        return brokerTxnList;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the data and process each one
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryBrokerTxnListModel brokerTxnList = BrokerSummaryBrokerTxnListModel.fromJson(commonModel.data['attributes']);
+    return brokerTxnList;
   }
 
   Future<BrokerSummaryTxnDetailModel> getBrokerTransactionDetail(String brokerCode, String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // check if we got date or not?
+    DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+    DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+    String dateFromString = _df.format(currentDateFrom);
+    String dateToString = _df.format(currentDateTo);
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // check if we got date or not?
-      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
-      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-      String dateFromString = _df.format(currentDateFrom);
-      String dateToString = _df.format(currentDateTo);
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/detail/broker/$brokerCode/code/$stockCode/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/detail/broker/$brokerCode/code/$stockCode/from/$dateFromString/to/$dateToString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryTxnDetailModel brokerTxnDetail = BrokerSummaryTxnDetailModel.fromJson(commonModel.data['attributes']);
-        return brokerTxnDetail;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the broker transaction detail data
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryTxnDetailModel brokerTxnDetail = BrokerSummaryTxnDetailModel.fromJson(commonModel.data['attributes']);
+    return brokerTxnDetail;
   }
 
   Future<BrokerSummaryTopModel> getBrokerSummaryTop([DateTime? searchDate]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      
-      // check if we got date or not?
-      String url = '';
-      if (searchDate == null) {
-        url = '${Globals.apiURL}api/broker-summaries/top/last';
-      }
-      else {
-        String dateSearchText = _df.format(searchDate);
-        url = '${Globals.apiURL}api/broker-summaries/top/date/$dateSearchText';
-      }
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryTopModel brokerTopResult = BrokerSummaryTopModel.fromJson(commonModel.data['attributes']);
-        return brokerTopResult;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // check if we got date or not?
+    String url = '';
+    if (searchDate == null) {
+      url = '${Globals.apiBrokerSummary}/top/last';
     }
     else {
-      throw Exception("No bearer token");
+      String dateSearchText = _df.format(searchDate);
+      url = '${Globals.apiBrokerSummary}/top/date/$dateSearchText';
     }
+
+    // get the API response
+    final String body = await NetUtils.get(
+      url: url
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
+
+    // parse the response to get broker summary top result
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryTopModel brokerTopResult = BrokerSummaryTopModel.fromJson(commonModel.data['attributes']);
+    return brokerTopResult;
   }
 
   Future<BrokerSummaryDateModel> getBrokerSummaryCodeDate(String stockCode) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/date/code/$stockCode'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/date/code/$stockCode'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
-        return brokerSummaryDate;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get broker summary data based on the stock code
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryDateModel brokerSummarryCode = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
+    return brokerSummarryCode;
   }
 
   Future<BrokerSummaryDateModel> getBrokerSummaryBrokerDate(String brokerID) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/date/broker/$brokerID'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/date/broker/$brokerID'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
-        return brokerSummaryDate;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get broker summary date
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
+    return brokerSummaryDate;
   }
 
   Future<BrokerSummaryDateModel> getBrokerSummaryDate() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/date/all'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/date/all'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
-        return brokerSummaryDate;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the broker summary date for all
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
+    return brokerSummaryDate;
   }
 
   Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String version, String stockCode, DateTime currentDate) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${_df.format(currentDate)}'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // check if we got date or not?
-      String currentDateString = '';
-      try {
-        currentDateString = _df.format(currentDate);
-      } catch(e) {
-        throw Exception(e.toString());
-      }
-
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/accum/$version/code/$stockCode/date/$currentDateString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryAccumulationModel brokerSummary = BrokerSummaryAccumulationModel.fromJson(commonModel.data['attributes']);
-        return brokerSummary;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the broker summary accumulation data
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryAccumulationModel brokerSummary = BrokerSummaryAccumulationModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
   }
 
   Future<BrokerSummaryDailyStatModel> getBrokerSummaryDailyStat(String code) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/daily/code/$code'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/stat/daily/code/$code'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryDailyStatModel brokerSummary = BrokerSummaryDailyStatModel.fromJson(commonModel.data['attributes']);
-        return brokerSummary;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the broker summary daily statistic
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryDailyStatModel brokerSummary = BrokerSummaryDailyStatModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
   }
 
   Future<BrokerSummaryDailyStatModel> getBrokerSummaryMonthlyStat(String code) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/monthly/code/$code'
+    ).onError((error, stackTrace) {
+      throw Exception(error);
+    });
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/broker-summaries/stat/monthly/code/$code'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerSummaryDailyStatModel brokerSummary = BrokerSummaryDailyStatModel.fromJson(commonModel.data['attributes']);
-        return brokerSummary;
-      }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the broker summary monthly statistic
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryDailyStatModel brokerSummary = BrokerSummaryDailyStatModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
   }
 }

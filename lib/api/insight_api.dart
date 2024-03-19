@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/common/common_array_model.dart';
@@ -19,696 +17,371 @@ import 'package:my_wealth/model/insight/insight_stock_dividend_list_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_new_listed_model.dart';
 import 'package:my_wealth/model/insight/insight_stock_split_list_model.dart';
 import 'package:my_wealth/model/insight/insight_top_worse_company_list_model.dart';
-import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/net/netutils.dart';
 
 class InsightAPI {
-  late String _bearerToken;
   final DateFormat _df = DateFormat('yyyy-MM-dd');
 
-  InsightAPI() {
-    // get the bearer token from user shared secured box
-    getJwt();
-  }
-
-  void getJwt() {
-    _bearerToken = UserSharedPreferences.getUserJWT();
-  }
-
   Future<List<SectorSummaryModel>> getSectorSummary() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/summary/sector'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SectorSummaryModel> sectorSummary = [];
-        for (var data in commonModel.data) {
-          SectorSummaryModel sector = SectorSummaryModel.fromJson(data['attributes']);
-          sectorSummary.add(sector);
-        }
-        return sectorSummary;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/summary/sector'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get sector summart list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SectorSummaryModel> sectorSummary = [];
+    for (var data in commonModel.data) {
+      SectorSummaryModel sector = SectorSummaryModel.fromJson(data['attributes']);
+      sectorSummary.add(sector);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return sectorSummary;
   }
 
   Future<TopWorseCompanyListModel> getSectorSummaryList(String sectorName, String sortType) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // convert sector name into Base64
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/summary/sectorname/$sectorNameBase64/list/$sortType'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        TopWorseCompanyListModel companyList = TopWorseCompanyListModel.fromJson(commonModel.data['attributes']);
-        return companyList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/summary/sectorname/$sectorNameBase64/list/$sortType'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get company sector list
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    TopWorseCompanyListModel companyList = TopWorseCompanyListModel.fromJson(commonModel.data['attributes']);
+    return companyList;
   }
 
   Future<List<SectorSummaryModel>> getIndustrySummary(String sectorName) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // convert sector name into Base64
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // convert sector name to Base64
-      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/summary/industry/sectorname/$sectorNameBase64'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SectorSummaryModel> sectorSummary = [];
-        for (var data in commonModel.data) {
-          SectorSummaryModel sector = SectorSummaryModel.fromJson(data['attributes']);
-          sectorSummary.add(sector);
-        }
-        return sectorSummary;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/summary/industry/sectorname/$sectorNameBase64'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get sector summary based on their industry list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SectorSummaryModel> sectorSummary = [];
+    for (var data in commonModel.data) {
+      SectorSummaryModel sector = SectorSummaryModel.fromJson(data['attributes']);
+      sectorSummary.add(sector);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return sectorSummary;
   }
 
   Future<List<SectorSummaryModel>> getSubSectorSummary(String sectorName) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // convert sector name to Base64
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // convert sector name to Base64
-      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/summary/subsector/sectorname/$sectorNameBase64'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SectorSummaryModel> sectorSummary = [];
-        for (var data in commonModel.data) {
-          SectorSummaryModel sector = SectorSummaryModel.fromJson(data['attributes']);
-          sectorSummary.add(sector);
-        }
-        return sectorSummary;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/summary/subsector/sectorname/$sectorNameBase64'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get sector summary list based on sub sector
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SectorSummaryModel> sectorSummary = [];
+    for (var data in commonModel.data) {
+      SectorSummaryModel sector = SectorSummaryModel.fromJson(data['attributes']);
+      sectorSummary.add(sector);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return sectorSummary;
   }
 
   Future<TopWorseCompanyListModel> getTopWorseCompany(String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/stock/$type'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        TopWorseCompanyListModel companyList = TopWorseCompanyListModel.fromJson(commonModel.data['attributes']);
-        return companyList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/stock/$type'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get top and worse company data
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    TopWorseCompanyListModel companyList = TopWorseCompanyListModel.fromJson(commonModel.data['attributes']);
+    return companyList;
   }
 
   Future<BrokerTopTransactionModel> getBrokerTopTransaction() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/broker/top'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        BrokerTopTransactionModel brokerList = BrokerTopTransactionModel.fromJson(commonModel.data['attributes']);
-        return brokerList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/broker/top'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to broker top transaction list
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerTopTransactionModel brokerList = BrokerTopTransactionModel.fromJson(commonModel.data['attributes']);
+    return brokerList;
   }
 
   Future<TopWorseCompanyListModel> getTopWorseReksadana(String type, String topWorse) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/reksadana/$topWorse/type/$type'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        TopWorseCompanyListModel companyList = TopWorseCompanyListModel.fromJson(commonModel.data['attributes']);
-        return companyList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/reksadana/$topWorse/type/$type'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get reksdana top and worse company
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    TopWorseCompanyListModel companyList = TopWorseCompanyListModel.fromJson(commonModel.data['attributes']);
+    return companyList;
   }
 
   Future<InsightBandarInterestModel> getBandarInteresting() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/bandar/interesting'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        InsightBandarInterestModel interestList = InsightBandarInterestModel.fromJson(commonModel.data['attributes']);
-        return interestList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/bandar/interesting'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
-
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    );
+    
+    // parse the response to get interesting stock from bandar
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    InsightBandarInterestModel interestList = InsightBandarInterestModel.fromJson(commonModel.data['attributes']);
+    return interestList;
   }
 
   Future<List<InsightAccumulationModel>> getTopAccumulation(int oneDayRate, DateTime fromDate, DateTime toDate) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // convert date
+    final String dateFromString = _df.format(fromDate.toLocal());
+    final String dateToString = _df.format(toDate.toLocal());
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      String dateFromString = _df.format(fromDate.toLocal());
-      String dateToString = _df.format(toDate.toLocal());
-
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/accumulation/oneday/$oneDayRate/from/$dateFromString/to/$dateToString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<InsightAccumulationModel> accumulation = [];
-        for (var data in commonModel.data) {
-          InsightAccumulationModel acc = InsightAccumulationModel.fromJson(data['attributes']);
-          accumulation.add(acc);
-        }
-        return accumulation;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/accumulation/oneday/$oneDayRate/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get top accumulation for stock
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<InsightAccumulationModel> accumulation = [];
+    for (var data in commonModel.data) {
+      InsightAccumulationModel acc = InsightAccumulationModel.fromJson(data['attributes']);
+      accumulation.add(acc);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return accumulation;
   }
 
   Future<List<InsightEpsModel>> getTopEPS(int minDiff, int minDiffRate) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/eps/top/min/$minDiff/diff/$minDiffRate'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<InsightEpsModel> epsList = [];
-        for (var data in commonModel.data) {
-          InsightEpsModel eps = InsightEpsModel.fromJson(data['attributes']);
-          epsList.add(eps);
-        }
-        return epsList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/eps/top/min/$minDiff/diff/$minDiffRate'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get EPS information list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<InsightEpsModel> epsList = [];
+    for (var data in commonModel.data) {
+      InsightEpsModel eps = InsightEpsModel.fromJson(data['attributes']);
+      epsList.add(eps);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return epsList;
   }
 
   Future<List<InsightSidewayModel>> getSideway(int maxOneDay, int oneDayRange, int oneWeekRange) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/sideway/oneday/$maxOneDay/onedayrange/$oneDayRange/oneweekrange/$oneWeekRange'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<InsightSidewayModel> sidewayList = [];
-        for (var data in commonModel.data) {
-          InsightSidewayModel sideway = InsightSidewayModel.fromJson(data['attributes']);
-          sidewayList.add(sideway);
-        }
-        return sidewayList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/sideway/oneday/$maxOneDay/onedayrange/$oneDayRange/oneweekrange/$oneWeekRange'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get stock that currently in sideway position
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<InsightSidewayModel> sidewayList = [];
+    for (var data in commonModel.data) {
+      InsightSidewayModel sideway = InsightSidewayModel.fromJson(data['attributes']);
+      sidewayList.add(sideway);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return sidewayList;
   }
 
   Future<MarketTodayModel> getMarketToday() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/markettoday'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        MarketTodayModel marketToday = MarketTodayModel.fromJson(commonModel.data['attributes']);
-        return marketToday;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/markettoday'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get market today information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    MarketTodayModel marketToday = MarketTodayModel.fromJson(commonModel.data['attributes']);
+    return marketToday;
   }
 
   Future<List<MarketCapModel>> getMarketCap() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/marketcap'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<MarketCapModel> marketCapList = [];
-        for (var data in commonModel.data) {
-          MarketCapModel marketCap = MarketCapModel.fromJson(data['attributes']);
-          marketCapList.add(marketCap);
-        }
-        return marketCapList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/marketcap'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get market cap from stock
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<MarketCapModel> marketCapList = [];
+    for (var data in commonModel.data) {
+      MarketCapModel marketCap = MarketCapModel.fromJson(data['attributes']);
+      marketCapList.add(marketCap);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return marketCapList;
   }
 
   Future<List<IndexBeaterModel>> getIndexBeater() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/indexbeater'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<IndexBeaterModel> indexBeaterList = [];
-        for (var data in commonModel.data) {
-          IndexBeaterModel indexBeater = IndexBeaterModel.fromJson(data['attributes']);
-          indexBeaterList.add(indexBeater);
-        }
-        return indexBeaterList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/indexbeater'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get all stock code that get return better than
+    // index.
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<IndexBeaterModel> indexBeaterList = [];
+    for (var data in commonModel.data) {
+      IndexBeaterModel indexBeater = IndexBeaterModel.fromJson(data['attributes']);
+      indexBeaterList.add(indexBeater);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return indexBeaterList;
   }
 
   Future<List<StockNewListedModel>> getStockNewListed() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/stock/new'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<StockNewListedModel> stockNewList = [];
-        for (var data in commonModel.data) {
-          StockNewListedModel stock = StockNewListedModel.fromJson(data['attributes']);
-          stockNewList.add(stock);
-        }
-        return stockNewList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/stock/new'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get all the new stock
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<StockNewListedModel> stockNewList = [];
+    for (var data in commonModel.data) {
+      StockNewListedModel stock = StockNewListedModel.fromJson(data['attributes']);
+      stockNewList.add(stock);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return stockNewList;
   }
 
   Future<List<StockDividendListModel>> getStockDividendList() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/stock/dividend'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<StockDividendListModel> stockNewList = [];
-        for (var data in commonModel.data) {
-          StockDividendListModel stock = StockDividendListModel.fromJson(data['attributes']);
-          stockNewList.add(stock);
-        }
-        return stockNewList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/stock/dividend'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get dividend information that currently
+    // bein distributed
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<StockDividendListModel> stockDividedList = [];
+    for (var data in commonModel.data) {
+      StockDividendListModel stock = StockDividendListModel.fromJson(data['attributes']);
+      stockDividedList.add(stock);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return stockDividedList;
   }
 
   Future<List<StockSplitListModel>> getStockSplitList() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/stock/split'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<StockSplitListModel> stockNewList = [];
-        for (var data in commonModel.data) {
-          StockSplitListModel stock = StockSplitListModel.fromJson(data['attributes']);
-          stockNewList.add(stock);
-        }
-        return stockNewList;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/stock/split'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the data and process each one
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<StockSplitListModel> stockSplitList = [];
+    for (var data in commonModel.data) {
+      StockSplitListModel stock = StockSplitListModel.fromJson(data['attributes']);
+      stockSplitList.add(stock);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return stockSplitList;
   }
 
   Future<List<InsightStockCollectModel>> getStockCollect([int? accumLimit, DateTime? dateFrom, DateTime? dateTo]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
-      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-      String dateFromString = _df.format(currentDateFrom);
-      String dateToString = _df.format(currentDateTo);
-      int currAccumLimit = (accumLimit ?? 75);
-
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/stockcollect/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<InsightStockCollectModel> stockCollectList = [];
-        for (var data in commonModel.data) {
-          InsightStockCollectModel stock = InsightStockCollectModel.fromJson(data['attributes']);
-          stockCollectList.add(stock);
-        }
-        return stockCollectList;
+    // prepare all necessary data/information
+    final DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+    final DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+    final String dateFromString = _df.format(currentDateFrom);
+    final String dateToString = _df.format(currentDateTo);
+    final int currAccumLimit = (accumLimit ?? 75);
+    
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/stockcollect/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the stock collection information list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<InsightStockCollectModel> stockCollectList = [];
+    for (var data in commonModel.data) {
+      InsightStockCollectModel stock = InsightStockCollectModel.fromJson(data['attributes']);
+      stockCollectList.add(stock);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return stockCollectList;
   }
 
   Future<InsightBrokerCollectModel> getBrokerCollect(String broker, [int? accumLimit, DateTime? dateFrom, DateTime? dateTo]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // prepare all necessary data/information
+    DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
+    DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
+    String dateFromString = _df.format(currentDateFrom);
+    String dateToString = _df.format(currentDateTo);
+    int currAccumLimit = (accumLimit ?? 75);
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
-      DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-      String dateFromString = _df.format(currentDateFrom);
-      String dateToString = _df.format(currentDateTo);
-      int currAccumLimit = (accumLimit ?? 75);
-
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/insight/brokercollect/broker/$broker/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        InsightBrokerCollectModel brokerCollect = InsightBrokerCollectModel.fromJson(commonModel.data['attributes']);
-        return brokerCollect;
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/brokercollect/broker/$broker/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get stock that currently being collected by broker
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    InsightBrokerCollectModel brokerCollect = InsightBrokerCollectModel.fromJson(commonModel.data['attributes']);
+    return brokerCollect;
   }
 }

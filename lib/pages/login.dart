@@ -30,6 +30,7 @@ import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
+import 'package:my_wealth/utils/net/netutils.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -433,17 +434,10 @@ class LoginPageState extends State<LoginPage> {
 
   Future<void> _getAdditionalInfo() async {
     // check whether this is due to invalid token?
-    // if so then we need to refresh the JWT being used by each call with the new JWT that we got
-    // when we perform re-login above
+    // if so then we need to refresh the JWT being used
     if (_isInvalidToken) {
-      _userAPI.getJwt();
-      _faveAPI.getJwt();
-      _watchlistApi.getJwt();
-      _indexApi.getJwt();
-      _brokerApi.getJwt();
-      _brokerSummaryApi.getJwt();
-      _insightAPI.getJwt();
-      _companyAPI.getJwt();
+      // refresh the netutils JWT token
+      NetUtils.refreshJWT();
     }
     
     await Future.wait([

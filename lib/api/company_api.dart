@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:my_wealth/model/common/common_array_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
@@ -13,435 +11,231 @@ import 'package:my_wealth/model/company/company_seasonality_model.dart';
 import 'package:my_wealth/model/company/company_saham_find_other_model.dart';
 import 'package:my_wealth/model/insight/insight_sector_name_list_model.dart';
 import 'package:my_wealth/model/insight/insight_sector_per_detail_model.dart';
-import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/net/netutils.dart';
 
 class CompanyAPI {
-  late String _bearerToken;
   final DateFormat _df = DateFormat('yyyy-MM-dd');
 
-  CompanyAPI() {
-    // get the bearer token from user shared secured box
-    getJwt();
-  }
-
-  void getJwt() {
-    _bearerToken = UserSharedPreferences.getUserJWT();
-  }
-
   Future<List<CompanyListModel>> findCompany(String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/type/${type.toLowerCase()}'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<CompanyListModel> ret = [];
-        for (dynamic data in commonModel.data) {
-          CompanyListModel company = CompanyListModel.fromJson(data['attributes']);
-          ret.add(company);
-        }
-        return ret;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/type/${type.toLowerCase()}'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the data and process each one
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<CompanyListModel> ret = [];
+    for (dynamic data in commonModel.data) {
+      // convert the attributes data to company list model
+      CompanyListModel company = CompanyListModel.fromJson(data['attributes']);
+      ret.add(company);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+
+    // return the company list
+    return ret;
   }
 
   Future<CompanyDetailModel> getCompanyDetail(int companyId, String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/${type.toLowerCase()}/detail/$companyId'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data[0]['attributes']);
-        return company;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/${type.toLowerCase()}/detail/$companyId'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the detail company information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data[0]['attributes']);
+    return company;
   }
 
   Future<List<CompanySearchModel>> getCompanyByName(String companyName, String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/$type/name/${companyName.toLowerCase()}'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<CompanySearchModel> ret = [];
-        for (dynamic data in commonModel.data) {
-          CompanySearchModel company = CompanySearchModel.fromJson(data['attributes']);
-          ret.add(company);
-        }
-        return ret;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/$type/name/${companyName.toLowerCase()}'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the company search result
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<CompanySearchModel> ret = [];
+    for (dynamic data in commonModel.data) {
+      CompanySearchModel company = CompanySearchModel.fromJson(data['attributes']);
+      ret.add(company);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return ret;
   }
 
   Future<CompanyDetailModel> getCompanyByID(int companyId, String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/$type/id/$companyId'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data['attributes']);
-        return company;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/$type/id/$companyId'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the company detail information based on the
+    // company ID
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data['attributes']);
+    return company;
   }
 
   Future<CompanyDetailModel> getCompanyByCode(String companyCode, String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/$type/code/${companyCode.toUpperCase()}'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data['attributes']);
-        return company;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/$type/code/${companyCode.toUpperCase()}'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get the company detail information based on the
+    // company code (this is usually for stock company)
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data['attributes']);
+    return company;
   }
 
   Future<List<CompanyDetailModel>> getCompanySectorAndSubSector(String type, String sectorName, String subSectorName) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // convert the sector and subsector into Base64
+    // as we will use Base24 to send the data to avoid any invalid character
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
+    String subSectorNameBase64 = base64.encode(utf8.encode(subSectorName));
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
-      String subSectorNameBase64 = base64.encode(utf8.encode(subSectorName));
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/sector/$sectorNameBase64/$type/$subSectorNameBase64'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<CompanyDetailModel> companyList = [];
-        for (var data in commonModel.data) {
-          CompanyDetailModel company = CompanyDetailModel.fromJson(data['attributes']);
-          companyList.add(company);
-        }
-        return companyList;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/sector/$sectorNameBase64/$type/$subSectorNameBase64'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the company list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<CompanyDetailModel> companyList = [];
+    for (var data in commonModel.data) {
+      CompanyDetailModel company = CompanyDetailModel.fromJson(data['attributes']);
+      companyList.add(company);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return companyList;
   }
 
   Future<List<SectorNameModel>> getSectorNameList() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/sector/list'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SectorNameModel> sectorNameList = [];
-        for (var data in commonModel.data) {
-          SectorNameModel company = SectorNameModel.fromJson(data['attributes']);
-          sectorNameList.add(company);
-        }
-        return sectorNameList;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/sector/list'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the sector name list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SectorNameModel> sectorNameList = [];
+    for (var data in commonModel.data) {
+      SectorNameModel company = SectorNameModel.fromJson(data['attributes']);
+      sectorNameList.add(company);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return sectorNameList;
   }
 
   Future<SectorPerDetailModel> getCompanySectorPER(String sectorName) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // convert the sector name into Base64
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/sector/$sectorNameBase64/per'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        SectorPerDetailModel per = SectorPerDetailModel.fromJson(commonModel.data['attributes']);
-        return per;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/sector/$sectorNameBase64/per'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get each sector PER
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    SectorPerDetailModel per = SectorPerDetailModel.fromJson(commonModel.data['attributes']);
+    return per;
   }
 
   Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate, [int? limit]) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
+    // get the initial query information for the API
+    String dateFromString = _df.format(fromDate);
+    String dateToString = _df.format(toDate);
+    int currLimit = (limit ?? 10);
 
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      String dateFromString = _df.format(fromDate);
-      String dateToString = _df.format(toDate);
-      int currLimit = (limit ?? 10);
-
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/companies/broker/$code/from/$dateFromString/to/$dateToString/limit/$currLimit'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        CompanyTopBrokerModel topBroker = CompanyTopBrokerModel.fromJson(commonModel.data['attributes']);
-        return topBroker;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/broker/$code/from/$dateFromString/to/$dateToString/limit/$currLimit'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get top broker information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyTopBrokerModel topBroker = CompanyTopBrokerModel.fromJson(commonModel.data['attributes']);
+    return topBroker;
   }
 
   Future<CompanySahamFindOtherModel> getOtherCompany(String companyCode) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/company-saham/findother/${companyCode.toUpperCase()}'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        CompanySahamFindOtherModel company = CompanySahamFindOtherModel.fromJson(commonModel.data['attributes']);
-        return company;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanySaham}/findother/${companyCode.toUpperCase()}'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to find similar company
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanySahamFindOtherModel company = CompanySahamFindOtherModel.fromJson(commonModel.data['attributes']);
+    return company;
   }
 
   Future<List<CompanySahamListModel>> getCompanySahamList() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/company-saham/list'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<CompanySahamListModel> ret = [];
-        for (dynamic data in commonModel.data) {
-          CompanySahamListModel company = CompanySahamListModel.fromJson(data['attributes']);
-          ret.add(company);
-        }
-        return ret;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanySaham}/list'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get company saham list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<CompanySahamListModel> ret = [];
+    for (dynamic data in commonModel.data) {
+      CompanySahamListModel company = CompanySahamListModel.fromJson(data['attributes']);
+      ret.add(company);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return ret;
   }
 
   Future<List<SeasonalityModel>> getSeasonality(String code) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/company-saham/seasonality/$code'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SeasonalityModel> ret = [];
-        for (dynamic data in commonModel.data) {
-          SeasonalityModel seasonality = SeasonalityModel.fromJson(data['attributes']);
-          ret.add(seasonality);
-        }
-        return ret;
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanySaham}/seasonality/$code'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get seasonality information for this company
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SeasonalityModel> ret = [];
+    for (dynamic data in commonModel.data) {
+      SeasonalityModel seasonality = SeasonalityModel.fromJson(data['attributes']);
+      ret.add(seasonality);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return ret;
   }
 }

@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:my_wealth/model/common/common_array_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_history_model.dart';
@@ -9,587 +7,301 @@ import 'package:my_wealth/model/watchlist/watchlist_summary_performance_model.da
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_performance_model.dart';
-import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/net/netutils.dart';
 
 class WatchlistAPI {
-  late String _bearerToken;
-
-  WatchlistAPI() {
-    // get the bearer token from user shared secured box
-    getJwt();
-  }
-
-  void getJwt() {
-    _bearerToken = UserSharedPreferences.getUserJWT();
-  }
-
   Future<List<WatchlistListModel>> getWatchlist(String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/$type'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistListModel> listWatchlist = [];
-        for (var data in commonModel.data) {
-          WatchlistListModel watchlist = WatchlistListModel.fromJson(data['attributes']);
-          listWatchlist.add(watchlist);
-        }
-        return listWatchlist;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/$type'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get list of watchlist
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistListModel> listWatchlist = [];
+    for (var data in commonModel.data) {
+      WatchlistListModel watchlist = WatchlistListModel.fromJson(data['attributes']);
+      listWatchlist.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlist;
   }
 
   Future<WatchlistListModel> findSpecific(String type, int id) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/find/$type/id/$id'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        WatchlistListModel watchlist = WatchlistListModel.fromJson(commonModel.data['attributes']);
-        return watchlist;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/find/$type/id/$id'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get detailed watchlist information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    WatchlistListModel watchlist = WatchlistListModel.fromJson(commonModel.data['attributes']);
+    return watchlist;
   }
 
   Future<WatchlistListModel> add(String type, int companyId) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.post(
-        Uri.parse('${Globals.apiURL}api/watchlists'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({'watchlist_company_id': companyId, 'watchlist_company_type': type}),
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        WatchlistListModel watchlist = WatchlistListModel.fromJson(commonModel.data['attributes']);
-        return watchlist;
+    // post the watchlist data using netutils
+    final String body = await NetUtils.post(
+      url: Globals.apiWatchlists,
+      body: {'watchlist_company_id': companyId, 'watchlist_company_type': type}
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the response to get watchlist information that we just added
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    WatchlistListModel watchlist = WatchlistListModel.fromJson(commonModel.data['attributes']);
+    return watchlist;
   }
 
   Future<bool> delete(int watchlistId) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.delete(
-        Uri.parse('${Globals.apiURL}api/watchlists/$watchlistId'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // as long as we got 200 it means that we already able to delete the watchlist
-        // so just return true.
-        return true;
+    // delete the watchlist data using netutils
+    await NetUtils.delete(
+      url: '${Globals.apiWatchlists}/$watchlistId',
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // if delete success, then return true
+    return true;
   }
 
   Future<List<WatchlistDetailListModel>> addDetail(int id, DateTime date, double shares, double price) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.post(
-        Uri.parse('${Globals.apiURL}api/watchlists-details'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'watchlist_detail_share': shares,
-          'watchlist_detail_price': price,
-          'watchlist_detail_date': date.toUtc().toIso8601String(),
-          'watchlist_detail_watchlist_id': id
-        }),
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistDetailListModel> watchlistDetail = [];
-        for (var data in commonModel.data) {
-          WatchlistDetailListModel detail = WatchlistDetailListModel.fromJson(data['attributes']);
-          watchlistDetail.add(detail);
-        }
-        return watchlistDetail;
+    // post the watchlist details data using netutils
+    final String body = await NetUtils.post(
+      url: Globals.apiWatchlistDetails,
+      body: {
+        'watchlist_detail_share': shares,
+        'watchlist_detail_price': price,
+        'watchlist_detail_date': date.toUtc().toIso8601String(),
+        'watchlist_detail_watchlist_id': id
       }
+    ).onError((error, stackTrace) {
+        throw Exception(error);
+      }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get watchlist detail information
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistDetailListModel> watchlistDetail = [];
+    for (var data in commonModel.data) {
+      WatchlistDetailListModel detail = WatchlistDetailListModel.fromJson(data['attributes']);
+      watchlistDetail.add(detail);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return watchlistDetail;
   }
 
   Future<bool> deleteDetail(int id) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.delete(
-        Uri.parse('${Globals.apiURL}api/watchlists-details/$id'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // no need to parse the result, as this only will response the ID that being deleted
-        // and we already knew the ID that we need to delete form the caller since it will
-        // need to passed it as parameter to here
-        return true;
+    // delete the watchlist details data using netutils
+    await NetUtils.delete(
+      url: '${Globals.apiWatchlistDetails}/$id',
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // if delete success, then return true
+    return true;
   }
 
   Future<bool> updateDetail(int id, DateTime date, double shares, double price) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.put(
-        Uri.parse('${Globals.apiURL}api/watchlists-details/$id'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'watchlist_detail_share': shares,
-          'watchlist_detail_price': price,
-          'watchlist_detail_date': date.toUtc().toIso8601String()
-        }),
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // no need to return the result from the API, as it will only return the
-        // last ID that we updated. So, just return true if all is good
-        return true;
+    // patch the watchlist details data using netutils
+    await NetUtils.put(
+      url: '${Globals.apiWatchlistDetails}/$id',
+      body: {
+        'watchlist_detail_share': shares,
+        'watchlist_detail_price': price,
+        'watchlist_detail_date': date.toUtc().toIso8601String()
+      },
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // return true if update success
+    return true;
   }
 
   Future<List<WatchlistDetailListModel>> findDetail(int companyId) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/detail/$companyId'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistDetailListModel> watchlistDetail = [];
-        for (var data in commonModel.data) {
-          WatchlistDetailListModel detail = WatchlistDetailListModel.fromJson(data['attributes']);
-          watchlistDetail.add(detail);
-        }
-        return watchlistDetail;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/detail/$companyId'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the detail for specific watchlist
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistDetailListModel> watchlistDetail = [];
+    for (var data in commonModel.data) {
+      WatchlistDetailListModel detail = WatchlistDetailListModel.fromJson(data['attributes']);
+      watchlistDetail.add(detail);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return watchlistDetail;
   }
 
   Future<List<WatchlistPerformanceModel>> getWatchlistPerformance(String type, int id) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/performance/$type/$id'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistPerformanceModel> listWatchlistPerformance = [];
-        for (var data in commonModel.data) {
-          WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
-          listWatchlistPerformance.add(watchlist);
-        }
-        return listWatchlistPerformance;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/performance/$type/$id'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist performance list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistPerformanceModel> listWatchlistPerformance = [];
+    for (var data in commonModel.data) {
+      WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
+      listWatchlistPerformance.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistPerformance;
   }
 
   Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceMonthYear(String type, int id, int month, int year) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/performance/$type/$id/month/$month/year/$year'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistPerformanceModel> listWatchlistPerformance = [];
-        for (var data in commonModel.data) {
-          WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
-          listWatchlistPerformance.add(watchlist);
-        }
-        return listWatchlistPerformance;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/performance/$type/$id/month/$month/year/$year'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist performance list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistPerformanceModel> listWatchlistPerformance = [];
+    for (var data in commonModel.data) {
+      WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
+      listWatchlistPerformance.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistPerformance;
   }
 
   Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceYear(String type, int id, int year) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/performance/$type/$id/year/$year'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistPerformanceModel> listWatchlistPerformance = [];
-        for (var data in commonModel.data) {
-          WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
-          listWatchlistPerformance.add(watchlist);
-        }
-        return listWatchlistPerformance;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/performance/$type/$id/year/$year'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist performance list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistPerformanceModel> listWatchlistPerformance = [];
+    for (var data in commonModel.data) {
+      WatchlistPerformanceModel watchlist = WatchlistPerformanceModel.fromJson(data['attributes']);
+      listWatchlistPerformance.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistPerformance;
   }
 
   Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummary(String type) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/performance/summary/$type'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SummaryPerformanceModel> listWatchlistPerformance = [];
-        for (var data in commonModel.data) {
-          SummaryPerformanceModel watchlist = SummaryPerformanceModel.fromJson(data['attributes']);
-          listWatchlistPerformance.add(watchlist);
-        }
-        return listWatchlistPerformance;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/performance/summary/$type'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist performance summary list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SummaryPerformanceModel> listWatchlistPerformance = [];
+    for (var data in commonModel.data) {
+      SummaryPerformanceModel watchlist = SummaryPerformanceModel.fromJson(data['attributes']);
+      listWatchlistPerformance.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistPerformance;
   }
 
   Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummaryMonthYear(String type, int month, int year) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/performance/summary/$type/month/$month/year/$year'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SummaryPerformanceModel> listWatchlistPerformance = [];
-        for (var data in commonModel.data) {
-          SummaryPerformanceModel watchlist = SummaryPerformanceModel.fromJson(data['attributes']);
-          listWatchlistPerformance.add(watchlist);
-        }
-        return listWatchlistPerformance;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/performance/summary/$type/month/$month/year/$year'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist performance summary list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SummaryPerformanceModel> listWatchlistPerformance = [];
+    for (var data in commonModel.data) {
+      SummaryPerformanceModel watchlist = SummaryPerformanceModel.fromJson(data['attributes']);
+      listWatchlistPerformance.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistPerformance;
   }
 
   Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummaryYear(String type, int year) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/performance/summary/$type/year/$year'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<SummaryPerformanceModel> listWatchlistPerformance = [];
-        for (var data in commonModel.data) {
-          SummaryPerformanceModel watchlist = SummaryPerformanceModel.fromJson(data['attributes']);
-          listWatchlistPerformance.add(watchlist);
-        }
-        return listWatchlistPerformance;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/performance/summary/$type/year/$year'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist performance list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SummaryPerformanceModel> listWatchlistPerformance = [];
+    for (var data in commonModel.data) {
+      SummaryPerformanceModel watchlist = SummaryPerformanceModel.fromJson(data['attributes']);
+      listWatchlistPerformance.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistPerformance;
   }
 
   Future<List<WatchlistHistoryModel>> getWatchlistHistory() async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      final response = await http.get(
-        Uri.parse('${Globals.apiURL}api/watchlists/history'),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        // parse the response to get the data and process each one
-        CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(response.body));
-        List<WatchlistHistoryModel> listWatchlistHistory = [];
-        for (var data in commonModel.data) {
-          WatchlistHistoryModel watchlist = WatchlistHistoryModel.fromJson(data['attributes']);
-          listWatchlistHistory.add(watchlist);
-        }
-        return listWatchlistHistory;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiWatchlists}/history'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
+    // parse the response to get the watchlist history list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<WatchlistHistoryModel> listWatchlistHistory = [];
+    for (var data in commonModel.data) {
+      WatchlistHistoryModel watchlist = WatchlistHistoryModel.fromJson(data['attributes']);
+      listWatchlistHistory.add(watchlist);
     }
-    else {
-      throw Exception("No bearer token");
-    }
+    return listWatchlistHistory;
   }
 
   Future<WatchlistPriceFirstAndLastDateModel> findFirstLastDate(String type, int? id) async {
-    // if empty then we try to get again the bearer token from user preferences
-    if (_bearerToken.isEmpty) {
-      getJwt();
-    }
-
-    // check if we have bearer token or not?
-    if (_bearerToken.isNotEmpty) {
-      // create the base url
-      String url = '${Globals.apiURL}api/watchlists/firstlast/$type';
+    // create the base url
+      String url = '${Globals.apiWatchlistDetails}/firstlast/$type';
       
       // in case this is not all, then add the id on the back
       if (type.toLowerCase() != 'all') {
         url += '/$id';
       }
 
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $_bearerToken",
-          'Content-Type': 'application/json',
-        },
-      );
-
-      // check if we got 200 response or not?
-      if (response.statusCode == 200) {
-        CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(response.body));
-        WatchlistPriceFirstAndLastDateModel watchlist = WatchlistPriceFirstAndLastDateModel.fromJson(commonModel.data['attributes']);
-        return watchlist;
+    // get the watchlist data using netutils
+    final String body = await NetUtils.get(
+      url: url
+    ).onError((error, stackTrace) {
+        throw Exception(error);
       }
+    );
 
-      // status code is not 200, means we got error
-      throw Exception(parseError(response.body).error.message);
-    }
-    else {
-      throw Exception("No bearer token");
-    }
+    // parse the watchlist response data
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    WatchlistPriceFirstAndLastDateModel watchlist = WatchlistPriceFirstAndLastDateModel.fromJson(commonModel.data['attributes']);
+    return watchlist;
   }
 }

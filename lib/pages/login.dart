@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
@@ -364,7 +363,7 @@ class LoginPageState extends State<LoginPage> {
           debugPrint("3️⃣ Update user information");
         });
       }
-    }).onError((ClientException error, stackTrace) async {
+    }).onError((NetException error, stackTrace) async {
       debugPrint("⛔ ${error.message}");
 
       if(error.message.toLowerCase() == "xmlhttprequest error.") {
@@ -404,6 +403,9 @@ class LoginPageState extends State<LoginPage> {
         await UserSharedPreferences.setUserJWT(resp.jwt).then((_) {
           debugPrint("1️⃣ Set user JWT token");
         });
+
+        // refresh JWT token on the NetUtils after login
+        NetUtils.refreshJWT();
 
         // then we can store the user information to the local storage
         await UserSharedPreferences.setUserInfo(resp.user).then((_) {

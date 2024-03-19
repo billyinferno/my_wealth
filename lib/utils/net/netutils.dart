@@ -1,9 +1,43 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:my_wealth/model/common/error_model.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/utils/function/parse_error.dart';
 import 'package:my_wealth/utils/globals.dart';
+
+enum NetType {
+  initialize,
+  get,
+  put,
+  patch,
+  post,
+  delete
+}
+
+class NetException {
+  final int code;
+  final NetType type;
+  final String message;
+  final String? body;
+
+  const NetException({required this.code, required this.type, required this.message, this.body});
+
+  @override
+  String toString() {
+    return '[$type][$code] $message';
+  }
+
+  ErrorModel? error() {
+    // check if body is not null
+    if (body != null) {
+      return parseError(body!);
+    }
+
+    // return null if body is null
+    return null;
+  }
+}
 
 class NetUtils {
   static String? bearerToken;
@@ -12,13 +46,21 @@ class NetUtils {
     bearerToken = UserSharedPreferences.getUserJWT();
   }
 
+  static void clearJWT() {
+    bearerToken = null;
+  }
+
   static Future get({required String url, Map<String, dynamic>? params}) async {
     // check if bearer token is null? if null then get from UserSharedPreferences
     bearerToken ??= UserSharedPreferences.getUserJWT();
 
     // check to ensure it's not empty
     if (bearerToken == null) {
-      throw Exception('Bearer Token Empty');
+      throw const NetException(
+        code: 403,
+        type: NetType.initialize,
+        message: "Bearer token empty"
+      );
     }
 
     // generate the additional params
@@ -37,7 +79,11 @@ class NetUtils {
     ).timeout(
       Duration(seconds: Globals.apiTimeOut),
       onTimeout: () {
-        throw Exception('Timeout When Get $url');
+        throw NetException(
+          code: 504,
+          type: NetType.get,
+          message: 'Gateway Timeout for $url'
+        );
       },
     );
 
@@ -47,7 +93,12 @@ class NetUtils {
     }
 
     // status code is not 200, means we got error
-    throw Exception(parseError(response.body).error.message); 
+    throw NetException(
+      code: response.statusCode,
+      type: NetType.get,
+      message: response.reasonPhrase ?? '',
+      body: response.body,
+    );
   }
 
   static Future post({required String url, Map<String, dynamic>? params, required Map<String, dynamic> body}) async {
@@ -56,7 +107,11 @@ class NetUtils {
 
     // check to ensure it's not empty
     if (bearerToken == null) {
-      throw Exception('Bearer Token Empty');
+      throw const NetException(
+        code: 403,
+        type: NetType.initialize,
+        message: "Bearer token empty"
+      );
     }
 
     // generate the additional params
@@ -76,7 +131,11 @@ class NetUtils {
     ).timeout(
       Duration(seconds: Globals.apiTimeOut),
       onTimeout: () {
-        throw Exception('Timeout When Post $url');
+        throw NetException(
+          code: 504,
+          type: NetType.post,
+          message: 'Gateway Timeout for $url'
+        );
       },
     );
 
@@ -86,7 +145,12 @@ class NetUtils {
     }
 
     // status code is not 200, means we got error
-    throw Exception(parseError(response.body).error.message); 
+    throw NetException(
+      code: response.statusCode,
+      type: NetType.post,
+      message: response.reasonPhrase ?? '',
+      body: response.body,
+    );
   }
 
   static Future delete({required String url, Map<String, dynamic>? params}) async {
@@ -95,7 +159,11 @@ class NetUtils {
 
     // check to ensure it's not empty
     if (bearerToken == null) {
-      throw Exception('Bearer Token Empty');
+      throw const NetException(
+        code: 403,
+        type: NetType.initialize,
+        message: "Bearer token empty"
+      );
     }
 
     // generate the additional params
@@ -114,7 +182,11 @@ class NetUtils {
     ).timeout(
       Duration(seconds: Globals.apiTimeOut),
       onTimeout: () {
-        throw Exception('Timeout When Delete $url');
+        throw NetException(
+          code: 504,
+          type: NetType.delete,
+          message: 'Gateway Timeout for $url'
+        );
       },
     );
 
@@ -124,7 +196,12 @@ class NetUtils {
     }
 
     // status code is not 200, means we got error
-    throw Exception(parseError(response.body).error.message); 
+    throw NetException(
+      code: response.statusCode,
+      type: NetType.delete,
+      message: response.reasonPhrase ?? '',
+      body: response.body,
+    );
   }
 
   static Future patch({required String url, Map<String, dynamic>? params, required Map<String, dynamic> body}) async {
@@ -133,7 +210,11 @@ class NetUtils {
 
     // check to ensure it's not empty
     if (bearerToken == null) {
-      throw Exception('Bearer Token Empty');
+      throw const NetException(
+        code: 403,
+        type: NetType.initialize,
+        message: "Bearer token empty"
+      );
     }
 
     // generate the additional params
@@ -153,7 +234,11 @@ class NetUtils {
     ).timeout(
       Duration(seconds: Globals.apiTimeOut),
       onTimeout: () {
-        throw Exception('Timeout When Patch $url');
+        throw NetException(
+          code: 504,
+          type: NetType.patch,
+          message: 'Gateway Timeout for $url'
+        );
       },
     );
 
@@ -163,7 +248,12 @@ class NetUtils {
     }
 
     // status code is not 200, means we got error
-    throw Exception(parseError(response.body).error.message); 
+    throw NetException(
+      code: response.statusCode,
+      type: NetType.patch,
+      message: response.reasonPhrase ?? '',
+      body: response.body,
+    );
   }
 
   static Future put({required String url, Map<String, dynamic>? params, required Map<String, dynamic> body}) async {
@@ -172,7 +262,11 @@ class NetUtils {
 
     // check to ensure it's not empty
     if (bearerToken == null) {
-      throw Exception('Bearer Token Empty');
+      throw const NetException(
+        code: 403,
+        type: NetType.initialize,
+        message: "Bearer token empty"
+      );
     }
 
     // generate the additional params
@@ -192,7 +286,11 @@ class NetUtils {
     ).timeout(
       Duration(seconds: Globals.apiTimeOut),
       onTimeout: () {
-        throw Exception('Timeout When Patch $url');
+        throw NetException(
+          code: 504,
+          type: NetType.put,
+          message: 'Gateway Timeout for $url'
+        );
       },
     );
 
@@ -202,6 +300,11 @@ class NetUtils {
     }
 
     // status code is not 200, means we got error
-    throw Exception(parseError(response.body).error.message); 
+    throw NetException(
+      code: response.statusCode,
+      type: NetType.put,
+      message: response.reasonPhrase ?? '',
+      body: response.body,
+    );
   }
 }

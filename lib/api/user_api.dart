@@ -24,7 +24,7 @@ class UserAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiUsers}/me'
     ).onError((error, stackTrace) {
-        throw Exception(error);
+        throw error as NetException;
       }
     );
 
@@ -50,7 +50,7 @@ class UserAPI {
 
   Future<UserLoginInfoModel> updateVisibilitySummary(bool visibility) async {
     // patch user visibility using netutils
-    final String body = await NetUtils.post(
+    final String body = await NetUtils.patch(
       url: '${Globals.apiVisibility}/summary',
       body: {'visibility': visibility},
     ).onError((error, stackTrace) {
@@ -65,7 +65,7 @@ class UserAPI {
 
   Future<UserLoginInfoModel> updateShowLots(bool showLots) async {
     // patch user show lots using netutils
-    final String body = await NetUtils.post(
+    final String body = await NetUtils.patch(
       url: '${Globals.apiVisibility}/lots',
       body: {'show_lots': showLots},
     ).onError((error, stackTrace) {
@@ -80,7 +80,7 @@ class UserAPI {
 
   Future<UserLoginInfoModel> updateShowEmptyWatchlist(bool showEmptyWatchlist) async {
     // patch user show lots using netutils
-    final String body = await NetUtils.post(
+    final String body = await NetUtils.patch(
       url: '${Globals.apiVisibility}/emptywatchlist',
       body: {'show_empty_watchlist': showEmptyWatchlist},
     ).onError((error, stackTrace) {
@@ -95,7 +95,7 @@ class UserAPI {
 
   Future<UserLoginInfoModel> updatePassword(String password, String newPassword) async {
     // patch user password lots using netutils
-    final String body = await NetUtils.post(
+    final String body = await NetUtils.patch(
       url: Globals.apiPassword,
       body: {
         'password': password,

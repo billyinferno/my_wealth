@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/net/netutils.dart';
 import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
@@ -508,6 +509,9 @@ class _UserPageState extends State<UserPage> {
                         if(value == true) {
                           await LocalBox.clear().then((_) {
                             debugPrint("🧹 Cleaning Local Storage");
+                            // clear the JWT token from NetUtils
+                            NetUtils.clearJWT();
+                            
                             // navigate back to login
                             Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
                           });

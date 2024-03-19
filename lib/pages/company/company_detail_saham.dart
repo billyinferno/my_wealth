@@ -542,6 +542,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           indicatorSize: TabBarIndicatorSize.tab,
           labelColor: textPrimary,
           unselectedLabelColor: textPrimary,
+          dividerHeight: 0,
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
             Tab(text: 'FUNDAMENTAL',),

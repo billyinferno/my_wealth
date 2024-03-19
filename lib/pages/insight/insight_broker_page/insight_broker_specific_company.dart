@@ -440,6 +440,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelColor: textPrimary,
                     unselectedLabelColor: textPrimary,
+                    dividerHeight: 0,
                     tabs: const <Widget>[
                       Tab(text: 'BROKER SUMMARY'),
                       Tab(text: 'TOP BROKER',)

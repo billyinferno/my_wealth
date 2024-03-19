@@ -42,6 +42,7 @@ class InsightPageState extends State<InsightPage> with SingleTickerProviderState
           indicatorSize: TabBarIndicatorSize.tab,
           labelColor: textPrimary,
           unselectedLabelColor: textPrimary,
+          dividerHeight: 0,
           tabs: const <Widget>[
             Tab(text: 'BROKER',),
             Tab(text: 'STOCK',),

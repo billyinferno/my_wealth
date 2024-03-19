@@ -82,6 +82,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelColor: textPrimary,
                     unselectedLabelColor: textPrimary,
+                    dividerHeight: 0,
                     tabs: const <Widget>[
                       Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),

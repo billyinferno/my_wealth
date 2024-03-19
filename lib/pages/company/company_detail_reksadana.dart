@@ -511,6 +511,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           indicatorSize: TabBarIndicatorSize.tab,
           labelColor: textPrimary,
           unselectedLabelColor: textPrimary,
+          dividerHeight: 0,
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
             Tab(text: 'COMPARE'),

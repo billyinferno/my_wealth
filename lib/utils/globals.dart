@@ -5,6 +5,32 @@ import 'package:line_icons/line_icons.dart';
 
 class Globals {
   static String apiURL = (dotenv.env['API_URL'] ?? 'http://192.168.1.176:1337/');
+  static int apiTimeOut = 10;
+
+  // add all the api path here, so in case we change API we can just do it from
+  // this single file instead goes to each API
+  static String apiBroker = '${apiURL}api/company-brokers';
+  static String apiBrokerSummary = '${apiURL}api/broker-summaries';
+  static String apiCompanies = '${apiURL}api/companies';
+  static String apiCompanySaham = '${apiURL}api/company-saham';
+  static String apiFavourites = '${apiURL}api/favourites';
+  static String apiIndices = '${apiURL}api/indices';
+  static String apiIndicePrice = '${apiURL}api/indices-prices';
+  static String apiInfoFundamentals = '${apiURL}api/info-fundamentals';
+  static String apiInfoReksadana = '${apiURL}api/info-reksadanas';
+  static String apiInfoSaham = '${apiURL}api/info-sahams';
+  static String apiPortofolio = '${apiURL}api/portofolio';
+  static String apiPriceSaham = '${apiURL}api/price-sahams';
+  static String apiAuthLocal = '${apiURL}api/auth/local';
+  static String apiUsers = '${apiURL}api/users';
+  static String apiRisk = '${apiURL}api/risk';
+  static String apiVisibility = '${apiURL}api/visibility';
+  static String apiPassword = '${apiURL}api/password';
+  static String apiBot = '${apiURL}api/bot';
+  static String apiWatchlists = '${apiURL}api/watchlists';
+  static String apiWatchlistDetails = '${apiURL}api/watchlists-details';
+  static String apiInsight = '${apiURL}api/insight';
+  
   static String appVersion = (dotenv.env['APP_VERSION'] ?? '0.0.1 - dev');
   static String flutterVersion = (dotenv.env['FLUTTER_VERSION'] ?? 'beta');
   static Map<String, String> reksadanaCompanyTypeEnum = {"reksadanacampuran":"Campuran", "reksadanasaham":"Saham", "reksadanapasaruang":"Pasar Uang", "reksadanapendapatantetap":"Pendapatan Tetap"};

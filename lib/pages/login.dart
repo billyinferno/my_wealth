@@ -375,6 +375,12 @@ class LoginPageState extends State<LoginPage> {
         if (currJwtToken.isNotEmpty) {
           // if already got token but unable to login, it means that the token already invalid
           _isInvalidToken = true;
+          
+          // since we knew that this is invalid token, then just clear the JWT
+          // otherwise it will causing the login to be invalid as we still have
+          // the invalid JWT token in the NetUtils
+          NetUtils.clearJWT();
+
           // show invalid token message on the login screen
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Token expired, please re-login"));
         }

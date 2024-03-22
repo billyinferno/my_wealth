@@ -9,6 +9,7 @@ class UserAPI {
     final String body = await NetUtils.post(
       url: Globals.apiAuthLocal,
       body: {'identifier': username, 'password': password},
+      requiredJWT: false,
     ).onError((error, stackTrace) {
         throw Exception(error);
       }

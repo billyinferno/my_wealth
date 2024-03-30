@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user/user_login.dart';
@@ -16,6 +15,7 @@ import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
@@ -33,7 +33,6 @@ class WatchlistListPage extends StatefulWidget {
 
 class WatchlistListPageState extends State<WatchlistListPage> {
   final ScrollController _scrollController = ScrollController();
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
   final WatchlistAPI _watchlistApi = WatchlistAPI();
 
   late WatchlistListArgs _watchlistArgs;
@@ -270,7 +269,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                       ),
                                       const SizedBox(width: 10,),
                                       Text(
-                                        (_watchlist.watchlistCompanyLastUpdate == null ? "-" : _df.format(_watchlist.watchlistCompanyLastUpdate!.toLocal()))
+                                        (_watchlist.watchlistCompanyLastUpdate == null ? "-" : Globals.dfddMMyyyy.format(_watchlist.watchlistCompanyLastUpdate!.toLocal()))
                                       ),
                                     ],
                                   )
@@ -503,7 +502,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                               onPressed: ((context) async {
                                 await ShowMyDialog(
                                   title: "Delete Detail",
-                                  text: "Are you sure to delete this detail?\nDate: ${_df.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
+                                  text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
                                   confirmLabel: "Delete",
                                   cancelLabel: "Cancel"
                                 ).show(context).then((resp) async {
@@ -557,7 +556,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    _df.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
+                                    Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
                                     style: const TextStyle(
                                       fontSize: 12,
                                     ),

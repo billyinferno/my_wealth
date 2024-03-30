@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/animation/animation_expand.dart';
+import 'package:my_wealth/utils/globals.dart';
 
 class WatchlistDetailCreateCalendar extends StatefulWidget {
   final Function(DateTime) onDateChange;
@@ -14,7 +15,6 @@ class WatchlistDetailCreateCalendar extends StatefulWidget {
 }
 
 class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCalendar> {
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
   bool _isDateVisible = false;
   late DateTime _selectedDate;
 
@@ -65,7 +65,7 @@ class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCale
                 const SizedBox(width: 10,),
                 Expanded(
                   child: Text(
-                    _df.format(_selectedDate.toLocal()),
+                    Globals.dfddMMyyyy.format(_selectedDate.toLocal()),
                     textAlign: TextAlign.right,
                   ),
                 ),

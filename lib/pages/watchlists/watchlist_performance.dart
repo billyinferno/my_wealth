@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/user/user_login.dart';
@@ -11,6 +10,7 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/widgets/list/row_child.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
@@ -26,9 +26,6 @@ class WatchlistPerformancePage extends StatefulWidget {
 
 class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
-  final DateFormat _dfMMDD = DateFormat('dd/MM');
-  final DateFormat _dfMMYY = DateFormat('MM/yy');
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
   late WatchlistListArgs _watchlistArgs;
@@ -251,7 +248,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                   ),
                                   const SizedBox(width: 5,),
                                   Text(
-                                    _df.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
+                                    Globals.dfddMMyyyy.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
                                   ),
                                 ],
                               ),
@@ -510,9 +507,9 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
                   }
 
-                  String dateText = _dfMMDD.format(_watchlistPerformance[index].buyDate);
+                  String dateText = Globals.dfddMM.format(_watchlistPerformance[index].buyDate);
                   if (_graphSelection == "m" || _graphSelection == "y") {
-                    dateText = _dfMMYY.format(_watchlistPerformance[index].buyDate);
+                    dateText = Globals.dfMMyy.format(_watchlistPerformance[index].buyDate);
                   }
 
 

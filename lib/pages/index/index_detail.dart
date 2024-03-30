@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/model/index/index_model.dart';
@@ -27,7 +26,6 @@ class IndexDetailPage extends StatefulWidget {
 }
 
 class IndexDetailPageState extends State<IndexDetailPage> {
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
   final IndexAPI _indexApi = IndexAPI();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
@@ -195,7 +193,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                               const SizedBox(width: 10,),
                               // ignore: unnecessary_null_comparison
-                              Text(_df.format(_index.indexLastUpdate.toLocal())),
+                              Text(Globals.dfddMMyyyy.format(_index.indexLastUpdate.toLocal())),
                             ],
                           ),
                           const SizedBox(height: 8,),
@@ -692,7 +690,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         Expanded(
                           flex: 2,
                           child: Text(
-                            _df.format(_indexPrice[index].indexPriceDate.toLocal()),
+                            Globals.dfddMMyyyy.format(_indexPrice[index].indexPriceDate.toLocal()),
                             style: const TextStyle(
                               fontSize: 12,
                             ),

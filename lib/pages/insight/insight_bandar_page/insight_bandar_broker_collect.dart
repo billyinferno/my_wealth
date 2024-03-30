@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
@@ -13,6 +12,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 
@@ -26,7 +26,6 @@ class InsightBandarBrokerCollectPage extends StatefulWidget {
 class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerCollectPage> {
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
-  final DateFormat _df = DateFormat('dd/MM/yy');
   final ScrollController _scrollController = ScrollController();
   
   late BrokerModel _brokerData;
@@ -218,7 +217,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                   ),
                                   child: Center(
                                     child: Text(
-                                      _df.format(_fromDate!),
+                                      Globals.dfddMMyy.format(_fromDate!),
                                       style: const TextStyle(
                                         fontSize: 12,
                                       ),
@@ -243,7 +242,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                   ),
                                   child: Center(
                                     child: Text(
-                                      _df.format(_toDate!),
+                                      Globals.dfddMMyy.format(_toDate!),
                                       style: const TextStyle(
                                         fontSize: 12,
                                       ),

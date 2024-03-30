@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/api/insight_api.dart';
@@ -9,6 +8,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
@@ -28,7 +28,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
 
-  final DateFormat _df = DateFormat('yyyy-MM-dd');
   final ScrollController _scrollController = ScrollController();
 
   // sort helper
@@ -180,7 +179,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                         ),
                         child: Center(
                           child: Text(
-                            _df.format(_fromDate),
+                            Globals.dfyyyyMMdd.format(_fromDate),
                             style: const TextStyle(
                               color: textPrimary,
                             ),
@@ -222,7 +221,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                         ),
                         child: Center(
                           child: Text(
-                            _df.format(_toDate),
+                            Globals.dfyyyyMMdd.format(_toDate),
                             style: const TextStyle(
                               color: textPrimary,
                             ),

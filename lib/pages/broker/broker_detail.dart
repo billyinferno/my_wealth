@@ -1,8 +1,6 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
@@ -13,6 +11,7 @@ import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
@@ -27,8 +26,6 @@ class BrokerDetailPage extends StatefulWidget {
 
 class _BrokerDetailPageState extends State<BrokerDetailPage> {
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
-  final DateFormat _df = DateFormat('yyyy-MM-dd');
-  final DateFormat _dfs = DateFormat('dd/MM');
   final ScrollController _scrollController = ScrollController();
 
   late BrokerDetailArgs _args;
@@ -241,7 +238,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    '${_df.format(_transactionList.brokerSummaryFromDate.toLocal())} - ${_df.format(_transactionList.brokerSummaryToDate.toLocal())}',
+                    '${Globals.dfyyyyMMdd.format(_transactionList.brokerSummaryFromDate.toLocal())} - ${Globals.dfyyyyMMdd.format(_transactionList.brokerSummaryToDate.toLocal())}',
                     style: const TextStyle(
                       color: secondaryColor,
                       fontWeight: FontWeight.bold,
@@ -675,7 +672,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     // iterate thru data
     data.forEach((key, value) {
       result.add(_generateRow(
-        _dfs.format(key.toLocal()),
+        Globals.dfddMM.format(key.toLocal()),
         formatIntWithNull(value.brokerSummaryBuyLot, false, false),
         formatCurrencyWithNull(value.brokerSummaryBuyValue, true, true),
         formatCurrencyWithNull(value.brokerSummaryBuyAverage, false, false),

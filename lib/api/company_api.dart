@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/model/common/common_array_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
@@ -15,8 +14,6 @@ import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
 
 class CompanyAPI {
-  final DateFormat _df = DateFormat('yyyy-MM-dd');
-
   Future<List<CompanyListModel>> findCompany(String type) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
@@ -168,8 +165,8 @@ class CompanyAPI {
 
   Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate, [int? limit]) async {
     // get the initial query information for the API
-    String dateFromString = _df.format(fromDate);
-    String dateToString = _df.format(toDate);
+    String dateFromString = Globals.dfyyyyMMdd.format(fromDate);
+    String dateToString = Globals.dfyyyyMMdd.format(toDate);
     int currLimit = (limit ?? 10);
 
     // get the company data using netutils

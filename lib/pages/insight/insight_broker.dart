@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
 import 'package:my_wealth/api/company_api.dart';
@@ -16,6 +15,7 @@ import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
@@ -34,7 +34,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final InsightAPI _insightAPI = InsightAPI();
 
-  final DateFormat _df = DateFormat('dd MMM yyyy');
   final ScrollController _scrollController = ScrollController();
 
   late BrokerSummaryTopModel? _brokerTopList;
@@ -362,7 +361,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                   const SizedBox(height: 5,),
                   Center(
                     child: Text(
-                      _df.format(_brokerTopList!.brokerSummaryDate.toLocal()),
+                      Globals.dfDDMMMyyyy.format(_brokerTopList!.brokerSummaryDate.toLocal()),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -443,7 +442,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                   const SizedBox(height: 5,),
                   Center(
                     child: Text(
-                      _df.format(_brokerTopTransaction.brokerSummaryDate.toLocal()),
+                      Globals.dfDDMMMyyyy.format(_brokerTopTransaction.brokerSummaryDate.toLocal()),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,

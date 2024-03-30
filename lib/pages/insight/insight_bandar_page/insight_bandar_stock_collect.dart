@@ -7,6 +7,7 @@ import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/list/stock_collect_expanded.dart';
@@ -21,7 +22,6 @@ class InsightBandarStockCollectPage extends StatefulWidget {
 class InsightBandarStockCollectPageState extends State<InsightBandarStockCollectPage> {
   final InsightAPI _insightAPI = InsightAPI();
   final ScrollController _scrollController = ScrollController();
-  final DateFormat _df = DateFormat('yyyy-MM-dd');
 
   late DateTime? _minBrokerDate;
   late DateTime? _maxBrokerDate;
@@ -129,7 +129,7 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                         ),
                         child: Center(
                           child: Text(
-                            _df.format(_fromDate!),
+                            Globals.dfyyyyMMdd.format(_fromDate!),
                             style: const TextStyle(
                               color: textPrimary,
                             ),
@@ -171,7 +171,7 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                         ),
                         child: Center(
                           child: Text(
-                            _df.format(_toDate!),
+                            Globals.dfyyyyMMdd.format(_toDate!),
                             style: const TextStyle(
                               color: textPrimary,
                             ),

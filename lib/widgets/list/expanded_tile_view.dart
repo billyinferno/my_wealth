@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/compute_watchlist.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/widgets/list/expanded_tile_children.dart';
 import 'package:my_wealth/widgets/list/expanded_tile_title.dart';
 
@@ -24,7 +25,6 @@ class ExpandedTileView extends StatelessWidget {
     bool isShowedLots = (showedLot ?? false);
     bool isInLot = (inLot ?? false);
     final DateFormat dt = DateFormat("dd/MM/yy");
-    final DateFormat dtSmall = DateFormat('dd/MM');
 
     // after that check if the showEmptyWatchlist is set as false?
     // if so ensure that if txn > 0 but totalShare is 0, just return SizedBox instead of expansion tile
@@ -60,7 +60,7 @@ class ExpandedTileView extends StatelessWidget {
           price: (watchlist.watchlistCompanyNetAssetValue ?? 0),
           prevPrice: watchlist.watchlistCompanyPrevPrice,
           gain: (isVisible ? watchlistResult.totalGain : null),
-          lastUpdate: (watchlist.watchlistCompanyLastUpdate == null ? "-" : dtSmall.format(watchlist.watchlistCompanyLastUpdate!.toLocal())),
+          lastUpdate: (watchlist.watchlistCompanyLastUpdate == null ? "-" : Globals.dfddMM.format(watchlist.watchlistCompanyLastUpdate!.toLocal())),
           riskColor: headerRiskColor,
           checkThousandOnPrice: (checkThousandOnPrice ?? false),
           subHeaderRiskColor: subHeaderRiskColor,

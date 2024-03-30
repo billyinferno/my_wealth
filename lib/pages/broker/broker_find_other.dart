@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker/broker_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/utils/globals.dart';
 
 class BrokerFindOtherPage extends StatefulWidget {
   const BrokerFindOtherPage({Key? key}) : super(key: key);
@@ -15,7 +15,6 @@ class BrokerFindOtherPage extends StatefulWidget {
 class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _brokerListScrollController = ScrollController();
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
   late List<BrokerModel> _brokerList;
   late List<BrokerModel> _filterList;
 
@@ -133,7 +132,7 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
                                     ),
                                     const SizedBox(height: 5,),
                                     Text(
-                                      _df.format(_filterList[index].brokerDate),
+                                      Globals.dfddMMyyyy.format(_filterList[index].brokerDate),
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 10,

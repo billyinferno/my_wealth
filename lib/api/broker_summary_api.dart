@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker/broker_summary_accumulation_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_daily_stat_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_date_model.dart';
@@ -12,14 +11,12 @@ import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
 
 class BrokerSummaryAPI {
-  final DateFormat _df = DateFormat('yyyy-MM-dd');
-
   Future<BrokerSummaryModel> getBrokerSummary(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
     // get the date we want to check
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = _df.format(currentDateFrom);
-    String dateToString = _df.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
 
     // get the API response
     final String body = await NetUtils.get(
@@ -39,8 +36,8 @@ class BrokerSummaryAPI {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = _df.format(currentDateFrom);
-    String dateToString = _df.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
 
     // get the API response
     final String body = await NetUtils.get(
@@ -59,8 +56,8 @@ class BrokerSummaryAPI {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = _df.format(currentDateFrom);
-    String dateToString = _df.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
 
     // get the API response
     final String body = await NetUtils.get(
@@ -79,8 +76,8 @@ class BrokerSummaryAPI {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = _df.format(currentDateFrom);
-    String dateToString = _df.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
 
     // get the API response
     final String body = await NetUtils.get(
@@ -102,7 +99,7 @@ class BrokerSummaryAPI {
       url = '${Globals.apiBrokerSummary}/top/last';
     }
     else {
-      String dateSearchText = _df.format(searchDate);
+      String dateSearchText = Globals.dfyyyyMMdd.format(searchDate);
       url = '${Globals.apiBrokerSummary}/top/date/$dateSearchText';
     }
 
@@ -164,7 +161,7 @@ class BrokerSummaryAPI {
   Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String version, String stockCode, DateTime currentDate) async {
     // get the API response
     final String body = await NetUtils.get(
-      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${_df.format(currentDate)}'
+      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${Globals.dfyyyyMMdd.format(currentDate)}'
     ).onError((error, stackTrace) {
       throw Exception(error);
     });

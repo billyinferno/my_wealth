@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
@@ -13,6 +12,7 @@ import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/performance_calendar.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -31,10 +31,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
   final ScrollController _scrollYearController = ScrollController();
 
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
-
-  final DateFormat _df2 = DateFormat('yyyy/MM');
-  final DateFormat _df3 = DateFormat('MMM yyyy');
-  final DateFormat _df4 = DateFormat('MMM');
 
   late WatchlistSummaryPerformanceArgs _args;
   late List<CalendarDatePL> _monthYearCalendarPL;
@@ -312,7 +308,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Text(_df2.format(_currentDate)),
+            Text(Globals.dfyyyyMM.format(_currentDate)),
             const SizedBox(width: 5,),
             const Icon(
               Ionicons.caret_down_sharp,
@@ -420,7 +416,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "${_df3.format(_currentDate)} P&L",
+                    "${Globals.dfMMMyyyy.format(_currentDate)} P&L",
                     style: const TextStyle(
                       color: textPrimary,
                       fontSize: 10,
@@ -981,7 +977,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     _yearCalendarPL.clear();
     _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
       return CalendarDatePL(
-        date: _df4.format(DateTime(useDate.year, (index+1), 1)),
+        date: Globals.dfMMM.format(DateTime(useDate.year, (index+1), 1)),
         pl: null,
         plRatio: null,
       );
@@ -1017,7 +1013,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
 
         // update the year calendar PL list for this month
         _yearCalendarPL[key.month-1] = CalendarDatePL(
-          date: _df4.format(priceDate),
+          date: Globals.dfMMM.format(priceDate),
           pl: (plCurrent - plBefore!),
           plRatio: (plCurrentRatio * 100),
         );

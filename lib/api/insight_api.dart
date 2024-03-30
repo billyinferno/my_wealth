@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/model/broker/broker_top_transaction_model.dart';
 import 'package:my_wealth/model/common/common_array_model.dart';
 import 'package:my_wealth/model/common/common_single_model.dart';
@@ -21,8 +20,6 @@ import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
 
 class InsightAPI {
-  final DateFormat _df = DateFormat('yyyy-MM-dd');
-
   Future<List<SectorSummaryModel>> getSectorSummary() async {
     // get insight data using netutils
     final String body = await NetUtils.get(
@@ -166,8 +163,8 @@ class InsightAPI {
 
   Future<List<InsightAccumulationModel>> getTopAccumulation(int oneDayRate, DateTime fromDate, DateTime toDate) async {
     // convert date
-    final String dateFromString = _df.format(fromDate.toLocal());
-    final String dateToString = _df.format(toDate.toLocal());
+    final String dateFromString = Globals.dfyyyyMMdd.format(fromDate.toLocal());
+    final String dateToString = Globals.dfyyyyMMdd.format(toDate.toLocal());
 
     // get insight data using netutils
     final String body = await NetUtils.get(
@@ -341,8 +338,8 @@ class InsightAPI {
     // prepare all necessary data/information
     final DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     final DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    final String dateFromString = _df.format(currentDateFrom);
-    final String dateToString = _df.format(currentDateTo);
+    final String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
+    final String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
     final int currAccumLimit = (accumLimit ?? 75);
     
     // get insight data using netutils
@@ -367,8 +364,8 @@ class InsightAPI {
     // prepare all necessary data/information
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = _df.format(currentDateFrom);
-    String dateToString = _df.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
     int currAccumLimit = (accumLimit ?? 75);
 
     // get insight data using netutils

@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/chart/performance_chart.dart';
@@ -27,7 +28,6 @@ class WatchlistSummaryPerformancePage extends StatefulWidget {
 class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerformancePage> {
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
 
   late WatchlistSummaryPerformanceArgs _args;
   late UserLoginInfoModel _userInfo;
@@ -388,7 +388,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         padding: const EdgeInsets.all(5),
                         width: 100,
                         child: Text(
-                          _df.format(_perfData[index].date),
+                          Globals.dfddMMyyyy.format(_perfData[index].date),
                           textAlign: TextAlign.center,
                           style: _smallFont,
                         ),

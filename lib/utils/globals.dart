@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -34,6 +35,19 @@ class Globals {
   static String appVersion = (dotenv.env['APP_VERSION'] ?? '0.0.1 - dev');
   static String flutterVersion = (dotenv.env['FLUTTER_VERSION'] ?? 'beta');
   static Map<String, String> reksadanaCompanyTypeEnum = {"reksadanacampuran":"Campuran", "reksadanasaham":"Saham", "reksadanapasaruang":"Pasar Uang", "reksadanapendapatantetap":"Pendapatan Tetap"};
+
+  static DateFormat dfddMM = DateFormat('dd/MM');
+  static DateFormat dfddMMyyyy = DateFormat('dd/MM/yyyy');
+  static DateFormat dfddMMyyyy2 = DateFormat('dd-MM-yyyy');
+  static DateFormat dfDDMMMyyyy = DateFormat('dd MMM yyyy');
+  static DateFormat dfddMMyy = DateFormat('dd/MM/yy');
+  
+  static DateFormat dfMMMyyyy = DateFormat('MMM yyyy');
+  static DateFormat dfMMM = DateFormat('MMM');
+  static DateFormat dfMMyy = DateFormat('MM/yy');
+
+  static DateFormat dfyyyyMMdd = DateFormat('yyyy-MM-dd');
+  static DateFormat dfyyyyMM = DateFormat('yyyy/MM');
 
   static List<Color> colorList = [
     // -- 1st shade --

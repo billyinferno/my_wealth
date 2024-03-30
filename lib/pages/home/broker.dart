@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/model/broker/broker_model.dart';
 import 'package:my_wealth/provider/broker_provider.dart';
@@ -8,6 +7,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
@@ -21,7 +21,6 @@ class BrokerPage extends StatefulWidget {
 }
 
 class _BrokerPageState extends State<BrokerPage> {
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
   final ScrollController _scrollController = ScrollController();
   final BrokerAPI _brokerAPI = BrokerAPI();
   final TextEditingController _searchController = TextEditingController();
@@ -167,7 +166,7 @@ class _BrokerPageState extends State<BrokerPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                _informationText(flex: 2, text: "Date", value: _df.format(_filterBrokerList[index].brokerDate.toLocal())),
+                                _informationText(flex: 2, text: "Date", value: Globals.dfddMMyyyy.format(_filterBrokerList[index].brokerDate.toLocal())),
                                 _informationText(text: "Volume", value: formatIntWithNull(_filterBrokerList[index].brokerVolume, true, true)),
                                 _informationText(text: "Value", value: formatIntWithNull(_filterBrokerList[index].brokerValue, true, true)),
                                 _informationText(text: "Frequency", value: formatIntWithNull(_filterBrokerList[index].brokerFrequency, false, false)),

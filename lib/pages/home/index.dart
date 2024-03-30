@@ -22,7 +22,6 @@ class IndexPage extends StatefulWidget {
 }
 
 class IndexPageState extends State<IndexPage> {
-  final DateFormat _df = DateFormat('dd/MM/yyyy');
   final ScrollController _scrollController = ScrollController();
   final IndexAPI _indexApi = IndexAPI();
 
@@ -117,7 +116,7 @@ class IndexPageState extends State<IndexPage> {
                       }),
                       child: SimpleListItem(
                         name: indexName,
-                        date: _df.format(_indexList[index].indexLastUpdate.toLocal()),
+                        date: Globals.dfddMMyyyy.format(_indexList[index].indexLastUpdate.toLocal()),
                         price: _indexList[index].indexNetAssetValue,
                         percentChange: (_indexList[index].indexDailyReturn * 100),
                         priceChange: (_indexList[index].indexNetAssetValue - _indexList[index].indexPrevPrice),

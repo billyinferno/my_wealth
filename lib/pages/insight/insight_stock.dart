@@ -39,7 +39,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
   final DateTime _todayDate = DateTime.now();
-  final DateFormat _df = DateFormat('dd MMM yyyy');
 
   late List<SectorSummaryModel> _sectorSummaryList;
   late TopWorseCompanyListModel _topCompanyList;
@@ -503,7 +502,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Fund Raised", value: formatIntWithNull(_stockNewListedList[index].fundRaised, true, true, 2)),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Listed Date", value: (_stockNewListedList[index].listedDate != null ? _df.format(_stockNewListedList[index].listedDate!) : '-')),
+                                    _smallBox(title: "Listed Date", value: (_stockNewListedList[index].listedDate != null ? Globals.dfDDMMMyyyy.format(_stockNewListedList[index].listedDate!) : '-')),
                                   ],
                                 ),
                                 const SizedBox(height: 5,),
@@ -610,9 +609,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Cum Date", value: (_stockDividendList[index].cumDividend != null ? _df.format(_stockDividendList[index].cumDividend!) : '-')),
+                                    _smallBox(title: "Cum Date", value: (_stockDividendList[index].cumDividend != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].cumDividend!) : '-')),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Ex Date", value: (_stockDividendList[index].exDividend != null ? _df.format(_stockDividendList[index].exDividend!) : '-')),
+                                    _smallBox(title: "Ex Date", value: (_stockDividendList[index].exDividend != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].exDividend!) : '-')),
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Dividend", value: formatDecimalWithNull(_stockDividendList[index].cashDividend, 1, 2)),
                                   ],
@@ -622,9 +621,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Record Date", value: (_stockDividendList[index].recordDate != null ? _df.format(_stockDividendList[index].recordDate!) : '-')),
+                                    _smallBox(title: "Record Date", value: (_stockDividendList[index].recordDate != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].recordDate!) : '-')),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Payment Date", value: (_stockDividendList[index].paymentDate != null ? _df.format(_stockDividendList[index].paymentDate!) : '-')),
+                                    _smallBox(title: "Payment Date", value: (_stockDividendList[index].paymentDate != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].paymentDate!) : '-')),
                                     const SizedBox(width: 10,),
                                     const Expanded(child: SizedBox(width: double.infinity,),),
                                   ],
@@ -735,7 +734,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   children: <Widget>[
                                     _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockSplitList[index].listedShares, true, true, 2)),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Split Date", value: (_stockSplitList[index].listingDate != null ? _df.format(_stockSplitList[index].listingDate!) : '-')),
+                                    _smallBox(title: "Split Date", value: (_stockSplitList[index].listingDate != null ? Globals.dfDDMMMyyyy.format(_stockSplitList[index].listingDate!) : '-')),
                                     const SizedBox(width: 10,),
                                     const Expanded(child: SizedBox(width: double.infinity,),),
                                   ],

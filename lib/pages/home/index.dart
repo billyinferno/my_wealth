@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/model/index/index_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';

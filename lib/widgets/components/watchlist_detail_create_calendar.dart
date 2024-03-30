@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/animation/animation_expand.dart';
 import 'package:my_wealth/utils/globals.dart';

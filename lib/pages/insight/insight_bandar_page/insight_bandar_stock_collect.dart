@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/api/insight_api.dart';
 import 'package:my_wealth/model/insight/insight_stock_collect_model.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';

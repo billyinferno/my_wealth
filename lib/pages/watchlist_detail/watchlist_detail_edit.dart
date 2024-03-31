@@ -226,6 +226,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                 watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
                 watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
                 watchlistFavouriteId: _watchlist.watchlistFavouriteId,
+                watchlistCompanyFCA: _watchlist.watchlistCompanyFCA,
               );
               newWatchlist.add(updateWatchlist); 
             }

@@ -167,6 +167,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                 watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
                 watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
                 watchlistFavouriteId: _watchlist.watchlistFavouriteId,
+                watchlistCompanyFCA: _watchlist.watchlistCompanyFCA,
               );
               newWatchList.add(updateWatchList);
             }

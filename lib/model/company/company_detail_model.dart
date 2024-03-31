@@ -73,6 +73,7 @@ class CompanyDetailModel {
         required this.companyPrices,
         this.companyFavourites,
         this.companyFavouritesId,
+        this.companyFCA,
     });
 
     final int companyId;
@@ -135,6 +136,7 @@ class CompanyDetailModel {
     final List<PriceModel> companyPrices;
     final bool? companyFavourites;
     final int? companyFavouritesId;
+    final bool? companyFCA;
 
     factory CompanyDetailModel.fromJson(Map<String, dynamic> json) {
       return CompanyDetailModel(
@@ -198,6 +200,7 @@ class CompanyDetailModel {
         companyPrices: List<PriceModel>.from(json["company_prices"].map((x) => PriceModel.fromJson(x))),
         companyFavourites: (json["company_favourites"] ?? false),
         companyFavouritesId: (json["company_favourites_id"] ?? -1),
+        companyFCA: (json['company_fca'] ?? false)
       );
     }
 
@@ -262,5 +265,6 @@ class CompanyDetailModel {
         "company_prices": List<dynamic>.from(companyPrices.map((x) => x.toJson())),
         "company_favourites": companyFavourites,
         "company_favourites_id": companyFavouritesId,
+        "company_fca": companyFCA,
     };
 }

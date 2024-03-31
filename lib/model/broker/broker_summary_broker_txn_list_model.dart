@@ -60,6 +60,7 @@ class BrokerSummaryCodeListModel {
         required this.brokerSummaryCode,
         required this.brokerSummaryName,
         required this.brokerSummaryFavouriteId,
+        required this.brokerSummaryFCA,
         required this.brokerSummaryLastPrice,
         required this.brokerSummaryAdjustedClosingPrice,
         required this.brokerSummaryLot,
@@ -71,6 +72,7 @@ class BrokerSummaryCodeListModel {
     final String brokerSummaryCode;
     final String brokerSummaryName;
     final int brokerSummaryFavouriteId;
+    final bool brokerSummaryFCA;
     final int brokerSummaryLastPrice;
     final int brokerSummaryAdjustedClosingPrice;
     final int brokerSummaryLot;
@@ -82,6 +84,7 @@ class BrokerSummaryCodeListModel {
         brokerSummaryCode: json["broker_summary_code"],
         brokerSummaryName: json["broker_summary_name"],
         brokerSummaryFavouriteId: json["broker_summary_favourite_id"],
+        brokerSummaryFCA: json["broker_summary_fca"],
         brokerSummaryLastPrice: json["broker_summary_last_price"],
         brokerSummaryAdjustedClosingPrice: json["broker_summary_adjusted_closing_price"],
         brokerSummaryLot: json["broker_summary_lot"],
@@ -94,6 +97,7 @@ class BrokerSummaryCodeListModel {
         "broker_summary_code": brokerSummaryCode,
         "broker_summary_name": brokerSummaryName,
         "broker_summary_favourite_id": brokerSummaryFavouriteId,
+        "broker_summary_fca": brokerSummaryFCA,
         "broker_summary_last_price": brokerSummaryLastPrice,
         "broker_summary_adjusted_closing_price": brokerSummaryAdjustedClosingPrice,
         "broker_summary_lot": brokerSummaryLot,

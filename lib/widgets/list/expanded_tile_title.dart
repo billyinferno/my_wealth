@@ -20,6 +20,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final double? totalValue;
   final double? totalCost;
   final double? averagePrice;
+  final bool? fca;
 
   const ExpandedTileTitle({
     Key? key,
@@ -38,13 +39,15 @@ class ExpandedTileTitle extends StatelessWidget {
     this.totalDayGain,
     this.totalValue,
     this.totalCost,
-    this.averagePrice
+    this.averagePrice,
+    this.fca,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final rColor = (riskColor ?? primaryLight);
     final diffPrice = (price - (prevPrice ?? price));
+    final isFca = (fca ?? false);
     
     Color trendColor = Colors.white;
     IconData trendIcon = Ionicons.remove;
@@ -83,9 +86,21 @@ class ExpandedTileTitle extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
+                            Visibility(
+                              visible: isFca,
+                              child: const Icon(
+                                Ionicons.warning,
+                                color: secondaryColor,
+                                size: 15,
+                              )
+                            ),
+                            Visibility(
+                              visible: isFca,
+                              child: const SizedBox(width: 5,)
+                            ),
                             Expanded(
                               child: Text(
                                 name,

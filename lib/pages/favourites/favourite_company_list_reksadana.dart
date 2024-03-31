@@ -390,6 +390,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                         date: (_sortedFaveList[index].favouritesLastUpdate == null ? "-" : _dt.format(_sortedFaveList[index].favouritesLastUpdate!.toLocal())),
                         value: _sortedFaveList[index].favouritesNetAssetValue,
                         isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        fca: (_sortedFaveList[index].favouritesFCA ?? false),
                         subWidget: _subInfoWidget(_sortedFaveList[index]),
                         onPress: (() async {
                           await setFavourite(index);

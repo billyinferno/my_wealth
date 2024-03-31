@@ -181,7 +181,33 @@ class WatchlistListPageState extends State<WatchlistListPage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+              children: <Widget>[
+                Visibility(
+                  visible: (_watchlist.watchlistCompanyFCA ?? false),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    color: secondaryDark,
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Ionicons.warning,
+                          color: secondaryLight,
+                          size: 10,
+                        ),
+                        SizedBox(width: 5,),
+                        Text(
+                          "This company is flagged with Full Call Auction",
+                          style: TextStyle(
+                            fontSize: 10,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
                 Container(
                   color: _riskColor,
                   child: Row(
@@ -634,6 +660,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
           watchlistCompanyPrevPrice: _watchlist.watchlistCompanyPrevPrice,
           watchlistCompanyLastUpdate: _watchlist.watchlistCompanyLastUpdate,
           watchlistFavouriteId: _watchlist.watchlistFavouriteId,
+          watchlistCompanyFCA: _watchlist.watchlistCompanyFCA,
         );
 
         List<WatchlistListModel> currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);

@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 
 class SimpleListItem extends StatelessWidget {
+  final bool? fca;
   final String name;
   final String date;
   final double price;
@@ -11,7 +15,7 @@ class SimpleListItem extends StatelessWidget {
   final double priceChange;
   final int riskFactor;
 
-  const SimpleListItem({ Key? key, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor }) : super(key: key);
+  const SimpleListItem({ Key? key, this.fca, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +45,32 @@ class SimpleListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Visibility(
+                        visible: (fca ?? false),
+                        child: const Icon(
+                          Ionicons.warning,
+                          color: secondaryColor,
+                          size: 15,
+                        )
+                      ),
+                      Visibility(
+                        visible: (fca ?? false),
+                        child: const SizedBox(width: 5,)
+                      ),
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 5,),
                   const Row(

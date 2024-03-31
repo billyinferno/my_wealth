@@ -24,6 +24,7 @@ class FavouritesListModel {
         this.favouritesCompanyYTDReturn,
         this.favouritesCompanyYearlyReturn,
         this.favouritesLastUpdate,
+        this.favouritesFCA,
         this.favouritesId,
         this.favouritesUserId,
     });
@@ -43,6 +44,7 @@ class FavouritesListModel {
     final double? favouritesCompanyYTDReturn;
     final double? favouritesCompanyYearlyReturn;
     final DateTime? favouritesLastUpdate;
+    final bool? favouritesFCA;
     final int? favouritesId;
     final int? favouritesUserId;
 
@@ -62,6 +64,7 @@ class FavouritesListModel {
         favouritesCompanyYTDReturn: (json["favourites_company_ytd_return"] == null ? 0 : json["favourites_company_ytd_return"].toDouble()),
         favouritesCompanyYearlyReturn: (json["favourites_company_yearly_return"] == null ? 0 : json["favourites_company_yearly_return"].toDouble()),
         favouritesLastUpdate: (json["favourites_last_update"] == null ? null : DateTime.parse(json["favourites_last_update"])),
+        favouritesFCA: (json["favourties_company_fca"] ?? false),
         favouritesId: json["favourites_id"],
         favouritesUserId: json["favourites_user_id"],
     );
@@ -82,6 +85,7 @@ class FavouritesListModel {
         "favourites_company_ytd_return":favouritesCompanyYTDReturn,
         "favourites_company_yearly_return":favouritesCompanyYearlyReturn,
         "favourites_last_update": (favouritesLastUpdate?.toIso8601String()),
+        "favourties_company_fca": favouritesFCA,
         "favourites_id": favouritesId,
         "favourites_user_id": favouritesUserId,
     };

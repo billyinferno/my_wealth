@@ -490,7 +490,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     required bool isInLot,
     required String shareTitle,
     required bool checkThousandOnPrice,
-    required ScrollController scrollController
+    required ScrollController scrollController,
   }) {
     return RefreshIndicator(
       onRefresh: (() async {

@@ -8,6 +8,7 @@ class WatchlistList extends StatelessWidget {
   final String date;
   final Color riskColor;
   final bool canAdd;
+  final bool fca;
   final VoidCallback onPress;
   const WatchlistList({
     Key? key,
@@ -16,6 +17,7 @@ class WatchlistList extends StatelessWidget {
     required this.date,
     required this.riskColor,
     required this.canAdd,
+    required this.fca,
     required this.onPress
   }) : super(key: key);
 
@@ -41,11 +43,32 @@ class WatchlistList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                          name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Visibility(
+                              visible: fca,
+                              child: const Icon(
+                                Ionicons.warning,
+                                color: secondaryColor,
+                                size: 15,
+                              )
+                            ),
+                            Visibility(
+                              visible: fca,
+                              child: const SizedBox(width: 5,)
+                            ),
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 5,),
                         Row(

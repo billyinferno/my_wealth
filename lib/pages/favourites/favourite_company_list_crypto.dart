@@ -166,6 +166,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                         date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
                         value: _filterList[index].favouritesNetAssetValue,
                         isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        fca: (_filterList[index].favouritesFCA ?? false),
                         onPress: (() async {
                           await setFavourite(index);
                         }),

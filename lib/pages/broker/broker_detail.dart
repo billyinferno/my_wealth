@@ -348,10 +348,22 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                   _isExpanded[index] ? const Icon(Ionicons.chevron_up, color: accentColor,) : const Icon(Ionicons.chevron_down, color: Colors.white)
                                 ),
                                 title: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     const SizedBox(width: 10,),
+                                    Visibility(
+                                      visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
+                                      child: const Icon(
+                                        Ionicons.warning,
+                                        color: secondaryColor,
+                                        size: 15,
+                                      )
+                                    ),
+                                    Visibility(
+                                      visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
+                                      child: const SizedBox(width: 5,)
+                                    ),
                                     Text(
                                       '(${_transactionList.brokerSummaryCodeList[index].brokerSummaryCode}) ',
                                       style: const TextStyle(
@@ -360,7 +372,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         fontSize: 12,
                                       ),
                                     ),
-                                    const SizedBox(width: 5,),
                                     Expanded(
                                       child: Text(
                                         _transactionList.brokerSummaryCodeList[index].brokerSummaryName,

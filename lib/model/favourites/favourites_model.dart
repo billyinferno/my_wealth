@@ -23,6 +23,7 @@ class FavouritesModel {
         required this.favouritesCompanySemiAnnualReturn,
         required this.favouritesCompanyYTDReturn,
         required this.favouritesCompanyYearlyReturn,
+        required this.favouritesFCA,
         required this.favouritesLastUpdate,
     });
 
@@ -39,6 +40,7 @@ class FavouritesModel {
     final double favouritesCompanySemiAnnualReturn;
     final double favouritesCompanyYTDReturn;
     final double favouritesCompanyYearlyReturn;
+    final bool favouritesFCA;
     final DateTime favouritesLastUpdate;
 
     factory FavouritesModel.fromJson(Map<String, dynamic> json) => FavouritesModel(
@@ -55,6 +57,7 @@ class FavouritesModel {
         favouritesCompanySemiAnnualReturn: (json["favourites_company_semi_annual_return"] == null ? 0 : json["favourites_company_semi_annual_return"].toDouble()),
         favouritesCompanyYTDReturn: (json["favourites_company_ytd_return"] == null ? 0 : json["favourites_company_ytd_return"].toDouble()),
         favouritesCompanyYearlyReturn: (json["favourites_company_yearly_return"] == null ? 0 : json["favourites_company_yearly_return"].toDouble()),
+        favouritesFCA: (json["favourties_company_fca"] ?? false),
         favouritesLastUpdate: DateTime.parse(json["favourites_last_update"]),
     );
 
@@ -72,6 +75,7 @@ class FavouritesModel {
         "favourites_company_semi_annual_return": favouritesCompanySemiAnnualReturn,
         "favourites_company_ytd_return": favouritesCompanyYTDReturn,
         "favourites_company_yearly_return": favouritesCompanyYearlyReturn,
+        "favourties_company_fca": favouritesFCA,
         "favourites_last_update": favouritesLastUpdate.toIso8601String(),
     };
 }

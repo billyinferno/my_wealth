@@ -164,6 +164,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 date: _df.format(_companySearchResult![index].companyLastUpdate.toLocal()),
                 riskColor: riskColor(_companySearchResult![index].companyNetAssetValue!, _companySearchResult![index].companyPrevPrice!, _userInfo!.risk),
                 canAdd: _companySearchResult![index].companyCanAdd,
+                fca: (_companySearchResult![index].companyFCA ?? false),
                 onPress: (() async {
                   await _addCompanyToWatchlist(index).then((_) async {
                     debugPrint("🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
@@ -208,6 +209,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
           companyName: _companySearchResult![index].companyName,
           companyNetAssetValue: _companySearchResult![index].companyNetAssetValue!,
           companyPrevPrice: _companySearchResult![index].companyPrevPrice!,
+          companyFCA: _companySearchResult![index].companyFCA,
           companyLastUpdate: _companySearchResult![index].companyLastUpdate,
           companyCanAdd: false
         );

@@ -10,10 +10,23 @@ class FavouriteCompanyList extends StatelessWidget {
   final String date;
   final double value;
   final bool isFavourite;
+  final bool fca;
   final VoidCallback onPress;
   final double? subWidgetSpace;
   final Widget? subWidget;
-  const FavouriteCompanyList({ Key? key, required this.companyId, required this.name, required this.type, required this.date, required this.value, required this.isFavourite, required this.onPress, this.subWidgetSpace, this.subWidget }) : super(key: key);
+  const FavouriteCompanyList({
+    Key? key,
+    required this.companyId, 
+    required this.name,
+    required this.type,
+    required this.date,
+    required this.value, 
+    required this.isFavourite,
+    required this.fca,
+    required this.onPress,
+    this.subWidgetSpace, 
+    this.subWidget
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +51,32 @@ class FavouriteCompanyList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Visibility(
+                        visible: fca,
+                        child: const Icon(
+                          Ionicons.warning,
+                          color: secondaryColor,
+                          size: 15,
+                        )
+                      ),
+                      Visibility(
+                        visible: fca,
+                        child: const SizedBox(width: 5,)
+                      ),
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

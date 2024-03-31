@@ -68,6 +68,7 @@ class ExpandedTileView extends StatelessWidget {
           totalValue: (isVisible ? watchlistResult.totalValue : null),
           totalCost: (isVisible ? watchlistResult.totalCost : null),
           averagePrice: (isVisible ? watchlistResult.averagePrice : null),
+          fca: watchlist.watchlistCompanyFCA,
         ),
         initiallyExpanded: isShowedLots,
         collapsedTextColor: textPrimary,

@@ -18,6 +18,7 @@ class WatchlistListModel {
         required this.watchlistCompanyPrevPrice,
         required this.watchlistCompanyLastUpdate,
         required this.watchlistFavouriteId,
+        required this.watchlistCompanyFCA,
         required this.watchlistDetail,
     });
 
@@ -28,6 +29,7 @@ class WatchlistListModel {
     final double? watchlistCompanyNetAssetValue;
     final double? watchlistCompanyPrevPrice;
     final DateTime? watchlistCompanyLastUpdate;
+    final bool? watchlistCompanyFCA;
     final int watchlistFavouriteId;
     final List<WatchlistDetailListModel> watchlistDetail;
 
@@ -39,6 +41,7 @@ class WatchlistListModel {
         watchlistCompanyNetAssetValue: (json["watchlist_company_net_asset_value"] == null ? 0 : json["watchlist_company_net_asset_value"].toDouble()),
         watchlistCompanyPrevPrice: (json["watchlist_company_prev_price"] == null ? 0 : json["watchlist_company_prev_price"].toDouble()),
         watchlistCompanyLastUpdate: (json["watchlist_company_last_update"] == null ? null : DateTime.parse(json["watchlist_company_last_update"])),
+        watchlistCompanyFCA: (json["watchlist_company_fca"] == '' ? false : json["watchlist_company_fca"]),
         watchlistFavouriteId: json["watchlist_favourite_id"],
         watchlistDetail: List<WatchlistDetailListModel>.from(json["watchlist_detail"].map((x) => WatchlistDetailListModel.fromJson(x))),
     );
@@ -51,6 +54,7 @@ class WatchlistListModel {
         "watchlist_company_net_asset_value": watchlistCompanyNetAssetValue!,
         "watchlist_company_prev_price": watchlistCompanyPrevPrice!,
         "watchlist_company_last_update": (watchlistCompanyLastUpdate?.toIso8601String()),
+        "watchlist_company_fca": watchlistCompanyFCA,
         "watchlist_favourite_id": watchlistFavouriteId,
         "watchlist_detail": List<dynamic>.from(watchlistDetail.map((x) => x.toJson())),
     };

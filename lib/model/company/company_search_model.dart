@@ -14,6 +14,7 @@ class CompanySearchModel {
         required this.companyName,
         this.companyNetAssetValue,
         this.companyPrevPrice,
+        required this.companyFCA,
         required this.companyLastUpdate,
         required this.companyCanAdd,
     });
@@ -22,6 +23,7 @@ class CompanySearchModel {
     final String companyName;
     final double? companyNetAssetValue;
     final double? companyPrevPrice;
+    final bool? companyFCA;
     final DateTime companyLastUpdate;
     final bool companyCanAdd;
 
@@ -30,14 +32,17 @@ class CompanySearchModel {
         companyName: json["company_name"].toString(),
         companyNetAssetValue: (json["company_net_asset_value"] == null ? 0 : json["company_net_asset_value"].toDouble()),
         companyPrevPrice: (json["company_prev_price"] == null ? 0 : json["company_prev_price"].toDouble()),
+        companyFCA: (json["company_fca"] ?? false),
         companyLastUpdate: DateTime.parse(json["company_last_update"]),
-        companyCanAdd: true,
+        companyCanAdd: (json["company_watchlist_id"] > 0 ? false : true),
     );
 
     Map<String, dynamic> toJson() => {
         "company_id": companyId,
         "company_name": companyName,
         "company_net_asset_value": companyNetAssetValue!,
+        "company_prev_price": companyPrevPrice,
+        "company_fca": companyFCA,
         "company_last_update": companyLastUpdate.toIso8601String(),
     };
 }

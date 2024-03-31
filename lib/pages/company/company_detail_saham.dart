@@ -244,6 +244,32 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            Visibility(
+              visible: (_companyDetail.companyFCA ?? false),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(5),
+                color: secondaryDark,
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Ionicons.warning,
+                      color: secondaryLight,
+                      size: 10,
+                    ),
+                    SizedBox(width: 5,),
+                    Text(
+                      "This company is flagged with Full Call Auction",
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
             Container(
               color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
               child: Row(

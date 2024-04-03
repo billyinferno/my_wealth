@@ -102,11 +102,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  flutter_localizations:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   flutter_shaders:
     dependency: transitive
     description:
@@ -268,10 +263,10 @@ packages:
     dependency: "direct main"
     description:
       name: month_picker_dialog
-      sha256: "4506f8e42c18e592f1652db9c6466abee4241d9e3f5b20ca798d9798fd29d9c6"
+      sha256: c908f78d506a2ef05ca390375f063c56944790de93943923e41fc6b92ae8f602
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.1"
+    version: "2.11.2"
   nested:
     dependency: transitive
     description:

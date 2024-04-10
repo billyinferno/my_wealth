@@ -9,7 +9,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 
 class CompanyDetailSahamFindOtherPage extends StatefulWidget {
   final Object? args;
-  const CompanyDetailSahamFindOtherPage({Key? key, required this.args}) : super(key: key);
+  const CompanyDetailSahamFindOtherPage({super.key, required this.args});
 
   @override
   State<CompanyDetailSahamFindOtherPage> createState() => _CompanyDetailSahamFindOtherPageState();

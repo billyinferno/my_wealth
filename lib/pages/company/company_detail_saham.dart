@@ -47,7 +47,7 @@ import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class CompanyDetailSahamPage extends StatefulWidget {
   final Object? companyData;
-  const CompanyDetailSahamPage({Key? key, required this.companyData}) : super(key: key);
+  const CompanyDetailSahamPage({super.key, required this.companyData});
 
   @override
   State<CompanyDetailSahamPage> createState() => _CompanyDetailSahamPageState();

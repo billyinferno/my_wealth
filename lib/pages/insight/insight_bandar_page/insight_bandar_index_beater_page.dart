@@ -15,7 +15,7 @@ import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class InsightBandarIndexBeaterPage extends StatefulWidget {
-  const InsightBandarIndexBeaterPage({Key? key}) : super(key: key);
+  const InsightBandarIndexBeaterPage({super.key});
 
   @override
   State<InsightBandarIndexBeaterPage> createState() => InsightBandarIndexBeaterPageState();

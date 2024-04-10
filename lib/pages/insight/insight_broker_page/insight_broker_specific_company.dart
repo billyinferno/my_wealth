@@ -16,7 +16,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 
 class InsightBrokerSpecificCompanyPage extends StatefulWidget {
-  const InsightBrokerSpecificCompanyPage({Key? key}) : super(key: key);
+  const InsightBrokerSpecificCompanyPage({super.key});
 
   @override
   State<InsightBrokerSpecificCompanyPage> createState() => _InsightBrokerSpecificCompanyPageState();

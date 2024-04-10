@@ -23,7 +23,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final bool? fca;
 
   const ExpandedTileTitle({
-    Key? key,
+    super.key,
     required this.name, 
     required this.buy, 
     required this.sell,
@@ -41,7 +41,7 @@ class ExpandedTileTitle extends StatelessWidget {
     this.totalCost,
     this.averagePrice,
     this.fca,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

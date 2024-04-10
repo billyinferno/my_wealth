@@ -15,7 +15,7 @@ class SimpleListItem extends StatelessWidget {
   final double priceChange;
   final int riskFactor;
 
-  const SimpleListItem({ Key? key, this.fca, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor }) : super(key: key);
+  const SimpleListItem({ super.key, this.fca, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor });
 
   @override
   Widget build(BuildContext context) {

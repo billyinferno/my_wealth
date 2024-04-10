@@ -7,7 +7,7 @@ import 'package:my_wealth/utils/globals.dart';
 class WatchlistDetailCreateCalendar extends StatefulWidget {
   final Function(DateTime) onDateChange;
   final DateTime? initialDate;
-  const WatchlistDetailCreateCalendar({ Key? key, required this.onDateChange, this.initialDate }) : super(key: key);
+  const WatchlistDetailCreateCalendar({ super.key, required this.onDateChange, this.initialDate });
 
   @override
   WatchlistDetailCreateCalendarState createState() => WatchlistDetailCreateCalendarState();

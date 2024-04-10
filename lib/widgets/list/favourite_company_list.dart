@@ -15,7 +15,7 @@ class FavouriteCompanyList extends StatelessWidget {
   final double? subWidgetSpace;
   final Widget? subWidget;
   const FavouriteCompanyList({
-    Key? key,
+    super.key,
     required this.companyId, 
     required this.name,
     required this.type,
@@ -26,7 +26,7 @@ class FavouriteCompanyList extends StatelessWidget {
     required this.onPress,
     this.subWidgetSpace, 
     this.subWidget
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

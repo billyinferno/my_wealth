@@ -16,7 +16,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 
 class InsightBrokerSpecificQueryPage extends StatefulWidget {
-  const InsightBrokerSpecificQueryPage({Key? key}) : super(key: key);
+  const InsightBrokerSpecificQueryPage({super.key});
 
   @override
   State<InsightBrokerSpecificQueryPage> createState() => _InsightBrokerSpecificQueryPageState();

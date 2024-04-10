@@ -20,7 +20,7 @@ import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class WatchlistCalendarPage extends StatefulWidget {
   final Object? args;
-  const WatchlistCalendarPage({Key? key, required this.args}) : super(key: key);
+  const WatchlistCalendarPage({super.key, required this.args});
 
   @override
   State<WatchlistCalendarPage> createState() => _WatchlistCalendarPageState();

@@ -30,7 +30,7 @@ class SeasonalityTable extends StatelessWidget {
   final ScrollController? controllerHorizontal;
   final ScrollController? controller;
   final List<SeasonalityModel> data;
-  const SeasonalityTable({Key? key, this.controllerVertical, this.controllerHorizontal, this.controller, required this.data}) : super(key: key);
+  const SeasonalityTable({super.key, this.controllerVertical, this.controllerHorizontal, this.controller, required this.data});
 
   @override
   Widget build(BuildContext context) {

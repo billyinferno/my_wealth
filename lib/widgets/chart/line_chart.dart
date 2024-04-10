@@ -8,7 +8,7 @@ class LineChart extends StatelessWidget {
   final Map<DateTime, int>? watchlist;
   final double? height;
   final bool? showLegend;
-  const LineChart({ Key? key, required this.data, this.height, this.watchlist, this.showLegend }) : super(key: key);
+  const LineChart({ super.key, required this.data, this.height, this.watchlist, this.showLegend });
 
   @override
   Widget build(BuildContext context) {

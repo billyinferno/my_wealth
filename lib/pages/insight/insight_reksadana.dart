@@ -13,7 +13,7 @@ import 'package:my_wealth/widgets/components/selectable_list.dart';
 import 'package:provider/provider.dart';
 
 class InsightReksadanaPage extends StatefulWidget {
-  const InsightReksadanaPage({Key? key}) : super(key: key);
+  const InsightReksadanaPage({super.key});
 
   @override
   State<InsightReksadanaPage> createState() => _InsightReksadanaPageState();

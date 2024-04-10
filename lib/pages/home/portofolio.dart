@@ -16,7 +16,7 @@ import 'package:my_wealth/widgets/list/product_list_item.dart';
 import 'package:provider/provider.dart';
 
 class PortofolioPage extends StatefulWidget {
-  const PortofolioPage({Key? key}) : super(key: key);
+  const PortofolioPage({super.key});
 
   @override
   State<PortofolioPage> createState() => _PortofolioPageState();

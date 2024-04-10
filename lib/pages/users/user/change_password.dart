@@ -8,7 +8,7 @@ import 'package:my_wealth/widgets/components/password_textfields.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({ Key? key }) : super(key: key);
+  const ChangePasswordPage({ super.key });
 
   @override
   ChangePasswordPageState createState() => ChangePasswordPageState();

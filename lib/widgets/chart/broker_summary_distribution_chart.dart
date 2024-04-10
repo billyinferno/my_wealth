@@ -10,7 +10,7 @@ import 'package:my_wealth/widgets/list/expanded_section.dart';
 
 class BrokerSummaryDistributionChart extends StatefulWidget {
   final List<BrokerSummaryAccumulationModel> data;
-  const BrokerSummaryDistributionChart({Key? key, required this.data}) : super(key: key);
+  const BrokerSummaryDistributionChart({super.key, required this.data});
 
   @override
   State<BrokerSummaryDistributionChart> createState() => _BrokerSummaryDistributionChartState();

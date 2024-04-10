@@ -17,7 +17,7 @@ import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
 
 class InsightBandarAccumulationPage extends StatefulWidget {
-  const InsightBandarAccumulationPage({Key? key}) : super(key: key);
+  const InsightBandarAccumulationPage({super.key});
 
   @override
   State<InsightBandarAccumulationPage> createState() => _InsightBandarAccumulationPageState();

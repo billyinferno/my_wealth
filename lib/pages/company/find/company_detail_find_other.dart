@@ -8,7 +8,7 @@ import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class CompanyDetailFindOtherPage extends StatefulWidget {
   final Object? type;
-  const CompanyDetailFindOtherPage({Key? key, required this.type}) : super(key: key);
+  const CompanyDetailFindOtherPage({super.key, required this.type});
 
   @override
   State<CompanyDetailFindOtherPage> createState() => _CompanyDetailFindOtherPageState();

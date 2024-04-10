@@ -10,14 +10,14 @@ class ColumnInfo extends StatelessWidget {
   final double? valueSize;
 
   const ColumnInfo({
-    Key? key,
+    super.key,
     required this.title,
     this.titleColor,
     this.titleSize,
     required this.value,
     this.valueColor,
     this.valueSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

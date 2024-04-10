@@ -13,7 +13,7 @@ class MyTableItem {
 
 class MyTableView extends StatelessWidget {
   final List<MyTableItem> data;
-  const MyTableView({Key? key, required this.data}) : super(key: key);
+  const MyTableView({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

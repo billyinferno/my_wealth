@@ -17,7 +17,7 @@ class ProductListItem extends StatelessWidget {
   final double? oneDay;
   final VoidCallback? onTap;
 
-  const ProductListItem({Key? key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.dayGain, this.netAssetValue, this.oneDay, this.onTap}) : super(key: key);
+  const ProductListItem({super.key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.dayGain, this.netAssetValue, this.oneDay, this.onTap});
 
   @override
   Widget build(BuildContext context) {

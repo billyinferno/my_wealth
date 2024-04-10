@@ -4,7 +4,7 @@ import 'package:my_wealth/themes/colors.dart';
 
 class CommonLoadingPage extends StatelessWidget {
   final bool? isNeedScaffold;
-  const CommonLoadingPage({Key? key, this.isNeedScaffold}) : super(key: key);
+  const CommonLoadingPage({super.key, this.isNeedScaffold});
 
   @override
   Widget build(BuildContext context) {

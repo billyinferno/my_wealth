@@ -10,7 +10,7 @@ import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
 class UpdateBotPage extends StatefulWidget {
-  const UpdateBotPage({Key? key}) : super(key: key);
+  const UpdateBotPage({super.key});
 
   @override
   State<UpdateBotPage> createState() => _UpdateBotPageState();

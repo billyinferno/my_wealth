@@ -13,7 +13,7 @@ import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListCryptoPage extends StatefulWidget {
-  const FavouriteCompanyListCryptoPage({Key? key}) : super(key: key);
+  const FavouriteCompanyListCryptoPage({super.key});
 
   @override
   State<FavouriteCompanyListCryptoPage> createState() => _FavouriteCompanyListCryptoPageState();

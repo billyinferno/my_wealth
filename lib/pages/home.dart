@@ -11,7 +11,7 @@ import 'package:my_wealth/pages/home/watchlists.dart';
 import 'package:my_wealth/themes/colors.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({ Key? key }) : super(key: key);
+  const HomePage({ super.key });
 
   @override
   HomePageState createState() => HomePageState();

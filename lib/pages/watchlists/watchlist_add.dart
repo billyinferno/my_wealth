@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 
 class WatchlistAddPage extends StatefulWidget {
   final Object? watchlistArgs;
-  const WatchlistAddPage({ Key? key, required this.watchlistArgs }) : super(key: key);
+  const WatchlistAddPage({ super.key, required this.watchlistArgs });
 
   @override
   WatchlistAddPageState createState() => WatchlistAddPageState();

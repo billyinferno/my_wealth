@@ -7,12 +7,12 @@ class RowChild extends StatelessWidget {
   final String valueText;
   final Color? valueColor;
   const RowChild({
-    Key? key,
+    super.key,
     required this.headerText,
     this.headerColor,
     required this.valueText,
     this.valueColor
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

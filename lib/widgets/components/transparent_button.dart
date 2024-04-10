@@ -13,7 +13,7 @@ class TransparentButton extends StatelessWidget {
   final Color? activeColor;
   final Color? bgColor;
   final Color? borderColor;
-  const TransparentButton({ Key? key, this.text, this.textSize, this.textColor, required this.icon, this.iconSize, required this.callback, this.active, this.vertical, this.activeColor, this.bgColor, this.borderColor }) : super(key: key);
+  const TransparentButton({ super.key, this.text, this.textSize, this.textColor, required this.icon, this.iconSize, required this.callback, this.active, this.vertical, this.activeColor, this.bgColor, this.borderColor });
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ class ScrollSegmentedControl extends StatefulWidget {
   final Color? selectedBgColor;
   final Color? selectedTextColor;
   final Function(String) onPress;
-  const ScrollSegmentedControl({Key? key, required this.data, this.borderColor, this.bgColor, this.textColor, this.selectedBgColor, this.selectedTextColor, required this.onPress}) : super(key: key);
+  const ScrollSegmentedControl({super.key, required this.data, this.borderColor, this.bgColor, this.textColor, this.selectedBgColor, this.selectedTextColor, required this.onPress});
 
   @override
   State<ScrollSegmentedControl> createState() => ScrollSegmentedControlState();

@@ -15,7 +15,7 @@ class NumberStepper extends StatefulWidget {
   final int? minRate;
   final int? maxRate;
   final Function(int) onTap;
-  const NumberStepper({Key? key, this.height, this.borderColor, this.buttonColor, this.bgColor, this.iconColor, this.iconSize, this.textColor, required this.initialRate, this.ratePrefix, this.minRate, this.maxRate, required this.onTap}) : super(key: key);
+  const NumberStepper({super.key, this.height, this.borderColor, this.buttonColor, this.bgColor, this.iconColor, this.iconSize, this.textColor, required this.initialRate, this.ratePrefix, this.minRate, this.maxRate, required this.onTap});
 
   @override
   State<NumberStepper> createState() => _NumberStepperState();

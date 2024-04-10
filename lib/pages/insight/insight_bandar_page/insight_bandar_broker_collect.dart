@@ -17,7 +17,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 
 class InsightBandarBrokerCollectPage extends StatefulWidget {
-  const InsightBandarBrokerCollectPage({Key? key}) : super(key: key);
+  const InsightBandarBrokerCollectPage({super.key});
 
   @override
   State<InsightBandarBrokerCollectPage> createState() => _InsightBandarBrokerCollectPageState();

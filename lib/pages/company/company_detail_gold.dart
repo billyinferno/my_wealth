@@ -22,7 +22,7 @@ import 'package:my_wealth/widgets/chart/line_chart.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class CompanyDetailGoldPage extends StatefulWidget {
-  const CompanyDetailGoldPage({Key? key}) : super(key: key);
+  const CompanyDetailGoldPage({super.key});
 
   @override
   State<CompanyDetailGoldPage> createState() => _CompanyDetailGoldPageState();

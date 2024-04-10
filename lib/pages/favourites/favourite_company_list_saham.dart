@@ -15,7 +15,7 @@ import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListSahamPage extends StatefulWidget {
-  const FavouriteCompanyListSahamPage({Key? key}) : super(key: key);
+  const FavouriteCompanyListSahamPage({super.key});
 
   @override
   State<FavouriteCompanyListSahamPage> createState() => _FavouriteCompanyListSahamPageState();

@@ -8,7 +8,7 @@ class CompanyDetailPriceList extends StatelessWidget {
   final Color riskColor;
   final String dayDiff;
   final Color dayDiffColor;
-  const CompanyDetailPriceList({ Key? key, required this.date, required this.price, required this.diff, required this.riskColor, required this.dayDiff, required this.dayDiffColor }) : super(key: key);
+  const CompanyDetailPriceList({ super.key, required this.date, required this.price, required this.diff, required this.riskColor, required this.dayDiff, required this.dayDiffColor });
 
   @override
   Widget build(BuildContext context) {

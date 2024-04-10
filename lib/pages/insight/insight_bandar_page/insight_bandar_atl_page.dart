@@ -15,7 +15,7 @@ class InsightBandarAtlPage extends StatefulWidget {
   final String dialogTitle;
   final String dialogDescription;
   final List<BandarInterestAttributes> data;
-  const InsightBandarAtlPage({Key? key, required this.title, required this.dialogTitle, required this.dialogDescription, required this.data}) : super(key: key);
+  const InsightBandarAtlPage({super.key, required this.title, required this.dialogTitle, required this.dialogDescription, required this.data});
 
   @override
   State<InsightBandarAtlPage> createState() => _InsightBandarAtlPageState();

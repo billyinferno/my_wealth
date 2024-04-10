@@ -10,7 +10,7 @@ import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
 class UpdateRiskPage extends StatefulWidget {
-  const UpdateRiskPage({ Key? key }) : super(key: key);
+  const UpdateRiskPage({ super.key });
 
   @override
   UpdateRiskPageState createState() => UpdateRiskPageState();

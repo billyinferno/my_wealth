@@ -23,7 +23,7 @@ import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:provider/provider.dart';
 
 class InsightBrokerPage extends StatefulWidget {
-  const InsightBrokerPage({Key? key}) : super(key: key);
+  const InsightBrokerPage({super.key});
 
   @override
   State<InsightBrokerPage> createState() => _InsightBrokerPageState();

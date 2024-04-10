@@ -4,7 +4,7 @@ import 'package:my_wealth/themes/colors.dart';
 
 class CommonErrorPage extends StatelessWidget {
   final String errorText;
-  const CommonErrorPage({Key? key, required this.errorText}) : super(key: key);
+  const CommonErrorPage({super.key, required this.errorText});
 
   @override
   Widget build(BuildContext context) {

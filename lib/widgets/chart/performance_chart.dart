@@ -23,14 +23,14 @@ class PerformanceChart extends StatelessWidget {
   final String? dateFormat;
 
   const PerformanceChart({
-    Key? key,
+    super.key,
     this.watchlistPerfData,
     this.perfData,
     this.watchlist,
     this.height,
     this.dateOffset,
     this.dateFormat,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

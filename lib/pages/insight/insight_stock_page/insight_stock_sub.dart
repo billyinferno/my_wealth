@@ -19,7 +19,7 @@ import 'package:my_wealth/storage/prefs/shared_user.dart';
 
 class InsightStockSubPage extends StatefulWidget {
   final Object? args;
-  const InsightStockSubPage({Key? key, required this.args}) : super(key: key);
+  const InsightStockSubPage({super.key, required this.args});
 
   @override
   State<InsightStockSubPage> createState() => _InsightStockSubPageState();

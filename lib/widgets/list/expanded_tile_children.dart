@@ -12,15 +12,14 @@ class ExpandedTileChildren extends StatelessWidget {
   final int risk;
 
   const ExpandedTileChildren(
-      {Key? key,
+      {super.key,
       required this.date,
       required this.shares,
       required this.isInLot,
       required this.price,
       required this.currentPrice,
       required this.averagePrice,
-      required this.risk})
-      : super(key: key);
+      required this.risk});
 
   @override
   Widget build(BuildContext context) {

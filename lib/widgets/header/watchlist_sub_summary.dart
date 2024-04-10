@@ -16,7 +16,7 @@ class WatchlistSubSummary extends StatelessWidget {
   final String type;
   final int? totalData;
   final ComputeWatchlistAllResult? compResult;
-  const WatchlistSubSummary({Key? key, required this.dayGain, required this.value, required this.cost, required this.riskFactor, this.isVisible, required this.type, this.totalData, this.compResult}) : super(key: key);
+  const WatchlistSubSummary({super.key, required this.dayGain, required this.value, required this.cost, required this.riskFactor, this.isVisible, required this.type, this.totalData, this.compResult});
 
   @override
   Widget build(BuildContext context) {

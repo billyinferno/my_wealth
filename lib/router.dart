@@ -48,7 +48,7 @@ import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:provider/provider.dart';
 
 class RouterPage extends StatefulWidget {
-  const RouterPage({ Key? key }) : super(key: key);
+  const RouterPage({ super.key });
 
   @override
   RouterPageState createState() => RouterPageState();

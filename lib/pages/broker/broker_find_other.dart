@@ -6,7 +6,7 @@ import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/utils/globals.dart';
 
 class BrokerFindOtherPage extends StatefulWidget {
-  const BrokerFindOtherPage({Key? key}) : super(key: key);
+  const BrokerFindOtherPage({super.key});
 
   @override
   State<BrokerFindOtherPage> createState() => _BrokerFindOtherPageState();

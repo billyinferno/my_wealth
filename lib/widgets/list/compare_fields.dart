@@ -11,7 +11,7 @@ class CompareFields extends StatelessWidget {
   final bool? showCompare;
   final double? isBigger;
   const CompareFields({
-    Key? key,
+    super.key,
     required this.color,
     required this.borderColor,
     required this.text,
@@ -19,7 +19,7 @@ class CompareFields extends StatelessWidget {
     this.textAlign,
     this.showCompare,
     this.isBigger
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 
 class StockCollectExpanded extends StatelessWidget {
   final InsightStockCollectModel data;
-  const StockCollectExpanded({Key? key, required this.data}) : super(key: key);
+  const StockCollectExpanded({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

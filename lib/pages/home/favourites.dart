@@ -18,7 +18,7 @@ import 'package:my_wealth/widgets/list/favourite_list.dart';
 import 'package:provider/provider.dart';
 
 class FavouritesPage extends StatefulWidget {
-  const FavouritesPage({ Key? key }) : super(key: key);
+  const FavouritesPage({ super.key });
 
   @override
   FavouritesPageState createState() => FavouritesPageState();

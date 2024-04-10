@@ -22,12 +22,12 @@ class PerformanceCalendar extends StatelessWidget {
   final List<CalendarDatePL> data;
   final PerformanceCalendarType type;
   const PerformanceCalendar({
-    Key? key,
+    super.key,
     required this.month,
     required this.year,
     required this.data,
     required this.type
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

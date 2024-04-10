@@ -12,7 +12,7 @@ class SearchBox extends StatefulWidget {
   final Color? bgColor;
   final Color? fgColor;
   const SearchBox({
-    Key? key,
+    super.key,
     required this.filterMode,
     required this.filterList,
     required this.filterSort,
@@ -20,7 +20,7 @@ class SearchBox extends StatefulWidget {
     required this.onSortSelect,
     this.bgColor,
     this.fgColor,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchBox> createState() => _SearchBoxState();

@@ -18,7 +18,7 @@ import 'package:my_wealth/widgets/chart/performance_chart.dart';
 
 class WatchlistPerformancePage extends StatefulWidget {
   final Object? args;
-  const WatchlistPerformancePage({Key? key, required this.args}) : super(key: key);
+  const WatchlistPerformancePage({super.key, required this.args});
 
   @override
   State<WatchlistPerformancePage> createState() => _WatchlistPerformancePageState();

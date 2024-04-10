@@ -17,7 +17,7 @@ class ExpandedTileView extends StatelessWidget {
   final String? shareTitle;
   final bool? checkThousandOnPrice;
   final bool showEmptyWatchlist;
-  const ExpandedTileView({Key? key, this.showedLot, this.inLot, required this.risk, required this.isVisible, required this.watchlist, required this.watchlistResult, this.shareTitle, this.checkThousandOnPrice, required this.showEmptyWatchlist}) : super(key: key);
+  const ExpandedTileView({super.key, this.showedLot, this.inLot, required this.risk, required this.isVisible, required this.watchlist, required this.watchlistResult, this.shareTitle, this.checkThousandOnPrice, required this.showEmptyWatchlist});
 
   @override
   Widget build(BuildContext context) {

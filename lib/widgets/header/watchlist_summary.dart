@@ -16,7 +16,7 @@ class WatchlistSummary extends StatelessWidget {
   final bool visibility;
   final VoidCallback onVisibilityPress;
   final ComputeWatchlistAllResult? compResult;
-  const WatchlistSummary({ Key? key, required this.dayGain, required this.value, required this.cost, required this.riskFactor, required this.visibility, required this.onVisibilityPress, this.compResult}) : super(key: key);
+  const WatchlistSummary({ super.key, required this.dayGain, required this.value, required this.cost, required this.riskFactor, required this.visibility, required this.onVisibilityPress, this.compResult});
 
   @override
   Widget build(BuildContext context) {

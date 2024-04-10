@@ -34,7 +34,7 @@ import 'package:my_wealth/widgets/components/watchlist_detail_create_textfields.
 
 class CompanyDetailReksadanaPage extends StatefulWidget {
   final Object? companyData;
-  const CompanyDetailReksadanaPage({ Key? key, required this.companyData }) : super(key: key);
+  const CompanyDetailReksadanaPage({ super.key, required this.companyData });
 
   @override
   CompanyDetailReksadanaPageState createState() => CompanyDetailReksadanaPageState();

@@ -29,7 +29,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistsPage extends StatefulWidget {
-  const WatchlistsPage({ Key? key }) : super(key: key);
+  const WatchlistsPage({ super.key });
 
   @override
   WatchlistsPageState createState() => WatchlistsPageState();

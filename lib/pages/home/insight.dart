@@ -6,7 +6,7 @@ import 'package:my_wealth/pages/insight/insight_stock.dart';
 import 'package:my_wealth/themes/colors.dart';
 
 class InsightPage extends StatefulWidget {
-  const InsightPage({Key? key}) : super(key: key);
+  const InsightPage({super.key});
 
   @override
   State<InsightPage> createState() => InsightPageState();

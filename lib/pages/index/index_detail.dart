@@ -19,7 +19,7 @@ import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class IndexDetailPage extends StatefulWidget {
   final Object? index;
-  const IndexDetailPage({ Key? key, required this.index }) : super(key: key);
+  const IndexDetailPage({ super.key, required this.index });
 
   @override
   IndexDetailPageState createState() => IndexDetailPageState();

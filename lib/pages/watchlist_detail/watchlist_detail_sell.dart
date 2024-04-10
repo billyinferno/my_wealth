@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 
 class WatchlistDetailSellPage extends StatefulWidget {
   final Object? watchlistArgs;
-  const WatchlistDetailSellPage({Key? key, required this.watchlistArgs}) : super(key: key);
+  const WatchlistDetailSellPage({super.key, required this.watchlistArgs});
 
   @override
   State<WatchlistDetailSellPage> createState() => _WatchlistDetailSellPageState();

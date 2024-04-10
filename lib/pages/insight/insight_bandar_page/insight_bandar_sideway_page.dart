@@ -15,7 +15,7 @@ import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
 
 class InsightBandarSidewayPage extends StatefulWidget {
-  const InsightBandarSidewayPage({Key? key}) : super(key: key);
+  const InsightBandarSidewayPage({super.key});
 
   @override
   State<InsightBandarSidewayPage> createState() => _InsightBandarSidewayPageState();

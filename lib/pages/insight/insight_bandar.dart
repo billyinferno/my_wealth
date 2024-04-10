@@ -13,7 +13,7 @@ import 'package:my_wealth/widgets/components/scroll_segmented_control.dart';
 import 'package:provider/provider.dart';
 
 class InsightBandarPage extends StatefulWidget {
-  const InsightBandarPage({Key? key}) : super(key: key);
+  const InsightBandarPage({super.key});
 
   @override
   State<InsightBandarPage> createState() => _InsightBandarPageState();

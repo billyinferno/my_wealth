@@ -11,7 +11,7 @@ class WatchlistList extends StatelessWidget {
   final bool fca;
   final VoidCallback onPress;
   const WatchlistList({
-    Key? key,
+    super.key,
     required this.name,
     required this.price,
     required this.date,
@@ -19,7 +19,7 @@ class WatchlistList extends StatelessWidget {
     required this.canAdd,
     required this.fca,
     required this.onPress
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -15,7 +15,7 @@ import 'package:my_wealth/widgets/components/search_box.dart';
 
 class InsightStockPERListPage extends StatefulWidget {
   final Object? args;
-  const InsightStockPERListPage({Key? key, required this.args}) : super(key: key);
+  const InsightStockPERListPage({super.key, required this.args});
 
   @override
   State<InsightStockPERListPage> createState() => _InsightStockPERListPageState();

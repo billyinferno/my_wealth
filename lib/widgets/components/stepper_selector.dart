@@ -14,7 +14,7 @@ class StepperSelector extends StatefulWidget {
   final double? width; 
   final String? clearText;
   final Function(int) onChanged;
-  const StepperSelector({ Key? key, required this.controller, required this.icon, required this.iconColor, this.iconSize, this.defaultValue, this.minValue, this.maxValue, this.width, this.clearText, required this.onChanged }) : super(key: key);
+  const StepperSelector({ super.key, required this.controller, required this.icon, required this.iconColor, this.iconSize, this.defaultValue, this.minValue, this.maxValue, this.width, this.clearText, required this.onChanged });
 
   @override
   StepperSelectorState createState() => StepperSelectorState();

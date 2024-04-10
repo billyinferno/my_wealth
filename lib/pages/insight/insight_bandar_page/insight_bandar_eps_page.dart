@@ -11,7 +11,7 @@ import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 
 class InsightBandarEPSPage extends StatefulWidget {
-  const InsightBandarEPSPage({Key? key}) : super(key: key);
+  const InsightBandarEPSPage({super.key});
 
   @override
   State<InsightBandarEPSPage> createState() => _InsightBandarEPSPageState();

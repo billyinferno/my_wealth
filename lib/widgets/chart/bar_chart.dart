@@ -16,7 +16,7 @@ class BarChart extends StatelessWidget {
   final double? barHeight;
   final double? legendPadding;
   final bool? showLegend;
-  const BarChart({Key? key, required this.data, this.padding, this.decoration, this.barHeight, this.legendPadding, this.showLegend}) : super(key: key);
+  const BarChart({super.key, required this.data, this.padding, this.decoration, this.barHeight, this.legendPadding, this.showLegend});
 
   @override
   Widget build(BuildContext context) {

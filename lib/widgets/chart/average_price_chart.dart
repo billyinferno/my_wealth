@@ -10,7 +10,7 @@ enum ChartType { avg, ma10, ma20, ma30 }
 class AveragePriceChart extends StatefulWidget {
   final CompanyDetailModel company;
   final List<InfoSahamPriceModel> price;
-  const AveragePriceChart({Key? key, required this.company, required this.price}) : super(key: key);
+  const AveragePriceChart({super.key, required this.company, required this.price});
 
   @override
   State<AveragePriceChart> createState() => _AveragePriceChartState();

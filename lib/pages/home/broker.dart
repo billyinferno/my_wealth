@@ -14,7 +14,7 @@ import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:provider/provider.dart';
 
 class BrokerPage extends StatefulWidget {
-  const BrokerPage({Key? key}) : super(key: key);
+  const BrokerPage({super.key});
 
   @override
   State<BrokerPage> createState() => _BrokerPageState();

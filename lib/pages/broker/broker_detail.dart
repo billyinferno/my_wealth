@@ -18,7 +18,7 @@ import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class BrokerDetailPage extends StatefulWidget {
   final Object? args;
-  const BrokerDetailPage({Key? key, required this.args}) : super(key: key);
+  const BrokerDetailPage({super.key, required this.args});
 
   @override
   State<BrokerDetailPage> createState() => _BrokerDetailPageState();

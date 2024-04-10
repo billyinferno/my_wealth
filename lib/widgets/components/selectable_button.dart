@@ -6,7 +6,7 @@ class SelectableButton extends StatelessWidget {
   final bool selected;
   final VoidCallback? onPress;
 
-  const SelectableButton({Key? key, required this.text, required this.selected, this.onPress}) : super(key: key);
+  const SelectableButton({super.key, required this.text, required this.selected, this.onPress});
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class WatchlistDetailSummaryBox extends StatelessWidget {
   final String title;
   final String text;
-  const WatchlistDetailSummaryBox({ Key? key, required this.title, required this.text }) : super(key: key);
+  const WatchlistDetailSummaryBox({ super.key, required this.title, required this.text });
 
   @override
   Widget build(BuildContext context) {

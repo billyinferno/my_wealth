@@ -9,7 +9,7 @@ class CompanyInfoBox extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
   
-  const CompanyInfoBox({Key? key, required this.header, this.headerColor, this.headerAlign, required this.child, this.onTap}) : super(key: key);
+  const CompanyInfoBox({super.key, required this.header, this.headerColor, this.headerAlign, required this.child, this.onTap});
 
   @override
   Widget build(BuildContext context) {

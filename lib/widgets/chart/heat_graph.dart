@@ -18,7 +18,7 @@ class HeatGraph extends StatelessWidget {
   final bool? enableDailyComparison;
   final UserLoginInfoModel userInfo;
   final bool? weekend;
-  const HeatGraph({ Key? key, this.title, required this.currentPrice, required this.data, required this.userInfo, this.enableDailyComparison, this.weekend }) : super(key: key);
+  const HeatGraph({ super.key, this.title, required this.currentPrice, required this.data, required this.userInfo, this.enableDailyComparison, this.weekend });
 
   @override
   Widget build(BuildContext context) {

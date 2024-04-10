@@ -14,7 +14,7 @@ import 'package:my_wealth/widgets/list/favourite_list.dart';
 import 'package:provider/provider.dart';
 
 class IndexPage extends StatefulWidget {
-  const IndexPage({ Key? key }) : super(key: key);
+  const IndexPage({ super.key });
 
   @override
   IndexPageState createState() => IndexPageState();

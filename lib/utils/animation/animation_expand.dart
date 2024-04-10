@@ -6,7 +6,7 @@ class AnimationExpand extends StatefulWidget {
   final int? duration;
   final Function(bool)? onExpand;
 
-  const AnimationExpand({ Key? key, required this.child, required this.expand, this.duration, this.onExpand}) : super(key: key);
+  const AnimationExpand({ super.key, required this.child, required this.expand, this.duration, this.onExpand});
 
   @override
   AnimationExpandState createState() => AnimationExpandState();

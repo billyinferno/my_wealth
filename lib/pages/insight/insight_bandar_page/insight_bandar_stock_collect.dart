@@ -12,7 +12,7 @@ import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/list/stock_collect_expanded.dart';
 
 class InsightBandarStockCollectPage extends StatefulWidget {
-  const InsightBandarStockCollectPage({Key? key}) : super(key: key);
+  const InsightBandarStockCollectPage({super.key});
 
   @override
   State<InsightBandarStockCollectPage> createState() => InsightBandarStockCollectPageState();

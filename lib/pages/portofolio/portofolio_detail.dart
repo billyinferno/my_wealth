@@ -17,7 +17,7 @@ import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class PortofolioDetailPage extends StatefulWidget {
   final Object? args;
-  const PortofolioDetailPage({Key? key, required this.args}) : super(key: key);
+  const PortofolioDetailPage({super.key, required this.args});
 
   @override
   State<PortofolioDetailPage> createState() => _PortofolioDetailPageState();

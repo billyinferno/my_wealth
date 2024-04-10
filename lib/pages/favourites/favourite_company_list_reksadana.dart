@@ -19,7 +19,7 @@ import 'package:my_wealth/widgets/components/stepper_selector_controller.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListReksadanaPage extends StatefulWidget {
-  const FavouriteCompanyListReksadanaPage({ Key? key }) : super(key: key);
+  const FavouriteCompanyListReksadanaPage({ super.key });
 
   @override
   FavouriteCompanyListReksadanaPageState createState() => FavouriteCompanyListReksadanaPageState();

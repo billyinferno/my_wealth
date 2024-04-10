@@ -12,7 +12,7 @@ class SelectableList extends StatefulWidget {
   final List<SelectableItem> items;
   final String? initialValue;
   final Function(String) onPress;
-  const SelectableList({Key? key, required this.items, this.initialValue, required this.onPress}) : super(key: key);
+  const SelectableList({super.key, required this.items, this.initialValue, required this.onPress});
 
   @override
   State<SelectableList> createState() => _SelectableListState();

@@ -27,7 +27,7 @@ import 'package:my_wealth/widgets/components/selectable_list.dart';
 import 'package:provider/provider.dart';
 
 class InsightStockPage extends StatefulWidget {
-  const InsightStockPage({Key? key}) : super(key: key);
+  const InsightStockPage({super.key});
 
   @override
   State<InsightStockPage> createState() => _InsightStockPageState();

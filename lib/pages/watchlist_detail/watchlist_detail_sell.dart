@@ -8,6 +8,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
@@ -82,11 +83,14 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
               title: "Shares",
+              subTitle: formatDecimalWithNull(_watchlistArgs.currentShare, 1, 5),
+              hintText: formatDecimalWithNull(_watchlistArgs.currentShare, 1, 5),
               decimal: 6,
             ),
             WatchlistDetailCreateTextFields(
               controller: _priceController,
               title: "Price",
+              hintText: formatDecimalWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, 1, 2),
               decimal: 6,
             ),
             const SizedBox(height: 10,),

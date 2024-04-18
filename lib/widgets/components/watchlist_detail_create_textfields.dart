@@ -6,6 +6,7 @@ import 'package:my_wealth/utils/extensions/decimal_formater.dart';
 class WatchlistDetailCreateTextFields extends StatelessWidget {
   final TextEditingController controller;
   final String title;
+  final String? subTitle;
   final int? decimal;
   final int? limit;
   final String? hintText;
@@ -14,6 +15,7 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
     super.key,
     required this.controller,
     required this.title,
+    this.subTitle,
     this.decimal,
     this.limit,
     this.hintText,
@@ -24,6 +26,7 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
     int dec = (decimal ?? 4);
     int lim = (limit ?? 12);
     String? currHintText = (hintText ?? "0.00");
+    String currSubTitle = (subTitle ?? "");
     bool isDecimal = (dec > 0 ? true : false);
 
     List<TextInputFormatter> formatter = [];
@@ -47,12 +50,29 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           const SizedBox(width: 10,),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: secondaryLight,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: secondaryLight,
+                ),
+              ),
+              Visibility(
+                visible: currSubTitle.isNotEmpty,
+                child: Text(
+                  currSubTitle,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                    color: primaryLight
+                  ),
+                )
+              ),
+            ],
           ),
           const SizedBox(width: 10,),
           Expanded(

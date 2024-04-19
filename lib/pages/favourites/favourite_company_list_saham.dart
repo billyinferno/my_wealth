@@ -49,6 +49,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     _filterList["6m"] = "Six Month";
     _filterList["yt"] = "Year To Date";
     _filterList["1y"] = "One Year";
+    _filterList["fc"] = "Full Call Auction";
 
     // default filter mode to Code and ASC
     _filterMode = "nm";
@@ -308,6 +309,19 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
       }
       else {
         _sortedFaveList = List<FavouritesListModel>.from(_filterFaveList.reversed);
+      }
+    }
+    else if (_filterMode == "fc") {
+      _sortedFaveList.clear();
+      for(int i=0; i<_filterFaveList.length; i++) {
+        if(_filterFaveList[i].favouritesFCA ?? false) {
+          _sortedFaveList.add(_filterFaveList[i]);
+        }
+      }
+
+      // check if ascending or descending
+      if (_filterSort != "ASC") {
+        _sortedFaveList = List<FavouritesListModel>.from(_sortedFaveList.reversed);
       }
     }
     else {

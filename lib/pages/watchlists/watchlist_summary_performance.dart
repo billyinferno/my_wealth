@@ -51,6 +51,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late int _totalData;
   late String _graphSelection;
   late String _dateFormat;
+  late double _gainDifference;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _perfDataDaily = [];
     _perfDataMonhtly = [];
     _perfDataYearly = [];
+    _gainDifference = 0;
 
     // defaulted the graph selection into 90 day
     _graphSelection = '9';
@@ -210,7 +212,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 ],
               ),
             ),
-            _showChart(),
+            const SizedBox(height: 10,),
             SizedBox(
               width: double.infinity,
               child: CupertinoSegmentedControl(
@@ -244,6 +246,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         _dateFormat = "dd/MM";
                         break;
                     }
+
+                    // calculate the gain difference
+                    _calculateGainDifference();
                   });
                 }),
                 groupValue: _graphSelection,
@@ -252,7 +257,26 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 pressedColor: primaryDark,
               ),
             ),
-            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                  decoration: BoxDecoration(
+                    color: (_gainDifference < 0 ? secondaryDark : Colors.green[900]),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Text(
+                    formatCurrency(_gainDifference, false, true, false, 2),
+                    style: const TextStyle(
+                      fontSize: 10,
+                    ),
+                  )
+                ),
+              ),
+            ),
+            _showChart(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -718,6 +742,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           break;
     }
 
+    // calculate the gain difference
+    _calculateGainDifference();
+
     _totalData = _perfData.length;
     if (_totalData > 0) {
       _max = max;
@@ -735,5 +762,17 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     }
 
     return true;
+  }
+
+  void _calculateGainDifference() {
+    // ensure that we have data first
+    if (_perfData.isNotEmpty) {
+      // compute array 0 and length-1 to get the gain difference
+      _gainDifference = _perfData[_perfData.length-1].gain - _perfData[0].gain;
+    }
+    else {
+      // if watchlist is empty, then defaulted to 0
+      _gainDifference = 0;
+    }
   }
 }

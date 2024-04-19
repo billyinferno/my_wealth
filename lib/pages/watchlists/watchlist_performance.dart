@@ -51,6 +51,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late int _totalData;
   late String _graphSelection;
   late String _dateFormat;
+  late double _gainDifference;
 
   @override
   void initState() {
@@ -113,6 +114,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     _watchlistPerformanceDaily = [];
     _watchlistPerformanceMonth = [];
     _watchlistPerformanceYear = [];
+    _gainDifference = 0;
     
     // get initial data
     _getData = _getInitData();
@@ -331,12 +333,34 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         _dateFormat = "dd/MM";
                         break;
                     }
+
+                    // calculate the gain difference
+                    _calculateGainDifference();
                   });
                 }),
                 groupValue: _graphSelection,
                 selectedColor: secondaryColor,
                 borderColor: secondaryDark,
                 pressedColor: primaryDark,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                  decoration: BoxDecoration(
+                    color: (_gainDifference < 0 ? secondaryDark : Colors.green[900]),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Text(
+                    formatCurrency(_gainDifference, false, true, false, 2),
+                    style: const TextStyle(
+                      fontSize: 10,
+                    ),
+                  )
+                ),
               ),
             ),
             SizedBox(
@@ -660,6 +684,9 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             break;
         }
 
+        // calculate the gain difference
+        _calculateGainDifference();
+
         // get the maximum and minimum
         _totalData = 0;
         
@@ -753,5 +780,33 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     }
 
     return true;
+  }
+
+  void _calculateGainDifference() {
+    double firstTotal = 0;
+    double lastTotal = 0;
+
+    // calculate the gain difference by checking the first data of
+    // _watchlistPerfomance and the last.
+    // ensure that we have data first
+    if (_watchlistPerformance.isNotEmpty) {
+      // compute array 0 and length-1 to get the gain difference
+      // get the first total
+      firstTotal = (
+          _watchlistPerformance[0].currentPrice * _watchlistPerformance[0].buyTotal
+        ) - _watchlistPerformance[0].buyAmount;
+
+      // calculate the last total                      
+      lastTotal = (
+          _watchlistPerformance[(_watchlistPerformance.length-1)].currentPrice *
+          _watchlistPerformance[_watchlistPerformance.length-1].buyTotal
+        ) - _watchlistPerformance[_watchlistPerformance.length-1].buyAmount;
+
+      _gainDifference = lastTotal - firstTotal;
+    }
+    else {
+      // if watchlist is empty, then defaulted to 0
+      _gainDifference = 0;
+    }
   }
 }

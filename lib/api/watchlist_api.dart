@@ -284,7 +284,7 @@ class WatchlistAPI {
 
   Future<WatchlistPriceFirstAndLastDateModel> findFirstLastDate(String type, int? id) async {
     // create the base url
-      String url = '${Globals.apiWatchlistDetails}/firstlast/$type';
+      String url = '${Globals.apiWatchlists}/firstlast/$type';
       
       // in case this is not all, then add the id on the back
       if (type.toLowerCase() != 'all') {

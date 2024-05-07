@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/list_equals.dart';
 import 'package:my_wealth/widgets/chart/heat_graph.dart';
 
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
   final Map<DateTime, int>? watchlist;
   final bool? showLegend;
+  final int? dateOffset;
   
-  const LineChartPainter({required this.data, this.watchlist, this.showLegend});
+  const LineChartPainter({required this.data, this.watchlist, this.showLegend, this.dateOffset});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -28,8 +30,8 @@ class LineChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(LineChartPainter oldDelegate) {
+    return listEquals<GraphData>(oldDelegate.data, data);
   }
 
   double _maxData() {
@@ -116,7 +118,7 @@ class LineChartPainter extends CustomPainter {
     double ma13Count = 0;
 
     // check for the date print offset
-    int datePrintOffset = 10;
+    int datePrintOffset = (dateOffset ?? 10);
     if (data.length < datePrintOffset) {
       datePrintOffset = data.length - 1;
     }

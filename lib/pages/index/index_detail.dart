@@ -6,16 +6,16 @@ import 'package:my_wealth/model/index/index_model.dart';
 import 'package:my_wealth/model/index/index_price_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
 import 'package:my_wealth/widgets/chart/heat_graph.dart';
 import 'package:my_wealth/widgets/chart/line_chart.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class IndexDetailPage extends StatefulWidget {
   final Object? index;
@@ -35,13 +35,17 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late UserLoginInfoModel? _userInfo;
   late String _indexName;
 
+  late Future<bool> _getData;
+  
+  final Map<int, List<IndexPriceModel>> _indexPriceData = {};
+  late int _currentIndexPrice;
+  final Map<DateTime, GraphData> _graphData = {};
+  final Map<DateTime, GraphData> _heatMapGraphData = {};
+
   double _priceDiff = 0;
   Color _riskColor = Colors.green;
-  bool _isLoading = true;
   bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
-  List<IndexPriceModel> _indexPrice = [];
-  Map<DateTime, GraphData>? _graphData;
   int _numPrice = 0;
   double? _minPrice;
   double? _maxPrice;
@@ -55,33 +59,31 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     if (Globals.indexName.containsKey(_index.indexName)) {
       _indexName = "($_indexName) ${Globals.indexName[_indexName]}";
     }
+
+    // default the index price data to 30
+    _currentIndexPrice = 30;
+
+    // clear both index price data and graphdata
+    _graphData.clear();
+    _indexPriceData.clear();
+
+    // initialize all the 30, 90, 180, and 365
+    _indexPriceData[30] = [];
+    _indexPriceData[60] = [];
+    _indexPriceData[90] = [];
+    _indexPriceData[180] = [];
+    _indexPriceData[365] = [];
+
     _userInfo = UserSharedPreferences.getUserInfo();
 
     _priceDiff = _index.indexNetAssetValue - _index.indexPrevPrice;
     _riskColor = riskColor(_index.indexNetAssetValue, _index.indexPrevPrice, _userInfo!.risk);
-    _indexPrice = [];
     _bodyPage = 0;
     _numPrice = 0;
 
-    _isLoading = true;
     _showCurrentPriceComparison = false;
 
-    // initialize graph data
-    _graphData = {};
-
-    Future.microtask(() async {
-      // show loader
-      showLoaderDialog(context);
-      await _getIndexPriceDetail().then((_) async {
-        // await Future.delayed(const Duration(seconds: 3));
-        debugPrint("🏁 Get index price detail");
-      }).onError((error, stackTrace) {
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-      }).whenComplete(() {
-        // remove loader
-        Navigator.pop(context);
-      });
-    });
+    _getData = _getAllData();
   }
 
   @override
@@ -94,12 +96,20 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(_isLoading) {
-      return blank();
-    }
-    else {
-      return body();
-    }
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Unable to get index price data');
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      },
+    );
   }
 
   Widget blank() {
@@ -108,7 +118,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     );
   }
 
-  Widget body() {
+  Widget _body() {
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -387,81 +397,142 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     );
   }
 
-  Future<void> _getIndexPriceDetail() async {
-    await _indexApi.getIndexPrice(_index.indexId).then((resp) {
-      _indexPrice = resp;
+  Future<bool> _getAllData() async {
+    await Future.wait([
+      _getIndexPriceDate().then((_) {
+        debugPrint("🏁 Get index price detail");
+      }),
+    ]).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+      throw Exception("Error when get indices price data");
+    },);
+    
+    return true;
+  }
 
-      // loop on the resp and put it on the graph
-      List<GraphData> tempData = [];
-      int totalData = 0;
+  Future<void> _getIndexPriceDate() async {
+    // get the 1 year, and from this we can generate the 30, 90, 180, 365
+    DateTime oneYearAgo = DateTime.now().subtract(const Duration(days: 365));
+
+    // get the data from API
+    await _indexApi.getIndexPriceDate(_index.indexId, oneYearAgo.toLocal(), DateTime.now().toLocal()).then((resp) {
+      // clear the _indexPriceData first
+      _indexPriceData.clear();
+
+      // initialize all the 30, 90, 180, and 365
+      _indexPriceData[30] = [];
+      _indexPriceData[60] = [];
+      _indexPriceData[90] = [];
+      _indexPriceData[180] = [];
+      _indexPriceData[365] = [];
 
       // initialize the minimum, maximum, and total price
       double totalPrice = 0;
       _minPrice = double.maxFinite;
       _maxPrice = double.minPositive;
+      _numPrice = 0;
 
-      // just loop the last 64 data of the index, no need to care about the date
-      // as it should be handle by the API call to select the data from the last date backward.
-      for (int i = 0; i < resp.length; i++) {
-        // add current index price to the temporary data
-        tempData.add(GraphData(date: resp[i].indexPriceDate.toLocal(), price: resp[i].indexPriceValue));
+      for (int i=0; i < resp.length; i++) {
+        // add the 30 days
+        if (i < 30) {
+          _indexPriceData[30]!.add(resp[i]);
+        }
 
-        if(_numPrice < 29) {
+        // add the 60 days
+        if (i < 60) {
+          _indexPriceData[60]!.add(resp[i]);
+        }
+
+        // add the 90 days
+        if (i < 90) {
+          _indexPriceData[90]!.add(resp[i]);
+        }
+
+        // add the 180 days
+        if (i < 180) {
+          _indexPriceData[180]!.add(resp[i]);
+        }
+
+        // for the total, minimum, and maximum, we will follow what is being
+        // selected on the graph
+        if (i < _currentIndexPrice) {
+          // add price
+          totalPrice += resp[i].indexPriceValue;
+          _numPrice++;
+
+          // check for minimum price and maximum price
           if(_minPrice! > resp[i].indexPriceValue) {
             _minPrice = resp[i].indexPriceValue;
           }
+
           if(_maxPrice! < resp[i].indexPriceValue) {
             _maxPrice = resp[i].indexPriceValue;
           }
-          totalPrice += resp[i].indexPriceValue;
-          _numPrice++;
         }
 
-        // add total data, and if already 64 break the list
-        totalData += 1;
-        // check total data now
-        if(totalData >= 64) {
-          break;
-        }
+        // add the 365 days
+        _indexPriceData[365]!.add(resp[i]);
       }
 
-      // add the current price which only in index
-      tempData.add(GraphData(date: _index.indexLastUpdate.toLocal(), price: _index.indexNetAssetValue));
-
-      // check the current price to min, max, and total
-      if(_minPrice! > _index.indexNetAssetValue) {
-        _minPrice = _index.indexNetAssetValue;
+      _avgPrice = 0;
+      // check if we have _numPrice or not?
+      if (_numPrice > 0) {
+        _avgPrice = totalPrice / _numPrice;
       }
-      if(_maxPrice! < _index.indexNetAssetValue) {
-        _maxPrice = _index.indexNetAssetValue;
-      }
-      totalPrice += _index.indexNetAssetValue;
-      _numPrice++;
 
-      // get average price
-      _avgPrice = totalPrice / _numPrice;
+      // generate current graph data
+      _generateGraphData();
 
-      // once got the data now sort it
-      tempData.sort((a, b) {
-        return a.date.compareTo(b.date);
-      });
-
-      // once sorted, then we can put it on map
-      for (GraphData data in tempData) {
-        _graphData![data.date] = data;
-        // debugPrint(_data.date.toString());
-      }
-      // debugPrint("--- END OF SORTED DATA ---");
-    }).whenComplete(() {
-      // when finished then set the isLoading into false to loead the body
-      _setIsLoading(false);
+      // generate heat map data
+      _generateHeatMapGraphData();
     });
   }
 
-  void _setIsLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
+  void _generateGraphData() {
+    // get the price data we want to generate the graph
+    List<IndexPriceModel> priceData = (_indexPriceData[_currentIndexPrice] ?? []);
+    
+    // copy the data to another list, so we will not change the list value
+    List<IndexPriceModel> tempData = priceData.toList();
+    // now sort the temp data
+    tempData.sort((a, b) {
+      return a.indexPriceDate.compareTo(b.indexPriceDate);
     });
+    
+    // clear the graph data
+    _graphData.clear();
+
+    // loop thru price data and generate the graph data
+    for(int i=0; i < tempData.length; i++) {
+      _graphData[tempData[i].indexPriceDate] = GraphData(
+        date: tempData[i].indexPriceDate,
+        price: tempData[i].indexPriceValue,
+      );
+    }
+  }
+
+  void _generateHeatMapGraphData() {
+    // get the price data we want to generate the graph
+    List<IndexPriceModel> priceData = (_indexPriceData[90] ?? []);
+    
+    // copy the data to another list, so we will not change the list value
+    List<IndexPriceModel> tempData = priceData.toList();
+    // now sort the temp data
+    tempData.sort((a, b) {
+      return a.indexPriceDate.compareTo(b.indexPriceDate);
+    });
+    
+    // clear the graph data
+    _heatMapGraphData.clear();
+
+    // loop thru price data and generate the graph data
+    for(int i=0; i < tempData.length; i++) {
+      _heatMapGraphData[tempData[i].indexPriceDate] = GraphData(
+        date: tempData[i].indexPriceDate,
+        price: tempData[i].indexPriceValue,
+      );
+    }
   }
 
   List<Widget> _detail() {
@@ -483,9 +554,39 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     graph.add(SingleChildScrollView(
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      child: LineChart(
-        data: _graphData!,
-        height: 250,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: double.infinity,
+            child: CupertinoSegmentedControl(
+              children: const {
+                30: Text("30D"),
+                60: Text("2M"),
+                90: Text("3M"),
+                180: Text("6M"),
+                365: Text("1Y"),
+              },
+              onValueChanged: ((value) {
+                setState(() {
+                  _currentIndexPrice = value;
+                  _generateGraphData();
+                });
+              }),
+              groupValue: _currentIndexPrice,
+              selectedColor: secondaryColor,
+              borderColor: secondaryDark,
+              pressedColor: primaryDark,
+            ),
+          ),
+          const SizedBox(height: 5,),
+          LineChart(
+            data: _graphData,
+            height: 250,
+            dateOffset: (_graphData.length ~/ 9),
+          ),
+        ],
       ),
     ));
 
@@ -532,7 +633,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               ),
               const SizedBox(height: 5,),
               HeatGraph(
-                data: _graphData!,
+                data: _heatMapGraphData,
                 userInfo: _userInfo!,
                 currentPrice: _index.indexNetAssetValue,
                 enableDailyComparison: _showCurrentPriceComparison,
@@ -663,17 +764,17 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       child: ListView(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
-        children: List<Widget>.generate(_indexPrice.length, (index) {
+        children: List<Widget>.generate(_indexPriceData[180]!.length, (index) {
           double? dayDiff;
           Color dayDiffColor = Colors.transparent;
-          if((index + 1) < _indexPrice.length) {
-            double? currDayPrice = _indexPrice[index].indexPriceValue;
-            double? prevDayPrice = _indexPrice[index+1].indexPriceValue;
+          if((index + 1) < _indexPriceData[180]!.length) {
+            double? currDayPrice = _indexPriceData[180]![index].indexPriceValue;
+            double? prevDayPrice = _indexPriceData[180]![index+1].indexPriceValue;
             dayDiff = (currDayPrice - prevDayPrice);
             dayDiffColor = riskColor(currDayPrice, prevDayPrice, _userInfo!.risk);
           }
           return Container(
-            color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
+            color: riskColor(_index.indexNetAssetValue, _indexPriceData[180]![index].indexPriceValue, _userInfo!.risk),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -690,7 +791,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         Expanded(
                           flex: 2,
                           child: Text(
-                            Globals.dfddMMyyyy.format(_indexPrice[index].indexPriceDate.toLocal()),
+                            Globals.dfddMMyyyy.format(_indexPriceData[180]![index].indexPriceDate.toLocal()),
                             style: const TextStyle(
                               fontSize: 12,
                             ),
@@ -700,7 +801,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         Expanded(
                           flex: 1,
                           child: Text(
-                            formatCurrency(_indexPrice[index].indexPriceValue),
+                            formatCurrency(_indexPriceData[180]![index].indexPriceValue),
                             style: const TextStyle(
                               fontSize: 12,
                             ),
@@ -717,13 +818,13 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                 border: Border(
                                   bottom: BorderSide(
                                     width: 2.0,
-                                    color: riskColor(_index.indexNetAssetValue, _indexPrice[index].indexPriceValue, _userInfo!.risk),
+                                    color: riskColor(_index.indexNetAssetValue, _indexPriceData[180]![index].indexPriceValue, _userInfo!.risk),
                                     style: BorderStyle.solid,
                                   )
                                 )
                               ),
                               child: Text(
-                                formatCurrency(_index.indexNetAssetValue - _indexPrice[index].indexPriceValue),
+                                formatCurrency(_index.indexNetAssetValue - _indexPriceData[180]![index].indexPriceValue),
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),

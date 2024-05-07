@@ -5,7 +5,7 @@ import 'package:my_wealth/model/index/index_price_model.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
 
-class IndexAPI {
+class IndexAPI {  
   Future<List<IndexModel>> getIndex() async {
     // get the index data using netutils
     final String body = await NetUtils.get(
@@ -29,6 +29,25 @@ class IndexAPI {
     // get the index data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/$indexId'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
+      }
+    );
+
+    // parse the response to get the list of price for specific index data
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<IndexPriceModel> listIndexPrice = [];
+    for (var data in commonModel.data) {
+      IndexPriceModel indexPrice = IndexPriceModel.fromJson(data['attributes']);
+      listIndexPrice.add(indexPrice);
+    }
+    return listIndexPrice;
+  }
+
+  Future<List<IndexPriceModel>> getIndexPriceDate(int indexID, DateTime from, DateTime to) async {
+    // get the index data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiIndicePrice}/id/$indexID/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }

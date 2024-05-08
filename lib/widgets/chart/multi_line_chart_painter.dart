@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/list_equals.dart';
 
 class MultiLineChartPainter extends CustomPainter {
   final double min;
@@ -49,8 +50,8 @@ class MultiLineChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(MultiLineChartPainter oldDelegate) {
+    return listEquals<Map<String, double>>(oldDelegate.data, data);
   }
 
   void _draw0Point(Canvas canvas, Size size, Offset center) {

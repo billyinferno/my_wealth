@@ -3,6 +3,7 @@ import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/list_equals.dart';
 
 class Candle {
   final double centerX;
@@ -13,7 +14,15 @@ class Candle {
   final String? dateText;
   final Paint paint;
   
-  Candle({required this.centerX, required this.wickHighY, required this.wickLowY, required this.candleHighY, required this.candleLowY, required this.paint, this.dateText});
+  Candle({
+    required this.centerX,
+    required this.wickHighY,
+    required this.wickLowY,
+    required this.candleHighY,
+    required this.candleLowY,
+    required this.paint,
+    this.dateText,
+  });
 }
 
 class StockCandleStickPainter extends CustomPainter {
@@ -21,6 +30,8 @@ class StockCandleStickPainter extends CustomPainter {
   final int maxHigh;
   final int minLow;
   int? padding;
+  final int? dateOffset;
+
   final Paint _wickPaint;
   final Paint _gainPaint;
   final Paint _lossPaint;
@@ -33,6 +44,7 @@ class StockCandleStickPainter extends CustomPainter {
     required this.stockData,
     required this.maxHigh,
     required this.minLow,
+    this.dateOffset,
     this.padding,
   }) : _wickPaint = Paint()..color = Colors.grey,
        _gainPaint = Paint()..color = Colors.green,
@@ -125,6 +137,8 @@ class StockCandleStickPainter extends CustomPainter {
     bool samePrice;
     String dateText = "";
     int adjustedOpenPrice;
+    int currentDateOffset = (dateOffset ?? 10);
+    
     for(int i = 0; i < totalData!; i++) {
       dateText = "";
       samePrice = false;
@@ -171,7 +185,7 @@ class StockCandleStickPainter extends CustomPainter {
       }
 
       // check if current i % 10?
-      if (i % 10 == 0) {
+      if (i % currentDateOffset == 0) {
         dateText = formatDate(date: stockData[i].date, format: 'dd/MM');
       }
 
@@ -190,8 +204,9 @@ class StockCandleStickPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(StockCandleStickPainter oldDelegate) {
+    return listEquals<InfoSahamPriceModel>(oldDelegate.stockData, stockData);
+    
   }
 
   void _drawText(Canvas canvas, Offset position, double width, String text, double left, double top) {

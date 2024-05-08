@@ -34,6 +34,7 @@ import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/chart/average_price_chart.dart';
 import 'package:my_wealth/widgets/chart/broker_summary_distribution_chart.dart';
 import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
+import 'package:my_wealth/widgets/chart/stock_chart.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
@@ -41,8 +42,6 @@ import 'package:my_wealth/widgets/list/compare_fields.dart';
 import 'package:my_wealth/widgets/chart/heat_graph.dart';
 import 'package:my_wealth/widgets/chart/line_chart.dart';
 import 'package:my_wealth/widgets/chart/seasonality_table.dart';
-import 'package:my_wealth/widgets/chart/stock_candlestick_painter.dart';
-import 'package:my_wealth/widgets/chart/stock_volume_painter.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 
 class CompanyDetailSahamPage extends StatefulWidget {
@@ -82,6 +81,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late List<InfoFundamentalsModel> _infoFundamental;
   late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
+  final Map<int, List<InfoSahamPriceModel>> _infoSahamPriceData = {};
+  late int _currentInfoSahamPrice;
   late String _brokerSummarySelected;
   late Map<DateTime, int> _watchlistDetail;
   late String? _otherCompanyCode;
@@ -114,7 +115,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   
   bool _showCurrentPriceComparison = false;
   bool _showNet = true;
-  Map<DateTime, GraphData>? _graphData;
+  final Map<DateTime, GraphData> _graphData = {};
+  final Map<DateTime, GraphData> _heatMapGraphData = {};
   
   int _numPrice = 0;
   int _bodyPage = 0;
@@ -150,7 +152,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize graph data
-    _graphData = {};
+    _graphData.clear();
+    _heatMapGraphData.clear();
 
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
@@ -165,6 +168,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // initialize info fundamental with empty array
     _infoFundamental = [];
+
+    // initialize the info price saham
+    _infoSahamPrice = [];
+    _infoSahamPriceData.clear();
+    
+    // initialize all the info
+    _infoSahamPriceData[30] = [];
+    _infoSahamPriceData[60] = [];
+    _infoSahamPriceData[90] = [];
+    _infoSahamPriceData[180] = [];
+    _infoSahamPriceData[365] = [];
+
+    // default saham price to 90
+    _currentInfoSahamPrice = 90;
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -2482,7 +2499,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                   ),
                   const SizedBox(height: 5,),
                   HeatGraph(
-                    data: _graphData!,
+                    data: _heatMapGraphData,
                     userInfo: _userInfo!,
                     currentPrice: _companyDetail.companyNetAssetValue!,
                     enableDailyComparison: _showCurrentPriceComparison,
@@ -2658,28 +2675,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             const Center(
               child: Text("Candlestick and Trade Volume"),
             ),
+            const SizedBox(height: 5,),
+            _dayStatSelection(),
             const SizedBox(height: 10,),
-            SizedBox(
-              height: 160,
-              child: CustomPaint(
-                size: Size.infinite,
-                painter: StockCandleStickPainter(
-                  stockData: _infoSahamPrice,
-                  maxHigh: _maxHigh!,
-                  minLow: _minLow!,
-                ),
-              ),
-            ),
-            const SizedBox(height: 15,),
-            SizedBox(
-              height: 30,
-              child: CustomPaint(
-                size: Size.infinite,
-                painter: StockVolumePainter(
-                  stockData: _infoSahamPrice,
-                  maxVolume: _maxVolume!,
-                ),
-              ),
+            StockChart(
+              data: _infoSahamPrice,
+              high: _maxHigh!,
+              low: _minLow!,
+              maxVol: _maxVolume!,
+              dateOffset: (_infoSahamPrice.length ~/ 10),
             ),
           ],
         );
@@ -2692,14 +2696,45 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             const Center(
               child: Text("Stock Price"),
             ),
+            const SizedBox(height: 5,),
+            _dayStatSelection(),
             LineChart(
-              data: _graphData!,
+              data: _graphData,
               height: 250,
               watchlist: _watchlistDetail,
+              dateOffset: (_graphData.length ~/ 9),
             ),
           ],
         );
     }
+  }
+
+  Widget _dayStatSelection() {
+    return SizedBox(
+      width: double.infinity,
+      child: CupertinoSegmentedControl(
+        children: const {
+          30: Text("30D"),
+          60: Text("2M"),
+          90: Text("3M"),
+          180: Text("6M"),
+          365: Text("1Y"),
+        },
+        onValueChanged: ((value) {
+          setState(() {
+            _currentInfoSahamPrice = value;
+            _infoSahamPrice = _infoSahamPriceData[_currentInfoSahamPrice]!;
+
+            _calculateMinMaxPrice(_infoSahamPrice);
+            _generateGraphData(_infoSahamPrice, _companyDetail);
+          });
+        }),
+        groupValue: _currentInfoSahamPrice,
+        selectedColor: extendedColor,
+        borderColor: Colors.transparent,
+        pressedColor: textPrimary,
+      ),
+    );
   }
 
   Widget _showGraph() {
@@ -2713,8 +2748,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           child: CupertinoSegmentedControl(
             children: const {
               "s": Text("Daily"),
-              "m": Text("Monthly"),
               "c": Text("Candle"),
+              "m": Text("Monthly"),
               "b": Text("Broker"),
             },
             onValueChanged: ((value) {
@@ -2832,46 +2867,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   void _generateGraphData(List<InfoSahamPriceModel> prices, CompanyDetailModel company) {
     // map the price date on company
     List<GraphData> tempData = [];
-    int totalData = 0;
     double totalPrice = 0;
     int totalPriceData = 0;
 
     _minPrice = double.maxFinite;
     _maxPrice = double.minPositive;
 
-    // move the last update to friday
-    int addDay = 5 - company.companyLastUpdate!.toLocal().weekday;
-    DateTime endDate = company.companyLastUpdate!.add(Duration(days: addDay));
-
-    // then go 14 weeks before so we knew the start date
-    DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
-    // only get the 1st 64 data, since we will want to get the latest data
+    // loop thru all the prices
     for (InfoSahamPriceModel price in prices) {
-      // ensure that all the data we will put is more than or equal with startdate
-      if(price.date.compareTo(startDate) >= 0) {
-        tempData.add(GraphData(date: price.date.toLocal(), price: price.lastPrice.toDouble()));
-        totalData += 1;
-      }
+      tempData.add(GraphData(date: price.date.toLocal(), price: price.lastPrice.toDouble()));
 
       // count for minimum, maximum, and average
-      if(totalPriceData < 29) {
-        if(_minPrice! > price.lastPrice.toDouble()) {
-          _minPrice = price.lastPrice.toDouble();
-        }
-
-        if(_maxPrice! < price.lastPrice.toDouble()) {
-          _maxPrice = price.lastPrice.toDouble();
-        }
-
-        totalPrice += price.lastPrice.toDouble();
-        totalPriceData++;
+      if(_minPrice! > price.lastPrice.toDouble()) {
+        _minPrice = price.lastPrice.toDouble();
       }
 
-      // if total data already more than 64 break  the data, as heat map only will display 65 data
-      if(totalData >= 64) {
-        break;
+      if(_maxPrice! < price.lastPrice.toDouble()) {
+        _maxPrice = price.lastPrice.toDouble();
       }
+
+      totalPrice += price.lastPrice.toDouble();
+      totalPriceData++;
     }
 
     // add the current price which only in company
@@ -2885,12 +2901,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     if(_maxPrice! < company.companyNetAssetValue!) {
       _maxPrice = company.companyNetAssetValue!;
     }
-
-    totalPrice += company.companyNetAssetValue!;
-    totalPriceData++;
     
     // compute average
-    _avgPrice = totalPrice / totalPriceData;
+    _avgPrice = 0;
+    if (totalPriceData > 0) {
+      _avgPrice = totalPrice / totalPriceData;
+    }
     _numPrice = totalPriceData;
 
     // sort the temporary data
@@ -2899,8 +2915,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     });
 
     // once sorted, then we can put it on map
+    _graphData.clear();
     for (GraphData data in tempData) {
-      _graphData![data.date] = data;
+      _graphData[data.date] = data;
     }
   }
 
@@ -3095,20 +3112,30 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   }
 
   Future<bool> _getInitData() async {
+    DateTime fromDate = DateTime.now().subtract(const Duration(days: 365)).toLocal();
+    DateTime toDate = DateTime.now().toLocal();
+
     try {
       // get the data that refer as dependency by other API
       // get company detail
       await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
-          // copy the response to company detail data
-          _companyDetail = resp;
+        // copy the response to company detail data
+        _companyDetail = resp;
 
-          // set the broker summary date based on the last update of the company
-          _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());
-          _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());    
+        // set the broker summary date based on the last update of the company
+        _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());
+        _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());
 
-          // we will try to get the broker data for 3 month of current date
-          _topBrokerDateTo =  (_companyDetail.companyLastUpdate == null ? DateTime.now().toLocal() : _companyDetail.companyLastUpdate!.toLocal());
-          _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
+        // got company detail, let's recalculate the from and to date that we
+        // will use to get the shama price, since broker summary already cater
+        // in case company last update is null, use brker summary date to
+        // as base for the from and to date.
+        fromDate = _brokerSummaryDateTo.subtract(const Duration(days: 365)).toLocal();
+        toDate = _brokerSummaryDateTo.toLocal();
+
+        // we will try to get the broker data for 3 month of current date
+        _topBrokerDateTo =  (_companyDetail.companyLastUpdate == null ? DateTime.now().toLocal() : _companyDetail.companyLastUpdate!.toLocal());
+        _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
       }).onError((error, stackTrace) {
         debugPrint("Error while getting Company Detail");
         debugPrint("Error: ${error.toString()}");
@@ -3152,11 +3179,19 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       await Future.wait([
         _brokerSummaryAPI.getBrokerSummaryCodeDate(_companyData.companyCode).then((resp) {
           _brokerSummaryDate = resp;
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got broker summary');
+        },),
 
         _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
           _brokerSummaryGross = resp;
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got broker summary gross data');
+        },),
 
         _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
           _brokerSummary = resp;
@@ -3166,25 +3201,45 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
           // calculate the broker summary
           _calculateBrokerSummary();
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got broker summary buy and sell data');
+        },),
 
         _brokerSummaryAPI.getBrokerSummaryAccumulation('v1', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
           _brokerSummaryAccumulation.add(resp);
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got broker summary accumulation (v1)');
+        },),
 
         _brokerSummaryAPI.getBrokerSummaryAccumulation('v2', _companyData.companyCode, _brokerSummaryDateFrom.toLocal()).then((resp) {
           _brokerSummaryAccumulation.add(resp);
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got broker summary accumulation (v2)');
+        },),
 
         _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo).then((resp) {
           _topBroker = resp;
           _topBrokerDateFrom = (resp.brokerMinDate ?? DateTime.now());
           _topBrokerDateTo = (resp.brokerMaxDate ?? DateTime.now());
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got company top broker');
+        },),
 
         _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
           _priceMA = resp;
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got moving average price');
+        },),
 
         _priceAPI.getPriceMovement(_companyData.companyCode).then((resp) {
           _priceMovement = resp;
@@ -3202,47 +3257,73 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           _priceMovementData.add(avgPrice);
           _priceMovementData.add(minPrice);
           _priceMovementData.add(maxPrice);
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got price movement data');
+        },),
 
         _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
           _infoFundamental = resp;
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when got info fundamental');
+        },),
 
-        _infoSahamsAPI.getInfoSahamPrice(_companyData.companyCode).then((resp) {
-          _infoSahamPrice = resp;
-
-          // loop thru _infoSahamPrice to get the max volume
-          _maxVolume = -1;
-          _maxHigh = -1;
-          _minLow = 999999999;
+        _infoSahamsAPI.getInfoSahamPriceDate(_companyData.companyCode, fromDate, toDate).then((resp) {
+          // clear and initialize the info saham price data
+          _infoSahamPriceData.clear();
+          _infoSahamPriceData[30] = [];
+          _infoSahamPriceData[60] = [];
+          _infoSahamPriceData[90] = [];
+          _infoSahamPriceData[180] = [];
+          _infoSahamPriceData[365] = [];
           
-          for (InfoSahamPriceModel price in _infoSahamPrice) {
-            if (price.volume > _maxVolume!) {
-              _maxVolume = price.volume;
+          // loop thru resp and populate the map accordingly
+          for(int i=0; i<resp.length; i++) {
+            // add for 30 days
+            if (i<30) {
+              _infoSahamPriceData[30]!.add(resp[i]);
             }
-            if (price.adjustedHighPrice > _maxHigh!) {
-              _maxHigh = price.adjustedHighPrice;
+
+            // add for 60 days
+            if (i<60) {
+              _infoSahamPriceData[60]!.add(resp[i]);
             }
-            if (price.adjustedLowPrice < _minLow!) {
-              _minLow = price.adjustedLowPrice;
+
+            // add for 90 days
+            if (i<90) {
+              _infoSahamPriceData[90]!.add(resp[i]);
             }
-            if (price.lastPrice > _maxHigh!) {
-              _maxHigh = price.lastPrice;
+
+            // add for 180 days
+            if (i<180) {
+              _infoSahamPriceData[180]!.add(resp[i]);
             }
-            if (price.lastPrice < _minLow!) {
-              _minLow = price.lastPrice;
-            }
+
+            // rest add to the 365 days
+            _infoSahamPriceData[365]!.add(resp[i]);
           }
 
-          // check if maxHigh, minLow is the same, if same then it probably because all the while
-          // the price is the same, so we don't have low and high, for this we can just ignore the maxHigh and minLow
-          // and add new ceiling for this.
-          if (_maxHigh == _minLow) {
-            _maxHigh = _maxHigh! + _maxHigh!;
+          // loop thru the 60 days to populate the heat map graph
+          // clear the heat map graph
+          _heatMapGraphData.clear();
+          for(int i=(_infoSahamPriceData[60]!.length-1); i>=0; i--) {
+            _heatMapGraphData[_infoSahamPriceData[60]![i].date] = GraphData(
+              date: _infoSahamPriceData[60]![i].date,
+              price: _infoSahamPriceData[60]![i].lastPrice.toDouble(),
+            );
           }
 
-          // generate map data
-          _generateGraphData(_infoSahamPrice, _companyDetail);   
+          // once got we can set the info saham price into the correct data
+          _infoSahamPrice = _infoSahamPriceData[_currentInfoSahamPrice]!;
+
+          // calculate the high and low for this data
+          _calculateMinMaxPrice(_infoSahamPriceData[_currentInfoSahamPrice]!);
+
+          // generate graph data
+          _generateGraphData(_infoSahamPriceData[_currentInfoSahamPrice]!, _companyDetail);
         }),
 
         _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
@@ -3315,5 +3396,37 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     }
 
     return true;
+  }
+
+  void _calculateMinMaxPrice(List<InfoSahamPriceModel> data) {
+    // loop thru data to get the max volume
+    _maxVolume = -1;
+    _maxHigh = -1;
+    _minLow = 999999999;
+    
+    for (InfoSahamPriceModel price in data) {
+      if (price.volume > _maxVolume!) {
+        _maxVolume = price.volume;
+      }
+      if (price.adjustedHighPrice > _maxHigh!) {
+        _maxHigh = price.adjustedHighPrice;
+      }
+      if (price.adjustedLowPrice < _minLow!) {
+        _minLow = price.adjustedLowPrice;
+      }
+      if (price.lastPrice > _maxHigh!) {
+        _maxHigh = price.lastPrice;
+      }
+      if (price.lastPrice < _minLow!) {
+        _minLow = price.lastPrice;
+      }
+    }
+
+    // check if maxHigh, minLow is the same, if same then it probably because all the while
+    // the price is the same, so we don't have low and high, for this we can just ignore the maxHigh and minLow
+    // and add new ceiling for this.
+    if (_maxHigh == _minLow) {
+      _maxHigh = _maxHigh! + _maxHigh!;
+    }
   }
 }

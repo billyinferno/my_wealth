@@ -48,7 +48,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   final Bit _bitData = Bit();
 
   bool _showCurrentPriceComparison = false;
-  Map<DateTime, GraphData>? _graphData;
+  late List<GraphData> _graphData;
+  late Map<DateTime, GraphData> _heatGraphData;
   
   int _numPrice = 0;
   int _bodyPage = 0;
@@ -68,7 +69,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize graph data
-    _graphData = {};
+    _graphData = [];
+    _heatGraphData = {};
 
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
@@ -768,7 +770,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
               ),
               const SizedBox(height: 5,),
               HeatGraph(
-                data: _graphData!,
+                data: _heatGraphData,
                 userInfo: _userInfo!,
                 currentPrice: _companyDetail.companyNetAssetValue!,
                 enableDailyComparison: _showCurrentPriceComparison,
@@ -790,9 +792,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       controller: _graphScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       child: LineChart(
-        data: _graphData!,
+        data: _graphData,
         height: 250,
         watchlist: _watchlistDetail,
+        dateOffset: (_graphData.length ~/ 10),
       ),
     ));
 
@@ -800,8 +803,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   }
 
   void _generateGraphData(CompanyDetailModel data) {
-    // map the price date on company
-    List<GraphData> tempData = [];
+    // clear the graph data
+    _graphData.clear();
+
     int totalData = 0;
     double totalPrice = 0;
     int totalPriceData = 0;
@@ -820,7 +824,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     for (PriceModel price in data.companyPrices) {
       // ensure that all the data we will put is more than or equal with startdate
       if(price.priceDate.compareTo(startDate) >= 0) {
-        tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
+        _graphData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
         totalData += 1;
       }
 
@@ -845,7 +849,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     }
 
     // add the current price which only in company
-    tempData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
+    _graphData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
 
     // check current price for minimum, maximum, and average
     if(_minPrice! > data.companyNetAssetValue!) {
@@ -864,13 +868,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     _numPrice = totalPriceData;
 
     // sort the temporary data
-    tempData.sort((a, b) {
+    _graphData.sort((a, b) {
       return a.date.compareTo(b.date);
     });
 
     // once sorted, then we can put it on map
-    for (GraphData data in tempData) {
-      _graphData![data.date] = data;
+    for (GraphData data in _graphData) {
+      _heatGraphData[data.date] = data;
     }
   }
 

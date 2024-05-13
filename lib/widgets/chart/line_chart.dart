@@ -4,7 +4,7 @@ import 'package:my_wealth/widgets/chart/heat_graph.dart';
 import 'package:my_wealth/widgets/chart/line_chart_painter.dart';
 
 class LineChart extends StatelessWidget {
-  final Map<DateTime, GraphData> data;
+  final List<GraphData> data;
   final Map<DateTime, int>? watchlist;
   final double? height;
   final bool? showLegend;
@@ -30,7 +30,7 @@ class LineChart extends StatelessWidget {
           width: double.infinity,
           child: CustomPaint(
             painter: LineChartPainter(
-              data: _convertDataToList(),
+              data: data,
               watchlist: watchlist,
               showLegend: showLegend,
               dateOffset: dateOffset,
@@ -87,13 +87,5 @@ class LineChart extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  List<GraphData> _convertDataToList() {
-    // convert the data from map into list
-    List<GraphData> dataExpand = [];
-    data.forEach((key, value) => dataExpand.add(value));
-
-    return dataExpand;
   }
 }

@@ -115,7 +115,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   
   bool _showCurrentPriceComparison = false;
   bool _showNet = true;
-  final Map<DateTime, GraphData> _graphData = {};
+  late List<GraphData> _graphData;
   final Map<DateTime, GraphData> _heatMapGraphData = {};
   
   int _numPrice = 0;
@@ -152,7 +152,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize graph data
-    _graphData.clear();
+    _graphData = [];
     _heatMapGraphData.clear();
 
     // assuming we don't have any watchlist detail
@@ -2917,7 +2917,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     // once sorted, then we can put it on map
     _graphData.clear();
     for (GraphData data in tempData) {
-      _graphData[data.date] = data;
+      _graphData.add(data);
     }
   }
 

@@ -8,13 +8,13 @@ import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
 import 'package:my_wealth/model/company/company_info_reksadana_model.dart';
 import 'package:my_wealth/model/company/company_list_model.dart';
-import 'package:my_wealth/model/price/price_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
+import 'package:my_wealth/utils/extensions/map.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
@@ -63,15 +63,22 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final InfoReksadanaAPI _infoReksadanaAPI = InfoReksadanaAPI();
+  
+  final Map<int, List<InfoReksadanaModel>> _infoReksadanaData = {};
+  late List<InfoReksadanaModel> _infoReksadana;
+  late int _currentDayIndex;
 
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   final DateFormat _dfShort = DateFormat("dd/MM");
   final Bit _bitData = Bit();
   final List<Widget> _calcTableResult = [];
   late List<Map<String, double>> _movementData;
-  late Map<DateTime, GraphData>? _graphData;
-  late Map<DateTime, GraphData>? _unitData;
-  late Map<DateTime, GraphData>? _assetData;
+  final Map<DateTime, GraphData> _heatMapGraphData = {};
+  late List<GraphData> _graphData;
+  late List<GraphData> _unitData;
+  late List<GraphData> _assetData;
+  late DateTime _from;
+  late DateTime _to;
   
   bool _showCurrentPriceComparison = false;
   bool _recurring = true;
@@ -119,12 +126,30 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize graph data
-    _graphData = {};
-    _unitData = {};
-    _assetData = {};
+    _graphData = [];
+    _unitData = [];
+    _assetData = [];
+    _heatMapGraphData.clear();
     
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
+
+    // default the from and to date as today date
+    _from = _to = DateTime.now().toLocal();
+
+    // clear info reksadana
+    _infoReksadanaData.clear();
+    
+    // initialize info reksadana
+    _infoReksadanaData[30] = [];
+    _infoReksadanaData[60] = [];
+    _infoReksadanaData[90] = [];
+    _infoReksadanaData[180] = [];
+    _infoReksadanaData[365] = [];
+
+    // defaulted the current day index into 90 days
+    _currentDayIndex = 90;
+    _infoReksadana = [];
 
     _getData = _getInitData();
   }
@@ -990,20 +1015,24 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           child: ListView(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
+            children: List<Widget>.generate(_infoReksadana.length, (index) {
               double? dayDiff;
               Color dayDiffColor = Colors.transparent;
-              if((index+1) < _companyDetail.companyPrices.length) {
+
+              // check if we already got previous date price
+              if((index+1) < _infoReksadana.length) {
                 double currPrice = _companyDetail.companyPrices[index].priceValue;
                 double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
                 dayDiff = currPrice - prevPrice;
                 dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
               }
+
+              // generate the company detail price list
               return CompanyDetailPriceList(
-                date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue),
-                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                date: _df.format(_infoReksadana[index].date.toLocal()),
+                price: formatCurrency(_infoReksadana[index].netAssetValue),
+                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _infoReksadana[index].netAssetValue),
+                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _infoReksadana[index].netAssetValue, _userInfo!.risk),
                 dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
                 dayDiffColor: dayDiffColor,
               );
@@ -1051,7 +1080,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             ),
             const SizedBox(height: 5,),
             HeatGraph(
-              data: _graphData!,
+              data: _heatMapGraphData.reverse(),
               userInfo: _userInfo!,
               currentPrice: _companyDetail.companyNetAssetValue!,
               enableDailyComparison: _showCurrentPriceComparison,
@@ -1078,11 +1107,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               ),
             ),
             const SizedBox(height: 5,),
+            _dayStatSelection(),
+            const SizedBox(height: 10,),
             LineChart(
-              data: _assetData!,
+              data: _assetData,
               height: 250,
               watchlist: _watchlistDetail,
               showLegend: false,
+              dateOffset: _dateOffset,
             ),
           ],
         );
@@ -1100,11 +1132,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               ),
             ),
             const SizedBox(height: 5,),
+            _dayStatSelection(),
+            const SizedBox(height: 10,),
             LineChart(
-              data: _unitData!,
+              data: _unitData,
               height: 250,
               watchlist: _watchlistDetail,
               showLegend: false,
+              dateOffset: _dateOffset,
             ),
           ],
         );
@@ -1122,6 +1157,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               ),
             ),
             const SizedBox(height: 5,),
+            _dayStatSelection(),
+            const SizedBox(height: 10,),
             MultiLineChart(
               height: 250,
               data: _movementData,
@@ -1146,10 +1183,13 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               ),
             ),
             const SizedBox(height: 5,),
+            _dayStatSelection(),
+            const SizedBox(height: 10,),
             LineChart(
-              data: _graphData!,
+              data: _graphData,
               height: 250,
               watchlist: _watchlistDetail,
+              dateOffset: _dateOffset,
             ),
           ],
         );
@@ -1551,111 +1591,126 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     );
   }
 
+  Widget _dayStatSelection() {
+    return SizedBox(
+      width: double.infinity,
+      child: CupertinoSegmentedControl(
+        children: const {
+          30: Text("30D"),
+          60: Text("2M"),
+          90: Text("3M"),
+          180: Text("6M"),
+          365: Text("1Y"),
+        },
+        onValueChanged: ((value) {
+          setState(() {
+            _currentDayIndex = value;
+            _infoReksadana = _infoReksadanaData[_currentDayIndex]!;
+
+            _generateGraphData();
+          });
+        }),
+        groupValue: _currentDayIndex,
+        selectedColor: extendedColor,
+        borderColor: Colors.transparent,
+        pressedColor: textPrimary,
+      ),
+    );
+  }
+
   Future<bool> _getInitData() async {
     try {
+      // company detail information is mandatory, so get the company information
+      // first before we call the other API
+      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+        _companyDetail = resp;
+
+        // calculate the average daily based on the daily, weekly, monthly, quarterly, semi annual, and yearly
+        _avgDaily = 0;
+        _avgCount = 0;
+        if (_companyDetail.companyDailyReturn != null) {
+          _avgDaily = _avgDaily! + _companyDetail.companyDailyReturn!;
+          _avgCount++;
+        }
+        if (_companyDetail.companyWeeklyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyDailyReturn! / 5);
+          _avgCount++;
+        }
+        if (_companyDetail.companyMonthlyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyMonthlyReturn! / 21.67);
+          _avgCount++;
+        }
+        if (_companyDetail.companyQuarterlyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyQuarterlyReturn! / 65);
+          _avgCount++;
+        }
+        if (_companyDetail.companySemiAnnualReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companySemiAnnualReturn! / 130);
+          _avgCount++;
+        }
+        if (_companyDetail.companyYearlyReturn != null) {
+          _avgDaily = _avgDaily! + (_companyDetail.companyYearlyReturn! / 260);
+          _avgCount++;
+        }
+        _avgDaily = (_avgDaily! / _avgCount);
+
+        // calculate again the from and to date based on the company last update
+        _to = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
+        _from = _to.subtract(const Duration(days: 365));
+      }).onError((error, stackTrace) {
+        debugPrint("Error ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+        throw Exception ("Error when get company information");  
+      });
+
       await Future.wait([
-        _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
-          _companyDetail = resp;
+        _infoReksadanaAPI.getInfoReksadanaDate(_companyData.companyId, _from, _to).then((resp) {
+          // clear info reksadana
+          _infoReksadanaData.clear();
+          
+          // initialize info reksadana
+          _infoReksadanaData[30] = [];
+          _infoReksadanaData[60] = [];
+          _infoReksadanaData[90] = [];
+          _infoReksadanaData[180] = [];
+          _infoReksadanaData[365] = [];
 
-          // calculate the average daily based on the daily, weekly, monthly, quarterly, semi annual, and yearly
-          _avgDaily = 0;
-          _avgCount = 0;
-          if (_companyDetail.companyDailyReturn != null) {
-            _avgDaily = _avgDaily! + _companyDetail.companyDailyReturn!;
-            _avgCount++;
-          }
-          if (_companyDetail.companyWeeklyReturn != null) {
-            _avgDaily = _avgDaily! + (_companyDetail.companyDailyReturn! / 5);
-            _avgCount++;
-          }
-          if (_companyDetail.companyMonthlyReturn != null) {
-            _avgDaily = _avgDaily! + (_companyDetail.companyMonthlyReturn! / 21.67);
-            _avgCount++;
-          }
-          if (_companyDetail.companyQuarterlyReturn != null) {
-            _avgDaily = _avgDaily! + (_companyDetail.companyQuarterlyReturn! / 65);
-            _avgCount++;
-          }
-          if (_companyDetail.companySemiAnnualReturn != null) {
-            _avgDaily = _avgDaily! + (_companyDetail.companySemiAnnualReturn! / 130);
-            _avgCount++;
-          }
-          if (_companyDetail.companyYearlyReturn != null) {
-            _avgDaily = _avgDaily! + (_companyDetail.companyYearlyReturn! / 260);
-            _avgCount++;
-          }
-          _avgDaily = (_avgDaily! / _avgCount);
+          // clear heat map data, as we will generate the heat map data here.
+          _heatMapGraphData.clear();
 
-          // map the price date on company
-          List<GraphData> tempData = [];
-          int totalData = 0;
-          double totalPrice = 0;
-          int totalPriceData = 0;
-          _minPrice = double.maxFinite;
-          _maxPrice = double.minPositive;
-
-          // move the last update to friday
-          int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
-          DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
-
-          // then go 14 weeks before so we knew the start date
-          DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
-          // only get the 1st 64 data, since we will want to get the latest data
-          for (PriceModel price in _companyDetail.companyPrices) {
-            // ensure that all the data we will put is more than or equal with startdate
-            if(price.priceDate.compareTo(startDate) >= 0) {
-              tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
-              totalData += 1;
+          // loop thru response to populate the info reksadana map
+          for(int i=0; i<resp.length; i++) {
+            if (i < 30) {
+              _infoReksadanaData[30]!.add(resp[i]);
             }
 
-            // count for minimum, maximum, and average
-            if(totalPriceData < 29) {
-              if(_minPrice! > price.priceValue) {
-                _minPrice = price.priceValue;
-              }
+            if (i < 60) {
+              _infoReksadanaData[60]!.add(resp[i]);
 
-              if(_maxPrice! < price.priceValue) {
-                _maxPrice = price.priceValue;
-              }
-
-              totalPrice += price.priceValue;
-              totalPriceData++;
+              // heat map is the same as 60 days of data, so just generate
+              // the heat map data here
+              _heatMapGraphData[resp[i].date] = GraphData(date: resp[i].date, price: resp[i].netAssetValue);
             }
 
-            // if total data already more than 64 break  the data, as heat map only will display 65 data
-            if(totalData >= 64) {
-              break;
+            if (i < 90) {
+              _infoReksadanaData[90]!.add(resp[i]);
+            }
+
+            if (i < 180) {
+              _infoReksadanaData[180]!.add(resp[i]);
+            }
+
+            if (i < 365) {
+              _infoReksadanaData[365]!.add(resp[i]);
             }
           }
 
-          // add the current price which only in company
-          tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+          // set the info reksadana list based on the current day index
+          // selected.
+          _infoReksadana = (_infoReksadanaData[_currentDayIndex] ?? []);
 
-          // check current price for minimum, maximum, and average
-          if(_minPrice! > _companyDetail.companyNetAssetValue!) {
-            _minPrice = _companyDetail.companyNetAssetValue!;
-          }
-
-          if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
-            _maxPrice = _companyDetail.companyNetAssetValue!;
-          }
-
-          totalPrice += _companyDetail.companyNetAssetValue!;
-          totalPriceData++;
-          // compute average
-          _avgPrice = totalPrice / totalPriceData;
-          _numPrice = totalPriceData;
-
-          // sort the temporary data
-          tempData.sort((a, b) {
-            return a.date.compareTo(b.date);
-          });
-
-          // once sorted, then we can put it on map
-          for (GraphData data in tempData) {
-            _graphData![data.date] = data;
-          }
+          // generate the graph data
+          _generateGraphData();
         }),
 
         _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
@@ -1686,41 +1741,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             }
           }
         }),
-        
-        _infoReksadanaAPI.getInfoReksadana(_companyData.companyId, 90).then((resp) {
-          // got all the reksadana information, we can split all the data and put it
-          // on the list
-          Map<String, double> daily = {};
-          Map<String, double> weekly = {};
-          Map<String, double> monhtly = {};
-          Map<String, double> yearly = {};
-          for (InfoReksadanaModel data in resp) {
-            daily[_dfShort.format(data.date)] = data.dailyReturn * 100;
-            weekly[_dfShort.format(data.date)] = data.weeklyReturn * 100;
-            monhtly[_dfShort.format(data.date)] = data.monthlyReturn * 100;
-            yearly[_dfShort.format(data.date)] = data.yearlyReturn * 100;
-
-            GraphData gdUnit = GraphData(date: data.date, price: data.totalUnit);
-            _unitData![data.date] = gdUnit;
-
-            GraphData gdAsset = GraphData(date: data.date, price: data.totalUnit * data.netAssetValue);
-            _assetData![data.date] = gdAsset;
-          }
-
-          _movementData.add(daily);
-          _movementData.add(weekly);
-          _movementData.add(monhtly);
-          _movementData.add(yearly);
-
-          // calculate the date offset
-          _dateOffset = _movementData[0].length ~/ 10;
-          if (_dateOffset > 10) {
-            _dateOffset = 10;
-          }
-          if (_dateOffset < 3) {
-            _dateOffset = 3;
-          }
-        }),
       ]).onError((error, stackTrace) {
         throw Exception('Error when getting data from server');
       });
@@ -1730,5 +1750,72 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
 
     return true;
+  }
+
+  void _generateGraphData() {
+    // map the price date on company
+    double totalPrice = 0;
+    int totalPriceData = 0;
+
+    // create variable helper for movement chart data
+    Map<String, double> daily = {};
+    Map<String, double> weekly = {};
+    Map<String, double> monhtly = {};
+    Map<String, double> yearly = {};
+
+    // calculate the date offset for the movement data based on the info
+    // reksadana length
+    _dateOffset = (_infoReksadana.length ~/ 10);
+
+    // initialize the minimum and maximum price
+    _minPrice = _companyDetail.companyNetAssetValue;
+    _maxPrice = _companyDetail.companyNetAssetValue;
+
+    // clear the unit and total graph data
+    _unitData.clear();
+    _assetData.clear();
+    _graphData.clear();
+    _movementData.clear();
+
+    // loop thru the current info reksadana to generate the graph data
+    for (InfoReksadanaModel data in _infoReksadana.toList().reversed) {
+      // check the minimum and maximum price
+      if(_minPrice! > data.netAssetValue) {
+        _minPrice = data.netAssetValue;
+      }
+
+      if(_maxPrice! < data.netAssetValue) {
+        _maxPrice = data.netAssetValue;
+      }
+
+      // calculate the total price to get the average data later
+      totalPrice += data.netAssetValue;
+      totalPriceData++;
+
+      // create the unit and total graph data
+      _graphData.add(GraphData(date: data.date.toLocal(), price: data.netAssetValue));
+      _unitData.add(GraphData(date: data.date.toLocal(), price: data.totalUnit));
+      _assetData.add(GraphData(date: data.date.toLocal(), price: data.totalUnit * data.netAssetValue));
+
+      // generate the movement chart data
+      daily[_dfShort.format(data.date)] = data.dailyReturn * 100;
+      weekly[_dfShort.format(data.date)] = data.weeklyReturn * 100;
+      monhtly[_dfShort.format(data.date)] = data.monthlyReturn * 100;
+      yearly[_dfShort.format(data.date)] = data.yearlyReturn * 100;
+    }
+
+    // add the movement data
+    _movementData.add(daily);
+    _movementData.add(weekly);
+    _movementData.add(monhtly);
+    _movementData.add(yearly);
+
+    // compute average, assume the average is current price in case the
+    // total price data is 0
+    _avgPrice = _companyDetail.companyNetAssetValue;
+    if (totalPriceData > 0) {
+      _avgPrice = totalPrice / totalPriceData;
+    }
+    _numPrice = totalPriceData;
   }
 }

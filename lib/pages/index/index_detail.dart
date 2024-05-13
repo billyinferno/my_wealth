@@ -39,7 +39,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   
   final Map<int, List<IndexPriceModel>> _indexPriceData = {};
   late int _currentIndexPrice;
-  final Map<DateTime, GraphData> _graphData = {};
+  late List<GraphData> _graphData;
   final Map<DateTime, GraphData> _heatMapGraphData = {};
 
   double _priceDiff = 0;
@@ -47,9 +47,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
   int _numPrice = 0;
-  double? _minPrice;
-  double? _maxPrice;
-  double? _avgPrice;
+  late double _minPrice;
+  late double _maxPrice;
+  late double _avgPrice;
 
   @override
   void initState() {
@@ -60,11 +60,11 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       _indexName = "($_indexName) ${Globals.indexName[_indexName]}";
     }
 
-    // default the index price data to 30
-    _currentIndexPrice = 30;
+    // default the index price data to 90 days
+    _currentIndexPrice = 90;
 
     // clear both index price data and graphdata
-    _graphData.clear();
+    _graphData = [];
     _indexPriceData.clear();
 
     // initialize all the 30, 90, 180, and 365
@@ -427,12 +427,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       _indexPriceData[180] = [];
       _indexPriceData[365] = [];
 
-      // initialize the minimum, maximum, and total price
-      double totalPrice = 0;
-      _minPrice = double.maxFinite;
-      _maxPrice = double.minPositive;
-      _numPrice = 0;
-
       for (int i=0; i < resp.length; i++) {
         // add the 30 days
         if (i < 30) {
@@ -454,31 +448,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
           _indexPriceData[180]!.add(resp[i]);
         }
 
-        // for the total, minimum, and maximum, we will follow what is being
-        // selected on the graph
-        if (i < _currentIndexPrice) {
-          // add price
-          totalPrice += resp[i].indexPriceValue;
-          _numPrice++;
-
-          // check for minimum price and maximum price
-          if(_minPrice! > resp[i].indexPriceValue) {
-            _minPrice = resp[i].indexPriceValue;
-          }
-
-          if(_maxPrice! < resp[i].indexPriceValue) {
-            _maxPrice = resp[i].indexPriceValue;
-          }
-        }
-
         // add the 365 days
         _indexPriceData[365]!.add(resp[i]);
-      }
-
-      _avgPrice = 0;
-      // check if we have _numPrice or not?
-      if (_numPrice > 0) {
-        _avgPrice = totalPrice / _numPrice;
       }
 
       // generate current graph data
@@ -490,25 +461,40 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   }
 
   void _generateGraphData() {
-    // get the price data we want to generate the graph
-    List<IndexPriceModel> priceData = (_indexPriceData[_currentIndexPrice] ?? []);
-    
-    // copy the data to another list, so we will not change the list value
-    List<IndexPriceModel> tempData = priceData.toList();
-    // now sort the temp data
-    tempData.sort((a, b) {
-      return a.indexPriceDate.compareTo(b.indexPriceDate);
-    });
-    
-    // clear the graph data
+    // calculate the _min, _max, _avg, and _num price here
+    double totalPrice = 0;
+
+    // initialize the _min, _max, _avg, and _num price
+    _numPrice = 0;
+    _minPrice = _index.indexNetAssetValue;
+    _maxPrice = _index.indexNetAssetValue;
+    _avgPrice = _index.indexNetAssetValue;
+
+    // clear graph data
     _graphData.clear();
 
-    // loop thru price data and generate the graph data
-    for(int i=0; i < tempData.length; i++) {
-      _graphData[tempData[i].indexPriceDate] = GraphData(
-        date: tempData[i].indexPriceDate,
-        price: tempData[i].indexPriceValue,
-      );
+    // loop thru current index in reverse
+    for(IndexPriceModel price in (_indexPriceData[_currentIndexPrice] ?? []).toList().reversed) {
+      if (_minPrice > price.indexPriceValue) {
+        _minPrice = price.indexPriceValue;
+      }
+
+      if (_maxPrice < price.indexPriceValue) {
+        _maxPrice = price.indexPriceValue;
+      }
+
+      totalPrice = totalPrice + price.indexPriceValue;
+
+      _graphData.add(GraphData(date: price.indexPriceDate, price: price.indexPriceValue));
+    }
+
+    // check if we got > 0 num price or not?
+    _numPrice = _indexPriceData[_currentIndexPrice]!.length;
+    if (_numPrice > 0) {
+      _avgPrice = totalPrice / _numPrice;
+    }
+    else {
+      _numPrice = 1;
     }
   }
 

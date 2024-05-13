@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/price_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
-import 'package:my_wealth/model/price/price_model.dart';
+import 'package:my_wealth/model/price/price_gold_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/extensions/map.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
@@ -41,12 +43,24 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
+  final PriceAPI _priceAPI = PriceAPI();
+
   final DateFormat _df = DateFormat("dd/MM/yyyy");
   final Bit _bitData = Bit();
+
+  late DateTime _fromDate;
+  late DateTime _toDate;
+
+  final Map<int, List<PriceGoldModel>> _priceGoldData = {};
+  late int _currentPriceGoldDay;
+  late List<PriceGoldModel> _priceGold;
+
+  late String _currentPriceCcy;
   
   bool _showCurrentPriceComparison = false;
   int _bodyPage = 0;
-  Map<DateTime, GraphData>? _graphData;
+  late List<GraphData> _graphData;
+  late Map<DateTime, GraphData> _heatMapGraphData;
   int _numPrice = 0;
   double? _minPrice;
   double? _maxPrice;
@@ -63,10 +77,30 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize graph data
-    _graphData = {};
+    _graphData = [];
 
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
+
+    // default the from and to date as today date
+    _fromDate = _toDate = DateTime.now();
+
+    // initialize the price gold map and list
+    _priceGoldData.clear();
+    _priceGoldData[30] = [];
+    _priceGoldData[60] = [];
+    _priceGoldData[90] = [];
+    _priceGoldData[180] = [];
+    _priceGoldData[365] = [];
+    _currentPriceGoldDay = 90;
+
+    _priceGold = [];
+
+    // default the price ccy to IDR
+    _currentPriceCcy = "IDR";
+
+    // clear the heat map graph data
+    _heatMapGraphData = {};
 
     _getData = _getInitData();
   }
@@ -315,8 +349,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 const SizedBox(width: 10,),
               ],
             ),
+            const SizedBox(height: 10,),
+            _ccyStatSelection(),
             const SizedBox(height: 5,),
-            ..._detail(),
+            Expanded(child: _detail()),
             const SizedBox(height: 30,),
           ],
         ),
@@ -324,7 +360,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     );
   }
 
-  List<Widget> _detail() {
+  Widget _detail() {
     switch(_bodyPage) {
       case 0:
         return _showSummary();
@@ -339,378 +375,395 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     }
   }
 
-  List<Widget> _showSummary() {
-    List<Widget> table = [];
-
-    table.add(
-      Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: SingleChildScrollView(
-            controller: _summaryController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
+  Widget _showSummary() {
+    return SingleChildScrollView(
+      controller: _summaryController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Daily",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Weekly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 5,),
-                    CompanyInfoBox(
-                      header: "Monthly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "YTD",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Yearly",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    const Expanded(child: SizedBox()),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        )
-      )
-    );
-
-    return table;
-  }
-
-  List<Widget> _showTable() {
-    List<Widget> table = [];
-
-    table.add(Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Container(
-            color: primaryColor,
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                CompanyInfoBox(
+                  header: "Daily",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
+                    textAlign: TextAlign.right,
                   ),
                 ),
                 const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Price",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  )
+                CompanyInfoBox(
+                  header: "Weekly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
                 ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.swap_vertical,
-                        size: 16,
-                      ),
-                    ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.pulse_outline,
-                        size: 16,
-                      ),
-                    ),
-                  )
+                const SizedBox(width: 5,),
+                CompanyInfoBox(
+                  header: "Monthly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
                 ),
               ],
             ),
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CompanyInfoBox(
+                  header: "YTD",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                CompanyInfoBox(
+                  header: "Yearly",
+                  headerAlign: MainAxisAlignment.end,
+                  child: Text(
+                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                const Expanded(child: SizedBox()),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _showTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(width: 10,),
+            Expanded(
+              child: Container(
+                color: primaryColor,
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Price",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      )
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.swap_vertical,
+                            size: 16,
+                          ),
+                        ),
+                      )
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.pulse_outline,
+                            size: 16,
+                          ),
+                        ),
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView(
+            controller: _priceController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: List<Widget>.generate(_priceGold.length, (index) {
+              double? dayDiff;
+              Color dayDiffColor = Colors.transparent;
+              double currPrice;
+              double prevPrice = 0;
+              double priceDiff = 0;
+              Color risk = Colors.white;
+
+              // check which CCY we want to show
+              if (_currentPriceCcy.toLowerCase() == 'idr') {
+                currPrice = _priceGold[index].priceGoldIdr;
+                if(index > 0) {
+                  prevPrice = _priceGold[index-1].priceGoldIdr;
+                }
+                priceDiff = _companyDetail.companyNetAssetValue! - _priceGold[index].priceGoldIdr;
+                risk = riskColor(_companyDetail.companyNetAssetValue!, _priceGold[index].priceGoldIdr, _userInfo!.risk);
+              }
+              else {
+                currPrice = _priceGold[index].priceGoldUsd;
+                if(index > 0) {
+                  prevPrice = _priceGold[index-1].priceGoldUsd;
+                }
+                priceDiff = _companyDetail.companyCurrentPriceUsd! - _priceGold[index].priceGoldIdr;
+                risk = riskColor(_companyDetail.companyCurrentPriceUsd!, _priceGold[index].priceGoldUsd, _userInfo!.risk);
+              }
+
+              // check if we have previous price or not?
+              if((index+1) < _priceGold.length) {
+                dayDiff = currPrice - prevPrice;
+                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+              }
+
+              return CompanyDetailPriceList(
+                date: _df.format(_priceGold[index].priceGoldDate.toLocal()),
+                price: formatCurrency(currPrice, true),
+                diff: formatCurrency(priceDiff, true),
+                riskColor: risk,
+                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                dayDiffColor: dayDiffColor,
+              );
+            }),
           ),
         ),
       ],
-    ));
-
-    table.add(Expanded(
-      child: ListView(
-        controller: _priceController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-          double? dayDiff;
-          Color dayDiffColor = Colors.transparent;
-          if((index+1) < _companyDetail.companyPrices.length) {
-            double currPrice = _companyDetail.companyPrices[index].priceValue;
-            double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-            dayDiff = currPrice - prevPrice;
-            dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-          }
-          return CompanyDetailPriceList(
-            date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-            price: formatCurrency(_companyDetail.companyPrices[index].priceValue, true),
-            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue, true),
-            riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-            dayDiffColor: dayDiffColor,
-          );
-        }),
-      ),
-    ));
-
-    return table;
+    );
   }
 
-  List<Widget> _showCalendar() {
-    List<Widget> calendar = [];
-
-    calendar.add(Expanded(
-      child: SingleChildScrollView(
-        controller: _calendarScrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: primaryLight,
-              width: 1.0,
-              style: BorderStyle.solid,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 5,),
-              Row(
+  Widget _showCalendar() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _calendarScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Current Price Comparison"),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showCurrentPriceComparison,
-                    activeColor: accentColor,
-                    onChanged: ((val) {
-                      setState(() {
-                        _showCurrentPriceComparison = val;
-                      });
-                    })
-                  )
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text("Current Price Comparison"),
+                      const SizedBox(width: 10,),
+                      CupertinoSwitch(
+                        value: _showCurrentPriceComparison,
+                        activeColor: accentColor,
+                        onChanged: ((val) {
+                          setState(() {
+                            _showCurrentPriceComparison = val;
+                          });
+                        })
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  HeatGraph(
+                    data: _heatMapGraphData,
+                    userInfo: _userInfo!,
+                    currentPrice: _companyDetail.companyNetAssetValue!,
+                    enableDailyComparison: _showCurrentPriceComparison,
+                    weekend: true,
+                  ),
                 ],
               ),
-              const SizedBox(height: 5,),
-              HeatGraph(
-                data: _graphData!,
-                userInfo: _userInfo!,
-                currentPrice: _companyDetail.companyNetAssetValue!,
-                enableDailyComparison: _showCurrentPriceComparison,
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ));
-
-    return calendar;
+        )
+      ],
+    );
   }
 
-  List<Widget> _showGraph() {
-    List<Widget> graph = [];
-
-    graph.add(SingleChildScrollView(
-      controller: _graphScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: LineChart(
-        data: _graphData!,
-        height: 250,
-        watchlist: _watchlistDetail,
-      ),
-    ));
-
-    return graph;
+  Widget _showGraph() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 10,),
+        _dayStatSelection(),
+        const SizedBox(height: 5,),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _graphScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: LineChart(
+              data: _graphData,
+              height: 250,
+              watchlist: _watchlistDetail,
+              dateOffset: (_priceGold.length ~/ 10),
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Future<bool> _getInitData() async {
     try {
+      await _companyApi.getCompanyDetail(-1, "gold").then((resp) {
+        _companyDetail = resp;
+
+        // calculate the from and to date that we need to get the gold price
+        _toDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
+        _fromDate = _toDate.subtract(const Duration(days: 365)).toLocal();
+      }).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+        throw Exception("Error when get gold information");
+      },);
+
       await Future.wait([
-        _companyApi.getCompanyDetail(-1, "gold").then((resp) {
-          _companyDetail = resp;
+        _priceAPI.getGoldPrice(_fromDate, _toDate).then((resp) {
+          // clear the price gold map
+          _priceGoldData.clear();
+          _priceGoldData[30] = [];
+          _priceGoldData[60] = [];
+          _priceGoldData[90] = [];
+          _priceGoldData[180] = [];
+          _priceGoldData[365] = [];
 
-          // map the price date on company
-          List<GraphData> tempData = [];
-          int totalData = 0;
-          double totalPrice = 0;
-          int totalPriceData = 0;
-          _minPrice = double.maxFinite;
-          _maxPrice = double.minPositive;
+          // clear the heat map graph data
+          _heatMapGraphData.clear();
 
-          // move the last update to friday
-          int addDay = 5 - _companyDetail.companyLastUpdate!.toLocal().weekday;
-          DateTime endDate = _companyDetail.companyLastUpdate!.add(Duration(days: addDay));
-
-          // then go 14 weeks before so we knew the start date
-          DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
-          // only get the 1st 64 data, since we will want to get the latest data
-          for (PriceModel price in _companyDetail.companyPrices) {
-            // ensure that all the data we will put is more than or equal with startdate
-            if(price.priceDate.compareTo(startDate) >= 0) {
-              tempData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
-              totalData += 1;
+          // loop thru the response to populate the price gold map data
+          for(int i=0; i<resp.length; i++) {
+            if (i<30) {
+              _priceGoldData[30]!.add(resp[i]);
             }
 
-            // count for minimum, maximum, and average
-            if(totalPriceData < 29) {
-              if(_minPrice! > price.priceValue) {
-                _minPrice = price.priceValue;
-              }
-
-              if(_maxPrice! < price.priceValue) {
-                _maxPrice = price.priceValue;
-              }
-
-              totalPrice += price.priceValue;
-              totalPriceData++;
+            if (i<60) {
+              _priceGoldData[60]!.add(resp[i]);
             }
 
-            // if total data already more than 64 break  the data, as heat map only will display 65 data
-            if(totalData >= 64) {
-              break;
+            if (i<90) {
+              _priceGoldData[90]!.add(resp[i]);
+              
+              // since gold have weekend, then we can just generate the heat
+              // graph data from 90 days
+              _heatMapGraphData[resp[i].priceGoldDate] = GraphData(
+                date: resp[i].priceGoldDate, price: resp[i].priceGoldIdr
+              );
+            }
+
+            if (i<180) {
+              _priceGoldData[180]!.add(resp[i]);
+            }
+
+            if (i<365) {
+              _priceGoldData[365]!.add(resp[i]);
             }
           }
 
-          // add the current price which only in company
-          tempData.add(GraphData(date: _companyDetail.companyLastUpdate!.toLocal(), price: _companyDetail.companyNetAssetValue!));
+          // reverse the data
+          _heatMapGraphData = _heatMapGraphData.reverse();
 
-          // check current price for minimum, maximum, and average
-          if(_minPrice! > _companyDetail.companyNetAssetValue!) {
-            _minPrice = _companyDetail.companyNetAssetValue!;
-          }
+          _priceGold = (_priceGoldData[_currentPriceGoldDay] ?? []);
 
-          if(_maxPrice! < _companyDetail.companyNetAssetValue!) {
-            _maxPrice = _companyDetail.companyNetAssetValue!;
-          }
+          _generateGraphData();
+        }).onError((error, stackTrace) {
+          debugPrint("Error: ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception("Error when get price gold data");
+        },),
 
-          totalPrice += _companyDetail.companyNetAssetValue!;
-          totalPriceData++;
-          // compute average
-          _avgPrice = totalPrice / totalPriceData;
-          _numPrice = totalPriceData;
-
-          // sort the temporary data
-          tempData.sort((a, b) {
-            return a.date.compareTo(b.date);
-          });
-
-          // once sorted, then we can put it on map
-          for (GraphData data in tempData) {
-            _graphData![data.date] = data;
-          }
-        }),
-        
         _watchlistAPI.findDetail(-1).then((resp) {
           // if we got response then map it to the map, so later we can sent it
           // to the graph for rendering the time when we buy the share
@@ -738,7 +791,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
               }
             }
           }
-        }),
+        }).onError((error, stackTrace) {
+          debugPrint("Error: ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception("Error when get gold watchlist data");
+        },),
       ]).onError((error, stackTrace) {
         throw Exception('Error while getting data from server');
       });
@@ -748,5 +805,94 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     }
 
     return true;
+  }
+
+  Widget _dayStatSelection() {
+    return SizedBox(
+      width: double.infinity,
+      child: CupertinoSegmentedControl(
+        children: const {
+          30: Text("30D"),
+          60: Text("2M"),
+          90: Text("3M"),
+          180: Text("6M"),
+          365: Text("1Y"),
+        },
+        onValueChanged: ((value) {
+          setState(() {
+            _currentPriceGoldDay = value;
+            _priceGold = _priceGoldData[_currentPriceGoldDay]!;
+
+            _generateGraphData();
+          });
+        }),
+        groupValue: _currentPriceGoldDay,
+        selectedColor: extendedColor,
+        borderColor: Colors.transparent,
+        pressedColor: textPrimary,
+      ),
+    );
+  }
+
+  Widget _ccyStatSelection() {
+    return SizedBox(
+      width: double.infinity,
+      child: CupertinoSegmentedControl(
+        children: const {
+          "IDR": Text("IDR"),
+          "USD": Text("USD"),
+        },
+        onValueChanged: ((value) {
+          setState(() {
+            _currentPriceCcy = value;
+            _generateGraphData();
+          });
+        }),
+        groupValue: _currentPriceCcy,
+        selectedColor: accentDark,
+        borderColor: Colors.transparent,
+        pressedColor: textPrimary,
+      ),
+    );
+  }
+
+  void _generateGraphData() {
+    double totalPrice = 0;
+    int totalPriceData = 0;
+    _minPrice = _companyDetail.companyNetAssetValue;
+    _maxPrice = _companyDetail.companyNetAssetValue;
+
+    _graphData.clear();
+
+    // loop the price gold data to generate graph data
+    for (PriceGoldModel price in _priceGold.toList().reversed) {
+      if(_minPrice! > price.priceGoldIdr) {
+        _minPrice = price.priceGoldIdr;
+      }
+
+      if(_maxPrice! < price.priceGoldIdr) {
+        _maxPrice = price.priceGoldIdr;
+      }
+
+      totalPrice += price.priceGoldIdr;
+      totalPriceData++;
+
+      // generate the graph data
+      if (_currentPriceCcy.toLowerCase() == "idr") {
+        _graphData.add(GraphData(date: price.priceGoldDate, price: price.priceGoldIdr));
+      }
+      else {
+        _graphData.add(GraphData(date: price.priceGoldDate, price: price.priceGoldUsd));
+      }
+    }
+
+    // compute average
+    if (totalPriceData > 0) {
+      _avgPrice = totalPrice / totalPriceData;
+      _numPrice = totalPriceData;
+    }
+    else {
+      _numPrice = 1;
+    }
   }
 }

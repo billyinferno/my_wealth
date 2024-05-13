@@ -6,7 +6,7 @@ import 'package:line_icons/line_icons.dart';
 
 class Globals {
   static String apiURL = (dotenv.env['API_URL'] ?? 'http://192.168.1.176:1337/');
-  static int apiTimeOut = 10;
+  static int apiTimeOut = 30;
 
   // add all the api path here, so in case we change API we can just do it from
   // this single file instead goes to each API
@@ -31,6 +31,7 @@ class Globals {
   static String apiWatchlists = '${apiURL}api/watchlists';
   static String apiWatchlistDetails = '${apiURL}api/watchlists-details';
   static String apiInsight = '${apiURL}api/insight';
+  static String apiPriceGold = '${apiURL}api/price-golds';
   
   static String appVersion = (dotenv.env['APP_VERSION'] ?? '0.0.1 - dev');
   static String flutterVersion = (dotenv.env['FLUTTER_VERSION'] ?? 'beta');

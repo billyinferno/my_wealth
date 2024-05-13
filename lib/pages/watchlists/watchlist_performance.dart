@@ -12,6 +12,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/widgets/list/row_child.dart';
+import 'package:my_wealth/widgets/list/watchlist_performance_builder.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/chart/performance_chart.dart';
@@ -40,14 +41,14 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late List<WatchlistPerformanceModel> _watchlistPerformanceMonth;
   late List<WatchlistPerformanceModel> _watchlistPerformanceYear;
   late CompanyDetailArgs _companyArgs;
-  late double? _max;
+  late double _max;
   late Color _maxColor;
-  late double? _min;
+  late double _min;
   late Color _minColor;
-  late double? _avg;
+  late double _avg;
   late Color _avgColor;
-  late double? _maxPL;
-  late double? _minPL;
+  late double _maxPL;
+  late double _minPL;
   late int _totalData;
   late String _graphSelection;
   late String _dateFormat;
@@ -96,20 +97,21 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     }
 
     // assume max, min, and average is null
-    _max = null;
+    _max = 0;
     _maxColor = textPrimary;
-    _min = null;
+    _min = 0;
     _minColor = textPrimary;
-    _avg = null;
+    _avg = 0;
     _avgColor = textPrimary;
-    _maxPL = null;
-    _minPL = null;
+    _maxPL = 0;
+    _minPL = 0;
 
     // set the graph selection as "9" (90 days)
     _graphSelection = "9";
     _dateFormat = "dd/MM";
 
     // initialize the result watchlist performance
+    _watchlistPerformance = [];
     _watchlistPerformance90Day = [];
     _watchlistPerformanceDaily = [];
     _watchlistPerformanceMonth = [];
@@ -493,127 +495,13 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
               ],
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: _watchlistPerformance.length,
-                itemBuilder: ((context, index) {
-                  if (_watchlistPerformance[index].buyTotal == 0) {
-                    return const SizedBox.shrink();
-                  }
-
-                  double pl = (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].currentPrice) - (_watchlistPerformance[index].buyTotal * _watchlistPerformance[index].buyAvg);
-                  
-                  double? plDiff;
-                  Color plDiffColor = textPrimary;
-                  if (index > 0) {
-                    // get the pl diff with pl before and now
-                    plDiff = (_watchlistPerformance[index - 1].buyTotal * _watchlistPerformance[index - 1].currentPrice) - (_watchlistPerformance[index - 1].buyTotal * _watchlistPerformance[index - 1].buyAvg);
-                    plDiff = pl - plDiff;
-
-                    // set the correct plDiffColor
-                    if (plDiff > 0) plDiffColor = Colors.green;
-                    if (plDiff < 0) plDiffColor = secondaryColor;
-                  }
-
-                  // check if this data is the same as _max or _min?
-                  Color plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryColor : Colors.green));
-                  
-                  bool isMinMax = false;
-                  if (pl == _max || pl == _min) {
-                    // means for this we will need to put color on the container instead of the text
-                    isMinMax = true;
-                    plColor = (pl == 0 ? textPrimary : (pl < 0 ? secondaryDark : Colors.green[900]!));
-                  }
-
-                  bool isPLMinMax = false;
-                  if (plDiff == _maxPL || plDiff == _minPL) {
-                    // means for this we will need to put color on the container instead of the text
-                    isPLMinMax = true;
-                    plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
-                  }
-
-                  String dateText = Globals.dfddMM.format(_watchlistPerformance[index].buyDate);
-                  if (_graphSelection == "m" || _graphSelection == "y") {
-                    dateText = Globals.dfMMyy.format(_watchlistPerformance[index].buyDate);
-                  }
-
-
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        width: 50,
-                        child: Text(
-                          dateText,
-                          textAlign: TextAlign.center,
-                          style: _smallFont,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(
-                            formatDecimal(_watchlistPerformance[index].buyTotal, 2),
-                            textAlign: TextAlign.center,
-                            style: _smallFont,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(
-                            formatCurrency(_watchlistPerformance[index].buyAvg, false, false, true, 0),
-                            textAlign: TextAlign.center,
-                            style: _smallFont,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(
-                            formatCurrency(_watchlistPerformance[index].currentPrice, false, false, true, 0),
-                            textAlign: TextAlign.center,
-                            style: _smallFont,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          color: (isMinMax ? plColor : Colors.transparent),
-                          child: Text(
-                            formatCurrency(pl, false, false, true, 0),
-                            textAlign: TextAlign.center,
-                            style: _smallFont.copyWith(
-                              color: (isMinMax ? Colors.white : plColor),
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          color: (isPLMinMax ? plDiffColor : Colors.transparent),
-                          child: Text(
-                            formatCurrencyWithNull(plDiff, false, false, true, 0),
-                            textAlign: TextAlign.center,
-                            style: _smallFont.copyWith(
-                              color: (isPLMinMax ? Colors.white : plDiffColor),
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
+              child: WatchlistBuilder(
+                data: _watchlistPerformance,
+                min: _min,
+                max: _max,
+                minPL: _minPL,
+                maxPL: _maxPL,
+                graphSelection: _graphSelection,
               ),
             ),
             const SizedBox(height: 25,), // safe area
@@ -664,23 +552,45 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
           }
         }
 
+        if (_watchlistPerformance90Day.isEmpty) {
+          _watchlistPerformance90Day = [];
+        }
+
         // once got the monthly and yearly, convert this map to list
-        _watchlistPerformanceMonth = monthly.values.toList();
-        _watchlistPerformanceYear = yearly.values.toList();
+        if (monthly.isNotEmpty) {
+          _watchlistPerformanceMonth = monthly.values.toList();
+        }
+        else {
+          _watchlistPerformanceMonth = [];
+        }
+
+        if (yearly.isNotEmpty) {
+          _watchlistPerformanceYear = yearly.values.toList();
+        }
+        else {
+          _watchlistPerformanceYear = [];
+        }
 
         // now check which one is being selected by user
+        _watchlistPerformance = [];
         switch(_graphSelection) {
           case "9":
-            _watchlistPerformance = _watchlistPerformance90Day.toList();
+            if (_watchlistPerformance90Day.isNotEmpty) {
+              _watchlistPerformance = _watchlistPerformance90Day.toList();
+            }
             break;
           case "m":
-            _watchlistPerformance = _watchlistPerformanceMonth.toList();
+            if (_watchlistPerformanceMonth.isNotEmpty) {
+              _watchlistPerformance = _watchlistPerformanceMonth.toList();
+            }
             break;
           case "y":
-            _watchlistPerformance = _watchlistPerformanceYear.toList();
+            if (_watchlistPerformanceYear.isNotEmpty) {
+              _watchlistPerformance = _watchlistPerformanceYear.toList();
+            }
             break;
           default:
-            _watchlistPerformance = _watchlistPerformanceDaily.toList();
+            _watchlistPerformance = [];
             break;
         }
 
@@ -746,26 +656,26 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
         if (_totalData > 0) {
           _max = max;
-          if (_max! > 0) {
+          if (_max > 0) {
             _maxColor = Colors.green;
           }
-          else if (_max! < 0) {
+          else if (_max < 0) {
             _maxColor = secondaryColor;
           }
 
           _min = min;
-          if (_min! > 0) {
+          if (_min > 0) {
             _minColor = Colors.green;
           }
-          else if (_min! < 0) {
+          else if (_min < 0) {
             _minColor = secondaryColor;
           }
 
           _avg = avg / _totalData;
-          if (_avg! > 0) {
+          if (_avg > 0) {
             _avgColor = Colors.green;
           }
-          else if (_avg! < 0) {
+          else if (_avg < 0) {
             _avgColor = secondaryColor;
           }
 

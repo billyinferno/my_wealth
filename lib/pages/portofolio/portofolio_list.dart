@@ -392,7 +392,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                       Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
                     }
                   }),
-                  bgColor: Globals.colorList[colorMap],
+                  bgColor: (_portofolioFiltered[index].portofolioTotalProduct > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
                   title: _portofolioFiltered[index].portofolioCompanyDescription,
                   subTitle: "${_portofolioFiltered[index].portofolioTotalProduct} product${_portofolioFiltered[index].portofolioTotalProduct > 1 ? "s" : ""}",
                   value: _portofolioFiltered[index].portofolioTotalValue,

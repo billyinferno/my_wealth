@@ -60,7 +60,7 @@ class SeasonalityTable extends StatelessWidget {
                   children: <Widget>[
                     _rowItem(
                       width: 65,
-                      height: 30,
+                      height: 50,
                       child: const Center(
                         child: Text(
                           "Month",
@@ -121,7 +121,7 @@ class SeasonalityTable extends StatelessWidget {
       children: <Widget>[
         ...List<Widget>.generate(12, (index) {
           return _rowItem(
-            height: 30,
+            height: 50,
             child: Center(
               child: Text(
                 df.format(DateTime(DateTime.now().year, (index + 1), 1)),
@@ -133,7 +133,7 @@ class SeasonalityTable extends StatelessWidget {
           );
         }),
         _rowItem(
-          height: 30,
+          height: 50,
           child: const Center(
             child: Text(
               "Avg",
@@ -227,6 +227,14 @@ class SeasonalityTable extends StatelessWidget {
   }
 
   Widget _seasonilityItem({required double? diffPrice, required double? minDiffPrice, required double? minLastPrice, required double? maxDiffPrice, required double? maxLastPrice}) {
+    double totalPercentageDiff = 0;
+
+    // ensure all data is available
+    if (minLastPrice != null && maxLastPrice != null && minDiffPrice != null && maxDiffPrice != null) {
+      // get the total percentage diff
+      totalPercentageDiff = (maxDiffPrice - minDiffPrice) / ((minLastPrice + maxLastPrice) / 2);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -276,7 +284,14 @@ class SeasonalityTable extends StatelessWidget {
               ],
             ),
           ],
-        )
+        ),
+        const SizedBox(height: 5,),
+        Text(
+          "${formatDecimalWithNull(totalPercentageDiff, 100, 2)}%",
+          style: const TextStyle(
+            fontSize: 10,
+          ),
+        ),
       ],
     );
   }
@@ -286,7 +301,7 @@ class SeasonalityTable extends StatelessWidget {
       padding: const EdgeInsets.all(5),
       color: (color ?? Colors.transparent),
       width: (width ?? 110),
-      height: (height ?? 56),
+      height: (height ?? 75),
       child: child,
     );
   }

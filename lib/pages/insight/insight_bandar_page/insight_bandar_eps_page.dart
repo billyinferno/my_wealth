@@ -38,8 +38,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
     if (_epsList.isEmpty) {
       // if not then get from API services
       Future.microtask(() async {
-        // show loader
-        showLoaderDialog(context);
+        if (mounted) {
+          // show loader
+          showLoaderDialog(context);
+        }
 
         // get the insight data
         await _insightAPI.getTopEPS(_minEpsRate, _minEpsDiffRate).then((resp) async {
@@ -49,8 +51,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
           await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
         });
       }).whenComplete(() {
-        // remove loader
-        Navigator.pop(context);
+        if (mounted) {
+          // remove loader
+          Navigator.pop(context);
+        }
         // set loading into false
         setLoading(false);
       });
@@ -221,7 +225,9 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                 // put on the shared preferences
                 await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
               }).whenComplete(() {
-                Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               });
 
               setState(() {
@@ -269,17 +275,21 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                         type: "saham",
                       );
                       
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                        // go to the company page
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                   child: Container(

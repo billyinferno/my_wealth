@@ -54,8 +54,10 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
             ),
             onPressed: (() async {
               await _checkForm().then((value) {
-                if(value) {
-                  Navigator.pop(context);
+                if (context.mounted) {
+                  if(value) {
+                    Navigator.pop(context);
+                  }
                 }
               });
             }),
@@ -103,15 +105,19 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                     showLoaderDialog(context);
                     await _addDetail().then((_) {
                       debugPrint("💾 Saved the watchlist detail for ${_watchlist.watchlistId}");
-                      // remove the loader dialog
-                      Navigator.pop(context);
-                      // return back to the previous page
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                        // return back to the previous page
+                        Navigator.pop(context);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
-                      // show error on snack bar
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                        // show error on snack bar
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      }
                     });
                   })
                 ),
@@ -122,7 +128,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                   icon: Ionicons.close,
                   callback: (() async {
                     await _checkForm().then((value) {
-                      if(value) {
+                      if(context.mounted && value) {
                         Navigator.pop(context);
                       }
                     });

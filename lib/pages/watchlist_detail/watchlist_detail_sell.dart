@@ -55,8 +55,10 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
             ),
             onPressed: (() async {
               await _checkForm().then((value) {
-                if(value) {
-                  Navigator.pop(context);
+                if (context.mounted) {
+                  if(value) {
+                    Navigator.pop(context);
+                  }
                 }
               });
             }),
@@ -106,17 +108,20 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   callback: (() async {
                     showLoaderDialog(context);
                     await _addDetail().then((_) {
-                      // ignore: prefer_interpolation_to_compose_strings
-                      debugPrint("💾 Sell the watchlist detail for " + _watchlist.watchlistId.toString());
-                      // remove the loader dialog
-                      Navigator.pop(context);
-                      // return back to the previous page
-                      Navigator.pop(context);
+                      debugPrint("💾 Sell the watchlist detail for ${_watchlist.watchlistId}");
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                        // return back to the previous page
+                        Navigator.pop(context);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
-                      // show error on snack bar
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                        // show error on snack bar
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      }
                     });
                   })
                 ),
@@ -127,8 +132,10 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   icon: Ionicons.close,
                   callback: (() async {
                     await _checkForm().then((value) {
-                      if(value) {
-                        Navigator.pop(context);
+                      if (context.mounted) {
+                        if(value) {
+                          Navigator.pop(context);
+                        }
                       }
                     });
                   })

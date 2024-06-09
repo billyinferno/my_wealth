@@ -100,10 +100,14 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                     await _searchCompany(searchText).then((resp) {
                       _setSearchResult(resp);
                     }).onError((error, stackTrace) {
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      }
                     }).whenComplete(() {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                      }
                     });
                   }
                 }),
@@ -169,9 +173,11 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                   await _addCompanyToWatchlist(index).then((_) async {
                     debugPrint("🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
                   }).onError((error, stackTrace) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      createSnackBar(message: error.toString())
-                    );
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        createSnackBar(message: error.toString())
+                      );
+                    }
                   });
                 })
               ),
@@ -240,8 +246,10 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
         throw Exception("Error when refresh watchlist ${_args.type} after add");
       });
     }).whenComplete(() {
-      // once finished then remove the loader dialog
-      Navigator.pop(context);
+      if (mounted) {
+        // once finished then remove the loader dialog
+        Navigator.pop(context);
+      }
     });
   }
 }

@@ -1279,8 +1279,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                         _otherCompanyCode = value as String;
                         
                         Future.microtask(() async {
-                          // show loader dialog
-                          showLoaderDialog(context);
+                          if (mounted) {
+                            // show loader dialog
+                            showLoaderDialog(context);
+                          }
                         
                           // get the company detail information
                           await _companyApi.getCompanyByCode(_otherCompanyCode!, 'saham').then((resp) {
@@ -1294,10 +1296,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                             }
                           });
                         }).whenComplete(() {
-                          Navigator.pop(context);
-                          setState(() {
-                            // set state to rebuild the widget
-                          });
+                          if (mounted) {
+                            Navigator.pop(context);
+                            setState(() {
+                              // set state to rebuild the widget
+                            });
+                          }
                         });
                       }
                     });
@@ -3057,11 +3061,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         _setBrokerSummary(_brokerSummaryGross);
       }
     }).whenComplete(() {
-      // remove the loader dialog
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader dialog
+        Navigator.pop(context);
+      }
     }).onError((error, stackTrace) {
-      // show snack bar
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get broker data from server'));
+      if (mounted) {
+        // show snack bar
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get broker data from server'));
+      }
       // show error
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
@@ -3077,13 +3085,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       setState(() {
         _topBroker = resp;
       });
-      // remove the loader dialog
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader dialog
+        Navigator.pop(context);
+      }
     }).onError((error, stackTrace) {
-      // remove the loader dialog
-      Navigator.pop(context);
-      // show snack bar
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get top broker data from server'));
+      if (mounted) {
+        // remove the loader dialog
+        Navigator.pop(context);
+        // show snack bar
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get top broker data from server'));
+      }
       // show error
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
@@ -3097,12 +3109,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // get the fundamental data
     await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
-      Navigator.pop(context);
       result = resp;
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }).onError((error, stackTrace) {
-      Navigator.pop(context);
       debugPrintStack(stackTrace: stackTrace);
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when fetching fundamental data"));
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when fetching fundamental data"));
+      }
     });
 
     // set the current info fundamental with the result we got

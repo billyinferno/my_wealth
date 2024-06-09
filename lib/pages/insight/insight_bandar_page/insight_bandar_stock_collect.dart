@@ -228,10 +228,14 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                 });
               }).onError((error, stackTrace) {
                 debugPrintStack(stackTrace: stackTrace);
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
+                }
               }).whenComplete(() {
                 // remove the loader
-                Navigator.pop(context);
+                if (mounted) {
+                  Navigator.pop(context);
+                }
               });
             }),
             child: Container(

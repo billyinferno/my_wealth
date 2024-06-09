@@ -154,17 +154,21 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                         type: "saham",
                       );
                       
-                      // remove the loader dialog
-                      Navigator.pop(context);
-    
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+      
+                        // go to the company page
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
-    
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+      
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                   child: Container(

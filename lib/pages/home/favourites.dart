@@ -120,30 +120,40 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
         await Future.wait([
           _getFavourites("reksadana").then((resp) async {
             if(resp.isNotEmpty) {
-              Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
+              if (mounted) {
+                Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
+              }
               await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
             }
           }),
 
           _getFavourites("saham").then((resp) async {
             if(resp.isNotEmpty) {
-              Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
+              if (mounted) {
+                Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
+              }
               await FavouritesSharedPreferences.setFavouritesList("saham", resp);
             }
           }),
 
           _getFavourites("crypto").then((resp) async {
             if(resp.isNotEmpty) {
-              Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
+              if (mounted) {
+                Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
+              }
               await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
             }
           })
         ]).onError((error, stackTrace) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+          }
           debugPrint("⛔ Error when refresh favourites crypto");
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
           throw Exception('⛔ Error when refresh favourites crypto');
         }).whenComplete(() {
-          Navigator.pop(context);
+          if (mounted) {
+            Navigator.pop(context);
+          }
         });
 
         // once finished just rebuild the widget
@@ -258,7 +268,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
       });
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
+      }
     });
     // remove the loader once it's finished
     if (!mounted) return;

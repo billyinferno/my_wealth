@@ -106,10 +106,14 @@ class _BrokerPageState extends State<BrokerPage> {
                   await _refreshBroker().then((value) {
                     debugPrint("🔃 Refresh Index");
                   }).onError((error, stackTrace) {
-                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                    }
                   }).whenComplete(() {
                     // remove the loader
-                    Navigator.pop(context);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
                   });
 
                   // once finished just rebuild the widget

@@ -693,14 +693,18 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
                         Future.microtask(() async {
                           // show loader dialog
-                          showLoaderDialog(context);
+                          if (mounted) {
+                            showLoaderDialog(context);
+                          }
 
                           // get the company detail information
                           await _companyApi.getCompanyByID(_otherCompany.companyId, 'reksadana').then((resp) {
                             _otherCompanyDetail = resp;
                           });
                         }).whenComplete(() {
-                          Navigator.pop(context);
+                          if (mounted) {
+                            Navigator.pop(context);
+                          }
                           setState(() {
                             // set state to rebuild the widget
                           });

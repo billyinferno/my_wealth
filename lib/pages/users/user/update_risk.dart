@@ -128,8 +128,10 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                     debugPrint("💾 Save the updated risk factor");
                     showLoaderDialog(context);
                     await _userApi.updateRisk(_riskValue.toInt()).then((resp) async {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                      }
     
                       // we will get updated user info here, so stored the updated
                       // user info with new risk factor to the local storea
@@ -142,15 +144,17 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                       // once finished, then pop out from this page
                       Navigator.pop(context);
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
-    
-                      // showed the snack bar
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        createSnackBar(
-                          message: "Unable to update risk factor",
-                        )
-                      );
+                      if (context.mounted) {                        
+                        // remove the loader dialog
+                        Navigator.pop(context);
+      
+                        // showed the snack bar
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          createSnackBar(
+                            message: "Unable to update risk factor",
+                          )
+                        );
+                      }
                     });
                   }
                 }),

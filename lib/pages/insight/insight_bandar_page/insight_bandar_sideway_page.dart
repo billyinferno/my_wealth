@@ -65,8 +65,10 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     // check if we already got result or not?
     if (_sidewayList.isEmpty) {
       Future.microtask(() async {
-        // show loader
-        showLoaderDialog(context);
+        if (mounted) {
+          // show loader
+          showLoaderDialog(context);
+        }
 
         // get the sideway data
         await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
@@ -76,7 +78,9 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
           await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
         });
       }).whenComplete(() {
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
         // set the sorted from side way
         _sortedList = List<InsightSidewayModel>.from(_sidewayList);
         _setLoading(false);
@@ -230,10 +234,14 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                 // stored the sideway result to shared preferences
                 await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
               }).whenComplete(() {
-                Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               }).onError((error, stackTrace) {
                 debugPrintStack(stackTrace: stackTrace);
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to retrieve sideway data"));
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to retrieve sideway data"));
+                }
               });
 
               setState(() {
@@ -307,17 +315,21 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                         type: "saham",
                       );
                       
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                        // go to the company page
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                   child: Container(

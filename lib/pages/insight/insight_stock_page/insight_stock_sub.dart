@@ -459,17 +459,21 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                 type: "saham",
               );
               
-              // remove the loader dialog
-              Navigator.pop(context);
+              if (mounted) {
+                // remove the loader dialog
+                Navigator.pop(context);
 
-              // go to the company page
-              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                // go to the company page
+                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+              }
             }).onError((error, stackTrace) {
-              // remove the loader dialog
-              Navigator.pop(context);
+              if (mounted) {
+                // remove the loader dialog
+                Navigator.pop(context);
 
-              // show the error message
-              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                // show the error message
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+              }
             });
           },
           child: Container(
@@ -548,8 +552,10 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
         _industryList = resp;
       });
     }).whenComplete(() {
-      // remove the loader dialog
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader dialog
+        Navigator.pop(context);
+      }
 
       // set loading into false
       setState(() {

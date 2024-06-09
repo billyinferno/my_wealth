@@ -41,7 +41,9 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
     // get the company data from API
     Future.microtask(() async {
       // show the loader dialog
-      showLoaderDialog(context);
+      if (mounted) {
+        showLoaderDialog(context);
+      }
 
       // get the data from api
       await _companyAPI.getOtherCompany(_currentCode).then((resp) {
@@ -53,7 +55,9 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
       // as  we will showed this when the search text is empty
       _filterList = _similarList;
     }).whenComplete(() {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
       setLoading(false);
     });
 

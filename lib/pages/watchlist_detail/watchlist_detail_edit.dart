@@ -84,7 +84,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
             ),
             onPressed: (() async {
               await _checkForm().then((value) {
-                if(value) {
+                if(context.mounted && value) {
                   Navigator.pop(context);
                 }
               });
@@ -135,17 +135,23 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                     await _updateDetail().then((resp) {
                       if(resp) {                      
                         debugPrint("💾 Update the watchlist detail ID ${_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId} for ${_watchlist.watchlistId}");
-                        // return back to the previous page
-                        Navigator.pop(context);
+                        if (context.mounted) {
+                          // return back to the previous page
+                          Navigator.pop(context);
+                        }
                       }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
-                      // show error on snack bar
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                        // show error on snack bar
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      }
                     }).whenComplete(() {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
+                      }
                     });
                   })
                 ),
@@ -156,7 +162,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   icon: Ionicons.close,
                   callback: (() async {
                     await _checkForm().then((value) {
-                      if(value) {
+                      if(context.mounted && value) {
                         Navigator.pop(context);
                       }
                     });

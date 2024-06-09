@@ -85,17 +85,19 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                       await _changePassword().then((resp) {
                         if(resp) {
                           debugPrint("🔓 Change Password");
-                          // update password success, show the message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            createSnackBar(
-                              message: "Password Change Successfully",
-                              icon: const Icon(
-                                Ionicons.checkmark,
-                                color: Colors.green,
-                              ),
-                              duration: 3,
-                            )
-                          );
+                          if (context.mounted) {
+                            // update password success, show the message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              createSnackBar(
+                                message: "Password Change Successfully",
+                                icon: const Icon(
+                                  Ionicons.checkmark,
+                                  color: Colors.green,
+                                ),
+                                duration: 3,
+                              )
+                            );
+                          }
     
                           // clear the text fields
                           _currentPasswordController.clear();
@@ -103,22 +105,26 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                           _confirmPasswordController.clear();
                         }
                         else {
+                          if (context.mounted) {
+                            // update password failed
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              createSnackBar(
+                                message: "Unable to Change Password",
+                                duration: 3,
+                              )
+                            );
+                          }
+                        }
+                      }).onError((error, stackTrace) {
+                        if (context.mounted) {
                           // update password failed
                           ScaffoldMessenger.of(context).showSnackBar(
                             createSnackBar(
-                              message: "Unable to Change Password",
+                              message: "Error when Change Password",
                               duration: 3,
                             )
                           );
                         }
-                      }).onError((error, stackTrace) {
-                        // update password failed
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          createSnackBar(
-                            message: "Error when Change Password",
-                            duration: 3,
-                          )
-                        );
                       });
                     }
                   })
@@ -189,8 +195,10 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
       // got error
       throw Exception(error.toString());
     }).whenComplete(() {
-      // remove loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove loader
+        Navigator.pop(context);
+      }
     });
 
     return ret;

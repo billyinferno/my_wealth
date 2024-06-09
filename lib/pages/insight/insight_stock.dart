@@ -131,10 +131,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
               });
             }).onError((error, stackTrace) {
               debugPrintStack(stackTrace: stackTrace);
-              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when refresh stock insight"));
+              _showScaffoldMessage(text: "Error when refresh stock insight");
             }).whenComplete(() {
-              // remove the loader
-              Navigator.pop(context);
+              if (context.mounted) {
+                // remove the loader
+                Navigator.pop(context);
+              }
             });
 
             // rebuild widget once finished
@@ -409,17 +411,21 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     type: "saham",
                                   );
                                   
-                                  // remove the loader dialog
-                                  Navigator.pop(context);
+                                  if (context.mounted) {
+                                    // remove the loader dialog
+                                    Navigator.pop(context);
 
-                                  // go to the company page
-                                  Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                                    // go to the company page
+                                    Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                                  }
                                 }).onError((error, stackTrace) {
-                                  // remove the loader dialog
-                                  Navigator.pop(context);
+                                  if (context.mounted) {
+                                    // remove the loader dialog
+                                    Navigator.pop(context);
+                                  }
 
                                   // show the error message
-                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                                  _showScaffoldMessage(text: 'Error when try to get the company detail from server');
                                 });
                               }
                             }
@@ -553,17 +559,21 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                 type: "saham",
                               );
                               
-                              // remove the loader dialog
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                // remove the loader dialog
+                                Navigator.pop(context);
 
-                              // go to the company page
-                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                                // go to the company page
+                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                              }
                             }).onError((error, stackTrace) {
-                              // remove the loader dialog
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                // remove the loader dialog
+                                Navigator.pop(context);
+                              }
 
                               // show the error message
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                              _showScaffoldMessage(text: 'Error when try to get the company detail from server');
                             });
                           }),
                           child: Container(
@@ -664,17 +674,21 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                 type: "saham",
                               );
                               
-                              // remove the loader dialog
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                // remove the loader dialog
+                                Navigator.pop(context);
 
-                              // go to the company page
-                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                                // go to the company page
+                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                              }
                             }).onError((error, stackTrace) {
-                              // remove the loader dialog
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                // remove the loader dialog
+                                Navigator.pop(context);
+                              }
 
                               // show the error message
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                              _showScaffoldMessage(text: 'Error when try to get the company detail from server');
                             });
                           }),
                           child: Container(
@@ -878,17 +892,21 @@ class _InsightStockPageState extends State<InsightStockPage> {
                 type: "saham",
               );
               
-              // remove the loader dialog
-              Navigator.pop(context);
+              if (mounted) {
+                // remove the loader dialog
+                Navigator.pop(context);
 
-              // go to the company page
-              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                // go to the company page
+                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+              }
             }).onError((error, stackTrace) {
-              // remove the loader dialog
-              Navigator.pop(context);
+              if (mounted) {
+                // remove the loader dialog
+                Navigator.pop(context);
+              }
 
               // show the error message
-              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+              _showScaffoldMessage(text: 'Error when try to get the company detail from server');
             });
           },
           child: Container(
@@ -959,5 +977,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
     setState(() {
       _worseCompanyPeriod = period;
     });
+  }
+
+  void _showScaffoldMessage({required String text}) {
+    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: text));
   }
  }

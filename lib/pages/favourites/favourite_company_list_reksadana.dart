@@ -69,16 +69,18 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     Future.microtask(() async {
       // once widget all load, showed the loader dialog since we will
       // perform API call to get the favorite company list
-      showLoaderDialog(context);
+      if (mounted) {
+        showLoaderDialog(context);
+      }
 
       // get the company for favourite list
-      await getFavouriteCompanyList().then((_) {
-        // pop out the loader once API call finished
-        Navigator.pop(context);
-      }).onError((error, stackTrace) {
+      await getFavouriteCompanyList().onError((error, stackTrace) {
         debugPrint(error.toString());
-        // pop out the loader once API call finished
-        Navigator.pop(context);
+      }).whenComplete(() {
+        if (mounted) {
+          // pop out the loader once API call finished
+          Navigator.pop(context);
+        }
       });
     });
   }
@@ -115,16 +117,17 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                 // on the new favorites being add/remove from this page
                 showLoaderDialog(context);
                 await getUserFavourites().then((_) {
-                  // remove the loader
-                  Navigator.pop(context);
                 }).onError((error, stackTrace) {
                   // in case error showed it on debug
                   debugPrint(error.toString());
-                  // remove the loader
-                  Navigator.pop(context);
                 }).whenComplete(() {
-                  // return back to the previous page
-                  Navigator.pop(context);
+                  if (context.mounted) {
+                    // remove the loader
+                    Navigator.pop(context);
+
+                    // return back to the previous page
+                    Navigator.pop(context);
+                  }
                 });
               }),
             ),
@@ -772,7 +775,9 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
         updateFaveList(index, resp);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
+        }
       });
     }
     else {
@@ -803,7 +808,9 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
         updateFaveList(index, ret);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));
+        }
       });
     }
   }

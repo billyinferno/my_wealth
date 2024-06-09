@@ -167,16 +167,20 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
                                   // get the detail information for this company
                                   Future.microtask(() async {
-                                    // show the loader dialog
-                                    showLoaderDialog(context);
+                                    if (context.mounted) {
+                                      // show the loader dialog
+                                      showLoaderDialog(context);
+                                    }
 
                                     // get the company detail
                                     await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
                                       _companyDetail = resp;
                                     });
                                   }).whenComplete(() {
-                                    // remove the loader dialog
-                                    Navigator.pop(context);
+                                    if (context.mounted) {
+                                      // remove the loader dialog
+                                      Navigator.pop(context);
+                                    }
 
                                     // check if this is the same as previous saham code or not?
                                     if (_companySahamCode != _companyDetail!.companySymbol) {
@@ -410,17 +414,21 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                 type: "saham",
                               );
 
-                              // remove the loader dialog
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                // remove the loader dialog
+                                Navigator.pop(context);
 
-                              // go to the company page
-                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                                // go to the company page
+                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                              }
                             }).onError((error, stackTrace) {
-                              // remove the loader dialog
-                              Navigator.pop(context);
+                              if (context.mounted) {
+                                // remove the loader dialog
+                                Navigator.pop(context);
 
-                              // show the error message
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message:'Error when try to get the company detail from server'));
+                                // show the error message
+                                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message:'Error when try to get the company detail from server'));
+                              }
                             });
                           }),
                           icon: const Icon(
@@ -1072,15 +1080,20 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       _brokerSummarySelected = "a";
       _showNet = false;
 
-      // remove the loader dialog
-      Navigator.pop(context);
+      if (mounted) {        
+        // remove the loader dialog
+        Navigator.pop(context);
+      }
     }).onError((error, stackTrace) {
-      // remove the loader dialog
-      Navigator.pop(context);
-
-      // print the stack trace and show snackbar
+      // print the stack trace
       debugPrintStack(stackTrace: stackTrace);
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch broker data"));
+      debugPrint("Error: ${error.toString()}");
+      if (mounted) {
+        // remove the loader dialog
+        Navigator.pop(context);
+        // show snack bar for the error
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch broker data"));
+      }
     });
   }
 }

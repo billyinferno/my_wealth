@@ -102,29 +102,30 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                         debugPrint("💾 Save the updated bot token");
                         showLoaderDialog(context);
                         await _userApi.updateBotToken(_controller.text).then((resp) async {
-                          // remove the loader dialog
-                          Navigator.pop(context);
-
                           // we will get updated user info here, so stored the updated
                           // user info with new risk factor to the local storea
                           await UserSharedPreferences.setUserInfo(resp);
+                          
+                          if (context.mounted) {
+                            // remove the loader dialog
+                            Navigator.pop(context);
 
-                          // update the provider to notify the user page
-                          if (!context.mounted) return;
-                          Provider.of<UserProvider>(context, listen: false)
-                              .setUserLoginInfo(resp);
+                            // update the provider to notify the user page
+                            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
 
-                          // once finished, then pop out from this page
-                          Navigator.pop(context);
+                            // once finished, then pop out from this page
+                            Navigator.pop(context);
+                          }
                         }).onError((error, stackTrace) {
-                          // remove the loader dialog
-                          Navigator.pop(context);
+                          if (context.mounted) {
+                            // remove the loader dialog
+                            Navigator.pop(context);
 
-                          // showed the snack bar
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(createSnackBar(
-                            message: "Unable to update Bot Token",
-                          ));
+                            // showed the snack bar
+                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(
+                              message: "Unable to update Bot Token",
+                            ));
+                          }
                         });
                       } else {
                         // showed the snack bar

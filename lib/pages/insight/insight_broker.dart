@@ -92,7 +92,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to get broker top list"));
+                _showScaffoldMessage(text: "Unable to get broker top list");
                 debugPrintStack(stackTrace: stackTrace);
               });
 
@@ -103,7 +103,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to get broker top transaction"));
+                _showScaffoldMessage(text: "Unable to get broker top transaction");
                 debugPrintStack(stackTrace: stackTrace);
               });
 
@@ -114,7 +114,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to get market today"));
+                _showScaffoldMessage(text: "Unable to get market today");
                 debugPrintStack(stackTrace: stackTrace);
               });
 
@@ -125,11 +125,13 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                 Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
               }).onError((error, stackTrace) {
                 // show the snack bar
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to get market cap"));
+                _showScaffoldMessage(text: "Unable to get market cap");
                 debugPrintStack(stackTrace: stackTrace);
               });
             }).whenComplete(() {
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
 
               setState(() {
                 // rebuild to refresh the widget
@@ -635,17 +637,21 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
             type: "saham",
           );
           
-          // remove the loader dialog
-          Navigator.pop(context);
+          if (mounted) {
+            // remove the loader dialog
+            Navigator.pop(context);
 
-          // go to the company page
-          Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+            // go to the company page
+            Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+          }
         }).onError((error, stackTrace) {
-          // remove the loader dialog
-          Navigator.pop(context);
+          if (mounted) {
+            // remove the loader dialog
+            Navigator.pop(context);
 
-          // show the error message
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+            // show the error message
+            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+          }
         });
       }),
       child: Row(
@@ -783,17 +789,21 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
             type: "saham",
           );
           
-          // remove the loader dialog
-          Navigator.pop(context);
+          if (mounted) {
+            // remove the loader dialog
+            Navigator.pop(context);
 
-          // go to the company page
-          Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+            // go to the company page
+            Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+          }
         }).onError((error, stackTrace) {
-          // remove the loader dialog
-          Navigator.pop(context);
+          if (mounted) {
+            // remove the loader dialog
+            Navigator.pop(context);
 
-          // show the error message
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+            // show the error message
+            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+          }
         });
       }),
       child: SizedBox(
@@ -963,6 +973,12 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
           ),
         );
       });
+    }
+  }
+
+  void _showScaffoldMessage({required String text}) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: text));
     }
   }
 }

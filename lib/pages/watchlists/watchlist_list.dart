@@ -430,20 +430,16 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             cancelLabel: "Cancel"
                           ).show(context).then((resp) async {
                             if(resp!) {
-                              // show the loader
-                              showLoaderDialog(context);
-                              await _deleteWatchlist().then((resp) {
-                                if(resp) {
-                                  debugPrint("🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
-                                  // navigate to the previous page
-                                  Navigator.pop(context); 
-                                }
-                              }).onError((error, stackTrace) {
-                                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                              }).whenComplete(() {
-                                // remove the loader
-                                Navigator.pop(context);
-                              });
+                              if (context.mounted) {  
+                                // show the loader
+                                showLoaderDialog(context);
+                              }
+
+                              // delete the watchlist, all the success and error
+                              // handling is moved to the function to ensure
+                              // the context is mounted when we perform the
+                              // delete on the watchlist.
+                              await _deleteWatchlist();
                             }
                           },);
                         })
@@ -541,7 +537,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                         debugPrint("🧹 Unable to delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
                                       }
                                     }).onError((error, stackTrace) {
-                                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                      }
                                     });
                                   }
                                 });
@@ -689,15 +687,16 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     }).onError((error, stackTrace) {
       throw Exception(error.toString());
     }).whenComplete(() {
-      // remove the loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
     });
 
     return ret;
   }
 
-  Future<bool> _deleteWatchlist() async {
-    bool ret = false;
+  Future<void> _deleteWatchlist() async {
     await _watchlistApi.delete(_watchlist.watchlistId).then((resp) async {
       if(resp) {
         // delete the current watchlist
@@ -714,9 +713,24 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
       }
-      ret = resp;
+      
+      if (resp) {
+        debugPrint("🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
+        if (mounted) {
+          // navigate to the previous page
+          Navigator.pop(context); 
+        }
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+      }
+    }).whenComplete(() {
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
     });
-    return ret;
   }
 
   void _compute() {

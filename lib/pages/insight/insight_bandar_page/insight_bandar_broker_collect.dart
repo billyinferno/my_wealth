@@ -285,8 +285,10 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                     // show the loader dialog
                     showLoaderDialog(context);
                     await _getBrokerCollect().then((_) {
-                      // remove loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove loader dialog
+                        Navigator.pop(context);
+                      }
                     });
                     
                     // rebuild widget
@@ -621,17 +623,21 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         type: "saham",
                       );
                       
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                        // go to the company page
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                   icon: Ionicons.business_outline,
@@ -981,8 +987,12 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       // stre the broker collection query result to the shared preferences
       await InsightSharedPreferences.setBrokerCollect(_brokerCollect!, _brokerCode, _fromDate!, _toDate!, _accumRate);
     }).onError((error, stackTrace) {
-      // show the error
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+      debugPrintStack(stackTrace: stackTrace);
+      debugPrint("Error: ${error.toString()}");
+      if (mounted) {
+        // show the error
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+      }
     });
   }
 }

@@ -68,9 +68,11 @@ class LoginPageState extends State<LoginPage> {
         if(isLogin) {
           debugPrint("🔓 Already login");
           await _getAdditionalInfo().then((_) {
-            // once finished get the additional information route this to home
-            debugPrint("🏠 Redirect to home");
-            Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+            if (mounted) {
+              // once finished get the additional information route this to home
+              debugPrint("🏠 Redirect to home");
+              Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+            }
           });
         }
         else {
@@ -300,13 +302,15 @@ class LoginPageState extends State<LoginPage> {
                           if (_formKey.currentState!.validate()) {
                             showLoaderDialog(context);
                             await _login(_usernameController.text, _passwordController.text).then((res) async {
-                              Navigator.pop(context);
-                              if(res) {
-                                debugPrint("🏠 Login success, redirect to home");
-                                Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
-                              }
-                              else {
-                                debugPrint("⛔ Wrong login information");
+                              if (mounted) {
+                                Navigator.pop(context);
+                                if(res) {
+                                  debugPrint("🏠 Login success, redirect to home");
+                                  Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+                                }
+                                else {
+                                  debugPrint("⛔ Wrong login information");
+                                }
                               }
                             });
                           }
@@ -358,9 +362,11 @@ class LoginPageState extends State<LoginPage> {
         // in case there are update from user that directly performed
         // on server.
         await UserSharedPreferences.setUserInfo(resp).then((_) {
-          // put the user information on the provider
-          Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-          debugPrint("3️⃣ Update user information");
+          if (mounted) {
+            // put the user information on the provider
+            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+            debugPrint("3️⃣ Update user information");
+          }
         });
       }
     }).onError((NetException error, stackTrace) async {
@@ -368,7 +374,7 @@ class LoginPageState extends State<LoginPage> {
 
       if(error.message.toLowerCase() == "xmlhttprequest error.") {
         // show no connection to API
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to connect to API"));
+        _showScaffoldMessage(text: "Unable to connect to API");
       }
       else {
         // check if we have jwt token or not?
@@ -382,7 +388,7 @@ class LoginPageState extends State<LoginPage> {
           NetUtils.clearJWT();
 
           // show invalid token message on the login screen
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Token expired, please re-login"));
+          _showScaffoldMessage(text: "Token expired, please re-login");
         }
       }
     });
@@ -415,9 +421,11 @@ class LoginPageState extends State<LoginPage> {
 
         // then we can store the user information to the local storage
         await UserSharedPreferences.setUserInfo(resp.user).then((_) {
-          // put the user information on the provider
-          Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp.user);
-          debugPrint("2️⃣ Set user information");
+          if (mounted) {
+            // put the user information on the provider
+            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp.user);
+            debugPrint("2️⃣ Set user information");
+          }
         });
 
         // and we can call all the rest of the API that we also need when user already
@@ -428,12 +436,12 @@ class LoginPageState extends State<LoginPage> {
       // check if the error message is "XMLHttpRequest error."
       if (error.toString() == "XMLHttpRequest error.") {
         debugPrint("🌏 No Internet Connection");
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to connect to API",));
+        _showScaffoldMessage(text: "Unable to connect to API");
       }
       else {
         // login failed
         debugPrint("🔐 Login failed");
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Invalid identifier or password",));
+        _showScaffoldMessage(text: "Invalid identifier or password");
       }
     });
 
@@ -650,5 +658,11 @@ class LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = isLoading;
     });
+  }
+
+  void _showScaffoldMessage({required String text}) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: text,));
+    }
   }
 }

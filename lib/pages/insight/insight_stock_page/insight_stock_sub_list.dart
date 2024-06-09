@@ -52,7 +52,9 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
 
     // once got the arguments then we can try to call the api to get the list of company
     Future.microtask(() async {
-      showLoaderDialog(context);
+      if (mounted) {
+        showLoaderDialog(context);
+      }
       
       await _companyAPI.getCompanySectorAndSubSector(_args.type, _args.sectorName, _args.subName).then((resp) {
         _companyList = resp;
@@ -61,8 +63,10 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
         _filterSort = "ASC";
       });
     }).whenComplete(() {
-      // remove the loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
       
       // set is loading into false
       setState(() {
@@ -147,17 +151,21 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                         type: "saham",
                       );
                       
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                        // go to the company page
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                   child: Container(

@@ -1086,7 +1086,9 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     }).then((value) {
       // if not first run, remove the loader dialog
       if ((firstRun ?? false) == false) {
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     });
 

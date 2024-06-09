@@ -382,17 +382,21 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                         watchList: resp
                       );
 
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // go to the watchlist list page
-                      Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
+                        // go to the watchlist list page
+                        Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                 );

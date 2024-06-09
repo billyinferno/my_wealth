@@ -858,7 +858,9 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
       // if this is not the  first run, it means that the loader dialog is being
       // called on top, close the loader dialog.
       if((firstRun ?? false) == false) {
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     });
 

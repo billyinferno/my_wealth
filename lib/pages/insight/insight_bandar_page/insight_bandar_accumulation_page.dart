@@ -69,7 +69,9 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
     if (_listAccumulation.isEmpty) {
       Future.microtask(() async {
-        showLoaderDialog(context);
+        if (mounted) {
+          showLoaderDialog(context);
+        }
 
         // get the min and max broker summary date
         await _brokerSummaryAPI.getBrokerSummaryDate().then((resp) async {
@@ -106,8 +108,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
           await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, _listAccumulation);
         });
       }).whenComplete(() {
-        // remove the loader
-        Navigator.pop(context);
+        if (mounted) {
+          // remove the loader
+          Navigator.pop(context);
+        }
 
         // then set the isloading state into false
         _setLoading(false);
@@ -276,10 +280,14 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                 });
               }).onError((error, stackTrace) {
                 debugPrintStack(stackTrace: stackTrace);
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
+                }
               }).whenComplete(() {
-                // remove the loader
-                Navigator.pop(context);
+                if (context.mounted) {
+                  // remove the loader
+                  Navigator.pop(context);
+                }
               });
             }),
             child: Container(
@@ -348,17 +356,21 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                         type: "saham",
                       );
                       
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // go to the company page
-                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                        // go to the company page
+                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                      }
                     }).onError((error, stackTrace) {
-                      // remove the loader dialog
-                      Navigator.pop(context);
+                      if (context.mounted) {
+                        // remove the loader dialog
+                        Navigator.pop(context);
 
-                      // show the error message
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                        // show the error message
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                      }
                     });
                   }),
                   child: Container(

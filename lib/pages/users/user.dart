@@ -214,7 +214,7 @@ class _UserPageState extends State<UserPage> {
                               debugPrint("🔃 Update Visibility to $_isVisible");
                               setSummaryVisible(_isVisible);
                             }).onError((error, stackTrace) {
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                              _showScaffoldMessage(text: error.toString());
                             });
                           }),
                         ),
@@ -280,7 +280,7 @@ class _UserPageState extends State<UserPage> {
                               debugPrint("🔃 Update Show Lots to $_showLots");
                               setShowLots(_showLots);
                             }).onError((error, stackTrace) {
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                              _showScaffoldMessage(text: error.toString());
                             });
                           }),
                         ),
@@ -346,7 +346,7 @@ class _UserPageState extends State<UserPage> {
                               debugPrint("🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
                               setShowEmptywatchlist(_showEmptyWatchlist);
                             }).onError((error, stackTrace) {
-                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                              _showScaffoldMessage(text: error.toString());
                             });
                           }),
                         ),
@@ -513,7 +513,9 @@ class _UserPageState extends State<UserPage> {
                             NetUtils.clearJWT();
                             
                             // navigate back to login
-                            Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                            if (context.mounted) {
+                              Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                            }
                           });
                         }
                       });
@@ -586,8 +588,10 @@ class _UserPageState extends State<UserPage> {
       // remove the loader
       Navigator.pop(context);
     }).onError((error, stackTrace) {
-      // remove the loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
 
       // throw the exception
       throw Exception(error.toString());
@@ -620,8 +624,10 @@ class _UserPageState extends State<UserPage> {
       // remove the loader
       Navigator.pop(context);
     }).onError((error, stackTrace) {
-      // remove the loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
 
       // throw the exception
       throw Exception(error.toString());
@@ -654,13 +660,21 @@ class _UserPageState extends State<UserPage> {
       // remove the loader
       Navigator.pop(context);
     }).onError((error, stackTrace) {
-      // remove the loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
 
       // throw the exception
       throw Exception(error.toString());
     });
 
     return ret;
+  }
+
+  void _showScaffoldMessage({required String text}) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: text));
+    }
   }
 }

@@ -204,16 +204,20 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
 
                                   // get the detail information for this company
                                   Future.microtask(() async {
-                                    // show the loader dialog
-                                    showLoaderDialog(context);
+                                    if (context.mounted) {
+                                      // show the loader dialog
+                                      showLoaderDialog(context);
+                                    }
 
                                     // get the company detail
                                     await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
                                       _companyDetail = resp;
                                     });
                                   }).whenComplete(() {
-                                    // remove the loader dialog
-                                    Navigator.pop(context);
+                                    if (context.mounted) {
+                                      // remove the loader dialog
+                                      Navigator.pop(context);
+                                    }
 
                                     // check if this is the same as previous saham code or not?
                                     if (_companySahamCode != _companyDetail!.companySymbol) {
@@ -887,13 +891,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     await _brokerSummaryAPI.getBrokerTransactionDetail(_brokerCode, _companySahamCode, _dateFrom, _dateTo).then((resp) {
       _brokerSummaryData = resp;
 
-      // remove the loader
-      Navigator.pop(context);
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+      }
     }).onError((error, stackTrace) {
-      // remove the loader
-      Navigator.pop(context);
-      // show the error
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+      if (mounted) {
+        // remove the loader
+        Navigator.pop(context);
+        // show the error
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+      }
     });
   }
 }

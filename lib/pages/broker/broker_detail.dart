@@ -228,7 +228,9 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
             
                     // get the broker summary
                     await _refreshTransactionList().onError((error, stackTrace) {
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                      }
                     });
                   }
                 }
@@ -275,10 +277,14 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                     if (_hasMore) {
                       showLoaderDialog(context);
                       await _getTransactionList().then((_) {
-                        Navigator.pop(context);
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
                       }).onError((error, stackTrace) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when load more data'));
+                        if (mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when load more data'));
+                        }
                       });
                     }
                   }),
@@ -501,10 +507,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                   if (value) {
                                     // try to get the data if not available
                                     showLoaderDialog(context);
-                                    await _getTransactionDetail(index).whenComplete(() {
-                                      // remove loader dialog
-                                      Navigator.pop(context);
-                                    });
+                                    await _getTransactionDetail(index);
                                   }
                                                     
                                   // set the state, so we will rebuild the whatever happen
@@ -809,9 +812,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   Future<void> _refreshTransactionList() async {
     showLoaderDialog(context);
     await _getTransactionList().then((_) {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }).onError((error, stackTrace) {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
       throw Exception('Error when get transaction list');
     });                        
   }
@@ -895,6 +902,11 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         _transactionList.brokerSummaryToDate.toLocal()).then((resp) {
           // got the response from the API, we will put this on the map of transaction detail
           _transactionDetail[index] = resp;
+      }).then((_) {
+        if (mounted) {
+          // remove loader dialog
+          Navigator.pop(context);
+        }
       });
     }
   }

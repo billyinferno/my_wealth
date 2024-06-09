@@ -610,7 +610,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                               await _deleteWatchlist(type, data[idx].watchlistId).then((value) {
                                 debugPrint("🗑️ Delete Watchlist ${data[idx].watchlistCompanyName}");
                               }).onError((error, stackTrace) {
-                                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                }
                               });
                             }
                           });
@@ -705,7 +707,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         throw Exception("❌ Error when refresh watchlist history");
       });
     })).whenComplete(() {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     });
   }
 
@@ -796,7 +800,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       throw Exception(error);
     }).whenComplete(() {
       // remove loader
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     });
   }
 }

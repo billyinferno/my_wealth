@@ -95,7 +95,9 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
           color: accentColor,
           onRefresh: (() async {
             await Future.microtask(() async {
-              showLoaderDialog(context);
+              if (context.mounted) {
+                showLoaderDialog(context);
+              }
               // get top list
               await _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
                 debugPrint("🔃 Refresh Reksdana Saham");
@@ -148,10 +150,14 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
               });
             }).onError((error, stackTrace) {
               debugPrintStack(stackTrace: stackTrace);
-              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when refresh reksadana insight"));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when refresh reksadana insight"));
+              }
             }).whenComplete(() {
-              // remove the loader
-              Navigator.pop(context);
+              if (context.mounted) {
+                // remove the loader
+                Navigator.pop(context);
+              }
             });
             
             // once finished just do rebuild so we can get all the latest data from provide since we didn't
@@ -389,17 +395,21 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                 type: "reksadana",
               );
               
-              // remove the loader dialog
-              Navigator.pop(context);
+              if (mounted) {
+                // remove the loader dialog
+                Navigator.pop(context);
 
-              // go to the company page
-              Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
+                // go to the company page
+                Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
+              }
             }).onError((error, stackTrace) {
-              // remove the loader dialog
-              Navigator.pop(context);
+              if (mounted) {
+                // remove the loader dialog
+                Navigator.pop(context);
 
-              // show the error message
-              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                // show the error message
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+              }
             });
           },
           child: Container(

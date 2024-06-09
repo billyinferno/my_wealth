@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/index_api.dart';
+import 'package:my_wealth/model/company/company_seasonality_model.dart';
 import 'package:my_wealth/model/index/index_model.dart';
 import 'package:my_wealth/model/index/index_price_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
@@ -10,6 +11,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/chart/seasonality_table.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
 import 'package:my_wealth/widgets/chart/heat_graph.dart';
 import 'package:my_wealth/widgets/chart/line_chart.dart';
@@ -40,6 +42,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   final Map<int, List<IndexPriceModel>> _indexPriceData = {};
   late int _currentIndexPrice;
   late List<GraphData> _graphData;
+  late List<SeasonalityModel> _seasonality;
   final Map<DateTime, GraphData> _heatMapGraphData = {};
 
   double _priceDiff = 0;
@@ -53,9 +56,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
   @override
   void initState() {
-    super.initState();
     _index = widget.index as IndexModel;
     _indexName = _index.indexName;
+    
     if (Globals.indexName.containsKey(_index.indexName)) {
       _indexName = "($_indexName) ${Globals.indexName[_indexName]}";
     }
@@ -83,7 +86,12 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
     _showCurrentPriceComparison = false;
 
+    // initialize seasonility with empty list
+    _seasonality = [];
+
     _getData = _getAllData();
+
+    super.initState();
   }
 
   @override
@@ -361,6 +369,20 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     });
                   }),
                   active: (_bodyPage == 0),
+                  vertical: true,
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
+                  text: "Season",
+                  bgColor: primaryDark,
+                  icon: Ionicons.rainy,
+                  callback: (() {
+                    setState(() {
+                      _bodyPage = 3;
+                    });
+                  }),
+                  active: (_bodyPage == 3),
+                  vertical: true,
                 ),
                 const SizedBox(width: 10,),
                 TransparentButton(
@@ -373,6 +395,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     });
                   }),
                   active: (_bodyPage == 1),
+                  vertical: true,
                 ),
                 const SizedBox(width: 10,),
                 TransparentButton(
@@ -385,6 +408,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     });
                   }),
                   active: (_bodyPage == 2),
+                  vertical: true,
                 ),
                 const SizedBox(width: 10,),
               ],
@@ -402,6 +426,12 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       _getIndexPriceDate().then((_) {
         debugPrint("🏁 Get index price detail");
       }),
+
+      _indexApi.getSeasonality(_index.indexId).then((resp) {
+        debugPrint("🏁 Get index seasonility");
+
+        _seasonality = resp;
+      })
     ]).onError((error, stackTrace) {
       debugPrint("Error: ${error.toString()}");
       debugPrintStack(stackTrace: stackTrace);
@@ -529,9 +559,15 @@ class IndexDetailPageState extends State<IndexDetailPage> {
         return _showCalendar();
       case 2:
         return _showGraph();
+      case 3:
+        return _showSeasonality();
       default:
         return _showTable();
     }
+  }
+
+  List<Widget> _showSeasonality() {
+    return [SeasonalityTable(data: _seasonality)];
   }
 
   List<Widget> _showGraph() {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:my_wealth/model/common/common_array_model.dart';
+import 'package:my_wealth/model/company/company_seasonality_model.dart';
 import 'package:my_wealth/model/index/index_model.dart';
 import 'package:my_wealth/model/index/index_price_model.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -61,5 +62,24 @@ class IndexAPI {
       listIndexPrice.add(indexPrice);
     }
     return listIndexPrice;
+  }
+
+  Future<List<SeasonalityModel>> getSeasonality(int id) async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiIndicePrice}/seasonality/$id'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
+      }
+    );
+
+    // parse the response to get seasonality information for this company
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<SeasonalityModel> ret = [];
+    for (dynamic data in commonModel.data) {
+      SeasonalityModel seasonality = SeasonalityModel.fromJson(data['attributes']);
+      ret.add(seasonality);
+    }
+    return ret;
   }
 }

@@ -205,10 +205,12 @@ class HeatGraph extends StatelessWidget {
 
   Widget _generateBox(Color boxColor, Color decorationColor) {
     return Container(
-      width: 20,
-      height: 20,
+      width: 18,
+      height: 18,
+      margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: boxColor,
+        borderRadius: BorderRadius.circular(6)
       ),
     );
   }
@@ -221,7 +223,6 @@ class HeatGraph extends StatelessWidget {
 
   Widget _generateBoxColumn(List<Widget> child) {
     return SizedBox(
-      width: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,

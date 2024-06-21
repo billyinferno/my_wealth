@@ -23,3 +23,10 @@ String formatDate({required DateTime date, required String format}) {
   final DateFormat df = DateFormat(format);
   return df.format(date);
 }
+
+bool isSameOrBefore({required DateTime date, required DateTime checkDate}) {
+  if (date.isAtSameMomentAs(checkDate) || date.isBefore(checkDate)) {
+    return true;
+  }
+  return false;
+}

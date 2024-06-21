@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/compute_watchlist.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/widgets/list/expanded_tile_children.dart';
 import 'package:my_wealth/widgets/list/expanded_tile_title.dart';
@@ -17,7 +18,18 @@ class ExpandedTileView extends StatelessWidget {
   final String? shareTitle;
   final bool? checkThousandOnPrice;
   final bool showEmptyWatchlist;
-  const ExpandedTileView({super.key, this.showedLot, this.inLot, required this.risk, required this.isVisible, required this.watchlist, required this.watchlistResult, this.shareTitle, this.checkThousandOnPrice, required this.showEmptyWatchlist});
+  const ExpandedTileView({
+    super.key,
+    this.showedLot,
+    this.inLot,
+    required this.risk,
+    required this.isVisible,
+    required this.watchlist,
+    required this.watchlistResult,
+    this.shareTitle,
+    this.checkThousandOnPrice,
+    required this.showEmptyWatchlist,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +37,7 @@ class ExpandedTileView extends StatelessWidget {
     bool isShowedLots = (showedLot ?? false);
     bool isInLot = (inLot ?? false);
     final DateFormat dt = DateFormat("dd/MM/yy");
+    final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now().toLocal());
 
     // after that check if the showEmptyWatchlist is set as false?
     // if so ensure that if txn > 0 but totalShare is 0, just return SizedBox instead of expansion tile
@@ -82,6 +95,10 @@ class ExpandedTileView extends StatelessWidget {
             currentPrice: watchlist.watchlistCompanyNetAssetValue!,
             averagePrice: watchlistResult.averagePrice,
             risk: risk,
+            calculateLoss: isSameOrBefore(
+              date: watchlist.watchlistDetail[index].watchlistDetailDate.toLocal(),
+              checkDate: checkDate
+            ),
           );
         }),
       ),

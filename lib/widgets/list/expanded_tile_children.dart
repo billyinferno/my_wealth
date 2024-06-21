@@ -10,6 +10,7 @@ class ExpandedTileChildren extends StatelessWidget {
   final double currentPrice;
   final double averagePrice;
   final int risk;
+  final bool calculateLoss;
 
   const ExpandedTileChildren(
       {super.key,
@@ -19,11 +20,16 @@ class ExpandedTileChildren extends StatelessWidget {
       required this.price,
       required this.currentPrice,
       required this.averagePrice,
-      required this.risk});
+      required this.risk,
+      required this.calculateLoss,
+    });
 
   @override
   Widget build(BuildContext context) {
-    final rColor = riskColor((shares * currentPrice), (shares * price), risk);
+    Color rColor = riskColor((shares * currentPrice), (shares * price), risk);
+    if (!calculateLoss) {
+      rColor = Colors.black;
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +87,7 @@ class ExpandedTileChildren extends StatelessWidget {
                 )
               ),
               child: Text(
-                (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(averagePrice * (shares * -1))),
+                (calculateLoss ? (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(averagePrice * (shares * -1))) : "-"),
                 style: const TextStyle(
                   fontSize: 10,
                 ),

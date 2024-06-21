@@ -37,7 +37,7 @@ class ExpandedTileView extends StatelessWidget {
     bool isShowedLots = (showedLot ?? false);
     bool isInLot = (inLot ?? false);
     final DateFormat dt = DateFormat("dd/MM/yy");
-    final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now().toLocal());
+    final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now());
 
     // after that check if the showEmptyWatchlist is set as false?
     // if so ensure that if txn > 0 but totalShare is 0, just return SizedBox instead of expansion tile
@@ -97,7 +97,7 @@ class ExpandedTileView extends StatelessWidget {
             risk: risk,
             calculateLoss: isSameOrBefore(
               date: watchlist.watchlistDetail[index].watchlistDetailDate.toLocal(),
-              checkDate: checkDate
+              checkDate: checkDate.toLocal(),
             ),
           );
         }),

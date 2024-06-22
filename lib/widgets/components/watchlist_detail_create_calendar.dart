@@ -40,7 +40,7 @@ class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCale
             });
           }),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+            padding: const EdgeInsets.fromLTRB(10, 14, 10, 14),
             decoration: const BoxDecoration(
               border: Border(
                 bottom: BorderSide(

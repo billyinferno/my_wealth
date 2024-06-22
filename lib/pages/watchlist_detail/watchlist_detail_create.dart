@@ -7,6 +7,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
+import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
@@ -89,7 +90,9 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
             WatchlistDetailCreateTextFields(
               controller: _priceController,
               title: "Price",
+              hintText: formatDecimalWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, 1, 2),
               decimal: 6,
+              defaultPrice: _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
             ),
             const SizedBox(height: 10,),
             Row(

@@ -113,12 +113,15 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
               title: "Shares",
+              hintText: formatDecimalWithNull(_prevShares, 1, 2),
               decimal: 6,
             ),
             WatchlistDetailCreateTextFields(
               controller: _priceController,
               title: "Price",
+              hintText: formatDecimalWithNull(_prevPrice, 1, 2),
               decimal: 6,
+              defaultPrice: _prevPrice,
             ),
             const SizedBox(height: 10,),
             Row(

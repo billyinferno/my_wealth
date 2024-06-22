@@ -59,4 +59,31 @@ class UserSharedPreferences {
       return null;
     }
   }
+
+  static void setUserVisibility({required bool visibility}) {
+    UserLoginInfoModel? currentUser = getUserInfo();
+
+    // ensure current user is not null
+    if (currentUser != null) {
+      // now check if the visibility is the same or not?
+      if (currentUser.visibility != visibility) {
+        // create a new user info
+        UserLoginInfoModel newUser = UserLoginInfoModel(
+          id: currentUser.id,
+          username: currentUser.username,
+          email: currentUser.email,
+          confirmed: currentUser.confirmed,
+          blocked: currentUser.blocked,
+          risk: currentUser.risk,
+          visibility: visibility,
+          showLots: currentUser.showLots,
+          bot: currentUser.bot,
+          showEmptyWatchlist: currentUser.showEmptyWatchlist
+        );
+
+        // assigned new user as the user info
+        setUserInfo(newUser);
+      }
+    }
+  }
 }

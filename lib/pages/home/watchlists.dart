@@ -60,6 +60,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   bool _isShowedLots = false;
   bool _isSummaryVisible = false;
   bool _isShowEmptyWatchlist = true;
+  
+  // hold the information for the current user configuration
+  bool _currentIsShowedLots = false;
+  bool _currentIsSummaryVisible = false;
+  bool _currentIsShowEmptyWatchlist = true;
 
   @override
   void initState() {
@@ -89,6 +94,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _isShowedLots = _userInfo!.showLots;
     _isShowEmptyWatchlist = _userInfo!.showEmptyWatchlist;
 
+    // get the current user information configuration during init stage
+    _currentIsSummaryVisible = _userInfo!.visibility;
+    _currentIsShowedLots = _userInfo!.showLots;
+    _currentIsShowEmptyWatchlist = _userInfo!.showEmptyWatchlist;
+
     _tabController = TabController(length: 5, vsync: this);
   }
 
@@ -108,6 +118,34 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     return Consumer2<UserProvider, WatchlistProvider>(
       builder: ((context, userProvider, watchlistProvider, child) {
         _userInfo = userProvider.userInfo;
+
+        // ensure user info is not null
+        if (_userInfo != null) {
+          // check if the current user information stored during init is
+          // different with the one we got now?
+          // if different then change the value of the variable used for control
+          // the configuration on the page
+
+          // check the visibility configuration
+          if (_currentIsSummaryVisible != _userInfo!.visibility) {
+            _currentIsSummaryVisible = _userInfo!.visibility;
+            _isSummaryVisible = _userInfo!.visibility;
+          }
+
+          // check the show lots configuration
+          if (_currentIsShowedLots != _userInfo!.showLots) {
+            _currentIsShowedLots = _userInfo!.showLots;
+            _isShowedLots = _userInfo!.showLots;
+          }
+
+          // check the show empty watch list configuration
+          if (_currentIsShowEmptyWatchlist != _userInfo!.showEmptyWatchlist) {
+            _currentIsShowEmptyWatchlist = _userInfo!.showEmptyWatchlist;
+            _isShowEmptyWatchlist = _userInfo!.showEmptyWatchlist;
+          }
+        }
+
+        // get all the watchlist information
         _watchlistReksadana = watchlistProvider.watchlistReksadana;
         _watchlistSaham = watchlistProvider.watchlistSaham;
         _watchlistCrypto = watchlistProvider.watchlistCrypto;

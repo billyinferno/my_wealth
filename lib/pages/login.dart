@@ -366,6 +366,11 @@ class LoginPageState extends State<LoginPage> {
             // put the user information on the provider
             Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
             debugPrint("3️⃣ Update user information");
+
+            // set the current visibility configuration on the provider
+            Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: resp.visibility);
+            Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: resp.showLots);
+            Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: resp.showEmptyWatchlist);
           }
         });
       }

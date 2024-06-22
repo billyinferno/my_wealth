@@ -194,14 +194,6 @@ class _UserPageState extends State<UserPage> {
                                   ),
                                 ],
                               ),
-                              Text(
-                                "Affects after restart",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: primaryLight,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -260,14 +252,6 @@ class _UserPageState extends State<UserPage> {
                                   ),
                                 ],
                               ),
-                              Text(
-                                "Affects after restart",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: primaryLight,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -325,14 +309,6 @@ class _UserPageState extends State<UserPage> {
                                     ),
                                   ),
                                 ],
-                              ),
-                              Text(
-                                "Affects after restart",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: primaryLight,
-                                  fontStyle: FontStyle.italic,
-                                ),
                               ),
                             ],
                           ),
@@ -584,6 +560,7 @@ class _UserPageState extends State<UserPage> {
       // update the provider to notify the user page
       if (!mounted) return;
       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+      Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: visibility);
 
       // remove the loader
       Navigator.pop(context);
@@ -620,6 +597,7 @@ class _UserPageState extends State<UserPage> {
       // update the provider to notify the user page
       if (!mounted) return;
       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+      Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: showLots);
 
       // remove the loader
       Navigator.pop(context);
@@ -656,6 +634,7 @@ class _UserPageState extends State<UserPage> {
       // update the provider to notify the user page
       if (!mounted) return;
       Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+      Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: showEmptyWatchlist);
 
       // remove the loader
       Navigator.pop(context);

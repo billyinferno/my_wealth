@@ -34,6 +34,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
   late List<BarChartData> _barChartData;
 
   bool _isSummaryVisible = true;
+  bool _currentIsSummaryVisible = true;
 
   @override
   void initState() {
@@ -52,20 +53,29 @@ class _PortofolioPageState extends State<PortofolioPage> {
 
     // check user visibility configuration
     _isSummaryVisible = _userInfo!.visibility;
+    _currentIsSummaryVisible = _userInfo!.visibility;
     
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isSummaryVisible) {
-      return _invisiblePage();
-    }
-
     // if not invisible then we will just return the normal page
     return Consumer2<UserProvider, WatchlistProvider>(
       builder: ((context, userProvider, watchlistProvider, child) {
         _userInfo = userProvider.userInfo;
+
+        // check if the visibility information is being change on the user page?
+        if (_currentIsSummaryVisible != _userInfo!.visibility) {
+          _currentIsSummaryVisible = _userInfo!.visibility;
+          _isSummaryVisible = _userInfo!.visibility;
+        }
+
+        // check summary visibility
+        if (!_isSummaryVisible) {
+          return _invisiblePage();
+        }
+
         _watchlistReksadana = watchlistProvider.watchlistReksadana;
         _watchlistSaham = watchlistProvider.watchlistSaham;
         _watchlistCrypto = watchlistProvider.watchlistCrypto;
@@ -210,7 +220,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(
-                Ionicons.eye_off,
+                Ionicons.eye_outline,
                 color: primaryLight,
                 size: 35,
               ),
@@ -275,120 +285,147 @@ class _PortofolioPageState extends State<PortofolioPage> {
           Expanded(
             child: Container(
               color: bgColor,
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 3,
-                        child: _smallText("Total Value"),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: _smallText("Total Unrealised")
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 3,
-                        child: _largeText(formatCurrency(value, false, true, false), summarySize),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Icon(
-                                trendIcon,
-                                color: trendColor,
-                                size: 16,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 3,
+                              child: _smallText("Total Value"),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: _smallText("Total Unrealised")
                               ),
-                              const SizedBox(width: 5,),
-                              Text(
-                                formatCurrency(gain, false, true, false),
-                                style: TextStyle(
-                                  color: trendColor,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 3,
+                              child: _largeText(formatCurrency(value, false, true, false), summarySize),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Icon(
+                                      trendIcon,
+                                      color: trendColor,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 5,),
+                                    Text(
+                                      formatCurrency(gain, false, true, false),
+                                      style: TextStyle(
+                                        color: trendColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 3,
+                              child: _smallText("Total Cost"),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: _smallText("Total Realised")
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                formatCurrency(cost, false, true, false),
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 3,
-                        child: _smallText("Total Cost"),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: _smallText("Total Realised")
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          formatCurrency(cost, false, true, false),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Icon(
-                                Ionicons.wallet_outline,
-                                color: realisedColor,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 5,),
-                              Text(
-                                formatCurrency(realised, false, true, false),
-                                style: TextStyle(
-                                  color: realisedColor,
-                                  fontWeight: FontWeight.bold,
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Icon(
+                                      Ionicons.wallet_outline,
+                                      color: realisedColor,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 5,),
+                                    Text(
+                                      formatCurrency(realised, false, true, false),
+                                      style: TextStyle(
+                                        color: realisedColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 10,),
+                  InkWell(
+                    onTap: (() {
+                      setState(() {
+                        _isSummaryVisible = !_isSummaryVisible;
+                      });
+                    }),
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      color: Colors.transparent,
+                      child: Icon(
+                        (_isSummaryVisible ? Ionicons.eye_off_outline : Ionicons.eye_outline),
+                        color: primaryLight,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
                 ],
               ),
             ),

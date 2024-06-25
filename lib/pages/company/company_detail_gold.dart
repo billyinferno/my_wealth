@@ -10,9 +10,9 @@ import 'package:my_wealth/model/price/price_gold_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/extensions/map.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -752,8 +752,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             }
           }
 
-          // reverse the data
-          _heatMapGraphData = _heatMapGraphData.reverse();
+          // sorted based on the keys
+          _heatMapGraphData = sortedMap<DateTime, GraphData>(data: _heatMapGraphData);
 
           _priceGold = (_priceGoldData[_currentPriceGoldDay] ?? []);
 

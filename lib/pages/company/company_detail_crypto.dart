@@ -12,6 +12,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -803,30 +804,22 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   }
 
   void _generateGraphData(CompanyDetailModel data) {
+    double totalPrice = 0;
+    int totalPriceData = 0;
+
     // clear the graph data
     _graphData.clear();
 
-    int totalData = 0;
-    double totalPrice = 0;
-    int totalPriceData = 0;
+    // clear the heat map graph
+    _heatGraphData.clear();
 
     _minPrice = double.maxFinite;
     _maxPrice = double.minPositive;
 
-    // move the last update to friday
-    int addDay = 5 - data.companyLastUpdate!.toLocal().weekday;
-    DateTime endDate = data.companyLastUpdate!.add(Duration(days: addDay));
-
-    // then go 14 weeks before so we knew the start date
-    DateTime startDate = endDate.subtract(const Duration(days: 89)); // ((7*13) - 2), the 2 is because we end the day on Friday so no Saturday and Sunday.
-
     // only get the 1st 64 data, since we will want to get the latest data
     for (PriceModel price in data.companyPrices) {
-      // ensure that all the data we will put is more than or equal with startdate
-      if(price.priceDate.compareTo(startDate) >= 0) {
-        _graphData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
-        totalData += 1;
-      }
+      // add the price to graph data
+      _graphData.add(GraphData(date: price.priceDate.toLocal(), price: price.priceValue));
 
       // count for minimum, maximum, and average
       if(totalPriceData < 29) {
@@ -842,11 +835,17 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         totalPriceData++;
       }
 
-      // if total data already more than 64 break  the data, as heat map only will display 65 data
-      if(totalData >= 64) {
-        break;
+      // for heat map we will check if the heat map length is less than 98 or not?
+      if (_heatGraphData.length <= 98) {
+        _heatGraphData[price.priceDate.toLocal()] = GraphData(
+          date: price.priceDate.toLocal(),
+          price: price.priceValue
+        );
       }
     }
+
+    // sorted the graph data so the date will be sorted in ascending order
+    _heatGraphData = sortedMap<DateTime, GraphData>(data: _heatGraphData);
 
     // add the current price which only in company
     _graphData.add(GraphData(date: data.companyLastUpdate!.toLocal(), price: data.companyNetAssetValue!));
@@ -871,11 +870,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     _graphData.sort((a, b) {
       return a.date.compareTo(b.date);
     });
-
-    // once sorted, then we can put it on map
-    for (GraphData data in _graphData) {
-      _heatGraphData[data.date] = data;
-    }
   }
 
   Future<bool> _getInitData() async {

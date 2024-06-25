@@ -14,9 +14,9 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
-import 'package:my_wealth/utils/extensions/map.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
@@ -73,7 +73,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final Bit _bitData = Bit();
   final List<Widget> _calcTableResult = [];
   late List<Map<String, double>> _movementData;
-  final Map<DateTime, GraphData> _heatMapGraphData = {};
+  late Map<DateTime, GraphData> _heatMapGraphData;
   late List<GraphData> _graphData;
   late List<GraphData> _unitData;
   late List<GraphData> _assetData;
@@ -129,7 +129,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _graphData = [];
     _unitData = [];
     _assetData = [];
-    _heatMapGraphData.clear();
+    _heatMapGraphData = {};
     
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
@@ -1084,7 +1084,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             ),
             const SizedBox(height: 5,),
             HeatGraph(
-              data: _heatMapGraphData.reverse(),
+              data: _heatMapGraphData,
               userInfo: _userInfo!,
               currentPrice: _companyDetail.companyNetAssetValue!,
               enableDailyComparison: _showCurrentPriceComparison,
@@ -1679,9 +1679,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           _infoReksadanaData[180] = [];
           _infoReksadanaData[365] = [];
 
-          // clear heat map data, as we will generate the heat map data here.
-          _heatMapGraphData.clear();
-
           // loop thru response to populate the info reksadana map
           for(int i=0; i<resp.length; i++) {
             if (i < 30) {
@@ -1690,10 +1687,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
             if (i < 60) {
               _infoReksadanaData[60]!.add(resp[i]);
-
-              // heat map is the same as 60 days of data, so just generate
-              // the heat map data here
-              _heatMapGraphData[resp[i].date] = GraphData(date: resp[i].date, price: resp[i].netAssetValue);
             }
 
             if (i < 90) {
@@ -1708,6 +1701,22 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               _infoReksadanaData[365]!.add(resp[i]);
             }
           }
+
+          // loop thru the 90 days to populate the heat map graph since the
+          // maximum heat map graph is 70 (5 * 14).
+          // clear the heat map graph
+          _heatMapGraphData.clear();
+          
+          // loop thru reksadana information to get the heat map data
+          for(int i=0; (i < _infoReksadanaData[90]!.length && _heatMapGraphData.length < 98); i++) {
+            _heatMapGraphData[_infoReksadanaData[90]![i].date] = GraphData(
+              date: _infoReksadanaData[90]![i].date,
+              price: _infoReksadanaData[90]![i].netAssetValue,
+            );
+          }
+
+          // sort the map as it will be in reverse order
+          _heatMapGraphData = sortedMap<DateTime, GraphData>(data: _heatMapGraphData);
 
           // set the info reksadana list based on the current day index
           // selected.

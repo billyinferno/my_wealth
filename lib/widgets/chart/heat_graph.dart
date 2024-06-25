@@ -83,8 +83,8 @@ class HeatGraph extends StatelessWidget {
 
     List<GraphData> dataExpand = [];
 
-    // first get the 1st keys
-    DateTime firstDate = data.keys.first;
+    // first get the 1st date
+    DateTime firstDate = data.keys.last.add(const Duration(days: -90));
 
     for(int day=0; day<91; day++) {
       DateTime keys = firstDate.add(Duration(days: day));

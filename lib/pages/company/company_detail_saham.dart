@@ -28,6 +28,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
@@ -116,7 +117,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   bool _showCurrentPriceComparison = false;
   bool _showNet = true;
   late List<GraphData> _graphData;
-  final Map<DateTime, GraphData> _heatMapGraphData = {};
+  late Map<DateTime, GraphData> _heatMapGraphData;
   
   int _numPrice = 0;
   int _bodyPage = 0;
@@ -153,7 +154,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // initialize graph data
     _graphData = [];
-    _heatMapGraphData.clear();
+    _heatMapGraphData = {};
 
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
@@ -3322,15 +3323,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             _infoSahamPriceData[365]!.add(resp[i]);
           }
 
-          // loop thru the 60 days to populate the heat map graph
+          // loop thru the 90 days to populate the heat map graph since the
+          // maximum heat map graph is 70 (5 * 14).
           // clear the heat map graph
           _heatMapGraphData.clear();
-          for(int i=(_infoSahamPriceData[60]!.length-1); i>=0; i--) {
-            _heatMapGraphData[_infoSahamPriceData[60]![i].date] = GraphData(
-              date: _infoSahamPriceData[60]![i].date,
-              price: _infoSahamPriceData[60]![i].lastPrice.toDouble(),
+          for(int i=0; (i < _infoSahamPriceData[90]!.length && _heatMapGraphData.length < 98); i++) {
+            _heatMapGraphData[_infoSahamPriceData[90]![i].date] = GraphData(
+              date: _infoSahamPriceData[90]![i].date,
+              price: _infoSahamPriceData[90]![i].lastPrice.toDouble(),
             );
           }
+
+          _heatMapGraphData = sortedMap<DateTime, GraphData>(data: _heatMapGraphData);
 
           // once got we can set the info saham price into the correct data
           _infoSahamPrice = _infoSahamPriceData[_currentInfoSahamPrice]!;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/portofolio_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
@@ -162,22 +163,20 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
               color: textPrimary,
             ),
           ),
-          InkWell(
-            onTap: (() {
+          IconButton(
+            onPressed: (() {
               // change the sort from ascending to descending
               setState(() {
                 _sortAscending = !_sortAscending;
                 _filterList();
               });
             }),
-            child: Container(
-              width: 55,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(55),
-              ),
-              child: _ascendingIcon(),
+            icon: Icon(
+              (_sortAscending ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+              color: textPrimary,
             ),
           ),
+          const SizedBox(width: 5,),
         ],
       ),
       body: Column(
@@ -406,48 +405,6 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
           const SizedBox(height: 30,),
         ],
       ),
-    );
-  }
-
-  Widget _ascendingIcon() {
-    String textUp = "A";
-    String textDown = "Z";
-    IconData currentIcon = Ionicons.arrow_down;
-
-    if (!_sortAscending) {
-      textUp = "Z";
-      textDown = "A";
-      currentIcon = Ionicons.arrow_up;
-    }
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              textUp,
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-            Text(
-              textDown,
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: 2,),
-        Icon(
-          currentIcon,
-          size: 20,
-        )
-      ],
     );
   }
 

@@ -126,7 +126,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                           realised: _watchlistAll!.totalRealisedReksadana,
                           unrealised: (_watchlistAll!.totalValueReksadana - _watchlistAll!.totalCostReksadana),
                           type: "reksadana",
-                          showSort: false,
+                          showSort: true,
                         );
                         Navigator.pushNamed(context, '/portofolio/list', arguments: args);
                       })

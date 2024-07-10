@@ -50,8 +50,10 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     "tl": "Total Value",
     "lf": "Share Left",
     "rp": "Realized P/L",
-    "up": "Unrealizd P/L",
-    "1d": "Daily Gain (%)",
+    "up": "Unrealizd P/L (\$)",
+    "u%": "Unrealizd P/L (%)",
+    "1%": "Daily Gain (%)",
+    "1d": "Daily Gain (\$)",
   };
   bool _sortAscending = true;
 
@@ -362,7 +364,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                 int colorMap = (index % Globals.colorList.length);
               
                 return ProductListItem(
-                  bgColor: Globals.colorList[colorMap],
+                  bgColor: (_portofolioFiltered[index].watchlistSubTotalShare > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
                   title: (_args.type == 'reksadana' ? _portofolioFiltered[index].companyName : "(${_portofolioFiltered[index].companyCode}) ${_portofolioFiltered[index].companyName}"),
                   subTitle: "${formatDecimal(_portofolioFiltered[index].watchlistSubTotalShare, 2)} shares",
                   value: _portofolioFiltered[index].watchlistSubTotalValue,
@@ -430,8 +432,14 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
       case "up":
         _portofolioFiltered.sort((a, b) => a.watchlistSubTotalUnrealised.compareTo(b.watchlistSubTotalUnrealised));
         break;
-      case "1d":
+      case "u%":
+        _portofolioFiltered.sort((a, b) => (a.watchlistSubTotalUnrealised/a.watchlistSubTotalCost).compareTo(b.watchlistSubTotalUnrealised/b.watchlistSubTotalCost));
+        break;
+      case "1%":
         _portofolioFiltered.sort((a, b) => a.companyDailyReturn!.compareTo(b.companyDailyReturn!));
+        break;
+      case "1d":
+        _portofolioFiltered.sort((a, b) => a.watchlistSubTotalDayGain.compareTo(b.watchlistSubTotalDayGain));
         break;
       default:
         // already copied above

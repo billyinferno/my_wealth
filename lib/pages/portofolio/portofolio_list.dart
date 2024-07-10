@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
@@ -31,6 +32,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
   late List<PortofolioSummaryModel> _portofolioList;
   late List<PortofolioSummaryModel> _portofolioFiltered;
   late Future<bool> _getData;
+  late bool _showZeroProduct;
 
   String _sortType = "ty";
   final Map<String, String> _sortMap = {
@@ -40,7 +42,10 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
     "co": "Total Cost",
     "vl": "Total Value",
     "rp": "Total Realized P/L",
-    "up": "Total Unrealized P/L",
+    "up": "Total Unrealized P/L (\$)",
+    "u%": "Total Unrealized P/L (%)",
+    "1d": "Day Gain (\$)",
+    "1%": "Day Gain (%)",
   };
   
   Color _trendColor = Colors.white;
@@ -94,6 +99,9 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
     // get show sort
     _showSort = (_args.showSort ?? true);
+
+    // default the show zero product into true
+    _showZeroProduct = true;
 
     super.initState();
   }
@@ -360,7 +368,42 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
             data: _barChartData,
             showLegend: false,
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 5,),
+          InkWell(
+            onTap: (() {
+              setState(() {
+                _showZeroProduct = !_showZeroProduct;
+              });
+            }),
+            child: Container(
+              height: 18,
+              color: Colors.transparent,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Transform.scale(
+                    scale: 0.6,
+                    child: CupertinoSwitch(
+                      value: _showZeroProduct,
+                      onChanged: ((value) {
+                        setState(() {
+                          _showZeroProduct = value;
+                        });
+                      })
+                    ),
+                  ),
+                  const Text(
+                    "Show 0 product on the list",
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 15,),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -369,6 +412,16 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
               itemBuilder: (context, index) {
                 int colorMap = _getColorMap(_portofolioFiltered[index].portofolioCompanyDescription, index);
                 
+                // check if _showZeroProduct is true, if true then verify if this
+                // item has product or not? if doesn't have then just return
+                // a sizedbox shrink instead.
+                if (!_showZeroProduct) {
+                  // check if the product is 0
+                  if (_portofolioFiltered[index].portofolioTotalProduct <= 0) {
+                    return const SizedBox.shrink();
+                  }
+                }
+
                 return ProductListItem(
                   onTap: (() {
                     // convert the total product
@@ -450,6 +503,15 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         break;
       case "up":
         _portofolioFiltered.sort((a, b) => a.portofolioTotalUnrealised.compareTo(b.portofolioTotalUnrealised));
+        break;
+      case "u%":
+        _portofolioFiltered.sort((a, b) => (a.portofolioTotalUnrealised/a.portofolioTotalCost).compareTo(b.portofolioTotalUnrealised/b.portofolioTotalCost));
+        break;
+      case "1d":
+        _portofolioFiltered.sort((a, b) => (a.portofolioTotalDayGain).compareTo(b.portofolioTotalDayGain));
+        break;
+      case "1%":
+        _portofolioFiltered.sort((a, b) => (a.portofolioTotalDayGain/a.portofolioTotalCost).compareTo(b.portofolioTotalDayGain/b.portofolioTotalCost));
         break;
       default:
         // already copied above

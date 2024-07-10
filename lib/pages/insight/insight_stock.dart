@@ -714,21 +714,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   children: <Widget>[
                                     _smallBox(title: "Ratio", value: _stockSplitList[index].ratio),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Current Price", value: formatIntWithNull(_stockSplitList[index].lastPrice, false, false, 0)),
-                                    const SizedBox(width: 10,),
-                                    _smallBox(title: "New Price", value: formatCurrencyWithNull((_stockSplitList[index].lastPrice! * _stockSplitList[index].nominalNew!) / _stockSplitList[index].nomimal!, false, false, false, 0)),
-                                  ],
-                                ),
-                                const SizedBox(height: 5,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
                                     _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockSplitList[index].listedShares, true, true, 2)),
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Split Date", value: formatDateWithNulll(date: _stockSplitList[index].listingDate)),
-                                    const SizedBox(width: 10,),
-                                    const Expanded(child: SizedBox(width: double.infinity,),),
                                   ],
                                 ),
                               ],

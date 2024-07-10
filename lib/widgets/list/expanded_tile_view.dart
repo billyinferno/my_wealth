@@ -73,7 +73,7 @@ class ExpandedTileView extends StatelessWidget {
           price: (watchlist.watchlistCompanyNetAssetValue ?? 0),
           prevPrice: watchlist.watchlistCompanyPrevPrice,
           gain: (isVisible ? watchlistResult.totalGain : null),
-          lastUpdate: (watchlist.watchlistCompanyLastUpdate == null ? "-" : Globals.dfddMM.format(watchlist.watchlistCompanyLastUpdate!.toLocal())),
+          lastUpdate: formatDateWithNulll(date: watchlist.watchlistCompanyLastUpdate, format: Globals.dfddMM),
           riskColor: headerRiskColor,
           checkThousandOnPrice: (checkThousandOnPrice ?? false),
           subHeaderRiskColor: subHeaderRiskColor,

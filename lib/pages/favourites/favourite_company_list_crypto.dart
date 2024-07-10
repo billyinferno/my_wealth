@@ -7,6 +7,7 @@ import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
@@ -165,7 +166,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                         companyId: _filterList[index].favouritesCompanyId,
                         name: "(${_filterList[index].favouritesSymbol}) ${_filterList[index].favouritesCompanyName}",
                         type: _filterList[index].favouritesCompanyType,
-                        date: (_filterList[index].favouritesLastUpdate == null ? "-" : _dt.format(_filterList[index].favouritesLastUpdate!.toLocal())),
+                        date: formatDateWithNulll(date: _filterList[index].favouritesLastUpdate, format: _dt),
                         value: _filterList[index].favouritesNetAssetValue,
                         isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
                         fca: (_filterList[index].favouritesFCA ?? false),

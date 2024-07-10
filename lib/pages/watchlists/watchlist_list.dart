@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/computation.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -295,7 +296,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                       ),
                                       const SizedBox(width: 10,),
                                       Text(
-                                        (_watchlist.watchlistCompanyLastUpdate == null ? "-" : Globals.dfddMMyyyy.format(_watchlist.watchlistCompanyLastUpdate!.toLocal()))
+                                        formatDateWithNulll(date: _watchlist.watchlistCompanyLastUpdate),
                                       ),
                                     ],
                                   )

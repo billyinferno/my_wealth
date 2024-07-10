@@ -11,6 +11,7 @@ import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
@@ -220,8 +221,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 color: primaryLight,
                               ),
                               const SizedBox(width: 10,),
-                              // ignore: unnecessary_null_comparison
-                              Text((_companyDetail.companyLastUpdate! == null ? "-" : _df.format(_companyDetail.companyLastUpdate!.toLocal()))),
+                              Text(formatDateWithNulll(date: _companyDetail.companyLastUpdate, format: _df)),
                             ],
                           ),
                           const SizedBox(height: 10,),

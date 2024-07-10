@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:my_wealth/utils/globals.dart';
 
 /// Calculates number of weeks for a given year as per https://en.wikipedia.org/wiki/ISO_week_date#Weeks_per_year
 int numOfWeeks(int year) {
@@ -22,6 +23,20 @@ int weekNumber(DateTime date) {
 String formatDate({required DateTime date, required String format}) {
   final DateFormat df = DateFormat(format);
   return df.format(date);
+}
+
+String formatDateWithNulll({required DateTime? date, DateFormat? format}) {
+  if (date == null) {
+    return '-';
+  }
+  else {
+    if (format != null) {
+      return format.format(date.toLocal());
+    }
+    else {
+      return Globals.dfDDMMMyyyy.format(date.toLocal());
+    }
+  }
 }
 
 bool isSameDate({required DateTime date1, required DateTime date2}) {

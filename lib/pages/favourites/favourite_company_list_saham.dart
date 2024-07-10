@@ -7,6 +7,7 @@ import 'package:my_wealth/provider/favourites_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
@@ -214,7 +215,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                         companyId: _sortedFaveList[index].favouritesCompanyId,
                         name: "(${_sortedFaveList[index].favouritesSymbol}) ${_sortedFaveList[index].favouritesCompanyName}",
                         type: _sortedFaveList[index].favouritesCompanyType,
-                        date: (_sortedFaveList[index].favouritesLastUpdate == null ? "-" : _dt.format(_sortedFaveList[index].favouritesLastUpdate!.toLocal())),
+                        date: formatDateWithNulll(date: _sortedFaveList[index].favouritesLastUpdate, format: _dt),
                         value: _sortedFaveList[index].favouritesNetAssetValue,
                         isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                         fca: (_sortedFaveList[index].favouritesFCA ?? false),

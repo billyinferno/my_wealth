@@ -16,6 +16,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/arguments/industry_summary_args.dart';
 import 'package:my_wealth/utils/arguments/insight_stock_sub_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -105,43 +106,21 @@ class _InsightStockPageState extends State<InsightStockPage> {
           color: accentColor,
           onRefresh: (() async {
             showLoaderDialog(context);
-            await Future.microtask(() async {
-              await _insightAPI.getSectorSummary().then((resp) async {
-                debugPrint("🔃 Refresh Sector Summary");
-                await InsightSharedPreferences.setSectorSummaryList(resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
-              });
-              await _insightAPI.getTopWorseCompany('top').then((resp) async {
-                debugPrint("🔃 Refresh Top Company Summary");
-                await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
-              });
-              await _insightAPI.getTopWorseCompany('worse').then((resp) async {
-                debugPrint("🔃 Refresh Worse Company Summary");
-                await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
-              });
 
-              // rebuild again the widget as the provide above is set with listen false
+            // refresh all the information
+            await _refreshInformation(context).onError((error, stackTrace) {
+              debugPrint("Error ${error.toString()}");
+              debugPrintStack(stackTrace: stackTrace);
+            }).then((_) {
+              // rebuild widget once finished
               setState(() {
                 // just rebuild
               });
-            }).onError((error, stackTrace) {
-              debugPrintStack(stackTrace: stackTrace);
-              _showScaffoldMessage(text: "Error when refresh stock insight");
             }).whenComplete(() {
               if (context.mounted) {
                 // remove the loader
                 Navigator.pop(context);
               }
-            });
-
-            // rebuild widget once finished
-            setState(() {
-              // just rebuild
             });
           }),
           child: SingleChildScrollView(
@@ -507,7 +486,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Fund Raised", value: formatIntWithNull(_stockNewListedList[index].fundRaised, true, true, 2)),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Listed Date", value: (_stockNewListedList[index].listedDate != null ? Globals.dfDDMMMyyyy.format(_stockNewListedList[index].listedDate!) : '-')),
+                                    _smallBox(title: "Listed Date", value: formatDateWithNulll(date: _stockNewListedList[index].listedDate)),
                                   ],
                                 ),
                                 const SizedBox(height: 5,),
@@ -618,9 +597,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Cum Date", value: (_stockDividendList[index].cumDividend != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].cumDividend!) : '-')),
+                                    _smallBox(title: "Cum Date", value: formatDateWithNulll(date: _stockDividendList[index].cumDividend)),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Ex Date", value: (_stockDividendList[index].exDividend != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].exDividend!) : '-')),
+                                    _smallBox(title: "Ex Date", value: formatDateWithNulll(date: _stockDividendList[index].exDividend)),
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Dividend", value: formatDecimalWithNull(_stockDividendList[index].cashDividend, 1, 2)),
                                   ],
@@ -630,9 +609,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Record Date", value: (_stockDividendList[index].recordDate != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].recordDate!) : '-')),
+                                    _smallBox(title: "Record Date", value: formatDateWithNulll(date: _stockDividendList[index].recordDate)),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Payment Date", value: (_stockDividendList[index].paymentDate != null ? Globals.dfDDMMMyyyy.format(_stockDividendList[index].paymentDate!) : '-')),
+                                    _smallBox(title: "Payment Date", value: formatDateWithNulll(date: _stockDividendList[index].paymentDate)),
                                     const SizedBox(width: 10,),
                                     const Expanded(child: SizedBox(width: double.infinity,),),
                                   ],
@@ -747,7 +726,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   children: <Widget>[
                                     _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockSplitList[index].listedShares, true, true, 2)),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Split Date", value: (_stockSplitList[index].listingDate != null ? Globals.dfDDMMMyyyy.format(_stockSplitList[index].listingDate!) : '-')),
+                                    _smallBox(title: "Split Date", value: formatDateWithNulll(date: _stockSplitList[index].listingDate)),
                                     const SizedBox(width: 10,),
                                     const Expanded(child: SizedBox(width: double.infinity,),),
                                   ],
@@ -959,6 +938,52 @@ class _InsightStockPageState extends State<InsightStockPage> {
         );
       }),
     );
+  }
+
+  Future<void> _refreshInformation(BuildContext context) async {
+    // refresh all the information
+    await Future.wait([
+      _insightAPI.getSectorSummary().then((resp) async {
+        debugPrint("🔃 Refresh Sector Summary");
+        await InsightSharedPreferences.setSectorSummaryList(resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
+      }),
+      _insightAPI.getTopWorseCompany('top').then((resp) async {
+        debugPrint("🔃 Refresh Top Company Summary");
+        await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
+      }),
+      _insightAPI.getTopWorseCompany('worse').then((resp) async {
+        debugPrint("🔃 Refresh Worse Company Summary");
+        await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
+      }),
+      _insightAPI.getStockNewListed().then((resp) async {
+        debugPrint("🔃 Refresh Stock Newly Listed");
+        await InsightSharedPreferences.setStockNewListed(resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockNewListed(resp);
+      }),
+      _insightAPI.getStockDividendList().then((resp) async {
+        debugPrint("🔃 Refresh Stock Dividend List");
+        await InsightSharedPreferences.setStockDividendList(resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockDividendList(resp);
+      }),
+      _insightAPI.getStockSplitList().then((resp) async {
+        debugPrint("🔃 Refresh Stock Split");
+        await InsightSharedPreferences.setStockSplitList(resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
+      }),
+    ]).onError((error, stackTrace) {
+      debugPrint("Error ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+      throw Exception("Error when get price gold data");
+    });
   }
 
   void _setSectorSummaryPeriod(String period) {

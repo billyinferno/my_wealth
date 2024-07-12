@@ -38,7 +38,7 @@ class UserLoginInfoModel {
       email: json['email'],
       confirmed: json['confirmed'],
       blocked: json['blocked'],
-      risk: json['risk'],
+      risk: (json['risk'] ?? 10),
       visibility: (json['visibility'] ?? false),
       showLots: (json['show_lots'] ?? false),
       bot: (json['bot'] ?? ''),

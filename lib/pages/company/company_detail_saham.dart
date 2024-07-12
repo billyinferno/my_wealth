@@ -14,6 +14,7 @@ import 'package:my_wealth/model/broker/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_model.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
 import 'package:my_wealth/model/company/company_saham_dividend_model.dart';
+import 'package:my_wealth/model/company/company_saham_split_model.dart';
 import 'package:my_wealth/model/company/company_top_broker_model.dart';
 import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
 import 'package:my_wealth/model/company/company_seasonality_model.dart';
@@ -67,6 +68,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final ScrollController _fundamentalItemController = ScrollController();
   final ScrollController _compareController = ScrollController();
   final ScrollController _dividendController = ScrollController();
+  final ScrollController _splitController = ScrollController();
   late TabController _tabController;
 
   late CompanyDetailArgs _companyData;
@@ -100,6 +102,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late String _brokerSummaryDailyMonthlyTypeSelected;
   late String _brokerSummaryDailyMonhtlyValueSelected;
   late CompanySahamDividendModel _dividend;
+  late CompanySahamSplitModel _split;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -149,7 +152,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     super.initState();
 
     // initialize the tab controller for summary page
-    _tabController = TabController(length: 5, vsync: this); //TODO: change to 6 once _tabSplit finished
+    _tabController = TabController(length: 6, vsync: this);
 
     // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
@@ -206,6 +209,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _fundamentalItemController.dispose();
     _compareController.dispose();
     _dividendController.dispose();
+    _splitController.dispose();
   }
   
   @override
@@ -598,7 +602,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             Tab(text: 'COMPARE'),
             Tab(text: 'SEASONALITY'),
             Tab(text: 'DIVIDEND'),
-            // Tab(text: 'SPLIT'),
+            Tab(text: 'SPLIT'),
           ],
         ),
         const SizedBox(height: 10,),
@@ -611,7 +615,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               _tabCompareInfo(),
               _tabSeasonality(),
               _tabDividend(),
-              // _tabSplit(), //TODO: enable once the _tabSplit is finished
+              _tabSplit(),
             ],
           ),
         ),
@@ -1425,6 +1429,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           Expanded(
             child: SingleChildScrollView(
               controller: _dividendController,
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -1649,10 +1654,178 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     return ret;
   }
 
-  // TODO: create split API first then we can add split page on the company detail saham
-  // Widget _tabSplit() {
-  //   return const Placeholder();
-  // }
+  Widget _tabSplit() {
+    // check if stock never been split before
+    if (_split.splits.isEmpty) {
+      return Center(
+        child: Text("Stock ${_companyData.companyCode} never been splitted before"),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _splitController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  ..._generateSplit(),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10,),
+          const Center(
+            child: Text(
+              "Stock split data provide by IDX",
+              style: TextStyle(
+                fontSize: 9,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _itemSplit({
+    required String ratio,
+    required String splitFactor,
+    required String listedShares,
+    required String listingDate,
+  }) {
+    const TextStyle styleBold = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 10,
+    );
+
+    const TextStyle styleNormal = TextStyle(
+      fontSize: 10,
+    );
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          )
+        )
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Ratio",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  ratio,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Split Factor",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  splitFactor,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Listed Shares",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  listedShares,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Listing Date",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  listingDate,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _generateSplit() {
+    List<Widget> ret = [];
+
+    // loop thru split data
+    for(SplitInfo split in _split.splits) {
+      ret.add(
+        _itemSplit(
+          ratio: split.ratio,
+          splitFactor: formatDecimal(split.splitFactor, 2),
+          listedShares: formatCurrency(split.listedShares, false, true, false, 2),
+          listingDate: Globals.dfddMMyyyy.format(split.listingDate),
+        )
+      );
+    }
+
+    return ret;
+  }
 
   Widget _fundamentalItem({required InfoFundamentalsModel fundamental}) {
     return Column(
@@ -3670,6 +3843,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
         _companyApi.getCompanySahamDividend(_companyData.companyCode).then((resp) {
           _dividend = resp;
+        }),
+
+        _companyApi.getCompanySahamSplit(_companyData.companyCode).then((resp) {
+          _split = resp;
         }),
       ]).onError((error, stackTrace) {
         debugPrint("Error when getting Company Data");

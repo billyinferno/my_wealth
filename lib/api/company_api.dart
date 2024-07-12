@@ -5,6 +5,7 @@ import 'package:my_wealth/model/company/company_detail_model.dart';
 import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/model/company/company_saham_dividend_model.dart';
 import 'package:my_wealth/model/company/company_saham_list_model.dart';
+import 'package:my_wealth/model/company/company_saham_split_model.dart';
 import 'package:my_wealth/model/company/company_search_model.dart';
 import 'package:my_wealth/model/company/company_top_broker_model.dart';
 import 'package:my_wealth/model/company/company_seasonality_model.dart';
@@ -250,6 +251,22 @@ class CompanyAPI {
     // company ID
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
     CompanySahamDividendModel company = CompanySahamDividendModel.fromJson(commonModel.data['attributes']);
+    return company;
+  }
+
+  Future<CompanySahamSplitModel> getCompanySahamSplit(String code) async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanySaham}/split/$code'
+    ).onError((error, stackTrace) {
+        throw Exception(error);
+      }
+    );
+
+    // parse the response to get the company detail information based on the
+    // company ID
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanySahamSplitModel company = CompanySahamSplitModel.fromJson(commonModel.data['attributes']);
     return company;
   }
 }

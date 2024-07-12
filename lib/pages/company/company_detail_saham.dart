@@ -13,6 +13,7 @@ import 'package:my_wealth/model/broker/broker_summary_daily_stat_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_date_model.dart';
 import 'package:my_wealth/model/broker/broker_summary_model.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
+import 'package:my_wealth/model/company/company_saham_dividend_model.dart';
 import 'package:my_wealth/model/company/company_top_broker_model.dart';
 import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
 import 'package:my_wealth/model/company/company_seasonality_model.dart';
@@ -31,6 +32,7 @@ import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/chart/average_price_chart.dart';
@@ -64,6 +66,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   final ScrollController _fundamentalController = ScrollController();
   final ScrollController _fundamentalItemController = ScrollController();
   final ScrollController _compareController = ScrollController();
+  final ScrollController _dividendController = ScrollController();
   late TabController _tabController;
 
   late CompanyDetailArgs _companyData;
@@ -96,6 +99,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late String _brokerSummaryDailyMonthlyDataSelected; 
   late String _brokerSummaryDailyMonthlyTypeSelected;
   late String _brokerSummaryDailyMonhtlyValueSelected;
+  late CompanySahamDividendModel _dividend;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -145,7 +149,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     super.initState();
 
     // initialize the tab controller for summary page
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this); //TODO: change to 6 once _tabSplit finished
 
     // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
@@ -201,6 +205,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _fundamentalController.dispose();
     _fundamentalItemController.dispose();
     _compareController.dispose();
+    _dividendController.dispose();
   }
   
   @override
@@ -592,6 +597,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             Tab(text: 'FUNDAMENTAL',),
             Tab(text: 'COMPARE'),
             Tab(text: 'SEASONALITY'),
+            Tab(text: 'DIVIDEND'),
+            // Tab(text: 'SPLIT'),
           ],
         ),
         const SizedBox(height: 10,),
@@ -603,6 +610,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               _tabFundamentalInfo(),
               _tabCompareInfo(),
               _tabSeasonality(),
+              _tabDividend(),
+              // _tabSplit(), //TODO: enable once the _tabSplit is finished
             ],
           ),
         ),
@@ -1384,8 +1393,266 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   }
 
   Widget _tabSeasonality() {
-    return SeasonalityTable(data: _seasonality);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Center(
+          child: Text(
+            "User risk tolerance ${_userInfo!.risk}%",
+            style: const TextStyle(
+              fontSize: 9,
+            ),
+          ),
+        ),
+        Expanded(
+          child: SeasonalityTable(
+            data: _seasonality,
+            risk: _userInfo?.risk,
+          ),
+        ),
+      ],
+    );
   }
+
+  Widget _tabDividend() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _dividendController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  ..._generateDividend(),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10,),
+          const Center(
+            child: Text(
+              "Dividend data provide by IDX",
+              style: TextStyle(
+                fontSize: 9,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _itemDividend({
+    required String cumDate,
+    required String exDate,
+    required String recordDate,
+    required String paymentDate,
+    required String cashDividend,
+    required String price,
+    required String priceDate,
+    required String note,
+  }) {
+    const TextStyle styleBold = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 10,
+    );
+
+    const TextStyle styleNormal = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 10,
+    );
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          )
+        )
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Dividend",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  cashDividend,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  "Price ($priceDate)",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  price,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Cum Date",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  cumDate,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Ex Date",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  exDate,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Record Date",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  recordDate,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Payment Date",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  paymentDate,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  "Note",
+                  style: styleBold,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  note,
+                  style: styleNormal,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _generateDividend() {
+    List<Widget> ret = [];
+
+    // loop thru dividend list
+    for (Dividend dividend in _dividend.dividend) {
+      ret.add(
+        _itemDividend(
+          cumDate: formatDateWithNulll(date: dividend.cumDividend, format: Globals.dfddMMyy),
+          exDate: Globals.dfddMMyy.format(dividend.exDividend),
+          recordDate: Globals.dfddMMyy.format(dividend.recordDate),
+          paymentDate: Globals.dfddMMyy.format(dividend.paymentDate),
+          cashDividend: formatCurrency(dividend.cashDividend),
+          price: formatCurrencyWithNull(dividend.price),
+          priceDate: formatDateWithNulll(date: dividend.priceDate, format: Globals.dfddMMyy),
+          note: dividend.note,
+        )
+      );
+    }
+
+    return ret;
+  }
+
+  // TODO: create split API first then we can add split page on the company detail saham
+  // Widget _tabSplit() {
+  //   return const Placeholder();
+  // }
 
   Widget _fundamentalItem({required InfoFundamentalsModel fundamental}) {
     return Column(
@@ -2661,8 +2928,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const Center(
-              child: Text("Monthly Price Movement"),
+            Center(
+              child: Text("Monthly Price Movement (${_priceMovement.prices.length} month${_priceMovement.prices.length > 1 ? "s" : ""})"),
             ),
             MultiLineChart(
               height: 250,
@@ -3399,7 +3666,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           // add buy and sell data to dail data
           _brokerSummaryMonthlyData.add(buyData);
           _brokerSummaryMonthlyData.add(sellData);
-        })
+        }),
+
+        _companyApi.getCompanySahamDividend(_companyData.companyCode).then((resp) {
+          _dividend = resp;
+        }),
       ]).onError((error, stackTrace) {
         debugPrint("Error when getting Company Data");
         debugPrint("Error: ${error.toString()}");

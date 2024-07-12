@@ -30,7 +30,15 @@ class SeasonalityTable extends StatelessWidget {
   final ScrollController? controllerHorizontal;
   final ScrollController? controller;
   final List<SeasonalityModel> data;
-  const SeasonalityTable({super.key, this.controllerVertical, this.controllerHorizontal, this.controller, required this.data});
+  final int? risk;
+  const SeasonalityTable({
+    super.key,
+    this.controllerVertical,
+    this.controllerHorizontal,
+    this.controller,
+    required this.data,
+    this.risk,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -161,8 +169,14 @@ class SeasonalityTable extends StatelessWidget {
           children: <Widget>[
             ..._generateSeasonlityYearlyItem(data: value),
             _rowItem(
-              child: _seasonilityItem(diffPrice: average[key]!.averageDiffPrice, minDiffPrice: average[key]!.averageMinDiffPrice, minLastPrice: average[key]!.averageMinLastPrice, maxDiffPrice: average[key]!.averageMaxDiffPrice, maxLastPrice: average[key]!.averageMaxLastPrice),
-              color: (average[key]!.averageDiffPrice == 0 ? Colors.black : riskColor(((average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice) + average[key]!.averageDiffPrice), (average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice), 10)),
+              child: _seasonilityItem(
+                diffPrice: average[key]!.averageDiffPrice,
+                minDiffPrice: average[key]!.averageMinDiffPrice,
+                minLastPrice: average[key]!.averageMinLastPrice,
+                maxDiffPrice: average[key]!.averageMaxDiffPrice,
+                maxLastPrice: average[key]!.averageMaxLastPrice),
+              color: (
+                average[key]!.averageDiffPrice == 0 ? Colors.black : riskColor(((average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice) + average[key]!.averageDiffPrice), (average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice), (risk ?? 10))),
             ),
           ],
         )
@@ -202,8 +216,14 @@ class SeasonalityTable extends StatelessWidget {
           // add the box
           result.add(
             _rowItem(
-              child: _seasonilityItem(diffPrice: data[index].averageDiffPrice, minDiffPrice: data[index].minDiffPrice, minLastPrice: data[index].minLastPrice, maxDiffPrice: data[index].maxDiffPrice, maxLastPrice: data[index].maxLastPrice),
-              color: (data[index].averageDiffPrice == 0 ? Colors.black : riskColor((minMaxPrice + data[index].averageDiffPrice), minMaxPrice, 10)),
+              child: _seasonilityItem(
+                diffPrice: data[index].averageDiffPrice,
+                minDiffPrice: data[index].minDiffPrice,
+                minLastPrice: data[index].minLastPrice,
+                maxDiffPrice: data[index].maxDiffPrice,
+                maxLastPrice: data[index].maxLastPrice
+              ),
+              color: (data[index].averageDiffPrice == 0 ? Colors.black : riskColor((minMaxPrice + data[index].averageDiffPrice), minMaxPrice, (risk ?? 10))),
             )
           );
 
@@ -226,13 +246,30 @@ class SeasonalityTable extends StatelessWidget {
     return result;
   }
 
-  Widget _seasonilityItem({required double? diffPrice, required double? minDiffPrice, required double? minLastPrice, required double? maxDiffPrice, required double? maxLastPrice}) {
+  Widget _seasonilityItem({
+    required double diffPrice,
+    required double? minDiffPrice,
+    required double? minLastPrice,
+    required double? maxDiffPrice,
+    required double? maxLastPrice
+  }) {
     double totalPercentageDiff = 0;
+    double cost = 0;
+    double range = 0;
+    Color textColor = textPrimary;
 
     // ensure all data is available
     if (minLastPrice != null && maxLastPrice != null && minDiffPrice != null && maxDiffPrice != null) {
       // get the total percentage diff
       totalPercentageDiff = (maxDiffPrice - minDiffPrice) / ((minLastPrice + maxLastPrice) / 2);
+      // calculate the text color
+      if (diffPrice != 0) {
+        cost = (minDiffPrice + maxDiffPrice);
+        range = (minDiffPrice < 0 ? minDiffPrice * (-1) : minDiffPrice) + (maxDiffPrice < 0 ? maxDiffPrice * (-1) : maxDiffPrice);
+        cost = cost / range;
+        
+        textColor = riskColor2(percentage: cost, diff: diffPrice, reverse: true);
+      }
     }
 
     return Column(
@@ -240,7 +277,10 @@ class SeasonalityTable extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          formatDecimalWithNull(diffPrice, 1, 2)
+          formatDecimalWithNull(diffPrice, 1, 2),
+          style: TextStyle(
+            color: textColor,
+          ),
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -252,14 +292,16 @@ class SeasonalityTable extends StatelessWidget {
               children: <Widget>[
                 Text(
                   formatDecimalWithNull(minDiffPrice, 1, 2),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9,
+                    color: textColor,
                   ),
                 ),
                 Text(
                   formatDecimalWithNull(minLastPrice, 1, 2),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -271,15 +313,17 @@ class SeasonalityTable extends StatelessWidget {
               children: <Widget>[
                 Text(
                   formatDecimalWithNull(maxDiffPrice, 1, 2),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9,
+                    color: textColor,
                   ),
                 ),
                 Text(
                   formatDecimalWithNull(maxLastPrice, 1, 2),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9,
-                  ),
+                    color: textColor,
+                  )
                 ),
               ],
             ),
@@ -288,15 +332,21 @@ class SeasonalityTable extends StatelessWidget {
         const SizedBox(height: 5,),
         Text(
           "${formatDecimalWithNull(totalPercentageDiff, 100, 2)}%",
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 10,
+            color: textColor
           ),
         ),
       ],
     );
   }
 
-  Widget _rowItem({Color? color, required Widget child, double? width, double? height}) {
+  Widget _rowItem({
+    Color? color,
+    required Widget child,
+    double? width,
+    double? height
+  }) {
     return Container(
       padding: const EdgeInsets.all(5),
       color: (color ?? Colors.transparent),
@@ -310,16 +360,40 @@ class SeasonalityTable extends StatelessWidget {
     // create the result variable
     Map<String, List<SeasonalityModel>> result = {};
 
+    SeasonalityModel? prevSeasonality;
+    SeasonalityModel? currentSeasonility;
+
     // loop thru data
     for(SeasonalityModel current in data) {
-      // check if current year already exists on the result or not?
-      if (result.containsKey(current.year)) {
-        // just add on the list
-        result[current.year]?.add(current);
+      // check if prev seasonality is null or not?
+      if (prevSeasonality == null) {
+        currentSeasonility = current;
+        prevSeasonality = current;
       }
       else {
-        result[current.year] = [];
-        result[current.year]?.add(current);
+        // if prev seasonality is not null then we can give the information
+        // of the previous min and max price
+        currentSeasonility = SeasonalityModel(
+          year: current.year,
+          month: current.month,
+          averageDiffPrice: current.averageDiffPrice,
+          minDiffPrice: current.minDiffPrice,
+          maxDiffPrice: current.maxDiffPrice,
+          minLastPrice: current.minLastPrice,
+          maxLastPrice: current.maxLastPrice,
+          minPrevPrice: prevSeasonality.minLastPrice,
+          maxPrevPrice: prevSeasonality.maxLastPrice,
+        );
+      }
+
+      // check if current year already exists on the result or not?
+      if (result.containsKey(currentSeasonility.year)) {
+        // just add on the list
+        result[currentSeasonility.year]?.add(currentSeasonility);
+      }
+      else {
+        result[currentSeasonility.year] = [];
+        result[currentSeasonility.year]?.add(currentSeasonility);
       }
     }
 

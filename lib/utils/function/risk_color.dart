@@ -52,6 +52,32 @@ Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor
   }
 }
 
+Color riskColor2({required double percentage, required double diff, bool? reverse}) {
+  double absPercentage = (percentage < 0 ? percentage * (-1) : percentage);
+  int value = (((absPercentage * 100).toInt()) % 100) ~/ 10;
+
+  if (reverse ?? false) {
+    value = 1000 - (value * 100);
+  }
+
+  if (value >= 0 && value <= 300) {
+    value = 700;
+  }
+  else if(value >= 400 && value <= 700) {
+    value = 800;
+  }
+  else {
+    value = 900;
+  }
+  
+  if (diff < 0) {
+    return Colors.red[value]!;
+  }
+  else {
+    return Colors.green[value]!;
+  }
+}
+
 Color riskColorReverse(double value, double cost) {
   // assuming that the colors is green
   Color result = Colors.green;

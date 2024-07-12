@@ -46,3 +46,6 @@ app.*.map.json
 
 # configuration file
 /env/.prod.env
+
+# json test file for API test
+/test/*.json

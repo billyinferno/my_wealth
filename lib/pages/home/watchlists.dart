@@ -363,6 +363,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         shareTitle: "Lot",
         checkThousandOnPrice: false,
         scrollController: _scrollControllerStock,
+        showDecimalPrice: false,
       );
     }
     return const Center(child: Text("No stock watchlists"));
@@ -529,6 +530,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     required String shareTitle,
     required bool checkThousandOnPrice,
     required ScrollController scrollController,
+    bool? showDecimalPrice,
   }) {
     return RefreshIndicator(
       onRefresh: (() async {
@@ -675,7 +677,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       watchlistResult: result![idx],
                       shareTitle: shareTitle,
                       checkThousandOnPrice: checkThousandOnPrice,
-                      showEmptyWatchlist: _isShowEmptyWatchlist
+                      showEmptyWatchlist: _isShowEmptyWatchlist,
+                      showPriceDecimal: (showDecimalPrice ?? true),
                     ),
                   ),
                 );

@@ -21,6 +21,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final double? totalCost;
   final double? averagePrice;
   final bool? fca;
+  final bool? showDecimal;
 
   const ExpandedTileTitle({
     super.key,
@@ -41,6 +42,7 @@ class ExpandedTileTitle extends StatelessWidget {
     this.totalCost,
     this.averagePrice,
     this.fca,
+    this.showDecimal,
   });
 
   @override
@@ -205,6 +207,7 @@ class ExpandedTileTitle extends StatelessWidget {
                                       formatCurrency(
                                         price,
                                         (checkThousandOnPrice ?? false),
+                                        (showDecimal ?? true),
                                       ),
                                       style: const TextStyle(
                                         fontSize: 12,

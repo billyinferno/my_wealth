@@ -18,6 +18,7 @@ class ExpandedTileView extends StatelessWidget {
   final String? shareTitle;
   final bool? checkThousandOnPrice;
   final bool showEmptyWatchlist;
+  final bool? showPriceDecimal;
   const ExpandedTileView({
     super.key,
     this.showedLot,
@@ -29,6 +30,7 @@ class ExpandedTileView extends StatelessWidget {
     this.shareTitle,
     this.checkThousandOnPrice,
     required this.showEmptyWatchlist,
+    this.showPriceDecimal,
   });
 
   @override
@@ -82,6 +84,7 @@ class ExpandedTileView extends StatelessWidget {
           totalCost: (isVisible ? watchlistResult.totalCost : null),
           averagePrice: (isVisible ? watchlistResult.averagePrice : null),
           fca: watchlist.watchlistCompanyFCA,
+          showDecimal: showPriceDecimal,
         ),
         initiallyExpanded: isShowedLots,
         collapsedTextColor: textPrimary,

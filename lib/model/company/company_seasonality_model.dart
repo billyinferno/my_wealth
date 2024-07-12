@@ -16,6 +16,8 @@ class SeasonalityModel {
         required this.maxDiffPrice,
         required this.minLastPrice,
         required this.maxLastPrice,
+        this.minPrevPrice,
+        this.maxPrevPrice,
     });
 
     final String year;
@@ -25,6 +27,8 @@ class SeasonalityModel {
     final double maxDiffPrice;
     final double minLastPrice;
     final double maxLastPrice;
+    final double? minPrevPrice;
+    final double? maxPrevPrice;
 
     factory SeasonalityModel.fromJson(Map<String, dynamic> json) => SeasonalityModel(
         year: json["year"],
@@ -34,6 +38,8 @@ class SeasonalityModel {
         maxDiffPrice: (json["max_diff_price"] != null ? json["max_diff_price"]?.toDouble() : 0),
         minLastPrice: (json["min_last_price"] != null ? json["min_last_price"]?.toDouble() : 0),
         maxLastPrice: (json["max_last_price"] != null ? json["max_last_price"]?.toDouble() : 0),
+        minPrevPrice: null,
+        maxPrevPrice: null,
     );
 
     Map<String, dynamic> toJson() => {

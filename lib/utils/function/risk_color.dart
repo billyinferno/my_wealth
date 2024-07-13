@@ -52,22 +52,42 @@ Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor
   }
 }
 
-Color riskColor2({required double percentage, required double diff, bool? reverse}) {
+Color riskColor2({
+  required double percentage,
+  required double diff,
+  bool? reverse,
+  List<int>? colorNumber,
+}) {
   double absPercentage = (percentage < 0 ? percentage * (-1) : percentage);
   int value = (((absPercentage * 100).toInt()) % 100) ~/ 10;
+  List<int> colorValue = [];
+
+  // assign default color to color value
+  colorValue.add(700);
+  colorValue.add(800);
+  colorValue.add(900);
+
+  // check if color number being passed is not null
+  if (colorNumber != null) {
+    // ensure the length is 3
+    if (colorNumber.length == 3) {
+      // we can just assign color value to color number
+      colorValue = colorNumber;
+    }
+  }
 
   if (reverse ?? false) {
     value = 1000 - (value * 100);
   }
 
   if (value >= 0 && value <= 300) {
-    value = 700;
+    value = colorValue[0];
   }
   else if(value >= 400 && value <= 700) {
-    value = 800;
+    value = colorValue[1];
   }
   else {
-    value = 900;
+    value = colorValue[2];
   }
   
   if (diff < 0) {

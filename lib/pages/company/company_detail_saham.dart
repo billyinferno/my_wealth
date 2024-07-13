@@ -1443,6 +1443,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   }
 
   Widget _tabDividend() {
+    // check if stock never giving dividend before
+    if (_dividend.dividend.isEmpty) {
+      return Center(
+        child: Text("Stock ${_companyData.companyCode} never given any dividend before"),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
       child: Column(

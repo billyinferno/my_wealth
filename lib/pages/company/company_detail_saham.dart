@@ -40,6 +40,7 @@ import 'package:my_wealth/widgets/chart/average_price_chart.dart';
 import 'package:my_wealth/widgets/chart/broker_summary_distribution_chart.dart';
 import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
 import 'package:my_wealth/widgets/chart/stock_chart.dart';
+import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
@@ -121,6 +122,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late DateTime _topBrokerDateTo;
 
   late Future<bool> _getData;
+  late int _userRisk;
   
   bool _showCurrentPriceComparison = false;
   bool _showNet = true;
@@ -191,6 +193,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // default saham price to 90
     _currentInfoSahamPrice = 90;
+
+    // get the current user risk
+    _userRisk = (_userInfo!.risk);
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -1401,18 +1406,36 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Center(
-          child: Text(
-            "User risk tolerance ${_userInfo!.risk}%",
-            style: const TextStyle(
-              fontSize: 9,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text("Risk Percentage"),
+            const SizedBox(width: 10,),
+            SizedBox(
+              width: 120,
+              child: NumberStepper(
+                initialRate: _userRisk,
+                maxRate: 75,
+                minRate: 5,
+                ratePrefix: "%",
+                bgColor: primaryColor,
+                borderColor: primaryLight,
+                textColor: Colors.white,
+                onTap: ((value) {
+                  setState(() {
+                    _userRisk = value;
+                  });
+                })
+              ),
             ),
-          ),
+          ],
         ),
+        const SizedBox(height: 10,),
         Expanded(
           child: SeasonalityTable(
             data: _seasonality,
-            risk: _userInfo?.risk,
+            risk: _userRisk,
           ),
         ),
       ],

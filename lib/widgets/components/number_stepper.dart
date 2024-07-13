@@ -14,8 +14,26 @@ class NumberStepper extends StatefulWidget {
   final String? ratePrefix;
   final int? minRate;
   final int? maxRate;
+  final int? stepper;
+  final int? stepperMultiply;
   final Function(int) onTap;
-  const NumberStepper({super.key, this.height, this.borderColor, this.buttonColor, this.bgColor, this.iconColor, this.iconSize, this.textColor, required this.initialRate, this.ratePrefix, this.minRate, this.maxRate, required this.onTap});
+  const NumberStepper({
+    super.key,
+    this.height,
+    this.borderColor,
+    this.buttonColor,
+    this.bgColor,
+    this.iconColor,
+    this.iconSize,
+    this.textColor,
+    required this.initialRate,
+    this.ratePrefix,
+    this.minRate,
+    this.maxRate,
+    required this.onTap,
+    this.stepper,
+    this.stepperMultiply,
+  });
 
   @override
   State<NumberStepper> createState() => _NumberStepperState();
@@ -25,6 +43,8 @@ class _NumberStepperState extends State<NumberStepper> {
   late int _oneDayRate;
   late int _minRate;
   late int _maxRate;
+  late int _stepper;
+  late int _stepperMultiply;
 
   @override
   void initState() {
@@ -32,6 +52,8 @@ class _NumberStepperState extends State<NumberStepper> {
     _oneDayRate = widget.initialRate;
     _minRate = (widget.minRate ?? 1);
     _maxRate = (widget.maxRate ?? 100);
+    _stepper = (widget.stepper ?? 1);
+    _stepperMultiply = (widget.stepperMultiply ?? 10);
 
     super.initState();
   }
@@ -56,7 +78,7 @@ class _NumberStepperState extends State<NumberStepper> {
           InkWell(
             onTap: (() {
               setState(() {
-                _oneDayRate = _oneDayRate - 1;
+                _oneDayRate = _oneDayRate - (_stepper);
                 if (_oneDayRate < _minRate) {
                   _oneDayRate = _minRate;
                 }
@@ -65,7 +87,7 @@ class _NumberStepperState extends State<NumberStepper> {
             }),
             onDoubleTap: (() {
               setState(() {
-                _oneDayRate = _oneDayRate - 10;
+                _oneDayRate = _oneDayRate - (_stepper * _stepperMultiply);
                 if (_oneDayRate < _minRate) {
                   _oneDayRate = _minRate;
                 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/model/company/company_seasonality_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -221,7 +222,9 @@ class SeasonalityTable extends StatelessWidget {
                 minDiffPrice: data[index].minDiffPrice,
                 minLastPrice: data[index].minLastPrice,
                 maxDiffPrice: data[index].maxDiffPrice,
-                maxLastPrice: data[index].maxLastPrice
+                maxLastPrice: data[index].maxLastPrice,
+                minPrevPrice: data[index].minPrevPrice,
+                maxPrevPrice: data[index].maxPrevPrice,
               ),
               color: (data[index].averageDiffPrice == 0 ? Colors.black : riskColor((minMaxPrice + data[index].averageDiffPrice), minMaxPrice, (risk ?? 10))),
             )
@@ -251,7 +254,9 @@ class SeasonalityTable extends StatelessWidget {
     required double? minDiffPrice,
     required double? minLastPrice,
     required double? maxDiffPrice,
-    required double? maxLastPrice
+    required double? maxLastPrice,
+    double? minPrevPrice,
+    double? maxPrevPrice,
   }) {
     double totalPercentageDiff = 0;
     double cost = 0;
@@ -310,12 +315,22 @@ class SeasonalityTable extends StatelessWidget {
                     color: textColor,
                   ),
                 ),
-                Text(
-                  formatDecimalWithNull(minLastPrice, 1, 2),
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: textColor,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    _getArrowIcon(
+                      value1: minPrevPrice,
+                      value2: minLastPrice,
+                    ),
+                    Text(
+                      formatDecimalWithNull(minLastPrice, 1, 2),
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: textColor,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -331,12 +346,22 @@ class SeasonalityTable extends StatelessWidget {
                     color: textColor,
                   ),
                 ),
-                Text(
-                  formatDecimalWithNull(maxLastPrice, 1, 2),
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: textColor,
-                  )
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      formatDecimalWithNull(maxLastPrice, 1, 2),
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: textColor,
+                      )
+                    ),
+                    _getArrowIcon(
+                      value1: maxPrevPrice,
+                      value2: maxLastPrice,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -354,6 +379,42 @@ class SeasonalityTable extends StatelessWidget {
     );
   }
 
+  Widget _getArrowIcon({
+    double? value1,
+    double? value2,
+    Color? color,
+    double? size
+  }) {
+    if (value1 == null || value2 == null) {
+      return Icon(
+        Ionicons.remove,
+        size: (size ?? 15),
+        color: (color ?? Colors.white),
+      );
+    }
+    if (value1 == value2) {
+      return Icon(
+        Ionicons.remove,
+        size: (size ?? 15),
+        color: (color ?? Colors.white),
+      );
+    }
+    else if (value1 < value2) {
+      return Icon(
+        Ionicons.caret_up,
+        size: (size ?? 15),
+        color: (color ?? Colors.green),
+      );
+    }
+    else {
+      return Icon(
+        Ionicons.caret_down,
+        size: (size ?? 15),
+        color: (color ?? Colors.red),
+      );
+    }
+  }
+
   Widget _rowItem({
     Color? color,
     required Widget child,
@@ -363,8 +424,8 @@ class SeasonalityTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(5),
       color: (color ?? Colors.transparent),
-      width: (width ?? 110),
-      height: (height ?? 75),
+      width: (width ?? 130),
+      height: (height ?? 85),
       child: child,
     );
   }
@@ -397,6 +458,8 @@ class SeasonalityTable extends StatelessWidget {
           minPrevPrice: prevSeasonality.minLastPrice,
           maxPrevPrice: prevSeasonality.maxLastPrice,
         );
+        // set prev seasonality as current
+        prevSeasonality = current;
       }
 
       // check if current year already exists on the result or not?

@@ -14,8 +14,10 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class InsightStockSubPage extends StatefulWidget {
   final Object? args;
@@ -35,7 +37,8 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
   late UserLoginInfoModel? _userInfo;
   late IndustrySummaryArgs _args;
 
-  bool _isLoading = true;
+  late Future<bool> _getData;
+
   late TopWorseCompanyListModel _sectorListTop;
   late TopWorseCompanyListModel _sectorListWorse;
   List<SectorSummaryModel> _subSectorList = [];
@@ -46,15 +49,12 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
   @override
   void initState() {
     _args = widget.args! as IndustrySummaryArgs;
-    _isLoading = true;
 
     // get user info from shared preferences
     _userInfo = UserSharedPreferences.getUserInfo();
     
-    // get the result
-    Future.microtask(() async {
-      await _getIndustrySummary();
-    });
+    // get initial data for stock sub sector
+    _getData = _getIndustrySummary();
 
     super.initState();
   }
@@ -69,14 +69,25 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Container(
-        color: primaryColor,
-      );
-    }
-    else {
-      return _generatePage();
-    }
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(
+            errorText: 'Error loading Sub Sector Information',
+            isNeedScaffold: false,
+          );
+        }
+        else if (snapshot.hasData) {
+          return _generatePage();
+        }
+        else {
+          return const CommonLoadingPage(
+            isNeedScaffold: false,
+          );
+        }
+      },
+    );
   }
 
   Widget _generatePage() {
@@ -448,33 +459,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
       children: List.generate(info.length, (index) {
         return InkWell(
           onTap: () async {
-            showLoaderDialog(context);
-            await _companyAPI.getCompanyByCode(info[index].code, 'saham').then((resp) {
-              CompanyDetailArgs args = CompanyDetailArgs(
-                companyId: resp.companyId,
-                companyName: resp.companyName,
-                companyCode: info[index].code,
-                companyFavourite: (resp.companyFavourites ?? false),
-                favouritesId: (resp.companyFavouritesId ?? -1),
-                type: "saham",
-              );
-              
-              if (mounted) {
-                // remove the loader dialog
-                Navigator.pop(context);
-
-                // go to the company page
-                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-              }
-            }).onError((error, stackTrace) {
-              if (mounted) {
-                // remove the loader dialog
-                Navigator.pop(context);
-
-                // show the error message
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-              }
-            });
+            _getCompanyAndGo(code: info[index].code);
           },
           child: Container(
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
@@ -528,39 +513,63 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
     );
   }
 
-  Future<void> _getIndustrySummary() async {
-    // get the industry summary from backend
-    showLoaderDialog(context);
-    Future.microtask(() async {
-      await _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'top').then((resp) {
+  Future<bool> _getIndustrySummary() async {
+    await Future.wait([
+      _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'top').then((resp) {
         // set the sub sector list with the response
         _sectorListTop = resp;
-      });
+      }),
 
-      await _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'worse').then((resp) {
+      _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'worse').then((resp) {
         // set the sub sector list with the response
         _sectorListWorse = resp;
-      });
+      }),
 
-      await _insightAPI.getSubSectorSummary(_args.sectorData.sectorName).then((resp) {
+      _insightAPI.getSubSectorSummary(_args.sectorData.sectorName).then((resp) {
         // set the sub sector list with the response
         _subSectorList = resp;
-      });
+      }),
 
-      await _insightAPI.getIndustrySummary(_args.sectorData.sectorName).then((resp) {
+      _insightAPI.getIndustrySummary(_args.sectorData.sectorName).then((resp) {
         // set the industry list with the response
         _industryList = resp;
-      });
-    }).whenComplete(() {
-      if (mounted) {
-        // remove the loader dialog
-        Navigator.pop(context);
-      }
+      }),
+    ]).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+      throw Exception('Error when get stock per sector information');
+    },);
 
-      // set loading into false
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    return true;
+  }
+
+  Future<void> _getCompanyAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get company information and navigate to company page
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove the loading screen once complete
+      LoadingScreen.instance().hide();
+    },);
   }
 }

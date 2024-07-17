@@ -12,10 +12,10 @@ import 'package:my_wealth/utils/arguments/watchlist_add_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/list/watchlist_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistAddPage extends StatefulWidget {
@@ -95,18 +95,11 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                   if(searchText.isNotEmpty) {
                     debugPrint("🔎 Searching for $searchText");
     
-                    // show loader dialog
-                    showLoaderDialog(context);
                     await _searchCompany(searchText).then((resp) {
                       _setSearchResult(resp);
                     }).onError((error, stackTrace) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      }
-                    }).whenComplete(() {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
                       }
                     });
                   }
@@ -190,11 +183,19 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
 
   Future<List<CompanySearchModel>> _searchCompany(String companyName) async {
     List<CompanySearchModel> ret = [];
+
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // find the company by name
     await _companyAPI.getCompanyByName(companyName, _args.type).then((resp) {
       ret = resp;
     }).onError((error, stackTrace) {
       throw Exception("Error when search company");
-    });
+    }).whenComplete(() {
+      // remove loading screen once finished
+      LoadingScreen.instance().hide();
+    },);
 
     return ret;
   }
@@ -206,7 +207,10 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
   }
 
   Future<void> _addCompanyToWatchlist(int index) async {
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // perform task
     Future.microtask(() async {
       // add the company to watchlist
       await _watchlistAPI.add(_args.type, _companySearchResult![index].companyId).then((_) async {
@@ -246,10 +250,8 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
         throw Exception("Error when refresh watchlist ${_args.type} after add");
       });
     }).whenComplete(() {
-      if (mounted) {
-        // once finished then remove the loader dialog
-        Navigator.pop(context);
-      }
+      // remove the loading screen once finisged
+      LoadingScreen.instance().hide();
     });
   }
 }

@@ -9,9 +9,9 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
@@ -555,7 +555,10 @@ class _UserPageState extends State<UserPage> {
   Future<bool> _updateVisibilitySummary(bool visibility) async {
     bool ret = false;
 
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // update user summary visibility configuration
     await _userApi.updateVisibilitySummary(visibility).then((resp) async {
       // set the return value as true
       ret = true;
@@ -564,21 +567,17 @@ class _UserPageState extends State<UserPage> {
       await UserSharedPreferences.setUserInfo(resp);
 
       // update the provider to notify the user page
-      if (!mounted) return;
-      Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-      Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: visibility);
-
-      // remove the loader
-      Navigator.pop(context);
-    }).onError((error, stackTrace) {
       if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
+        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+        Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: visibility);
       }
-
+    }).onError((error, stackTrace) {
       // throw the exception
       throw Exception(error.toString());
-    });
+    }).whenComplete(() {
+      // remove loading screen once finished
+      LoadingScreen.instance().hide();
+    },);
 
     return ret;
   }
@@ -592,7 +591,10 @@ class _UserPageState extends State<UserPage> {
   Future<bool> _updateShowLots(bool showLots) async {
     bool ret = false;
 
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // update user show lots configuration
     await _userApi.updateShowLots(showLots).then((resp) async {
       // set the return value as true
       ret = true;
@@ -601,21 +603,17 @@ class _UserPageState extends State<UserPage> {
       await UserSharedPreferences.setUserInfo(resp);
 
       // update the provider to notify the user page
-      if (!mounted) return;
-      Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-      Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: showLots);
-
-      // remove the loader
-      Navigator.pop(context);
-    }).onError((error, stackTrace) {
-      if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
+      if (mounted) {        
+        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+        Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: showLots);
       }
-
+    }).onError((error, stackTrace) {
       // throw the exception
       throw Exception(error.toString());
-    });
+    }).whenComplete(() {
+      // remove loading screen once finisged
+      LoadingScreen.instance().hide();
+    },);
 
     return ret;
   }
@@ -629,7 +627,10 @@ class _UserPageState extends State<UserPage> {
   Future<bool> _updateShowEmptyWatchlist(bool showEmptyWatchlist) async {
     bool ret = false;
 
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // update user show empty watchlish configuration
     await _userApi.updateShowEmptyWatchlist(showEmptyWatchlist).then((resp) async {
       // set the return value as true
       ret = true;
@@ -638,21 +639,17 @@ class _UserPageState extends State<UserPage> {
       await UserSharedPreferences.setUserInfo(resp);
 
       // update the provider to notify the user page
-      if (!mounted) return;
-      Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-      Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: showEmptyWatchlist);
-
-      // remove the loader
-      Navigator.pop(context);
-    }).onError((error, stackTrace) {
       if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
+        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+        Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: showEmptyWatchlist);
       }
-
+    }).onError((error, stackTrace) {
       // throw the exception
       throw Exception(error.toString());
-    });
+    }).whenComplete(() {
+      // remove loading screen when finished
+      LoadingScreen.instance().hide();
+    },);
 
     return ret;
   }

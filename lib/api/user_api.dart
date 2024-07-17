@@ -36,7 +36,7 @@ class UserAPI {
 
   Future<UserLoginInfoModel> updateRisk(int risk) async {
     // patch user risk information using netutils
-    final String body = await NetUtils.post(
+    final String body = await NetUtils.patch(
       url: Globals.apiRisk,
       body: {'risk': risk},
     ).onError((error, stackTrace) {

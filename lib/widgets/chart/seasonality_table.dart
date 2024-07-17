@@ -424,7 +424,7 @@ class SeasonalityTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(5),
       color: (color ?? Colors.transparent),
-      width: (width ?? 135),
+      width: (width ?? 145),
       height: (height ?? 85),
       child: child,
     );

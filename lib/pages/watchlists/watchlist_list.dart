@@ -498,11 +498,18 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
                       WatchlistDetailEditArgs args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
-                      final Color rColor = riskColor(
+                      Color rColor = riskColor(
                         (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
                         (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
                         _userInfo!.risk
                       );
+
+                      // check if the watchlist item date is more than company last update
+                      // if so, then just make it black instead of calculate the risk color
+                      // since we don't have the information for the date.
+                      if (_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal().isAfter((_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal())) {
+                        rColor = Colors.black;
+                      }
     
                       return Slidable(
                         endActionPane: ActionPane(

@@ -54,33 +54,17 @@ class LoginPageState extends State<LoginPage> {
   final BrokerSummaryAPI _brokerSummaryApi = BrokerSummaryAPI();
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
+
+  late Future<bool> _getMe;
   
-  bool _isLoading = true;
   bool _isInvalidToken = false;
 
   @override
   void initState() {
     super.initState();
 
-    // once all page already loaded, then we can try to perform check login
-    Future.microtask(() async {
-      await _checkLogin().then((isLogin) async {
-        if(isLogin) {
-          debugPrint("🔓 Already login");
-          await _getAdditionalInfo().then((_) {
-            if (mounted) {
-              // once finished get the additional information route this to home
-              debugPrint("🏠 Redirect to home");
-              Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
-            }
-          });
-        }
-        else {
-          debugPrint("🔐 Not yet login");
-          _setIsLoading(false);
-        }
-      });
-    });
+    // check if user already login
+    _getMe = _checkIfLogin();
   }
 
   @override
@@ -95,14 +79,23 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _generateBody(),
+      body: FutureBuilder(
+        future: _getMe,
+        builder: ((context, snapshot) {
+          if (snapshot.hasData || snapshot.hasError) {
+            // show login screen
+            return _generateBody();
+          }
+          else {
+            // show loading
+            return _splashScreen();
+          }
+        }),
+      ),
     );
   }
 
   Widget _generateBody() {
-    if (_isLoading) {
-      return _splashScreen();
-    }
     return _loginScreen();
   }
 
@@ -435,12 +428,11 @@ class LoginPageState extends State<LoginPage> {
             debugPrint("2️⃣ Set user information");
           }
         });
-
-        // and we can call all the rest of the API that we also need when user already
-        // login.
-        await _getAdditionalInfo();
       }
     }).onError((error, stackTrace) {
+      // show error
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
       // check if the error message is "XMLHttpRequest error."
       if (error.toString() == "XMLHttpRequest error.") {
         debugPrint("🌏 No Internet Connection");
@@ -452,6 +444,21 @@ class LoginPageState extends State<LoginPage> {
         _showScaffoldMessage(text: "Invalid identifier or password");
       }
     });
+
+    // and we can call all the rest of the API that we also need when user already
+    // login.
+    await _getAdditionalInfo().onError((error, stackTrace) {
+      // set the return into false
+      ret = false;
+
+      // print error on the console
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+      debugPrint("ℹ️ Unable to get additional information");
+
+      // show the error on the scaffold
+      _showScaffoldMessage(text: "Unable to get additional info");
+    },);
 
     // remove the loading screen
     LoadingScreen.instance().hide();
@@ -665,10 +672,31 @@ class LoginPageState extends State<LoginPage> {
     });
   }
 
-  void _setIsLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
+  Future<bool> _checkIfLogin() async {
+    // check whether user already login or not?
+    await _checkLogin().then((isLogin) async {
+      if(isLogin) {
+        debugPrint("🔓 Already login");
+
+        // get the additional information for user
+        await _getAdditionalInfo().then((_) {
+          if (mounted) {
+            // once finished get the additional information route this to home
+            debugPrint("🏠 Redirect to home");
+            Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+          }
+        }).onError((error, stackTrace) {
+          debugPrint("Error: ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+          throw Exception('Error when get the additional data');
+        },);
+      }
+      else {
+        debugPrint("🔐 Not yet login");
+      }
     });
+
+    return true;
   }
 
   void _showScaffoldMessage({required String text}) {

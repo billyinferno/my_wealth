@@ -7,8 +7,10 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class InsightBandarEPSPage extends StatefulWidget {
   const InsightBandarEPSPage({super.key});
@@ -26,7 +28,7 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
   late int _minEpsDiffRate;
   late List<InsightEpsModel> _epsList;
 
-  bool _isLoading = true;
+  late Future<bool> _getData;
 
   @override
   void initState() {
@@ -34,35 +36,8 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
     _minEpsDiffRate = InsightSharedPreferences.getEpsMinDiffRate(); // default to 5%
     _epsList = InsightSharedPreferences.getEpsResult();             // default to empty list
 
-    // check if the _epsList is empry
-    if (_epsList.isEmpty) {
-      // if not then get from API services
-      Future.microtask(() async {
-        if (mounted) {
-          // show loader
-          showLoaderDialog(context);
-        }
-
-        // get the insight data
-        await _insightAPI.getTopEPS(_minEpsRate, _minEpsDiffRate).then((resp) async {
-          _epsList = resp;
-
-          // put on the shared preferences
-          await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
-        });
-      }).whenComplete(() {
-        if (mounted) {
-          // remove loader
-          Navigator.pop(context);
-        }
-        // set loading into false
-        setLoading(false);
-      });
-    }
-    else {
-      // just set loading into false, as we already get the data from shared preferences
-      setLoading(false);
-    }
+    // get the data either from cache or from API
+    _getData = _getInitData();
 
     super.initState();
   }
@@ -75,12 +50,28 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if loading show this
-    if (_isLoading) {
-      return const Center(child: Text("Load top EPS data..."),);
-    }
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(
+            errorText: 'Error loading bandar accumulation page',
+            isNeedScaffold: false,
+          );
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage(
+            isNeedScaffold: false,
+          );
+        }
+      },
+    );
+  }
 
-    // once finished loading we cal showed the data
+  Widget _body() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,22 +207,21 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
           const SizedBox(height: 10,),
           InkWell(
             onTap: (() async {
-              // get the new data based on the rate change on the slider
-              showLoaderDialog(context);
+              // show loading screen
+              LoadingScreen.instance().show(context: context);
 
+              // get the new data based on the rate change on the slider
               await _insightAPI.getTopEPS(_minEpsRate, _minEpsDiffRate).then((resp) async {
                 _epsList = resp;
                 
                 // put on the shared preferences
                 await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
-              }).whenComplete(() {
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              });
 
-              setState(() {
-                // just set state so we will rebuild the list view
+                setState(() {
+                  // just set state so we will rebuild the list view
+                });
+              }).whenComplete(() {
+                LoadingScreen.instance().hide();
               });
             }),
             child: Container(
@@ -263,34 +253,8 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
               itemCount: _epsList.length,
               itemBuilder: ((context, index) {
                 return InkWell(
-                  onTap: (() async {
-                    showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_epsList[index].code, 'saham').then((resp) {
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: resp.companyId,
-                        companyName: resp.companyName,
-                        companyCode: _epsList[index].code,
-                        companyFavourite: (resp.companyFavourites ?? false),
-                        favouritesId: (resp.companyFavouritesId ?? -1),
-                        type: "saham",
-                      );
-                      
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // go to the company page
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                      }
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // show the error message
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                      }
-                    });
+                  onTap: (() {
+                    _getCompanyDetailAndGo(code: _epsList[index].code);
                   }),
                   child: Container(
                     padding: const EdgeInsets.all(5),
@@ -448,9 +412,52 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
     );
   }
 
-  void setLoading(bool value) {
-    setState(() {
-      _isLoading = value;
-    });
+  Future<bool> _getInitData() async {
+    // check if the _epsList is empry
+    if (_epsList.isEmpty) {
+      // get the insight data
+      await _insightAPI.getTopEPS(_minEpsRate, _minEpsDiffRate).then((resp) async {
+        _epsList = resp;
+
+        // put on the shared preferences
+        await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
+      }).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+        throw Exception('Error when get Top EPS data from server');
+      },);
+    }
+
+    return true;
+  }
+
+  Future<void> _getCompanyDetailAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get company detail and go
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove loading instance
+      LoadingScreen.instance().hide();
+    },);
   }
 }

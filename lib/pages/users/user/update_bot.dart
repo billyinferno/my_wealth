@@ -5,8 +5,8 @@ import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class UpdateBotPage extends StatefulWidget {
@@ -100,16 +100,16 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                     } else {
                       if (_controller.text.isNotEmpty) {
                         debugPrint("💾 Save the updated bot token");
-                        showLoaderDialog(context);
+                        // show loading screen
+                        LoadingScreen.instance().show(context: context);
+
+                        // update the bot token
                         await _userApi.updateBotToken(_controller.text).then((resp) async {
                           // we will get updated user info here, so stored the updated
                           // user info with new risk factor to the local storea
                           await UserSharedPreferences.setUserInfo(resp);
                           
                           if (context.mounted) {
-                            // remove the loader dialog
-                            Navigator.pop(context);
-
                             // update the provider to notify the user page
                             Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
 
@@ -118,15 +118,15 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                           }
                         }).onError((error, stackTrace) {
                           if (context.mounted) {
-                            // remove the loader dialog
-                            Navigator.pop(context);
-
                             // showed the snack bar
                             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(
                               message: "Unable to update Bot Token",
                             ));
                           }
-                        });
+                        }).whenComplete(() {
+                          // remove loading screen after finished
+                          LoadingScreen.instance().hide();
+                        },);
                       } else {
                         // showed the snack bar
                         ScaffoldMessenger.of(context)

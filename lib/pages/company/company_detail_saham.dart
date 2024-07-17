@@ -34,13 +34,13 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/chart/average_price_chart.dart';
 import 'package:my_wealth/widgets/chart/broker_summary_distribution_chart.dart';
 import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
 import 'package:my_wealth/widgets/chart/stock_chart.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
@@ -335,19 +335,22 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: secondaryLight, style: BorderStyle.solid, width: 1.0),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: const EdgeInsets.all(2),
-                                  child: Text(
-                                    _companyDetail.companyType,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: secondaryLight,
+                                Visibility(
+                                  visible: (_companyDetail.companyType.isNotEmpty),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: secondaryLight, style: BorderStyle.solid, width: 1.0),
+                                      borderRadius: BorderRadius.circular(5),
                                     ),
-                                    overflow: TextOverflow.ellipsis,
+                                    padding: const EdgeInsets.all(2),
+                                    child: Text(
+                                      _companyDetail.companyType,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: secondaryLight,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 5,),
@@ -1291,36 +1294,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               Expanded(
                 child: InkWell(
                   onTap: (() async {
-                    await Navigator.pushNamed(context, '/company/detail/saham/find', arguments: _companyDetail.companySymbol!).then((value) {
+                    await Navigator.pushNamed(context, '/company/detail/saham/find', arguments: _companyDetail.companySymbol!).then((value) async {
                       // check if value is not null?
                       if (value != null) {
                         // means we already got our other company code, we can call API to find the company
                         _otherCompanyCode = value as String;
-                        
-                        Future.microtask(() async {
-                          if (mounted) {
-                            // show loader dialog
-                            showLoaderDialog(context);
-                          }
-                        
-                          // get the company detail information
-                          await _companyApi.getCompanyByCode(_otherCompanyCode!, 'saham').then((resp) {
-                            _otherCompanyDetail = resp;
-                          });
-                        
-                          // get the fundamental information, but we will only use the 1st index or array
-                          await _infoFundamentalAPI.getInfoFundamental(_otherCompanyCode!).then((resp) {
-                            if (resp.isNotEmpty) {
-                              _otherInfoFundamental = resp[0];
-                            }
-                          });
-                        }).whenComplete(() {
-                          if (mounted) {
-                            Navigator.pop(context);
-                            setState(() {
-                              // set state to rebuild the widget
-                            });
-                          }
+
+                        // get the company detail information                        
+                        await _getCompanyDetail();
+
+                        setState(() {
+                          // set state to rebuild the widget
                         });
                       }
                     });
@@ -2078,7 +2062,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                           _brokerSummaryDateTo = result.end;
 
                           // get the broker summary
-                          await _getBrokerSummary();
+                          await _getBrokerSummary().onError((error, stackTrace) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                            }
+                          },);
                         }
                       }
                     }),
@@ -3512,58 +3500,52 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   }
 
   Future<void> _getBrokerSummary() async {
-    // show loader dialog
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
 
     // get the broker summary
-    Future.microtask(() async {
-      await _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+    await Future.wait([
+      // get the broker summary gross
+      _brokerSummaryAPI.getBrokerSummary(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
         _brokerSummaryGross = resp;
-      });
+      }),
 
-      await _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
+      // get the broker summary net
+      _brokerSummaryAPI.getBrokerSummaryNet(_companyData.companyCode, _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal()).then((resp) {
         _brokerSummaryNet = resp;
-      });
-
-      if (_showNet) {
-        _setBrokerSummary(_brokerSummaryNet);
-      }
-      else {
-        _setBrokerSummary(_brokerSummaryGross);
-      }
-    }).whenComplete(() {
-      if (mounted) {
-        // remove the loader dialog
-        Navigator.pop(context);
-      }
-    }).onError((error, stackTrace) {
-      if (mounted) {
-        // show snack bar
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get broker data from server'));
-      }
-      // show error
+      }),
+    ]).onError((error, stackTrace) {
+      // print the error
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
+      
+      // show error
+      throw Exception('Error when try to get broker data from server');
+    },).then((_) {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
     });
+
+    // check whether we need to show groos or net broker summary
+    if (_showNet) {
+      _setBrokerSummary(_brokerSummaryNet);
+    }
+    else {
+      _setBrokerSummary(_brokerSummaryGross);
+    }
   }
 
   Future<void> _getTopBroker() async {
-    // show loader dialog
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
 
     // get the broker summary
     await _companyApi.getCompanyTopBroker(_companyData.companyCode, _topBrokerDateFrom.toLocal(), _topBrokerDateTo.toLocal()).then((resp) {
       setState(() {
         _topBroker = resp;
       });
-      if (mounted) {
-        // remove the loader dialog
-        Navigator.pop(context);
-      }
     }).onError((error, stackTrace) {
       if (mounted) {
-        // remove the loader dialog
-        Navigator.pop(context);
         // show snack bar
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get top broker data from server'));
       }
@@ -3571,26 +3553,29 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
     });
+
+    // remove loading screen
+    LoadingScreen.instance().hide();
   }
 
   Future<void> _getFundamental() async {
     List<InfoFundamentalsModel> result = [];
-    // show loader dialog
-    showLoaderDialog(context);
+    
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
 
     // get the fundamental data
     await _infoFundamentalAPI.getInfoFundamental(_companyData.companyCode, _quarterSelection).then((resp) {
       result = resp;
-      if (mounted) {
-        Navigator.pop(context);
-      }
     }).onError((error, stackTrace) {
       debugPrintStack(stackTrace: stackTrace);
       if (mounted) {
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when fetching fundamental data"));
       }
     });
+
+    // remove loading screen
+    LoadingScreen.instance().hide();
 
     // set the current info fundamental with the result we got
     setState(() {
@@ -3894,6 +3879,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     }
 
     return true;
+  }
+
+  Future<void> _getCompanyDetail() async {
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company detail information that we will use for comparison
+    await Future.wait([
+      _companyApi.getCompanyByCode(_otherCompanyCode!, 'saham').then((resp) {
+        _otherCompanyDetail = resp;
+      }),
+
+      _infoFundamentalAPI.getInfoFundamental(_otherCompanyCode!).then((resp) {
+        if (resp.isNotEmpty) {
+          _otherInfoFundamental = resp[0];
+        }
+      }),
+    ]);
+
+    // remove the loading screen
+    LoadingScreen.instance().hide();
   }
 
   void _calculateMinMaxPrice(List<InfoSahamPriceModel> data) {

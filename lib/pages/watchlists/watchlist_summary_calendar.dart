@@ -13,8 +13,8 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/performance_calendar.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
@@ -1069,9 +1069,9 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     bool? firstRun
   }) async {
     // check if this is first run or not?
-    // if not first run, then show the loader dialog
+    // if not first run, then show the loading screen
     if ((firstRun ?? false) == false) {
-      showLoaderDialog(context);
+      LoadingScreen.instance().show(context: context);
     }
 
     // get the data
@@ -1083,14 +1083,12 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
       debugPrint(error.toString());
       debugPrintStack(stackTrace: stackTrace);
       throw 'Error when try to get the data from server';
-    }).then((value) {
-      // if not first run, remove the loader dialog
+    }).whenComplete(() {
+      // if not first run, remove the loading screen
       if ((firstRun ?? false) == false) {
-        if (mounted) {
-          Navigator.pop(context);
-        }
+        LoadingScreen.instance().hide();
       }
-    });
+    },);
 
     return true;
   }

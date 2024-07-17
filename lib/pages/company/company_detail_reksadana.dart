@@ -20,9 +20,9 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_detail_price_list.dart';
@@ -685,29 +685,17 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               children: <Widget>[
                 InkWell(
                   onTap: (() async {
-                    await Navigator.pushNamed(context, '/company/detail/find', arguments: 'reksadana').then((value) {
+                    await Navigator.pushNamed(context, '/company/detail/find', arguments: 'reksadana').then((value) async {
                       // check if value is not null?
                       if (value != null) {
                         // convert the value to company list model
                         _otherCompany = value as CompanyListModel;
 
-                        Future.microtask(() async {
-                          // show loader dialog
-                          if (mounted) {
-                            showLoaderDialog(context);
-                          }
+                        // get the company detail information that we want to compare
+                        await _getCompanyDetail();
 
-                          // get the company detail information
-                          await _companyApi.getCompanyByID(_otherCompany.companyId, 'reksadana').then((resp) {
-                            _otherCompanyDetail = resp;
-                          });
-                        }).whenComplete(() {
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-                          setState(() {
-                            // set state to rebuild the widget
-                          });
+                        setState(() {
+                          // set state to rebuild the widget
                         });
                       }
                     });
@@ -1763,6 +1751,27 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
 
     return true;
+  }
+
+  Future<void> _getCompanyDetail() async {
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company detail information
+    await _companyApi.getCompanyByID(_otherCompany.companyId, 'reksadana').then((resp) {
+      _otherCompanyDetail = resp;
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      // show error on the screen
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when get other company detail"));
+      }
+    },);
+
+    // once finished hide the loading screen
+    LoadingScreen.instance().hide();
   }
 
   void _generateGraphData() {

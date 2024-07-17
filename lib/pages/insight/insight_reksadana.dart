@@ -7,9 +7,9 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/selectable_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class InsightReksadanaPage extends StatefulWidget {
@@ -94,76 +94,16 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         return RefreshIndicator(
           color: accentColor,
           onRefresh: (() async {
-            await Future.microtask(() async {
+            await _getInsightReksadanaInformation().onError((error, stackTrace) {
               if (context.mounted) {
-                showLoaderDialog(context);
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
               }
-              // get top list
-              await _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
-                debugPrint("🔃 Refresh Reksdana Saham");
-                await InsightSharedPreferences.setTopReksadanaList('saham', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
+            },).then((_) {
+              // once finished just do rebuild so we can get all the latest data from provide since we didn't
+              // set the provide as listen on above async call
+              setState(() {
+                // just rebuild
               });
-              await _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
-                debugPrint("🔃 Refresh Reksadana Campuran");
-                await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
-              });
-              await _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
-                debugPrint("🔃 Refresh Reksadana Pasar Uang");
-                await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
-              });
-              await _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
-                debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
-                await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
-              });
-              // get worse list
-              await _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
-                debugPrint("🔃 Refresh Reksdana Saham");
-                await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
-              });
-              await _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
-                debugPrint("🔃 Refresh Reksadana Campuran");
-                await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
-              });
-              await _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
-                debugPrint("🔃 Refresh Reksadana Pasar Uang");
-                await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
-              });
-              await _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
-                debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
-                await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
-              });
-            }).onError((error, stackTrace) {
-              debugPrintStack(stackTrace: stackTrace);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when refresh reksadana insight"));
-              }
-            }).whenComplete(() {
-              if (context.mounted) {
-                // remove the loader
-                Navigator.pop(context);
-              }
-            });
-            
-            // once finished just do rebuild so we can get all the latest data from provide since we didn't
-            // set the provide as listen on above async call
-            setState(() {
-              // just rebuild
             });
           }),
           child: SingleChildScrollView(
@@ -384,7 +324,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
 
         return InkWell(
           onTap: () async {
-            showLoaderDialog(context);
+            // show loading screen
+            LoadingScreen.instance().show(context: context);
+
+            // get the company detail information based on the company id
             await _companyAPI.getCompanyByID(info[index].companySahamId, 'reksadana').then((resp) {
               CompanyDetailArgs args = CompanyDetailArgs(
                 companyId: info[index].companySahamId,
@@ -396,21 +339,18 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
               );
               
               if (mounted) {
-                // remove the loader dialog
-                Navigator.pop(context);
-
                 // go to the company page
                 Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
               }
             }).onError((error, stackTrace) {
               if (mounted) {
-                // remove the loader dialog
-                Navigator.pop(context);
-
                 // show the error message
                 ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
               }
-            });
+            }).whenComplete(() {
+              // remove the loading screen
+              LoadingScreen.instance().hide();
+            },);
           },
           child: Container(
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
@@ -501,5 +441,93 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     setState(() {
       _worsePendapatantetapPeriodSelected = value;
     });
+  }
+
+  Future<void> _getInsightReksadanaInformation() async {
+    TopWorseCompanyListModel? topSaham;
+    TopWorseCompanyListModel? topCampuran;
+    TopWorseCompanyListModel? topPasarUang;
+    TopWorseCompanyListModel? topPendapatanTetap;
+    TopWorseCompanyListModel? worseSaham;
+    TopWorseCompanyListModel? worseCampuran;
+    TopWorseCompanyListModel? worsePasarUang;
+    TopWorseCompanyListModel? worsePendapatanTetap;
+
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the insight reksadana information
+    await Future.wait([
+      _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
+        debugPrint("🔃 Refresh Reksdana Saham Top");
+        await InsightSharedPreferences.setTopReksadanaList('saham', resp);
+        topSaham = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
+        debugPrint("🔃 Refresh Reksadana Campuran Top");
+        await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
+        topCampuran = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
+        debugPrint("🔃 Refresh Reksadana Pasar Uang Top");
+        await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
+        topPasarUang = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
+        debugPrint("🔃 Refresh Reksadana Pendapatan Tetap Top");
+        await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
+        topPendapatanTetap = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
+        debugPrint("🔃 Refresh Reksdana Saham Loser");
+        await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
+        worseSaham = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
+        debugPrint("🔃 Refresh Reksadana Campuran");
+        await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
+        worseCampuran = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
+        debugPrint("🔃 Refresh Reksadana Pasar Uang");
+        await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
+        worsePasarUang = resp;
+      }),
+
+      _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
+        debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
+        await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
+        worsePendapatanTetap = resp;
+      }),
+    ]).then((_) {
+      // if all good then we can set the provider
+      if (mounted && (
+        topSaham != null && topCampuran != null && topPasarUang != null && topPendapatanTetap != null &&
+        worseSaham != null && worseCampuran != null && worsePasarUang != null && worsePendapatanTetap != null
+      )) {
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', topSaham!);
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', topCampuran!);
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', topPasarUang!);
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', topPendapatanTetap!);
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', worseSaham!);
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', worseCampuran!);
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', worsePasarUang!);
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', worsePendapatanTetap!);
+      }
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      throw Exception('Error when get reksdanda top and worse information');
+    },).whenComplete(() {
+      // remove loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 }

@@ -20,11 +20,11 @@ import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_company.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/components/selectable_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class InsightStockPage extends StatefulWidget {
@@ -105,7 +105,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
         return RefreshIndicator(
           color: accentColor,
           onRefresh: (() async {
-            showLoaderDialog(context);
+            // show loading screen
+            LoadingScreen.instance().show(context: context);
 
             // refresh all the information
             await _refreshInformation(context).onError((error, stackTrace) {
@@ -117,10 +118,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
                 // just rebuild
               });
             }).whenComplete(() {
-              if (context.mounted) {
-                // remove the loader
-                Navigator.pop(context);
-              }
+              // remove the loading screen
+              LoadingScreen.instance().hide();
             });
           }),
           child: SingleChildScrollView(
@@ -374,38 +373,11 @@ class _InsightStockPageState extends State<InsightStockPage> {
                       _stockNewListedList.length,
                       ((index) {
                         return InkWell(
-                          onTap: (() async {
+                          onTap: (() {
                             // check if the listed date is more than today date?
                             if (_stockNewListedList[index].listedDate != null) {
                               if (_stockNewListedList[index].listedDate!.isBefore(_todayDate)) {
-                                // able to click and go to the company
-                                showLoaderDialog(context);
-                                await _companyAPI.getCompanyByCode(_stockNewListedList[index].code, 'saham').then((resp) {
-                                  CompanyDetailArgs args = CompanyDetailArgs(
-                                    companyId: resp.companyId,
-                                    companyName: resp.companyName,
-                                    companyCode: _stockNewListedList[index].code,
-                                    companyFavourite: (resp.companyFavourites ?? false),
-                                    favouritesId: (resp.companyFavouritesId ?? -1),
-                                    type: "saham",
-                                  );
-                                  
-                                  if (context.mounted) {
-                                    // remove the loader dialog
-                                    Navigator.pop(context);
-
-                                    // go to the company page
-                                    Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                                  }
-                                }).onError((error, stackTrace) {
-                                  if (context.mounted) {
-                                    // remove the loader dialog
-                                    Navigator.pop(context);
-                                  }
-
-                                  // show the error message
-                                  _showScaffoldMessage(text: 'Error when try to get the company detail from server');
-                                });
+                                _getCompanyDetailAndGo(code: _stockNewListedList[index].code);
                               }
                             }
                             else {
@@ -525,35 +497,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
                       _stockDividendList.length,
                       ((index) {
                         return InkWell(
-                          onTap: (() async {
-                            // click and go to the company
-                            showLoaderDialog(context);
-                            await _companyAPI.getCompanyByCode(_stockDividendList[index].code, 'saham').then((resp) {
-                              CompanyDetailArgs args = CompanyDetailArgs(
-                                companyId: resp.companyId,
-                                companyName: resp.companyName,
-                                companyCode: _stockDividendList[index].code,
-                                companyFavourite: (resp.companyFavourites ?? false),
-                                favouritesId: (resp.companyFavouritesId ?? -1),
-                                type: "saham",
-                              );
-                              
-                              if (context.mounted) {
-                                // remove the loader dialog
-                                Navigator.pop(context);
-
-                                // go to the company page
-                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                              }
-                            }).onError((error, stackTrace) {
-                              if (context.mounted) {
-                                // remove the loader dialog
-                                Navigator.pop(context);
-                              }
-
-                              // show the error message
-                              _showScaffoldMessage(text: 'Error when try to get the company detail from server');
-                            });
+                          onTap: (() {
+                            _getCompanyDetailAndGo(code: _stockDividendList[index].code);
                           }),
                           child: Container(
                             width: double.infinity,
@@ -640,35 +585,9 @@ class _InsightStockPageState extends State<InsightStockPage> {
                       _stockSplitList.length,
                       ((index) {
                         return InkWell(
-                          onTap: (() async {
+                          onTap: (() {
                             // click and go to the company
-                            showLoaderDialog(context);
-                            await _companyAPI.getCompanyByCode(_stockSplitList[index].code, 'saham').then((resp) {
-                              CompanyDetailArgs args = CompanyDetailArgs(
-                                companyId: resp.companyId,
-                                companyName: resp.companyName,
-                                companyCode: _stockSplitList[index].code,
-                                companyFavourite: (resp.companyFavourites ?? false),
-                                favouritesId: (resp.companyFavouritesId ?? -1),
-                                type: "saham",
-                              );
-                              
-                              if (context.mounted) {
-                                // remove the loader dialog
-                                Navigator.pop(context);
-
-                                // go to the company page
-                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                              }
-                            }).onError((error, stackTrace) {
-                              if (context.mounted) {
-                                // remove the loader dialog
-                                Navigator.pop(context);
-                              }
-
-                              // show the error message
-                              _showScaffoldMessage(text: 'Error when try to get the company detail from server');
-                            });
+                            _getCompanyDetailAndGo(code: _stockSplitList[index].code);
                           }),
                           child: Container(
                             width: double.infinity,
@@ -847,34 +766,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: List.generate(info.length, (index) {
         return InkWell(
-          onTap: () async {
-            showLoaderDialog(context);
-            await _companyAPI.getCompanyByCode(info[index].code, 'saham').then((resp) {
-              CompanyDetailArgs args = CompanyDetailArgs(
-                companyId: resp.companyId,
-                companyName: resp.companyName,
-                companyCode: info[index].code,
-                companyFavourite: (resp.companyFavourites ?? false),
-                favouritesId: (resp.companyFavouritesId ?? -1),
-                type: "saham",
-              );
-              
-              if (mounted) {
-                // remove the loader dialog
-                Navigator.pop(context);
-
-                // go to the company page
-                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-              }
-            }).onError((error, stackTrace) {
-              if (mounted) {
-                // remove the loader dialog
-                Navigator.pop(context);
-              }
-
-              // show the error message
-              _showScaffoldMessage(text: 'Error when try to get the company detail from server');
-            });
+          onTap: () {
+            _getCompanyDetailAndGo(code: info[index].code);
           },
           child: Container(
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
@@ -992,7 +885,36 @@ class _InsightStockPageState extends State<InsightStockPage> {
     });
   }
 
-  void _showScaffoldMessage({required String text}) {
-    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: text));
+  Future<void> _getCompanyDetailAndGo({required String code}) async {
+    // show loading screen first
+    LoadingScreen.instance().show(context: context);
+
+    // get the stock information based on code
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when get company detail info"));
+      }
+    }).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
  }

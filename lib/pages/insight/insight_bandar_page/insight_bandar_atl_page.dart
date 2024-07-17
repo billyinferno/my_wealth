@@ -7,8 +7,8 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class InsightBandarAtlPage extends StatefulWidget {
   final String title;
@@ -88,34 +88,8 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
 
   Widget _item({required BandarInterestAttributes data}) {
     return InkWell(
-      onTap: (() async {
-        showLoaderDialog(context);
-        await _companyAPI.getCompanyByCode(data.code, 'saham').then((resp) {
-          CompanyDetailArgs args = CompanyDetailArgs(
-            companyId: resp.companyId,
-            companyName: resp.companyName,
-            companyCode: data.code,
-            companyFavourite: (resp.companyFavourites ?? false),
-            favouritesId: (resp.companyFavouritesId ?? -1),
-            type: "saham",
-          );
-          
-          if (mounted) {
-            // remove the loader dialog
-            Navigator.pop(context);
-
-            // go to the company page
-            Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-          }
-        }).onError((error, stackTrace) {
-          if (mounted) {
-            // remove the loader dialog
-            Navigator.pop(context);
-
-            // show the error message
-            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-          }
-        });
+      onTap: (() {
+        _getCompanyDetailAndGo(code: data.code);
       }),
       child: Container(
         decoration: const BoxDecoration(
@@ -282,5 +256,35 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
       ),
       overflow: TextOverflow.ellipsis,
     );
+  }
+
+  Future<void> _getCompanyDetailAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company data and go
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 }

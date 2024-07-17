@@ -12,7 +12,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
@@ -275,17 +275,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 child: LazyLoadScrollView(
                   onEndOfPage: (() async {
                     if (_hasMore) {
-                      showLoaderDialog(context);
-                      await _getTransactionList().then((_) {
+                      LoadingScreen.instance().show(context: context);
+                      await _getTransactionList().onError((error, stackTrace) {
                         if (mounted) {
-                          Navigator.pop(context);
-                        }
-                      }).onError((error, stackTrace) {
-                        if (mounted) {
-                          Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when load more data'));
                         }
                       });
+                      LoadingScreen.instance().hide();
                     }
                   }),
                   child: ListView.builder(
@@ -506,7 +502,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                   // check if expanded
                                   if (value) {
                                     // try to get the data if not available
-                                    showLoaderDialog(context);
                                     await _getTransactionDetail(index);
                                   }
                                                     
@@ -810,17 +805,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   }
 
   Future<void> _refreshTransactionList() async {
-    showLoaderDialog(context);
-    await _getTransactionList().then((_) {
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    }).onError((error, stackTrace) {
-      if (mounted) {
-        Navigator.pop(context);
-      }
+    LoadingScreen.instance().show(context: context);
+    await _getTransactionList().onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
       throw Exception('Error when get transaction list');
-    });                        
+    });
+    LoadingScreen.instance().hide();                       
   }
 
   void _updateTransactionList(BrokerSummaryBrokerTxnListModel updateTxn) {
@@ -895,19 +886,17 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   Future<void> _getTransactionDetail(int index) async {
     // check if this is on the transaction detail map already or not?
     if (!_transactionDetail.containsKey(index)) {
+      LoadingScreen.instance().show(context: context);
       await _brokerSummaryAPI.getBrokerTransactionDetail(
         _transactionList.brokerSummaryId,
         _transactionList.brokerSummaryCodeList[index].brokerSummaryCode,
         _transactionList.brokerSummaryFromDate.toLocal(),
-        _transactionList.brokerSummaryToDate.toLocal()).then((resp) {
-          // got the response from the API, we will put this on the map of transaction detail
-          _transactionDetail[index] = resp;
-      }).then((_) {
-        if (mounted) {
-          // remove loader dialog
-          Navigator.pop(context);
-        }
+        _transactionList.brokerSummaryToDate.toLocal()
+      ).then((resp) {
+        // got the response from the API, we will put this on the map of transaction detail
+        _transactionDetail[index] = resp;
       });
+      LoadingScreen.instance().hide();
     }
   }
 

@@ -8,11 +8,13 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class InsightBandarSidewayPage extends StatefulWidget {
   const InsightBandarSidewayPage({super.key});
@@ -38,7 +40,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
   late int _avgOneDay;
   late int _avgOneWeek;
 
-  bool _isLoading = true;
+  late Future<bool> _getData;
 
   @override
   void initState() {
@@ -62,36 +64,8 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     _avgOneWeek = InsightSharedPreferences.getSidewayAvgOneWeek();
     _sidewayList = InsightSharedPreferences.getSidewayResult();
 
-    // check if we already got result or not?
-    if (_sidewayList.isEmpty) {
-      Future.microtask(() async {
-        if (mounted) {
-          // show loader
-          showLoaderDialog(context);
-        }
-
-        // get the sideway data
-        await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
-          _sidewayList = resp;
-
-          // stored the sideway result to shared preferences
-          await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
-        });
-      }).whenComplete(() {
-        if (mounted) {
-          Navigator.pop(context);
-        }
-        // set the sorted from side way
-        _sortedList = List<InsightSidewayModel>.from(_sidewayList);
-        _setLoading(false);
-      });
-    }
-    else {
-      // already got result, just set the loading into false
-      // so we can render the page automatically
-      _sortedList = List<InsightSidewayModel>.from(_sidewayList);
-      _setLoading(false);
-    }
+    // get the initial data either from API or from cache
+    _getData = _getInitData();
 
     super.initState();
   }
@@ -104,12 +78,28 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if loading show text loading
-    if (_isLoading) {
-      return const Expanded(child: Center(child: Text("Loading Sideway Data"),));
-    }
+    return FutureBuilder(
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(
+            errorText: 'Error loading bandar sideway page',
+            isNeedScaffold: false,
+          );
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage(
+            isNeedScaffold: false,
+          );
+        }
+      })
+    );
+  }
 
-    // else return the main widget
+  Widget _body() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +211,10 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
           const SizedBox(height: 10,),
           InkWell(
             onTap: (() async {
-              showLoaderDialog(context);
+              // show loading screen
+              LoadingScreen.instance().show(context: context);
+
+              // get stock that currently sideway from API
               await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
                 // clear the sideway list and set response as sidewaylist
                 _sidewayList.clear();
@@ -233,19 +226,18 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
                 // stored the sideway result to shared preferences
                 await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
+
+                setState(() {
+                  // just set stat to refresh the widget
+                });
               }).whenComplete(() {
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
+                // remove loading screen
+                LoadingScreen.instance().hide();
               }).onError((error, stackTrace) {
                 debugPrintStack(stackTrace: stackTrace);
-                if (context.mounted) {
+                if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to retrieve sideway data"));
                 }
-              });
-
-              setState(() {
-                // just set stat to refresh the widget
               });
             }),
             child: Container(
@@ -303,34 +295,8 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
               itemCount: _sortedList.length,
               itemBuilder: ((context, index) {
                 return InkWell(
-                  onTap: (() async {
-                    showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_sortedList[index].code, 'saham').then((resp) {
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: resp.companyId,
-                        companyName: resp.companyName,
-                        companyCode: _sortedList[index].code,
-                        companyFavourite: (resp.companyFavourites ?? false),
-                        favouritesId: (resp.companyFavouritesId ?? -1),
-                        type: "saham",
-                      );
-                      
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // go to the company page
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                      }
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // show the error message
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                      }
-                    });
+                  onTap: (() {
+                    _getCompanyDataAndGo(code: _sortedList[index].code);
                   }),
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
@@ -466,12 +432,6 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
       return textPrimary;
     }
   }
-
-  void _setLoading(bool value) {
-    setState(() {
-      _isLoading = value;
-    });
-  }
   
   void _filterData() {
     // create a temporary list to contain all the result from filter
@@ -520,5 +480,62 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
   void _sortData() {
     // regardless the data just reverse the current result
     _sortedList = _sortedList.reversed.toList();
+  }
+
+  Future<bool> _getInitData() async {
+    // check if we already got result or not?
+    if (_sidewayList.isEmpty) {
+      // get the sideway data
+      await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
+        _sidewayList = resp;
+
+        // stored the sideway result to shared preferences
+        await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
+
+        // set the sorted from side way
+        _sortedList = List<InsightSidewayModel>.from(_sidewayList);
+      }).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+        throw Exception('Error when get sideway data');
+      },);
+    }
+    else {
+      // already got result, just set the loading into false
+      // so we can render the page automatically
+      _sortedList = List<InsightSidewayModel>.from(_sidewayList);
+    }
+    
+    return true;
+  }
+
+  Future<void> _getCompanyDataAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company data and navigate to the company page
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove the loading screen once finished
+      LoadingScreen.instance().hide();
+    },);
   }
 }

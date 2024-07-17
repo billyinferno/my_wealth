@@ -12,9 +12,9 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/performance_calendar.dart';
 import 'package:my_wealth/widgets/list/row_child.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
@@ -844,7 +844,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   }) async {
     // if this is not a first run then show the loader dialog
     if((firstRun ?? false) == false) {
-      showLoaderDialog(context);
+      LoadingScreen.instance().show(context: context);
     }
 
     await Future.wait([
@@ -854,15 +854,13 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     ]).onError((error, stackTrace) {
       debugPrint(error.toString());
       throw 'Error when try to get the data from server';
-    }).then((_) {
+    }).whenComplete(() {
       // if this is not the  first run, it means that the loader dialog is being
       // called on top, close the loader dialog.
       if((firstRun ?? false) == false) {
-        if (mounted) {
-          Navigator.pop(context);
-        }
+        LoadingScreen.instance().hide();
       }
-    });
+    },);
 
     return true;
   }

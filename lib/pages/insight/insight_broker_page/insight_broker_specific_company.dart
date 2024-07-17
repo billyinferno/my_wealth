@@ -12,8 +12,8 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class InsightBrokerSpecificCompanyPage extends StatefulWidget {
   const InsightBrokerSpecificCompanyPage({super.key});
@@ -140,8 +140,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               children: <Widget>[
                 const SizedBox(height: 10,),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
                       flex: 2,
@@ -165,35 +165,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                   // convert value to company list model
                                   _companyData = value as CompanyListModel;
 
-                                  // get the detail information for this company
-                                  Future.microtask(() async {
-                                    if (context.mounted) {
-                                      // show the loader dialog
-                                      showLoaderDialog(context);
-                                    }
-
-                                    // get the company detail
-                                    await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
-                                      _companyDetail = resp;
-                                    });
-                                  }).whenComplete(() {
-                                    if (context.mounted) {
-                                      // remove the loader dialog
-                                      Navigator.pop(context);
-                                    }
-
-                                    // check if this is the same as previous saham code or not?
-                                    if (_companySahamCode != _companyDetail!.companySymbol) {
-                                      // set state to refresh the page
-                                      setState(() {
-                                        _companySahamCode = _companyDetail!.companySymbol!;
-
-                                        // clear the current search result
-                                        _brokerSummaryData = null;
-                                        _brokerTopData = null;
-                                      });
-                                    }
-                                  });
+                                  _getCompanyDataAndSearch();
                                 }
                               });
                             }),
@@ -238,7 +210,11 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                           const SizedBox(height: 5,),
                           InkWell(
                             onTap: (() async {
-                              await _showCalendar();
+                              await _showCalendar().onError((error, stackTrace) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                }
+                              },);
                             }),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,60 +276,67 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                         ],
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 5,),
-                InkWell(
-                  onTap: (() async {
-                    // check that broker and code already filled
-                    if (_companySahamCode.isEmpty) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CupertinoAlertDialog(
-                            title: const Text("Select Company Code"),
-                            content: const Text("Please company code from the list, before run the query."),
-                            actions: <CupertinoActionSheetAction>[
-                              CupertinoActionSheetAction(
-                                onPressed: (() {
-                                  Navigator.pop(context);
-                                }),
-                                child: const Text("OK"),
-                              )
-                            ],
-                          );
-                        }
-                      );
-                    }
-                    else {
-                      await _getBrokerTransaction();
-                      setState(() {
-                        // generate the summary and top page
-                        _generateSummaryPage();
-                        _generateTopPage();
-                      });
-                    }
-                  }),
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: secondaryColor,
-                      border: Border.all(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      )
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "SEARCH",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(width: 5,),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(""),
+                        const SizedBox(height: 5,),
+                        InkWell(
+                          onTap: (() async {
+                            // check that broker and code already filled
+                            if (_companySahamCode.isEmpty) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text("Select Company Code"),
+                                    content: const Text("Please company code from the list, before run the query."),
+                                    actions: <CupertinoActionSheetAction>[
+                                      CupertinoActionSheetAction(
+                                        onPressed: (() {
+                                          Navigator.pop(context);
+                                        }),
+                                        child: const Text("OK"),
+                                      )
+                                    ],
+                                  );
+                                }
+                              );
+                            }
+                            else {
+                              await _getBrokerTransaction().then((_) {  
+                                setState(() {
+                                  // generate the summary and top page
+                                  _generateSummaryPage();
+                                  _generateTopPage();
+                                });
+                              },);
+                            }
+                          }),
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: secondaryDark,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                              color: secondaryColor,
+                            ),
+                            child: const Icon(
+                              Ionicons.search,
+                              color: textPrimary,
+                              size: 15,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -402,34 +385,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                         ),
                         const SizedBox(width: 10,),
                         IconButton(
-                          onPressed: (() async {
-                            showLoaderDialog(context);
-                            await _companyAPI.getCompanyByCode(_companySahamCode, 'saham').then((resp) {
-                              CompanyDetailArgs args = CompanyDetailArgs(
-                                companyId: resp.companyId,
-                                companyName: resp.companyName,
-                                companyCode: _companySahamCode,
-                                companyFavourite: (resp.companyFavourites ?? false),
-                                favouritesId: (resp.companyFavouritesId ?? -1),
-                                type: "saham",
-                              );
-
-                              if (context.mounted) {
-                                // remove the loader dialog
-                                Navigator.pop(context);
-
-                                // go to the company page
-                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                              }
-                            }).onError((error, stackTrace) {
-                              if (context.mounted) {
-                                // remove the loader dialog
-                                Navigator.pop(context);
-
-                                // show the error message
-                                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message:'Error when try to get the company detail from server'));
-                              }
-                            });
+                          onPressed: (() {
+                            _getCompanyAndGo(code: _companySahamCode);
                           }),
                           icon: const Icon(
                             Ionicons.business_outline,
@@ -442,7 +399,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                   ),
                   TabBar(
                     controller: _tabController,
-                    tabAlignment: TabAlignment.start,
                     indicatorColor: accentColor,
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelColor: textPrimary,
@@ -1031,10 +987,17 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       if ((result.start.compareTo(_dateFrom) != 0) ||
           (result.end.compareTo(_dateTo) != 0)) {
         // set the broker from and to date
-        setState(() {
-          _dateFrom = result.start;
-          _dateTo = result.end;
-        });
+        _dateFrom = result.start;
+        _dateTo = result.end;
+        
+        // directly get the result so it will feel instant
+        await _getBrokerTransaction().then((_) {  
+          setState(() {
+            // generate the summary and top page
+            _generateSummaryPage();
+            _generateTopPage();
+          });
+        },);
       }
     }
   }
@@ -1059,7 +1022,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   }
 
   Future<void> _getBrokerTransaction() async {
-    showLoaderDialog(context);
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
+
     await Future.wait([
       // get the data of the broker transaction for this company code
       _brokerSummaryAPI.getBrokerSummary(_companySahamCode, _dateFrom, _dateTo).then((resp) {
@@ -1079,21 +1044,90 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
       _brokerSummarySelected = "a";
       _showNet = false;
-
-      if (mounted) {        
-        // remove the loader dialog
-        Navigator.pop(context);
-      }
     }).onError((error, stackTrace) {
       // print the stack trace
-      debugPrintStack(stackTrace: stackTrace);
       debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
       if (mounted) {
-        // remove the loader dialog
-        Navigator.pop(context);
         // show snack bar for the error
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch broker data"));
       }
-    });
+    }).whenComplete(() {
+      // remove loading screen when finished
+      LoadingScreen.instance().hide();
+    },);
+  }
+
+  Future<void> _getCompanyDataAndSearch() async {
+    // check if current company saham code the same as the company code that
+    // we query above
+    if (_companySahamCode != _companyData!.companySymbol) {
+      // show the loading screen
+      LoadingScreen.instance().show(context: context);
+
+      // get the company detail
+      await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
+        _companyDetail = resp;
+      }).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+        if (mounted) {
+          // show snack bar for the error
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch company info"));
+        }
+        return;
+      },).whenComplete(() {
+        // remove loading screen
+        LoadingScreen.instance().hide();
+      },);
+
+      // set the company saham code with the company data that we got
+      _companySahamCode = _companyDetail!.companySymbol!;
+
+      // clear the current search result
+      _brokerSummaryData = null;
+      _brokerTopData = null;
+
+      // directly get the broker transaction for this stock so the result will
+      // feel instantious instead ask user to press search again.
+      // on error is already handle on the _getBrokerTransaction method.
+      await _getBrokerTransaction().then((_) {  
+        setState(() {
+          // generate the summary and top page
+          _generateSummaryPage();
+          _generateTopPage();
+        });
+      },);
+    }
+  }
+
+  Future<void> _getCompanyAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company detail and navigate to the company page
+    await _companyAPI.getCompanyByCode(_companySahamCode, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: _companySahamCode,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message:'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove the loading screen when finished
+      LoadingScreen.instance().hide();
+    },);
   }
 }

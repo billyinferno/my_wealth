@@ -9,11 +9,11 @@ import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/components/watchlist_detail_create_calendar.dart';
 import 'package:my_wealth/widgets/components/watchlist_detail_create_textfields.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistDetailEditPage extends StatefulWidget {
@@ -134,7 +134,6 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   bgColor: primaryDark,
                   icon: Ionicons.save,
                   callback: (() async {
-                    showLoaderDialog(context);
                     await _updateDetail().then((resp) {
                       if(resp) {                      
                         debugPrint("💾 Update the watchlist detail ID ${_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId} for ${_watchlist.watchlistId}");
@@ -145,15 +144,8 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                       }
                     }).onError((error, stackTrace) {
                       if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
                         // show error on snack bar
                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      }
-                    }).whenComplete(() {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
                       }
                     });
                   })
@@ -193,6 +185,9 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
         // return back update of sales to minus again
         shares *= -1;
       }
+
+      // show the loadin gscreen
+      LoadingScreen.instance().show(context: context);
 
       // call the update detail API
       await _watchlistApi.updateDetail(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId, _selectedDate, shares, price).then((resp) async {
@@ -246,12 +241,16 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
 
           // got the new list, not time to update the shared preferences and the provider
           await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
-          if (!mounted) return;
-          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+          if (mounted) {
+            Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+          }
         }
 
         ret = resp;
-      });
+      }).whenComplete(() {
+        // remove loading screen
+        LoadingScreen.instance().hide();
+      },);
     }
     else {
       throw Exception("Shares cannot be zero, and price minimum is zero");

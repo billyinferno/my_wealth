@@ -7,7 +7,7 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class StockCollectExpanded extends StatelessWidget {
   final InsightStockCollectModel data;
@@ -24,7 +24,10 @@ class StockCollectExpanded extends StatelessWidget {
         children: <Widget>[
           SlidableAction(
             onPressed: ((BuildContext context) async {
-              showLoaderDialog(context);
+              // show loading screen
+              LoadingScreen.instance().show(context: context);
+
+              // get the stock company information using code
               await companyAPI.getCompanyByCode(data.code, 'saham').then((resp) {
                 CompanyDetailArgs args = CompanyDetailArgs(
                   companyId: resp.companyId,
@@ -36,21 +39,18 @@ class StockCollectExpanded extends StatelessWidget {
                 );
                 
                 if (context.mounted) {
-                  // remove the loader dialog
-                  Navigator.pop(context);
-
                   // go to the company page
                   Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
                 }
               }).onError((error, stackTrace) {
                 if (context.mounted) {
-                  // remove the loader dialog
-                  Navigator.pop(context);
-
                   // show the error message
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
                 }
-              });
+              }).whenComplete(() {
+                // remove the loading screen
+                LoadingScreen.instance().hide();
+              },);
             }),
             icon: Ionicons.business_outline,
             backgroundColor: primaryColor,

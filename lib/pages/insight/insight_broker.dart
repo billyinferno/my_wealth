@@ -16,10 +16,10 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class InsightBrokerPage extends StatefulWidget {
@@ -82,61 +82,17 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
 
         return RefreshIndicator(
           onRefresh: (() async {
-            showLoaderDialog(context);
-            Future.microtask(() async {
-              // get the broker summary top list
-              await _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
-                debugPrint("🔃 Refresh Broker Summary Top");
-                await BrokerSharedPreferences.setBroketTopList(resp);
-                if (!context.mounted) return;
-                Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
-              }).onError((error, stackTrace) {
-                // show the snack bar
-                _showScaffoldMessage(text: "Unable to get broker top list");
-                debugPrintStack(stackTrace: stackTrace);
-              });
-
-              await _insightAPI.getBrokerTopTransaction().then((resp) async {
-                debugPrint("🔃 Refresh Broker Top Transaction List");
-                await InsightSharedPreferences.setBrokerTopTxn(resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
-              }).onError((error, stackTrace) {
-                // show the snack bar
-                _showScaffoldMessage(text: "Unable to get broker top transaction");
-                debugPrintStack(stackTrace: stackTrace);
-              });
-
-              await _insightAPI.getMarketToday().then((resp) async {
-                debugPrint("🔃 Refresh Broker Market Today");
-                await InsightSharedPreferences.setBrokerMarketToday(resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
-              }).onError((error, stackTrace) {
-                // show the snack bar
-                _showScaffoldMessage(text: "Unable to get market today");
-                debugPrintStack(stackTrace: stackTrace);
-              });
-
-              await _insightAPI.getMarketCap().then((resp) async {
-                debugPrint("🔃 Refresh Broker Market Cap");
-                await InsightSharedPreferences.setMarketCap(resp);
-                if (!context.mounted) return;
-                Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
-              }).onError((error, stackTrace) {
-                // show the snack bar
-                _showScaffoldMessage(text: "Unable to get market cap");
-                debugPrintStack(stackTrace: stackTrace);
-              });
-            }).whenComplete(() {
+            await _getInsightInformation().onError((error, stackTrace) {
+              // got error show the snack bar
               if (context.mounted) {
-                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
               }
-
+            },).then((_) {
+              // if all good rebuild the state
               setState(() {
                 // rebuild to refresh the widget
               });
-            });
+            },);
           }),
           color: accentColor,
           child: SingleChildScrollView(
@@ -626,7 +582,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   Widget _marketCapRow({required int no, required String code, required int price, required int marketCap, required int shareOut}) {
     return InkWell(
       onTap: (() async {
-        showLoaderDialog(context);
+        // show loading screen
+        LoadingScreen.instance().show(context: context);
+
+        // get the stock information by code
         await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
           CompanyDetailArgs args = CompanyDetailArgs(
             companyId: resp.companyId,
@@ -638,21 +597,18 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
           );
           
           if (mounted) {
-            // remove the loader dialog
-            Navigator.pop(context);
-
             // go to the company page
             Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
           }
         }).onError((error, stackTrace) {
           if (mounted) {
-            // remove the loader dialog
-            Navigator.pop(context);
-
             // show the error message
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
           }
-        });
+        }).whenComplete(() {
+          // remove the loading screen
+          LoadingScreen.instance().hide();
+        },);
       }),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -778,7 +734,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
           return;
         }
 
-        showLoaderDialog(context);
+        // show loading screen
+        LoadingScreen.instance().show(context: context);
+
+        // get the stock information using code
         await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
           CompanyDetailArgs args = CompanyDetailArgs(
             companyId: resp.companyId,
@@ -790,21 +749,18 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
           );
           
           if (mounted) {
-            // remove the loader dialog
-            Navigator.pop(context);
-
             // go to the company page
             Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
           }
         }).onError((error, stackTrace) {
           if (mounted) {
-            // remove the loader dialog
-            Navigator.pop(context);
-
             // show the error message
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
           }
-        });
+        }).whenComplete(() {
+          // remove loading screen
+          LoadingScreen.instance().hide();
+        },);
       }),
       child: SizedBox(
         width: double.infinity,
@@ -976,9 +932,51 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     }
   }
 
-  void _showScaffoldMessage({required String text}) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: text));
-    }
+  Future<void> _getInsightInformation() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get all the insight and broker summary information
+    await Future.wait([
+      _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
+        debugPrint("🔃 Refresh Broker Summary Top");
+        await BrokerSharedPreferences.setBroketTopList(resp);
+        if (mounted) {
+          Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
+        }
+      }),
+      
+      _insightAPI.getBrokerTopTransaction().then((resp) async {
+        debugPrint("🔃 Refresh Broker Top Transaction List");
+        await InsightSharedPreferences.setBrokerTopTxn(resp);
+        if (mounted) {
+          Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
+        }
+      }),
+
+      _insightAPI.getMarketToday().then((resp) async {
+        debugPrint("🔃 Refresh Broker Market Today");
+        await InsightSharedPreferences.setBrokerMarketToday(resp);
+        if (mounted) {
+          Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
+        }
+      }),
+
+       _insightAPI.getMarketCap().then((resp) async {
+        debugPrint("🔃 Refresh Broker Market Cap");
+        await InsightSharedPreferences.setMarketCap(resp);
+        if (mounted) {
+          Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
+        }
+      }),
+    ]).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      throw Exception('Error when get broker insight information');
+    }).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    });
   }
 }

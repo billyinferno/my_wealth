@@ -7,9 +7,9 @@ import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/list/stock_collect_expanded.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class InsightBandarStockCollectPage extends StatefulWidget {
   const InsightBandarStockCollectPage({super.key});
@@ -214,9 +214,10 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
           const SizedBox(height: 10,),
           InkWell(
             onTap: (() async {
-              // get the accumulation result from the insight API
-              showLoaderDialog(context);
+              // show loading screen
+              LoadingScreen.instance().show(context: context);
               
+              // get the accumulation result from the insight API
               await _insightAPI.getStockCollect(_accumRate, _fromDate, _toDate).then((resp) {      
                 // set the collection list as resp
                 setState(() {
@@ -227,15 +228,14 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                   InsightSharedPreferences.setStockCollect(_stockCollectList!, _fromDate!, _toDate!, _accumRate);
                 });
               }).onError((error, stackTrace) {
+                debugPrint("Error: ${error.toString()}");
                 debugPrintStack(stackTrace: stackTrace);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
                 }
               }).whenComplete(() {
-                // remove the loader
-                if (mounted) {
-                  Navigator.pop(context);
-                }
+                // remove loading screen when finished
+                LoadingScreen.instance().hide();
               });
             }),
             child: Container(

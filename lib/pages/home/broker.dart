@@ -8,9 +8,9 @@ import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class BrokerPage extends StatefulWidget {
@@ -102,24 +102,18 @@ class _BrokerPageState extends State<BrokerPage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: (() async {
-                  showLoaderDialog(context);
                   await _refreshBroker().then((value) {
                     debugPrint("🔃 Refresh Index");
                   }).onError((error, stackTrace) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                     }
-                  }).whenComplete(() {
-                    // remove the loader
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  });
-
-                  // once finished just rebuild the widget
-                  setState(() {
-                    // just rebuild
-                  });
+                  }).whenComplete(() {  
+                    // once finished just rebuild the widget
+                    setState(() {
+                      // just rebuild
+                    });
+                  },);
                 }),
                 color: accentColor,
                 child: ListView(
@@ -191,18 +185,25 @@ class _BrokerPageState extends State<BrokerPage> {
   }
 
   Future<void> _refreshBroker() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the broker list
     await _brokerAPI.getBroker().then((resp) async {
       // set the shared preferences and provider for index
       await BrokerSharedPreferences.setBrokerList(resp);
       if (!mounted) return;
       Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
-
-      setState(() {
-        // just set state to rebuild
-      });
     }).onError((error, stackTrace) {
+      // hide loading screen when got error
+      LoadingScreen.instance().hide();
+
+      // throw exception
       throw Exception(error.toString());
     });
+
+    // hide loading screen
+    LoadingScreen.instance().hide();
   }
 
   Widget _informationText({int? flex, required String text, required String value}) {

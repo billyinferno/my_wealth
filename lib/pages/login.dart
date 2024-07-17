@@ -20,7 +20,6 @@ import 'package:my_wealth/provider/watchlist_provider.dart';
 import 'package:my_wealth/storage/box/local_box.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_company.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
@@ -30,6 +29,7 @@ import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -300,10 +300,9 @@ class LoginPageState extends State<LoginPage> {
                         height: 50,
                         onPressed: (() async {
                           if (_formKey.currentState!.validate()) {
-                            showLoaderDialog(context);
                             await _login(_usernameController.text, _passwordController.text).then((res) async {
                               if (mounted) {
-                                Navigator.pop(context);
+                                // check whether user is able to login or not?
                                 if(res) {
                                   debugPrint("🏠 Login success, redirect to home");
                                   Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
@@ -406,6 +405,10 @@ class LoginPageState extends State<LoginPage> {
     bool ret = false;
     debugPrint("🔑 Try to login");
     
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // check user credentials
     await _userAPI.login(username, password).then((resp) async {
       // login success, check and ensure that user is confirmed and not blocked
       if(resp.user.confirmed == true && resp.user.blocked == false) {
@@ -449,6 +452,9 @@ class LoginPageState extends State<LoginPage> {
         _showScaffoldMessage(text: "Invalid identifier or password");
       }
     });
+
+    // remove the loading screen
+    LoadingScreen.instance().hide();
 
     return ret;
   }

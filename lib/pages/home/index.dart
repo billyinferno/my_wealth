@@ -6,11 +6,11 @@ import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_index.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class IndexPage extends StatefulWidget {
@@ -84,17 +84,11 @@ class IndexPageState extends State<IndexPage> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: (() async {
-                  showLoaderDialog(context);
                   await _refreshIndex().then((value) {
                     debugPrint("🔃 Refresh Index");
                   }).onError((error, stackTrace) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                    }
-                  }).whenComplete(() {
-                    if (context.mounted) {
-                      // remove the loader
-                      Navigator.pop(context);
                     }
                   });
 
@@ -143,13 +137,20 @@ class IndexPageState extends State<IndexPage> {
   }
 
   Future<void> _refreshIndex() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the index data
     await _indexApi.getIndex().then((resp) async {
       // set the shared preferences and provider for index
       await IndexSharedPreferences.setIndexList(resp);
       _refreshIndexList();
     }).onError((error, stackTrace) {
       throw Exception(error.toString());
-    });
+    }).whenComplete(() {
+      // remove loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 
   void _sortedIndexList() {

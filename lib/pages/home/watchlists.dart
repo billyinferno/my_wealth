@@ -18,7 +18,6 @@ import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/compute_watchlist.dart';
 import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/list/expanded_tile_view.dart';
@@ -26,6 +25,7 @@ import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/header/watchlist_sub_summary.dart';
 import 'package:my_wealth/widgets/header/watchlist_summary.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistsPage extends StatefulWidget {
@@ -409,11 +409,16 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     if (_watchlistHistory!.isNotEmpty) {
       return RefreshIndicator(
         onRefresh: (() async {
-          await _refreshWatchlist();
-          // once finished rebuild widget
-          setState(() {
-            // just rebuild
-          });
+          await _refreshWatchlist().onError((error, stackTrace) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+            }
+          },).whenComplete(() {            
+            // once finished rebuild widget
+            setState(() {
+              // just rebuild
+            });
+          },);
         }),
         color: accentColor,
         child: Column(
@@ -534,11 +539,16 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   }) {
     return RefreshIndicator(
       onRefresh: (() async {
-        await _refreshWatchlist();
-        // once finished rebuild widget
-        setState(() {
-          // just rebuild
-        });
+        await _refreshWatchlist().onError((error, stackTrace) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+          }
+        },).whenComplete(() {  
+          // once finished rebuild widget
+          setState(() {
+            // just rebuild
+          });
+        },);
       }),
       color: accentColor,
       child: Column(
@@ -691,67 +701,56 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   }
 
   Future<void> _refreshWatchlist() async {
-    showLoaderDialog(context);
-    await Future.microtask((() async {
-      // get reksadana
-      await _watchlistAPI.getWatchlist("reksadana").then((resp) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the watchlist data
+    await Future.wait([
+      _watchlistAPI.getWatchlist("reksadana").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
         debugPrint("🔃 Refresh watchlist reksadana");
-      }).onError((error, stackTrace) {
-        throw Exception("❌ Error when refresh watchlist reksadana");
-      });
+      }),
 
-      // get saham
-      await _watchlistAPI.getWatchlist("saham").then((resp) async {
+      _watchlistAPI.getWatchlist("saham").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("saham", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
         debugPrint("🔃 Refresh watchlist saham");
-      }).onError((error, stackTrace) {
-        throw Exception("❌ Error when refresh watchlist saham");
-      });
+      }),
 
-      // get crypto
-      await _watchlistAPI.getWatchlist("crypto").then((resp) async {
+       _watchlistAPI.getWatchlist("crypto").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("crypto", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
         debugPrint("🔃 Refresh watchlist crypto");
-      }).onError((error, stackTrace) {
-        throw Exception("❌ Error when refresh watchlist crypto");
-      });
+      }),
 
-      // get gold
-      await _watchlistAPI.getWatchlist("gold").then((resp) async {
+      _watchlistAPI.getWatchlist("gold").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("gold", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
         debugPrint("🔃 Refresh watchlist gold");
-      }).onError((error, stackTrace) {
-        throw Exception("❌ Error when refresh watchlist gold");
-      });
+      }),
 
-      // get history
-      await _watchlistAPI.getWatchlistHistory().then((resp) async {
+      _watchlistAPI.getWatchlistHistory().then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlistHistory(resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
         debugPrint("🔃 Refresh watchlist history");
-      }).onError((error, stackTrace) {
-        throw Exception("❌ Error when refresh watchlist history");
-      });
-    })).whenComplete(() {
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      }),
+    ]).onError((error, stackTrace) {
+      throw Exception("Error when refresh watchlist");
     });
+
+    // remove loading screen
+    LoadingScreen.instance().hide();
   }
 
   List<WatchlistListModel> _sortWatchlist(List<WatchlistListModel> watchlist) {
@@ -794,8 +793,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   }
 
   Future<void> _deleteWatchlist(String type, int watchlistId) async {
-    // show loader
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // delete the watchlist
     await _watchlistAPI.delete(watchlistId).then((resp) async {
       if(resp) {
         // filter out the watchlist that we already delete
@@ -840,10 +841,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
       // when error return the error to the caller
       throw Exception(error);
     }).whenComplete(() {
-      // remove loader
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      // remove the loading screen
+      LoadingScreen.instance().hide();
     });
   }
 }

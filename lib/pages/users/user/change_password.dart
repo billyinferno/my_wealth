@@ -3,9 +3,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/password_textfields.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({ super.key });
@@ -160,11 +160,18 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
       if(currentPassword.length >= 6 && newPassword.length >= 6 && confirmPassword.length >= 6) {
         // all have length at least 6, so now confirm if the new and confirm password is the same or not?
         if(newPassword == confirmPassword) {
-          // all good!
-          return true;
+          // ensure all 3 is not same password
+          if (currentPassword == newPassword) {
+            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Password is the same"));
+            return false;
+          }
+          else {
+            // all good!
+            return true;
+          }
         }
         else {
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "New and Confirmed Password Missmatch"));
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "New and Confirmed password missmatch"));
           return false;
         }
       }
@@ -184,8 +191,8 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
     String currentPassword = _currentPasswordController.text;
     String newPassword = _newPasswordController.text;
 
-    // show the loader
-    showLoaderDialog(context);
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
 
     // try to update the password
     await _userAPI.updatePassword(currentPassword, newPassword).then((_) {
@@ -195,10 +202,8 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
       // got error
       throw Exception(error.toString());
     }).whenComplete(() {
-      if (mounted) {
-        // remove loader
-        Navigator.pop(context);
-      }
+      // remove the loading screen once finished
+      LoadingScreen.instance().hide();
     });
 
     return ret;

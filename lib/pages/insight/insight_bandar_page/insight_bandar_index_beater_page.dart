@@ -8,9 +8,9 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
@@ -142,34 +142,8 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                 int priceDiff = (_sortedBeaterList[index].lastPrice - _sortedBeaterList[index].prevClosingPrice!);
     
                 return InkWell(
-                  onTap: (() async {
-                    showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_sortedBeaterList[index].code, 'saham').then((resp) {
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: resp.companyId,
-                        companyName: resp.companyName,
-                        companyCode: _sortedBeaterList[index].code,
-                        companyFavourite: (resp.companyFavourites ?? false),
-                        favouritesId: (resp.companyFavouritesId ?? -1),
-                        type: "saham",
-                      );
-                      
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-      
-                        // go to the company page
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                      }
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-      
-                        // show the error message
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                      }
-                    });
+                  onTap: (() {
+                    _getCompanyDetailAndGo(code: _sortedBeaterList[index].code);
                   }),
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -378,5 +352,35 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
       // just reversed the current sorted list
       _sortedBeaterList = List<IndexBeaterModel>.from(_sortedBeaterList.reversed);
     }
+  }
+
+  Future<void> _getCompanyDetailAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get company detail and go
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 }

@@ -8,9 +8,11 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListCryptoPage extends StatefulWidget {
@@ -26,6 +28,8 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
   final ScrollController _scrollController = ScrollController();
   final DateFormat _dt = DateFormat("dd/MM/yyyy");
 
+  late Future<bool> _getData;
+
   List<FavouritesListModel> _faveList = [];
   List<FavouritesListModel> _filterList = [];
 
@@ -33,23 +37,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
   void initState() {
     super.initState();
 
-    Future.microtask(() async {
-      // once widget all load, showed the loader dialog since we will
-      // perform API call to get the favorite company list
-      if (mounted) {
-        showLoaderDialog(context);
-      }
-
-      // get the company for favourite list
-      await getFavouriteCompanyList().onError((error, stackTrace) {
-        debugPrint(error.toString());
-      }).whenComplete(() {
-        if (mounted) {
-          // pop out the loader once API call finished
-          Navigator.pop(context);
-        }
-      });
-    });
+    _getData = _getInitData();
   }
 
   @override
@@ -62,6 +50,23 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading crypto company list');
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      },
+    );
+  }
+
+  Widget _body() {
     return SafeArea(
       child: PopScope(
         canPop: false,
@@ -81,15 +86,16 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                 // fetch the user favorites when we return back to the favorites screen
                 // and notify the provider to we can update the favorites screen based
                 // on the new favorites being add/remove from this page
-                showLoaderDialog(context);
                 await getUserFavourites().onError((error, stackTrace) {
                   // in case error showed it on debug
                   debugPrint(error.toString());
-                }).whenComplete(() {
-                  if (context.mounted) {
-                    // remove the loader
-                    Navigator.pop(context);
 
+                  // print on the scaffold snack bar
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when retrieve user favourites'));
+                  }
+                }).whenComplete(() {
+                  if (mounted) {
                     // return back to the previous page
                     Navigator.pop(context);
                   }
@@ -182,7 +188,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
           ),
         ),
       ),
-    ); 
+    );
   }
 
   void searchList(String find) {
@@ -273,6 +279,10 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
   }
 
   Future<void> getUserFavourites() async {
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the favourites list
     await _faveAPI.getFavourites("crypto").then((resp) async {
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
@@ -280,5 +290,19 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
       if (!mounted) return;
       Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
     });
+
+    // remove the loading screen
+    LoadingScreen.instance().hide();
+  }
+
+  Future<bool> _getInitData() async {
+    await getFavouriteCompanyList().onError((error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
+      throw Exception('Error when get crypto company list');
+    });
+
+    // return true to the caller
+    return true;
   }
 }

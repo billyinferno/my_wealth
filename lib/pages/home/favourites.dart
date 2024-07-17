@@ -11,10 +11,10 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/widgets/list/favourite_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class FavouritesPage extends StatefulWidget {
@@ -112,8 +112,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
   Widget _createList(ScrollController controller, String type, List<FavouritesModel> data) {
     return RefreshIndicator(
       onRefresh: (() async {
-        debugPrint("🔃 Refresh favourites ");
-        showLoaderDialog(context);
+        debugPrint("🔃 Refresh favourites");
 
         // use future wait so we can sent it all together to save the time when
         // we need to wait for the response.
@@ -143,18 +142,21 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
               }
               await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
             }
-          })
+          }),
         ]).onError((error, stackTrace) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
           }
-          debugPrint("⛔ Error when refresh favourites crypto");
-          throw Exception('⛔ Error when refresh favourites crypto');
-        }).whenComplete(() {
-          if (mounted) {
-            Navigator.pop(context);
-          }
+
+          // remove the loading screen if error
+          LoadingScreen.instance().hide();
+          
+          debugPrint("⛔ Error when refresh favourites");
+          throw Exception('⛔ Error when refresh favourites');
         });
+
+        // remove the loading screen
+        LoadingScreen.instance().hide();
 
         // once finished just rebuild the widget
         setState(() {
@@ -195,7 +197,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
     
                       result.then((value) async {
                         if(value == true) {
-                          await deleteFavourites(index, type);
+                          await _deleteFavourites(index, type);
                         }
                       });
                     }),
@@ -229,7 +231,7 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
     }
   }
 
-  Future<void> deleteFavourites(int index, String type) async {
+  Future<void> _deleteFavourites(int index, String type) async {
     // check if this is already favourite or not?
     late int faveId;
     if(type == "reksadana") {
@@ -242,7 +244,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
       faveId = _favouriteListCrypto[index].favouritesId;
     }
     
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
     await _faveAPI.delete(faveId).then((_) {
       if(type=="reksadana") {
         debugPrint("🧹 Delete Favourite ID $faveId for company ${_favouriteListReksadana[index].favouritesCompanyName}");
@@ -272,9 +276,9 @@ class FavouritesPageState extends State<FavouritesPage> with SingleTickerProvide
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
       }
     });
-    // remove the loader once it's finished
-    if (!mounted) return;
-    Navigator.pop(context);
+    
+    // remove the loading screen
+    LoadingScreen.instance().hide();
   }
 
   Future<List<FavouritesModel>> _getFavourites(String type) async {

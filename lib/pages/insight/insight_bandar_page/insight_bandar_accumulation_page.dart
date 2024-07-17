@@ -9,12 +9,14 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class InsightBandarAccumulationPage extends StatefulWidget {
   const InsightBandarAccumulationPage({super.key});
@@ -42,7 +44,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
   late List<InsightAccumulationModel> _listAccumulation;
   late BrokerSummaryDateModel _brokerSummaryDate;
 
-  bool _isLoading = true;
+  late Future<bool> _getData;
 
   @override
   void initState() {
@@ -64,69 +66,8 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
     _filterMode = "df";
     _filterSort = "DESC";
 
-    // once got then check if we got result or not? if got result then no need to query to server
-    // we can display the one that already stored on the cache.
-
-    if (_listAccumulation.isEmpty) {
-      Future.microtask(() async {
-        if (mounted) {
-          showLoaderDialog(context);
-        }
-
-        // get the min and max broker summary date
-        await _brokerSummaryAPI.getBrokerSummaryDate().then((resp) async {
-          _brokerSummaryDate = resp;
-
-          // check whether the toDate is more than maxDate, and whether fromDate is lesser than minDate
-          if (_brokerSummaryDate.brokerMaxDate.isBefore(_toDate)) {
-            _toDate = _brokerSummaryDate.brokerMaxDate.toLocal();
-            // here todate should be current date, but since maxdate is lesser than today date
-            // we will assume that current date is same as todate
-            _currentDate = _toDate;
-
-            // in case there are changes on the todate, we also need to perform the calculation
-            // of from date, in case the from date is now after the to date.
-            if (_fromDate.isAfter(_toDate)) {
-              _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before to date is the from date is passed the to date
-            }
-          }
-
-          // check if the broker minimum date is after the from date, if so, then change the from date to
-          // broker minimum date.
-          if (_brokerSummaryDate.brokerMinDate.isAfter(_fromDate)) {
-            _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
-          }
-
-          await BrokerSharedPreferences.setBrokerMinMaxDate(_brokerSummaryDate.brokerMinDate, _brokerSummaryDate.brokerMaxDate);
-        });
-
-        // get the accumulation list
-        await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
-          _listAccumulation = resp;
-
-          // stored all the data to shared preferences
-          await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, _listAccumulation);
-        });
-      }).whenComplete(() {
-        if (mounted) {
-          // remove the loader
-          Navigator.pop(context);
-        }
-
-        // then set the isloading state into false
-        _setLoading(false);
-      });
-    }
-    else {
-      // already got the data, so we can just get the broker min max date from the shared preferences
-      DateTime brokerMinDate = BrokerSharedPreferences.getBrokerMinDate()!;
-      DateTime brokerMaxDate = BrokerSharedPreferences.getBrokerMaxDate()!;
-
-      _brokerSummaryDate = BrokerSummaryDateModel(brokerMinDate: brokerMinDate, brokerMaxDate: brokerMaxDate);
-      
-      // then set the isloading state into false
-      _setLoading(false);
-    }
+    // get the data either from server or cache
+    _getData = _getInitData();
 
     super.initState();
   }
@@ -139,11 +80,26 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
   @override
   Widget build(BuildContext context) {
-    // if loading then just show that we are loading the data
-    if (_isLoading) {
-      return const Center(child: Text("Loading data"),);
-    }
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(
+            errorText: 'Error loading bandar accumulation page',
+            isNeedScaffold: false,
+          );
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage(isNeedScaffold: false,);
+        }
+      },
+    );
+  }
 
+  Widget _body() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,8 +225,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
           const SizedBox(height: 10,),
           InkWell(
             onTap: (() async {
+              // show loading screen
+              LoadingScreen.instance().show(context: context);
+
               // get the accumulation result from the insight API
-              showLoaderDialog(context);
               await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
                 // stored all the data to shared preferences
                 await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, resp);
@@ -279,15 +237,14 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                   _listAccumulation = resp;
                 });
               }).onError((error, stackTrace) {
+                debugPrint("Error: ${error.toString()}");
                 debugPrintStack(stackTrace: stackTrace);
-                if (context.mounted) {
+                if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
                 }
               }).whenComplete(() {
-                if (context.mounted) {
-                  // remove the loader
-                  Navigator.pop(context);
-                }
+                // remove the loading screen
+                LoadingScreen.instance().hide();
               });
             }),
             child: Container(
@@ -344,34 +301,8 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
               itemCount: _listAccumulation.length,
               itemBuilder: ((context, index) {
                 return InkWell(
-                  onTap: (() async {
-                    showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_listAccumulation[index].code, 'saham').then((resp) {
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: resp.companyId,
-                        companyName: resp.companyName,
-                        companyCode: _listAccumulation[index].code,
-                        companyFavourite: (resp.companyFavourites ?? false),
-                        favouritesId: (resp.companyFavouritesId ?? -1),
-                        type: "saham",
-                      );
-                      
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // go to the company page
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                      }
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // show the error message
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                      }
-                    });
+                  onTap: (() {
+                    _getCompanyDetailAndGo(code: _listAccumulation[index].code);
                   }),
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -471,12 +402,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
     );
   }
 
-  void _setLoading(bool value) {
-    setState(() {
-      _isLoading = value;
-    });
-  }
-
   Future<void> _showCalendar() async {
     DateTimeRange? result = await showDateRangePicker(
       context: context,
@@ -540,5 +465,98 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
   void _sortData() {
     // regardless the data just reverse the current result
     _listAccumulation = _listAccumulation.reversed.toList();
+  }
+
+  Future<bool> _getInitData() async {
+    // once got then check if we got result or not? if got result then no need to query to server
+    // we can display the one that already stored on the cache.
+    if (_listAccumulation.isEmpty) {
+      // get the data from server
+      await Future.microtask(() async {
+        // get the min and max broker summary date
+        await _brokerSummaryAPI.getBrokerSummaryDate().then((resp) async {
+          _brokerSummaryDate = resp;
+
+          // check whether the toDate is more than maxDate, and whether fromDate is lesser than minDate
+          if (_brokerSummaryDate.brokerMaxDate.isBefore(_toDate)) {
+            _toDate = _brokerSummaryDate.brokerMaxDate.toLocal();
+            // here todate should be current date, but since maxdate is lesser than today date
+            // we will assume that current date is same as todate
+            _currentDate = _toDate;
+
+            // in case there are changes on the todate, we also need to perform the calculation
+            // of from date, in case the from date is now after the to date.
+            if (_fromDate.isAfter(_toDate)) {
+              _fromDate = _toDate.add(const Duration(days: -7)); // 7 days before to date is the from date is passed the to date
+            }
+          }
+
+          // check if the broker minimum date is after the from date, if so, then change the from date to
+          // broker minimum date.
+          if (_brokerSummaryDate.brokerMinDate.isAfter(_fromDate)) {
+            _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
+          }
+
+          await BrokerSharedPreferences.setBrokerMinMaxDate(_brokerSummaryDate.brokerMinDate, _brokerSummaryDate.brokerMaxDate);
+        }).onError((error, stackTrace) {
+          debugPrint("Error: ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+
+          throw Exception('Error when get broker summary date');
+        },);
+
+        // get the accumulation list
+        await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
+          _listAccumulation = resp;
+
+          // stored all the data to shared preferences
+          await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, _listAccumulation);
+        }).onError((error, stackTrace) {
+          debugPrint("Error: ${error.toString()}");
+          debugPrintStack(stackTrace: stackTrace);
+
+          throw Exception('Error when get top accumulation');
+        },);
+      });
+    }
+    else {
+      // already got the data, so we can just get the broker min max date from the shared preferences
+      DateTime brokerMinDate = BrokerSharedPreferences.getBrokerMinDate()!;
+      DateTime brokerMaxDate = BrokerSharedPreferences.getBrokerMaxDate()!;
+
+      _brokerSummaryDate = BrokerSummaryDateModel(brokerMinDate: brokerMinDate, brokerMaxDate: brokerMaxDate);
+    }
+
+    return true;
+  }
+
+  Future<void> _getCompanyDetailAndGo({required String code}) async {
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company detail information
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 }

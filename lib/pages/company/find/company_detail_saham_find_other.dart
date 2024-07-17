@@ -5,7 +5,8 @@ import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/company/company_saham_find_other_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class CompanyDetailSahamFindOtherPage extends StatefulWidget {
   final Object? args;
@@ -26,7 +27,7 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
   late List<OtherCompanyInfo> _filterList;
   late String _currentCode;
 
-  bool _isLoading = true;
+  late Future<bool> _getData;
 
   @override
   void initState() {
@@ -36,30 +37,8 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
     _companyList = [];
     _similarList = [];
 
-    _isLoading = true;
-
-    // get the company data from API
-    Future.microtask(() async {
-      // show the loader dialog
-      if (mounted) {
-        showLoaderDialog(context);
-      }
-
-      // get the data from api
-      await _companyAPI.getOtherCompany(_currentCode).then((resp) {
-        _companyList = resp.all;
-        _similarList = resp.similar;
-      });
-
-      // once finished then we can set the filter list same as similar list
-      // as  we will showed this when the search text is empty
-      _filterList = _similarList;
-    }).whenComplete(() {
-      if (mounted) {
-        Navigator.pop(context);
-      }
-      setLoading(false);
-    });
+    // get the data
+    _getData = _getInitData();
 
     super.initState();
   }
@@ -73,9 +52,23 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
 
   @override
   Widget build(BuildContext context) {
-    // if loading then return container with background color only
-    if (_isLoading) return Container(color: primaryColor,);
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading find other stock');
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      },
+    );
+  }
 
+  Widget _body() {
     return SafeArea(
       child: PopScope(
         canPop: false,
@@ -282,6 +275,25 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
     );
   }
 
+  Future<bool> _getInitData() async {
+    // get the data from api
+    await _companyAPI.getOtherCompany(_currentCode).then((resp) {
+      _companyList = resp.all;
+      _similarList = resp.similar;
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      throw Exception('Error when get the data from server');
+    },);
+
+    // once finished then we can set the filter list same as similar list
+    // as  we will showed this when the search text is empty
+    _filterList = _similarList;
+
+    return true;
+  }
+
   void searchList(String find) {
     // clear the filter list first
     _filterList.clear();
@@ -295,12 +307,6 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
 
     setState(() {
       // just set state to rebuild the widget
-    });
-  }
-
-  void setLoading(bool value) {
-    setState(() {
-      _isLoading = value;
     });
   }
 }

@@ -9,10 +9,12 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListSahamPage extends StatefulWidget {
@@ -32,10 +34,11 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
   late String _filterSort;
   final Map<String, String> _filterList = {};
 
+  late Future<bool> _getData;
+
   List<FavouritesListModel> _faveList = [];
   List<FavouritesListModel> _filterFaveList = [];
   List<FavouritesListModel> _sortedFaveList = [];
-
 
   @override
   void initState() {
@@ -56,27 +59,8 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     _filterMode = "nm";
     _filterSort = "ASC";
 
-    Future.microtask(() async {
-      // once widget all load, showed the loader dialog since we will
-      // perform API call to get the favorite company list
-      if (mounted) {
-        showLoaderDialog(context);
-      }
-
-      // get the company for favourite list
-      await getFavouriteCompanyList().then((_) {
-        if (mounted) {
-          // pop out the loader once API call finished
-          Navigator.pop(context);
-        }
-      }).onError((error, stackTrace) {
-        debugPrint(error.toString());
-        if (mounted) {
-          // pop out the loader once API call finished
-          Navigator.pop(context);
-        }
-      });
-    });
+    // get the favourite company list for saham
+    _getData = _getInitData();
   }
 
   @override
@@ -89,6 +73,23 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading saham favourite list');
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      },
+    );
+  }
+
+  Widget _body() {
     return SafeArea(
       child: PopScope(
         canPop: false,
@@ -108,21 +109,8 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                 // fetch the user favorites when we return back to the favorites screen
                 // and notify the provider to we can update the favorites screen based
                 // on the new favorites being add/remove from this page
-                showLoaderDialog(context);
-                await getUserFavourites().then((_) {
-                  if (context.mounted) {
-                    // remove the loader
-                    Navigator.pop(context);
-                  }
-                }).onError((error, stackTrace) {
-                  // in case error showed it on debug
-                  debugPrint(error.toString());
-                  if (context.mounted) {
-                    // remove the loader
-                    Navigator.pop(context);
-                  }
-                }).whenComplete(() {
-                  if (context.mounted) {
+                await _getUserFavourites().whenComplete(() {
+                  if (mounted) {
                     // return back to the previous page
                     Navigator.pop(context);
                   }
@@ -141,13 +129,13 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                 onFilterSelect: ((value) {
                   setState(() {
                     _filterMode = value;
-                    sortedFaveList();
+                    _sortedFave();
                   });
                 }),
                 onSortSelect: ((value) {
                   setState(() {
                     _filterSort = value;
-                    sortedFaveList();
+                    _sortedFave();
                   });
                 })
               ),
@@ -159,13 +147,13 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                   onChanged: ((value) {
                     if (value.length >= 3) {
                       setState(() {
-                        searchList(value);
+                        _searchList(value);
                       });
                     }
                     else {
                       // if less than 3, then we will return the value of filter list
                       // with all the fave list.
-                      setFilterList(_faveList);
+                      _setFilterList(_faveList);
                     }
                   }),
                   suffixMode: OverlayVisibilityMode.editing,
@@ -221,7 +209,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                         fca: (_sortedFaveList[index].favouritesFCA ?? false),
                         subWidget: _subInfoWidget(_sortedFaveList[index]),
                         onPress: (() async {
-                          await setFavourite(index);
+                          await _setFavourite(index);
                         }),
                       ),
                     );
@@ -232,7 +220,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
           ),
         ),
       ),
-    ); 
+    );
   }
 
   Widget _subInfoWidget(FavouritesListModel data) {
@@ -310,7 +298,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     );
   }
 
-  void sortedFaveList() {
+  void _sortedFave() {
     // clear the current code list as we will rebuild t his
     _sortedFaveList.clear();
 
@@ -376,7 +364,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     }
   }
 
-  void searchList(String find) {
+  void _searchList(String find) {
     // clear the filter list first
     _filterFaveList.clear();
     // then loop thru _faveList and check if the company name or code contain the text we want to find
@@ -386,10 +374,10 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
         _filterFaveList.add(_faveList[i]);
       }
     }
-    sortedFaveList();
+    _sortedFave();
   }
 
-  void updateFaveList(int index, FavouritesListModel resp) {
+  void _updateFaveList(int index, FavouritesListModel resp) {
     setState(() {
       _sortedFaveList[index] = resp;
       for (var i = 0; i < _faveList.length; i++) {
@@ -409,7 +397,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     });
   }
 
-  Future<void> setFavourite(int index) async {
+  Future<void> _setFavourite(int index) async {
     // check if this is already favourite or not?
     int faveUserId = _sortedFaveList[index].favouritesUserId ?? -1;
     int faveId = _sortedFaveList[index].favouritesId ?? -1;
@@ -439,7 +427,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
         );
 
         // update the list and re-render the page
-        updateFaveList(index, resp);
+        _updateFaveList(index, resp);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         if (mounted) {
@@ -469,7 +457,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
           favouritesUserId: resp.favouritesUserId,
         );
 
-        updateFaveList(index, ret);
+        _updateFaveList(index, ret);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         if (mounted) {
@@ -479,33 +467,51 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     }
   }
 
-  void setFavouriteList(List<FavouritesListModel> list) {
+  void _setFavouriteList(List<FavouritesListModel> list) {
     setState(() {
       _faveList = List<FavouritesListModel>.from(list);
     });
   }
 
-  void setFilterList(List<FavouritesListModel> list) {
+  void _setFilterList(List<FavouritesListModel> list) {
     setState(() {
       _filterFaveList = List<FavouritesListModel>.from(list);
-      sortedFaveList();
+      _sortedFave();
     });
   }
 
-  Future<void> getFavouriteCompanyList() async {
-    await _faveAPI.listFavouritesCompanies("saham").then((resp) {
-      setFavouriteList(resp);
-      setFilterList(resp);
-    });
-  }
+  Future<void> _getUserFavourites() async {
+    // show the loading screen
+    LoadingScreen.instance().show(context: context);
 
-  Future<void> getUserFavourites() async {
+    // get the favourites so we can showed it on the favourites page
     await _faveAPI.getFavourites("saham").then((resp) async {
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("saham", resp);
       // notify the provider
       if (!mounted) return;
       Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
-    });
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+      throw Exception('Error when get user favourites');
+    },);
+
+    // hide loading screen
+    LoadingScreen.instance().hide();
+  }
+
+  Future<bool> _getInitData() async {
+    await _faveAPI.listFavouritesCompanies("saham").then((resp) {
+      _setFavouriteList(resp);
+      _setFilterList(resp);
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      throw Exception('Error when get saham list');
+    },);
+
+    return true;
   }
 }

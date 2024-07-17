@@ -12,8 +12,8 @@ import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class InsightBrokerSpecificQueryPage extends StatefulWidget {
   const InsightBrokerSpecificQueryPage({super.key});
@@ -143,15 +143,18 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                           InkWell(
                             onTap: (() async {
                               // navigate to the find other company list and we will get the value from there
-                              await Navigator.pushNamed(context, '/broker/find').then((value) {
+                              await Navigator.pushNamed(context, '/broker/find').then((value) async {
                                 if (value != null) {
                                   // convert value to company list model
                                   _brokerData = value as BrokerModel;
 
                                   // set the data
-                                  setState(() {
-                                    _brokerCode = _brokerData.brokerFirmId;
-                                  });
+                                  _brokerCode = _brokerData.brokerFirmId;
+                                  await _getBrokerTransaction().then((_) {  
+                                    setState(() {
+                                      // set state just to rebuild
+                                    });
+                                  },);
                                 }
                               });
                             }),
@@ -202,32 +205,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                   // convert value to company list model
                                   _companyData = value as CompanyListModel;
 
-                                  // get the detail information for this company
-                                  Future.microtask(() async {
-                                    if (context.mounted) {
-                                      // show the loader dialog
-                                      showLoaderDialog(context);
-                                    }
-
-                                    // get the company detail
-                                    await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
-                                      _companyDetail = resp;
-                                    });
-                                  }).whenComplete(() {
-                                    if (context.mounted) {
-                                      // remove the loader dialog
-                                      Navigator.pop(context);
-                                    }
-
-                                    // check if this is the same as previous saham code or not?
-                                    if (_companySahamCode != _companyDetail!.companySymbol) {
-                                      // set state to refresh the page
-                                      setState(() {
-                                        _companySahamCode = _companyDetail!.companySymbol!;
-                                        _companySahamCodePrice = (_companyDetail!.companyNetAssetValue ?? -1);
-                                      });
-                                    }
-                                  });
+                                  _getCompanyDataAndSearch();
                                 }
                               });
                             }),
@@ -334,59 +312,66 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                         ],
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 5,),
-                InkWell(
-                  onTap: (() async {
-                    // check that broker and code already filled
-                    if (_brokerCode.isEmpty || _companySahamCode.isEmpty) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CupertinoAlertDialog(
-                            title: const Text("Select Broker and Company"),
-                            content: const Text("Please select broker and company from the list, before run the query."),
-                            actions: <CupertinoActionSheetAction>[
-                              CupertinoActionSheetAction(
-                                onPressed: (() {
-                                  Navigator.pop(context);
-                                }),
-                                child: const Text("OK"),
-                              )
-                            ],
-                          );
-                        }
-                      );
-                    }
-                    else {
-                      await _getBrokerTransaction();
-                      setState(() {
-                        // rebuild widget
-                        _currentCompanySahamCodePrice = _companySahamCodePrice;
-                      });
-                    }
-                  }),
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: secondaryColor,
-                      border: Border.all(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      )
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "SEARCH",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(width: 5,),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(""),
+                        const SizedBox(height: 5,),
+                        InkWell(
+                          onTap: (() async {
+                            // check that broker and code already filled
+                            if (_companySahamCode.isEmpty) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text("Select Broker and Company"),
+                                    content: const Text("Please select broker and company from the list, before run the query."),
+                                    actions: <CupertinoActionSheetAction>[
+                                      CupertinoActionSheetAction(
+                                        onPressed: (() {
+                                          Navigator.pop(context);
+                                        }),
+                                        child: const Text("OK"),
+                                      )
+                                    ],
+                                  );
+                                }
+                              );
+                            }
+                            else {
+                              await _getBrokerTransaction().then((_) {  
+                                setState(() {
+                                  // rebuild widget
+                                  _currentCompanySahamCodePrice = _companySahamCodePrice;
+                                });
+                              },);
+                            }
+                          }),
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: secondaryDark,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                              color: secondaryColor,
+                            ),
+                            child: const Icon(
+                              Ionicons.search,
+                              color: textPrimary,
+                              size: 15,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -444,10 +429,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     // for this we can check on the all since all will be combination of
     // both domestic and foreign
     if (_brokerSummaryData!.brokerSummaryAll.brokerSummaryBuy.isEmpty && _brokerSummaryData!.brokerSummaryAll.brokerSummarySell.isEmpty) {
-      return const Center(
-        child: Text(
-          "No data for this query",
-        ),
+      return const Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(height: 10,),
+          Center(
+            child: Text(
+              "No data for this query",
+            ),
+          ),
+        ],
       );
     }
 
@@ -884,24 +876,57 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
   }
 
   Future<void> _getBrokerTransaction() async {
-    // show the loader dialog
-    showLoaderDialog(context);
+    if (_brokerCode.isNotEmpty && _companySahamCode.isNotEmpty) {
+      // show the loading screen
+      LoadingScreen.instance().show(context: context);
 
-    // get the transaction
-    await _brokerSummaryAPI.getBrokerTransactionDetail(_brokerCode, _companySahamCode, _dateFrom, _dateTo).then((resp) {
-      _brokerSummaryData = resp;
+      // get the transaction
+      await _brokerSummaryAPI.getBrokerTransactionDetail(_brokerCode, _companySahamCode, _dateFrom, _dateTo).then((resp) {
+        _brokerSummaryData = resp;
+      }).onError((error, stackTrace) {
+        if (mounted) {
+          // show the error
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+        }
+      }).whenComplete(() {
+        // remove loading screen when finished
+        LoadingScreen.instance().hide();
+      },);
+    }
+  }
 
-      if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
-      }
-    }).onError((error, stackTrace) {
-      if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
-        // show the error
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
-      }
-    });
+  Future<void> _getCompanyDataAndSearch() async {
+    // check if this is the same as previous saham code or not?
+    if (_companySahamCode != _companyData!.companySymbol) {
+      // show the loading screen
+      LoadingScreen.instance().show(context: context);
+
+      // get the company detail
+      await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
+        _companyDetail = resp;
+      }).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+        if (mounted) {
+          // show snack bar for the error
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch company info"));
+        }
+        return;
+      },).whenComplete(() {
+        // remove loading screen
+        LoadingScreen.instance().hide();
+      },);
+
+      // directly get the broker transaction for this stock so the result will
+      // feel instantious instead ask user to press search again.
+      // on error is already handle on the _getBrokerTransaction method.
+      _companySahamCode = _companyDetail!.companySymbol!;
+      _companySahamCodePrice = (_companyDetail!.companyNetAssetValue ?? -1);
+      await _getBrokerTransaction().then((_) {  
+        setState(() {        
+          // set state just to rebuild
+        });
+      },);
+    }
   }
 }

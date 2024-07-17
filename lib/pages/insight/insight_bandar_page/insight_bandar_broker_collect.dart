@@ -13,8 +13,8 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class InsightBandarBrokerCollectPage extends StatefulWidget {
   const InsightBandarBrokerCollectPage({super.key});
@@ -282,18 +282,17 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                     );
                   }
                   else {
-                    // show the loader dialog
-                    showLoaderDialog(context);
-                    await _getBrokerCollect().then((_) {
+                    // get the broker collection
+                    await _getBrokerCollect().then((_) {  
+                      setState(() {
+                        // rebuild widget
+                      });
+                    }).onError((error, stackTrace) {
                       if (context.mounted) {
-                        // remove loader dialog
-                        Navigator.pop(context);
+                        // show the error
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
                       }
-                    });
-                    
-                    // rebuild widget
-                    setState(() {
-                    });
+                    },);
                   }
                 }),
                 child: Container(
@@ -408,7 +407,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalBuyValue, false, false, 0, false),
+                        formatIntWithNull(_brokerCollect!.summaryTotalBuyValue, false, false, 2, true),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -486,7 +485,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalSellValue, false, false, 0, false),
+                        formatIntWithNull(_brokerCollect!.summaryTotalSellValue, false, false, 2, true),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -550,7 +549,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue, false, false, 0, false),
+                        formatIntWithNull(_brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue, false, false, 2, true),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -611,34 +610,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
               extentRatio: 0.15,
               children: <Widget>[
                 SlidableAction(
-                  onPressed: ((BuildContext context) async {
-                    showLoaderDialog(context);
-                    await _companyAPI.getCompanyByCode(_brokerCollect!.data[index].code, 'saham').then((resp) {
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: resp.companyId,
-                        companyName: resp.companyName,
-                        companyCode: _brokerCollect!.data[index].code,
-                        companyFavourite: (resp.companyFavourites ?? false),
-                        favouritesId: (resp.companyFavouritesId ?? -1),
-                        type: "saham",
-                      );
-                      
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // go to the company page
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                      }
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // show the error message
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                      }
-                    });
+                  onPressed: ((BuildContext context) {
+                    _getCompanyDetailAndGo(code: _brokerCollect!.data[index].code);
                   }),
                   icon: Ionicons.business_outline,
                   backgroundColor: primaryColor,
@@ -979,6 +952,9 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
   }
 
   Future<void> _getBrokerCollect() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
     // get the transaction
     await _insightAPI.getBrokerCollect(_brokerCode, _accumRate, _fromDate, _toDate).then((resp) async {
       // put the response to the broker collect
@@ -989,10 +965,41 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     }).onError((error, stackTrace) {
       debugPrintStack(stackTrace: stackTrace);
       debugPrint("Error: ${error.toString()}");
+
+      throw Exception('Error when trying to get the broker summary data');
+    }).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    },);
+  }
+
+  Future<void> _getCompanyDetailAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company detail and go
+    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
       if (mounted) {
-        // show the error
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
       }
-    });
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 }

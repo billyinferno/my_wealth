@@ -11,12 +11,14 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:my_wealth/widgets/components/stepper_selector.dart';
 import 'package:my_wealth/widgets/components/stepper_selector_controller.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/widgets/page/common_error_page.dart';
+import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:provider/provider.dart';
 
 class FavouriteCompanyListReksadanaPage extends StatefulWidget {
@@ -37,6 +39,8 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
   late String _filterMode;
   late String _filterSort;
   final Map<String, String> _filterList = {};
+
+  late Future<bool> _getData;
 
   List<FavouritesListModel> _faveList = [];
   List<FavouritesListModel> _filterFaveList = [];
@@ -67,23 +71,8 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     _filterMode = "nm";
     _filterSort = "ASC";
 
-    Future.microtask(() async {
-      // once widget all load, showed the loader dialog since we will
-      // perform API call to get the favorite company list
-      if (mounted) {
-        showLoaderDialog(context);
-      }
-
-      // get the company for favourite list
-      await getFavouriteCompanyList().onError((error, stackTrace) {
-        debugPrint(error.toString());
-      }).whenComplete(() {
-        if (mounted) {
-          // pop out the loader once API call finished
-          Navigator.pop(context);
-        }
-      });
-    });
+    // get the favourite company list for reksadana
+    _getData = _getInitData();
   }
 
   @override
@@ -97,6 +86,23 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getData,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading reksadana favourite list');
+        }
+        else if (snapshot.hasData) {
+          return _body();
+        }
+        else {
+          return const CommonLoadingPage();
+        }
+      },
+    );
+  }
+
+  Widget _body() {
     return SafeArea(
       child: PopScope(
         canPop: false,
@@ -116,16 +122,12 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                 // fetch the user favorites when we return back to the favorites screen
                 // and notify the provider to we can update the favorites screen based
                 // on the new favorites being add/remove from this page
-                showLoaderDialog(context);
-                await getUserFavourites().then((_) {
+                await _getUserFavourites().then((_) {
                 }).onError((error, stackTrace) {
                   // in case error showed it on debug
                   debugPrint(error.toString());
                 }).whenComplete(() {
-                  if (context.mounted) {
-                    // remove the loader
-                    Navigator.pop(context);
-
+                  if (mounted) {
                     // return back to the previous page
                     Navigator.pop(context);
                   }
@@ -144,13 +146,13 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                 onFilterSelect: ((value) {
                   setState(() {
                     _filterMode = value;
-                    sortedFaveList();
+                    _sortedFave();
                   });
                 }),
                 onSortSelect: ((value) {
                   setState(() {
                     _filterSort = value;
-                    sortedFaveList();
+                    _sortedFave();
                   });
                 })
               ),
@@ -397,7 +399,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                         fca: (_sortedFaveList[index].favouritesFCA ?? false),
                         subWidget: _subInfoWidget(_sortedFaveList[index]),
                         onPress: (() async {
-                          await setFavourite(index);
+                          await _setFavourite(index);
                         }),
                       ),
                     );
@@ -665,10 +667,10 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     }
 
     // once finished, set the _filterList with result
-    setFilterList(result);
+    _setFilterList(result);
   }
 
-  void sortedFaveList() {
+  void _sortedFave() {
     // clear the current code list as we will rebuild t his
     _sortedFaveList.clear();
 
@@ -721,7 +723,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     }
   }
 
-  void updateFaveList(int index, FavouritesListModel resp) {
+  void _updateFaveList(int index, FavouritesListModel resp) {
     setState(() {
       _sortedFaveList[index] = resp;
       for (var i = 0; i < _faveList.length; i++) {
@@ -741,7 +743,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     });
   }
 
-  Future<void> setFavourite(int index) async {
+  Future<void> _setFavourite(int index) async {
     // check if this is already favourite or not?
     int faveUserId = _sortedFaveList[index].favouritesUserId ?? -1;
     int faveId = _sortedFaveList[index].favouritesId ?? -1;
@@ -773,7 +775,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
         );
 
         // update the list and re-render the page
-        updateFaveList(index, resp);
+        _updateFaveList(index, resp);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         if (mounted) {
@@ -806,7 +808,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
         );
 
         // update the list with the updated response and re-render the page
-        updateFaveList(index, ret);
+        _updateFaveList(index, ret);
       }).onError((error, stackTrace) {
         debugPrint(error.toString());
         if (mounted) {
@@ -816,29 +818,26 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     }
   }
 
-  void setFavouriteList(List<FavouritesListModel> list) {
+  void _setFavouriteList(List<FavouritesListModel> list) {
     setState(() {
       _faveList.clear();
       _faveList = List<FavouritesListModel>.from(list);
     });
   }
 
-  void setFilterList(List<FavouritesListModel> list) {
+  void _setFilterList(List<FavouritesListModel> list) {
     setState(() {
       _filterFaveList.clear();
       _filterFaveList = List<FavouritesListModel>.from(list);
-      sortedFaveList();
+      _sortedFave();
     });
   }
 
-  Future<void> getFavouriteCompanyList() async {
-    await _faveAPI.listFavouritesCompanies("reksadana").then((resp) {
-      setFavouriteList(resp);
-      setFilterList(resp);
-    });
-  }
+  Future<void> _getUserFavourites() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
 
-  Future<void> getUserFavourites() async {
+    // get user reksadana favourites
     await _faveAPI.getFavourites("reksadana").then((resp) async {
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
@@ -846,5 +845,22 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
       if (!mounted) return;
       Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
     });
+
+    // remove loading screen
+    LoadingScreen.instance().hide();
+  }
+
+  Future<bool> _getInitData() async {
+    await _faveAPI.listFavouritesCompanies("reksadana").then((resp) {
+      _setFavouriteList(resp);
+      _setFilterList(resp);
+    }).onError((error, stackTrace) {
+      debugPrint("Error: ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+
+      throw Exception('Error when get reksadana favourite list');
+    },);
+
+    return true;
   }
 }

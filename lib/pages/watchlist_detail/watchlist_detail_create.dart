@@ -8,11 +8,11 @@ import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/components/watchlist_detail_create_calendar.dart';
 import 'package:my_wealth/widgets/components/watchlist_detail_create_textfields.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistDetailBuyPage
@@ -105,19 +105,14 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                   bgColor: primaryDark,
                   icon: Ionicons.bag_add,
                   callback: (() async {
-                    showLoaderDialog(context);
                     await _addDetail().then((_) {
                       debugPrint("💾 Saved the watchlist detail for ${_watchlist.watchlistId}");
                       if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
                         // return back to the previous page
                         Navigator.pop(context);
                       }
                     }).onError((error, stackTrace) {
                       if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
                         // show error on snack bar
                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                       }
@@ -151,6 +146,10 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
     double price = (double.tryParse(_priceController.text) ?? 0);
 
     if(shares > 0 && price >= 0) {
+      // show the loading screen
+      LoadingScreen.instance().show(context: context);
+
+      // call API to add watchlist detail
       await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
         // change the watchlist detail for this one
         List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
@@ -179,9 +178,13 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
 
         // once got the new one then we can update the shared preferences and provider
         await WatchlistSharedPreferences.setWatchlist(_type, newWatchList);
-        if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
-      });
+        if (mounted) {
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
+        }
+      }).whenComplete(() {
+        // remove loading screen after finished
+        LoadingScreen.instance().hide();
+      },);
     }
     else {
       throw Exception("Share and Price are zero");

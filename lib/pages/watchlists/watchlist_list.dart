@@ -17,11 +17,11 @@ import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/list/watchlist_detail_summary_box.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistListPage extends StatefulWidget {
@@ -431,11 +431,6 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             cancelLabel: "Cancel"
                           ).show(context).then((resp) async {
                             if(resp!) {
-                              if (context.mounted) {  
-                                // show the loader
-                                showLoaderDialog(context);
-                              }
-
                               // delete the watchlist, all the success and error
                               // handling is moved to the function to ensure
                               // the context is mounted when we perform the
@@ -633,7 +628,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   Future<bool> _deleteDetail(int watchlistDetailID) async {
     bool ret = false;
 
-    showLoaderDialog(context);
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // call API to delete the watchlist detail
     await _watchlistApi.deleteDetail(watchlistDetailID).then((resp) async {
       if(resp) {
         // first create the new watchlist for this
@@ -678,28 +676,31 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         // once we finished generate the updated watchlist, update the shared preferences
         // and the provider
         await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
-        if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+        if (mounted) {
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+        }
       }
 
       ret = resp;
-    // await Future.delayed(Duration(milliseconds: 10)).then((_) {
-    //   _ret = true;
     }).onError((error, stackTrace) {
       throw Exception(error.toString());
     }).whenComplete(() {
-      if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
-      }
+      // remove loading screen
+      LoadingScreen.instance().hide();
     });
 
     return ret;
   }
 
   Future<void> _deleteWatchlist() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // call API server to delete the watchlist
     await _watchlistApi.delete(_watchlist.watchlistId).then((resp) async {
       if(resp) {
+        debugPrint("🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
+        
         // delete the current watchlist
         List<WatchlistListModel> newWatchlist = [];
         List<WatchlistListModel> currentWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
@@ -711,26 +712,26 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
         // update shared preferences and provdier
         await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
-        if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
-      }
-      
-      if (resp) {
-        debugPrint("🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
+
+        // ensure it's already mounted
         if (mounted) {
+          // update provider so the other page will refresh
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+          
           // navigate to the previous page
           Navigator.pop(context); 
         }
+      }
+      
+      if (resp) {
       }
     }).onError((error, stackTrace) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
       }
     }).whenComplete(() {
-      if (mounted) {
-        // remove the loader
-        Navigator.pop(context);
-      }
+      // remove the loading screen
+      LoadingScreen.instance().hide();
     });
   }
 

@@ -11,8 +11,8 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/loader/show_loader_dialog.dart';
 import 'package:my_wealth/widgets/list/product_list_item.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
@@ -376,29 +376,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                   netAssetValue: _portofolioFiltered[index].companyNetAssetValue,
                   oneDay: _portofolioFiltered[index].companyDailyReturn,
                   onTap: (() async {
-                    showLoaderDialog(context);
-                    await _watchlistAPI.findSpecific(_args.type, _portofolioFiltered[index].watchlistId).then((resp) {
-                      WatchlistListArgs watchlistArgs = WatchlistListArgs(
-                        type: _args.type,
-                        watchList: resp
-                      );
-
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // go to the watchlist list page
-                        Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
-                      }
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // remove the loader dialog
-                        Navigator.pop(context);
-
-                        // show the error message
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
-                      }
-                    });
+                    _goFindSpecificAndGo(type: _args.type, id: _portofolioFiltered[index].watchlistId);
                   }),
                 );
               }),
@@ -482,5 +460,31 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
 
     // return true if coming here 
     return false;
+  }
+
+  Future<void> _goFindSpecificAndGo({required String type, required int id}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the watchlist detail data from API
+    await _watchlistAPI.findSpecific(type, id).then((resp) {
+      WatchlistListArgs watchlistArgs = WatchlistListArgs(
+        type: _args.type,
+        watchList: resp
+      );
+
+      if (mounted) {
+        // go to the watchlist list page
+        Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove the loading after finished
+      LoadingScreen.instance().hide();
+    },);
   }
 }

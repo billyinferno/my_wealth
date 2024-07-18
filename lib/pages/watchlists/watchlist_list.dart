@@ -507,7 +507,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       // check if the watchlist item date is more than company last update
                       // if so, then just make it black instead of calculate the risk color
                       // since we don't have the information for the date.
-                      if (_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal().isAfter((_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal())) {
+                      if (!isSameOrBefore(
+                        date: _watchlist.watchlistDetail[index].watchlistDetailDate.toLocal(),
+                        checkDate: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
+                      )) {
                         rColor = Colors.black;
                       }
     

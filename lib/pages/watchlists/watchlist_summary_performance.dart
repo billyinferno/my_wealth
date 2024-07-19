@@ -46,8 +46,17 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _max;
   late double _min;
   late double _avg;
+  late double _max90;
+  late double _min90;
+  late double _maxDaily;
+  late double _minDaily;
+  late double _maxMonhtly;
+  late double _minMonhtly;
+  late double _maxYearly;
+  late double _minYearly;
   late double _maxPL;
   late double _minPL;
+
   late int _totalData;
   late String _graphSelection;
   late String _dateFormat;
@@ -198,9 +207,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _rowItem(text: "MIN", value: _min, needColor: true),
+                              _rowItem(text: "MIN (${_perfData.length})", value: _min, needColor: true),
                               const SizedBox(width: 10,),
-                              _rowItem(text: "MAX", value: _max, needColor: true),
+                              _rowItem(text: "MAX (${_perfData.length})", value: _max, needColor: true),
                               const SizedBox(width: 10,),
                               _rowItem(text: "AVERAGE", value: _avg, needColor: true),
                             ],
@@ -232,18 +241,26 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       case "9":
                         _perfData = _perfData90D.toList();
                         _dateFormat = "dd/MM";
+                        _max = _max90;
+                        _min = _min90;
                         break;
                       case "m":
                         _perfData = _perfDataMonhtly.toList();
                         _dateFormat = "MM/yy";
+                        _max = _maxMonhtly;
+                        _min = _minMonhtly;
                         break;
                       case "y":
                         _perfData = _perfDataYearly.toList();
                         _dateFormat = "MM/yy";
+                        _max = _maxYearly;
+                        _min = _minYearly;
                         break;
                       default:
                         _perfData = _perfDataDaily.toList();
                         _dateFormat = "dd/MM";
+                        _max = _maxDaily;
+                        _min = _minDaily;
                         break;
                     }
 
@@ -714,7 +731,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       }
 
       // add for the average
-      avg = avg + dt.plValue;
+      avg = avg + (plDiff ?? 0);
     }
 
     // now put all the entried on the monhtly and yearly to the performance
@@ -745,11 +762,14 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     // calculate the gain difference
     _calculateGainDifference();
 
+    // calculate the min max for each graph
+    _calculateMinMax();
+
     _totalData = _perfData.length;
     if (_totalData > 0) {
       _max = max;
       _min = min;
-      _avg = avg / _totalData;
+      _avg = avg / (_totalData - 1);
       _maxPL = plDiffMax;
       _minPL = plDiffMin;
     }
@@ -762,6 +782,85 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     }
 
     return true;
+  }
+
+  void _calculateMinMax() {
+    // initialize all the max and min PL
+    _max90 = double.negativeInfinity;
+    _min90 = double.infinity;
+    _maxDaily = double.negativeInfinity;
+    _minDaily = double.infinity;
+    _maxMonhtly = double.negativeInfinity;
+    _minMonhtly = double.infinity;
+    _maxYearly = double.negativeInfinity;
+    _minYearly = double.infinity;
+
+    // loop thru all the data to get the min and max for each list
+    for (PerformanceData data in _perfData90D) {
+      if (data.gain >= _max90) {
+        _max90 = data.gain;
+      }
+      
+      if (data.gain <= _min90) {
+        _min90 = data.gain;
+      }
+    }
+
+    for (PerformanceData data in _perfDataDaily) {
+      if (data.gain >= _maxDaily) {
+        _maxDaily = data.gain;
+      }
+      
+      if (data.gain <= _minDaily) {
+        _minDaily = data.gain;
+      }
+    }
+
+    for (PerformanceData data in _perfDataMonhtly) {
+      if (data.gain >= _maxMonhtly) {
+        _maxMonhtly = data.gain;
+      }
+      
+      if (data.gain <= _minMonhtly) {
+        _minMonhtly = data.gain;
+      }
+    }
+
+    for (PerformanceData data in _perfDataYearly) {
+      if (data.gain >= _maxYearly) {
+        _maxYearly = data.gain;
+      }
+      
+      if (data.gain <= _minYearly) {
+        _minYearly = data.gain;
+      }
+    }
+
+    // check again to ensure all being set
+    if (_max90 == double.negativeInfinity) {
+      _max90 = 0;
+    }
+    if (_min90 == double.infinity) {
+      _min90 = 0;
+    }
+    if (_maxDaily == double.negativeInfinity) {
+      _maxDaily = 0;
+    }
+    if (_minDaily == double.infinity) {
+      _minDaily = 0;
+    }
+    if (_maxMonhtly == double.negativeInfinity) {
+      _maxMonhtly = 0;
+    }
+    if (_minMonhtly == double.infinity) {
+      _minMonhtly = 0;
+    }
+    if (_maxYearly == double.negativeInfinity) {
+      _maxYearly = 0;
+    }
+    if (_minYearly == double.infinity) {
+      _minYearly = 0;
+    }
   }
 
   void _calculateGainDifference() {

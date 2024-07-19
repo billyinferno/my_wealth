@@ -1,16 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
+import 'package:my_wealth/model/index/index_model.dart';
+import 'package:my_wealth/model/index/index_price_model.dart';
 import 'package:my_wealth/model/watchlist/watchlist_summary_performance_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/wacthlist_summary_performance_args.dart';
+import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/chart/performance_chart.dart';
@@ -26,6 +31,7 @@ class WatchlistSummaryPerformancePage extends StatefulWidget {
 
 class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerformancePage> {
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
+  final IndexAPI _indexAPI = IndexAPI();
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
 
   late WatchlistSummaryPerformanceArgs _args;
@@ -56,6 +62,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _minYearly;
   late double _maxPL;
   late double _minPL;
+  late IndexModel _indexCompare;
+  late String _indexCompareName;
+  late List<IndexPriceModel> _indexComparePrice;
 
   late int _totalData;
   late String _graphSelection;
@@ -79,6 +88,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _perfDataMonhtly = [];
     _perfDataYearly = [];
     _gainDifference = 0;
+
+    _indexCompareName = "";
+    _indexComparePrice = [];
 
     // defaulted the graph selection into 90 day
     _graphSelection = '9';
@@ -149,6 +161,32 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
               ),
             )
           ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: (() async {
+                // go to index list page
+                await Navigator.pushNamed(context, '/index/find').then((value) async {
+                  if (value != null) {
+                    // convert value to company list model
+                    _indexCompare = value as IndexModel;
+                    _indexCompareName = _indexCompare.indexName;
+
+                    await _getIndexData().onError((error, stackTrace) {
+                      // remove the index compare name and price since we will
+                      // not be able to perform comparison
+                      _indexCompareName = "";
+                      _indexComparePrice.clear();
+                    },);
+                  }
+                });
+              }),
+              icon: const Icon(
+                Ionicons.git_compare_outline,
+                color: textPrimary,
+              )
+            ),
+            const SizedBox(width: 10,),
+          ],
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,21 +314,35 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
             ),
             Container(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
-                  decoration: BoxDecoration(
-                    color: (_gainDifference < 0 ? secondaryDark : Colors.green[900]),
-                    borderRadius: BorderRadius.circular(25),
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Visibility(
+                    visible: (_indexCompareName.isNotEmpty),
+                    child: Text(
+                      "Comparing with $_indexCompareName",
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    )
                   ),
-                  child: Text(
-                    formatCurrency(_gainDifference, false, true, false, 2),
-                    style: const TextStyle(
-                      fontSize: 10,
+                  const Expanded(child: SizedBox(),),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                    decoration: BoxDecoration(
+                      color: (_gainDifference < 0 ? secondaryDark : Colors.green[900]),
+                      borderRadius: BorderRadius.circular(25),
                     ),
+                    child: Text(
+                      formatCurrency(_gainDifference, false, true, false, 2),
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    )
                   )
-                ),
+                ],
               ),
             ),
             _showChart(),
@@ -872,6 +924,32 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     else {
       // if watchlist is empty, then defaulted to 0
       _gainDifference = 0;
+    }
+  }
+
+  Future<void> _getIndexData() async {
+    // ensure we have _perfDataDaily
+    if (_perfDataDaily.isNotEmpty) {
+      // show loading screen
+      LoadingScreen.instance().show(context: context);
+
+      await _indexAPI.getIndexPriceDate(
+        _indexCompare.indexId,
+        _perfDataDaily.first.date,
+        _perfDataDaily.last.date
+      ).then((resp) {
+        _indexComparePrice = resp;
+      },).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when get index price"));
+        }
+      },).whenComplete(() {
+        // remove the loading screen
+        LoadingScreen.instance().hide();
+      },);
     }
   }
 }

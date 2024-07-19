@@ -56,6 +56,7 @@ class LoginPageState extends State<LoginPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
 
   late Future<bool> _getMe;
+  late bool _isLogin;
   
   bool _isInvalidToken = false;
 
@@ -64,6 +65,7 @@ class LoginPageState extends State<LoginPage> {
     super.initState();
 
     // check if user already login
+    _isLogin = false;
     _getMe = _checkIfLogin();
   }
 
@@ -82,8 +84,8 @@ class LoginPageState extends State<LoginPage> {
       body: FutureBuilder(
         future: _getMe,
         builder: ((context, snapshot) {
-          if (snapshot.hasData || snapshot.hasError) {
-            // show login screen
+          if ((snapshot.hasData || snapshot.hasError) && !_isLogin) {
+            // check if user is login or not?
             return _generateBody();
           }
           else {
@@ -677,6 +679,9 @@ class LoginPageState extends State<LoginPage> {
     await _checkLogin().then((isLogin) async {
       if(isLogin) {
         debugPrint("🔓 Already login");
+
+        // set the _isLogin variable to true
+        _isLogin = true;
 
         // get the additional information for user
         await _getAdditionalInfo().then((_) {

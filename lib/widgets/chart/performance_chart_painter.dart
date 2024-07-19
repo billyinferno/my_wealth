@@ -23,6 +23,8 @@ class ChartProperties {
 class PerformanceChartPainter extends CustomPainter {
   final List<PerformanceData> data;
   final ChartProperties dataProperties;
+  final List<PerformanceData>? compare;
+  final ChartProperties? compareProperties;
   final bool? showInvestment;
   final ChartProperties? investmentProperties;
   final Map<DateTime, int>? watchlist;
@@ -33,6 +35,8 @@ class PerformanceChartPainter extends CustomPainter {
   PerformanceChartPainter({
     required this.data,
     required this.dataProperties,
+    this.compare,
+    this.compareProperties,
     required this.showInvestment,
     required this.investmentProperties,
     this.datePrintOffset,
@@ -48,6 +52,11 @@ class PerformanceChartPainter extends CustomPainter {
 
   final Paint dpInvestment = Paint()
     ..color = extendedDark
+    ..strokeWidth = 1.0
+    ..style = PaintingStyle.stroke;
+
+  final Paint dpCompare = Paint()
+    ..color = accentDark.withOpacity(0.7)
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
 
@@ -87,6 +96,12 @@ class PerformanceChartPainter extends CustomPainter {
     // if we have investment data, draw the investment data
     if ((showInvestment ?? false) && (investmentProperties != null)) {
       _drawInvestmentLine(canvas, size);
+    }
+
+    // check if we have compare or not?
+    if ((compare ?? []).isNotEmpty) {
+      // draw the line for compare
+      _drawCompare(canvas, size);
     }
 
     // draw the line if we have data
@@ -424,6 +439,47 @@ class PerformanceChartPainter extends CustomPainter {
 
     // draw the line chart
     canvas.drawPath(pInvestment, dpInvestment);
+  }
+
+  void _drawCompare(Canvas canvas, Size size) {
+    // create the rect that we will use as a guide for the graph
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
+
+    double x;
+    double y;
+
+    Path pCompare = Path();
+    bool isFirst = true;
+    double ratio = 0;
+    double w = graphRect.width / (compare!.length.toDouble() - 1);
+
+    if (compareProperties!.gap > 0) {
+      ratio = graphRect.height / compareProperties!.gap;
+    }
+
+    x = graphRect.left;
+    y = 0;
+
+    // loop thru data
+    for (PerformanceData value in compare!) {
+      y = 10 + graphRect.height - ((value.total + compareProperties!.norm) * ratio);
+      // print("Total: ${value.total}, Norm: ${compareProperties!.norm}");
+      // print("Calc: ${((value.total + compareProperties!.norm) * ratio)}");
+
+      // check whether this is the first data?
+      if (isFirst) {
+        pCompare.moveTo(x, y);
+        isFirst = false;
+      } else {
+        pCompare.lineTo(x, y);
+      }
+
+      // next column
+      x += w;
+    }
+
+    // draw the line chart
+    canvas.drawPath(pCompare, dpCompare); 
   }
 
   void _drawBox(Canvas canvas, Size size) {

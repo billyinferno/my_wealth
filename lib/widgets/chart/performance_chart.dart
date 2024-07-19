@@ -7,16 +7,19 @@ import 'package:my_wealth/widgets/chart/performance_chart_painter.dart';
 class ChartComputeResult {
   final ChartProperties dataProperties;
   final ChartProperties investmentProperties;
+  final ChartProperties? compareProperties;
 
   const ChartComputeResult({
     required this.dataProperties,
     required this.investmentProperties,
+    required this.compareProperties,
   });
 }
 
 class PerformanceChart extends StatelessWidget {
   final List<WatchlistPerformanceModel>? watchlistPerfData;
   final List<PerformanceData>? perfData;
+  final List<PerformanceData>? compare;
   final List<WatchlistDetailListModel>? watchlist;
   final double? height;
   final int? dateOffset;
@@ -26,6 +29,7 @@ class PerformanceChart extends StatelessWidget {
     super.key,
     this.watchlistPerfData,
     this.perfData,
+    this.compare,
     this.watchlist,
     this.height,
     this.dateOffset,
@@ -47,6 +51,7 @@ class PerformanceChart extends StatelessWidget {
       watchlistData: watchlistData,
       watchlistResult: watchlistResult,
       data: data,
+      compare: compare,
     );
 
     // get the date print offset based on the data length
@@ -70,6 +75,8 @@ class PerformanceChart extends StatelessWidget {
       painter: PerformanceChartPainter(
         data: data,
         dataProperties: computeResult.dataProperties,
+        compare: compare,
+        compareProperties: computeResult.compareProperties,
         showInvestment: true,
         investmentProperties: computeResult.investmentProperties,
         watchlist: watchlistResult,
@@ -86,6 +93,7 @@ class PerformanceChart extends StatelessWidget {
     required List<WatchlistPerformanceModel> watchlistData,
     required Map<DateTime, int> watchlistResult,
     required List<PerformanceData> data,
+    List<PerformanceData>? compare,
   }) {
     final Bit bitData = Bit();
     DateTime tempDate;
@@ -100,6 +108,11 @@ class PerformanceChart extends StatelessWidget {
     double maxInvestment = 0;
     double gapInvestment = 0;
     double normInvestment = 0;
+
+    double minCompare = double.infinity;
+    double maxCompare = 0;
+    double gapCompare = 0;
+    double normCompare = 0;
 
     // always clear the watchlist before we perform computation
     watchlistResult.clear();
@@ -185,6 +198,23 @@ class PerformanceChart extends StatelessWidget {
     norm = gap - max;
     normInvestment = gapInvestment - maxInvestment;
 
+    // check if we have compare or not?
+    if ((compare ?? []).isNotEmpty) {
+      // loop thru compare and calculate the compare properties
+      for(PerformanceData cmp in compare!) {
+        if (cmp.total < minCompare) {
+          minCompare = cmp.total;
+        }
+        if (cmp.total > maxCompare) {
+          maxCompare = cmp.total;
+        }
+      }
+
+      // once finished we can get the gap and normalize value for the compare
+      gapCompare = maxCompare - minCompare;
+      normCompare = gapCompare - maxCompare;
+    }
+
     // loop thru the watchlist if available
     if ((watchlist ?? []).isNotEmpty) {
       // loop thru all the watchlist
@@ -227,7 +257,8 @@ class PerformanceChart extends StatelessWidget {
     // result the compute res
     return ChartComputeResult(
       dataProperties: ChartProperties(min: min, max: max, gap: gap, norm: norm),
-      investmentProperties: ChartProperties(min: minInvestment, max: maxInvestment, gap: gapInvestment, norm: normInvestment)
+      investmentProperties: ChartProperties(min: minInvestment, max: maxInvestment, gap: gapInvestment, norm: normInvestment),
+      compareProperties: ChartProperties(min: minCompare, max: maxCompare, gap: gapCompare, norm: normCompare),
     );
   }
 }

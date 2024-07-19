@@ -106,10 +106,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_lucide
-      sha256: "458f4bdaebbb7cafd3cd50003668fd221a87c5ce6c14dbfd641b84c26a7eca58"
+      sha256: f59a3bf83401cdeb263a4215bd5cc1c384f7818834a8f99536f17f0ef8071fd5
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.3.0"
   flutter_shaders:
     dependency: transitive
     description:
@@ -457,5 +457,5 @@ packages:
     source: hosted
     version: "1.0.4"
 sdks:
-  dart: ">=3.4.0 <4.0.0"
+  dart: ">=3.4.3 <4.0.0"
   flutter: ">=3.22.0"

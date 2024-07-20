@@ -5,6 +5,7 @@ import 'package:my_wealth/widgets/chart/line_chart_painter.dart';
 
 class LineChart extends StatelessWidget {
   final List<GraphData> data;
+  final List<GraphData>? compare;
   final Map<DateTime, int>? watchlist;
   final double? height;
   final bool? showLegend;
@@ -12,6 +13,7 @@ class LineChart extends StatelessWidget {
   const LineChart({
     super.key,
     required this.data,
+    this.compare,
     this.height,
     this.watchlist,
     this.showLegend,
@@ -22,6 +24,24 @@ class LineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     double chartHeight = (height ?? 250);
     bool isShowLegend = (showLegend ?? true);
+
+    // get the date print offset based on the data length
+    // try to calculate the datePrintOffset by checking from 2-10, which one
+    // is the better date print offset
+    int datePrintOffset = 1;
+    if (dateOffset != null) {
+      datePrintOffset = dateOffset!;
+    }
+    else {
+      for(int i=2; i<=10; i++) {
+        datePrintOffset = (data.length ~/ i);
+        if (datePrintOffset <= 10) {
+          // exit from loop
+          break;
+        }
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -31,9 +51,10 @@ class LineChart extends StatelessWidget {
           child: CustomPaint(
             painter: LineChartPainter(
               data: data,
+              compare: compare,
               watchlist: watchlist,
               showLegend: showLegend,
-              dateOffset: dateOffset,
+              dateOffset: datePrintOffset,
             ),
             child: Container(
               height: chartHeight,

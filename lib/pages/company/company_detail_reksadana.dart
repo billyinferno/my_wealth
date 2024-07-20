@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
+import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/api/info_reksadana_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
 import 'package:my_wealth/model/company/company_detail_model.dart';
 import 'package:my_wealth/model/company/company_info_reksadana_model.dart';
 import 'package:my_wealth/model/company/company_list_model.dart';
+import 'package:my_wealth/model/index/index_model.dart';
+import 'package:my_wealth/model/index/index_price_model.dart';
 import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
@@ -64,6 +67,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final InfoReksadanaAPI _infoReksadanaAPI = InfoReksadanaAPI();
+  final IndexAPI _indexAPI = IndexAPI();
   
   final Map<int, List<InfoReksadanaModel>> _infoReksadanaData = {};
   late List<InfoReksadanaModel> _infoReksadana;
@@ -80,6 +84,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late List<GraphData> _assetData;
   late DateTime _from;
   late DateTime _to;
+
+  late IndexModel _indexCompare;
+  late String _indexCompareName;
+  late List<IndexPriceModel> _indexComparePrice;
+  late Map<DateTime, double> _indexPriceMap;
+  late List<GraphData> _indexData;
   
   bool _showCurrentPriceComparison = false;
   bool _recurring = true;
@@ -95,8 +105,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   @override
   void initState() {
-    super.initState();
-
     // initialize tab
     _tabController = TabController(length: 2, vsync: this);
 
@@ -152,7 +160,15 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _currentDayIndex = 90;
     _infoReksadana = [];
 
+    // initialize index compare data
+    _indexCompareName = "";
+    _indexComparePrice = [];
+    _indexPriceMap = {};
+    _indexData = [];
+
     _getData = _getInitData();
+
+    super.initState();
   }
 
   @override
@@ -1166,19 +1182,125 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const Center(
-              child: Text(
-                "Price",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+            InkWell(
+              onDoubleTap: (() {
+                // check if we want to remove the comparison
+                if (_indexCompareName.isNotEmpty) {
+                  showCupertinoDialog(
+                    context: context,
+                    builder: ((BuildContext context) {
+                      return CupertinoAlertDialog(
+                        title: const Text("Clear Compare"),
+                        content: Text("Do you want to clear comparison with $_indexCompareName?"),
+                        actions: <CupertinoDialogAction>[
+                          CupertinoDialogAction(
+                            onPressed: (() {
+                              setState(() {                    
+                                // clear the index compare data
+                                _indexCompareName = "";
+                                _indexComparePrice.clear();
+                                _indexPriceMap.clear();
+                                _indexData.clear();
+                              });
+
+                              // remove the dialog
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "Yes",
+                              style: TextStyle(
+                                color: textPrimary,
+                              ),
+                            )
+                          ),
+                          CupertinoDialogAction(
+                            onPressed: (() {
+                              // remove the dialog
+                              Navigator.pop(context);
+                            }),
+                            child: const Text("No")
+                          ),
+                        ],
+                      );
+                    })
+                  );
+                }
+              }),
+              child: Container(
+                color: Colors.transparent,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text("Price${(_indexCompareName.isNotEmpty ? " (Compare with $_indexCompareName)" : "")}"),
+                    Visibility(
+                      visible: _indexCompareName.isNotEmpty,
+                      child: const SizedBox(width: 5,)
+                    ),
+                    Visibility(
+                      visible: _indexCompareName.isNotEmpty,
+                      child: Container(
+                        height: 15,
+                        width: 15,
+                        color: secondaryDark,
+                        child: const Icon(
+                          Ionicons.close,
+                          size: 12,
+                          color: textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
             const SizedBox(height: 5,),
-            _dayStatSelection(),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Expanded(child: _dayStatSelection()),
+                InkWell(
+                  onTap: (() async {
+                    // go to index list page
+                    await Navigator.pushNamed(context, '/index/find').then((value) async {
+                      if (value != null) {
+                        // convert value to company list model
+                        _indexCompare = value as IndexModel;
+                        _indexCompareName = _indexCompare.indexName;
+
+                        await _getIndexData().onError((error, stackTrace) {
+                          // remove the index compare name and price since we will
+                          // not be able to perform comparison
+                          _indexCompareName = "";
+                          _indexComparePrice.clear();
+                          _indexPriceMap.clear();
+                          _indexData.clear();
+                        });
+                      }
+                    });
+                  }),
+                  child: Container(
+                    height: 28,
+                    width: 28,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: extendedColor,
+                    ),
+                    child: const Icon(
+                      Ionicons.git_compare_outline,
+                      color: textPrimary,
+                      size: 15,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15,),
+              ],
+            ),
             const SizedBox(height: 10,),
             LineChart(
               data: _graphData,
+              compare: _indexData,
               height: 250,
               watchlist: _watchlistDetail,
               dateOffset: _dateOffset,
@@ -1600,6 +1722,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             _infoReksadana = _infoReksadanaData[_currentDayIndex]!;
 
             _generateGraphData();
+            _generateIndexGraph();
           });
         }),
         groupValue: _currentDayIndex,
@@ -1839,5 +1962,100 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _avgPrice = totalPrice / totalPriceData;
     }
     _numPrice = totalPriceData;
+  }
+
+  Future<void> _getIndexData() async {
+    // ensure we have _perfDataDaily
+    if (_graphData.isNotEmpty) {
+      // show loading screen
+      LoadingScreen.instance().show(context: context);
+
+      await _indexAPI.getIndexPriceDate(
+        _indexCompare.indexId,
+        _infoReksadanaData[365]!.last.date,
+        _infoReksadanaData[365]!.first.date
+      ).then((resp) async {
+        _indexComparePrice = resp;
+
+        // generate the index performance data
+        Future.microtask(() async {
+          // first generate the index map
+          await _generateIndexMap();
+
+          // then we generate the graph
+          await _generateIndexGraph();
+        },);
+
+        // once finished just set state so we can rebuild the page
+        setState(() {
+        });
+      },).onError((error, stackTrace) {
+        debugPrint("Error: ${error.toString()}");
+        debugPrintStack(stackTrace: stackTrace);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when get index price"));
+        }
+      },).whenComplete(() {
+        // remove the loading screen
+        LoadingScreen.instance().hide();
+      },);
+    }
+  }
+
+  Future<void> _generateIndexMap() async {
+    // convert data from list index price model to map data
+    // this is needed so we can have the same data as graph data later on
+
+    // first clear the map
+    _indexPriceMap.clear();
+
+    // loop thru the index compare price that we got from API
+    for(IndexPriceModel price in _indexComparePrice) {
+      _indexPriceMap[price.indexPriceDate.toLocal()] = price.indexPriceValue;
+    }
+  }
+
+  Future<void> _generateIndexGraph() async {
+    // ensure that we have _indexPriceMap
+    if (_indexPriceMap.isNotEmpty) {
+      // create temporary graph data
+      List<GraphData> tempGraph = [];
+
+      // loop thru graph data
+      for(GraphData data in _graphData) {
+        // check if this date exists in index map or not?
+        if (_indexPriceMap.containsKey(data.date.toLocal())) {
+          // add this data to the tempGraph
+          tempGraph.add(
+            GraphData(
+              date: data.date.toLocal(),
+              price: _indexPriceMap[data.date.toLocal()]!,
+            )
+          );
+        }
+        else {
+          // check if tempGraph already got data or not?
+          if (tempGraph.isNotEmpty) {
+            // just use the last one
+            GraphData lastData = tempGraph.last;
+            tempGraph.add(lastData);
+          }
+          else {
+            // no data here, just make it 0
+            tempGraph.add(
+              GraphData(
+                date: data.date.toLocal(),
+                price: 0,
+              )
+            );
+          }
+        }
+      }
+
+      // clear index data, and copy it from tempGraph
+      _indexData.clear();
+      _indexData = tempGraph.toList();
+    }
   }
 }

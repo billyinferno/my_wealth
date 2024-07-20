@@ -7,11 +7,18 @@ import 'package:my_wealth/widgets/chart/heat_graph.dart';
 
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
+  final List<GraphData>? compare;
   final Map<DateTime, int>? watchlist;
   final bool? showLegend;
   final int? dateOffset;
   
-  const LineChartPainter({required this.data, this.watchlist, this.showLegend, this.dateOffset});
+  const LineChartPainter({
+    required this.data,
+    this.compare,
+    this.watchlist,
+    this.showLegend,
+    this.dateOffset
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -21,6 +28,15 @@ class LineChartPainter extends CustomPainter {
     // ensure that we at least have more than 1 data, because if only 1 data
     // then the min or max probably will be the same.
     if (data.length > 1) {
+      // draw the guide line
+      _drawGuideLine(canvas, size, center);
+
+      // check if we got compare or not?
+      if ((compare ?? []).isNotEmpty) {
+        // then let's draw the compare line
+        _drawCompare(canvas, size, center);
+      }
+
       // then let's draw the line
       _drawLine(canvas, size, center);
     }
@@ -34,7 +50,7 @@ class LineChartPainter extends CustomPainter {
     return listEquals<GraphData>(oldDelegate.data, data);
   }
 
-  double _maxData() {
+  double _maxData({required List<GraphData> data}) {
     // loop on the data
     double max = double.minPositive;
 
@@ -47,7 +63,7 @@ class LineChartPainter extends CustomPainter {
     return max;
   }
 
-  double _minData() {
+  double _minData({required List<GraphData> data}) {
     // loop on the data
     double min = double.maxFinite;
 
@@ -72,12 +88,10 @@ class LineChartPainter extends CustomPainter {
     canvas.drawRect(rect, border);
   }
 
-  void _drawLine(Canvas canvas, Size size, Offset center) {
+  void _drawGuideLine(Canvas canvas, Size size, Offset center) {
     // get the max and min data from the graph
-    double max = _maxData();
-    double min = _minData();
-    double x;
-    double y;
+    double max = _maxData(data: data);
+    double min = _minData(data: data);
 
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
@@ -89,10 +103,6 @@ class LineChartPainter extends CustomPainter {
       ..color = primaryLight.withOpacity(0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
-    Paint watchlistPaintBuy = Paint()
-      ..color = accentColor;
-    Paint watchlistPaintSell = Paint()
-      ..color = extendedLight;
     Paint avgPricePaint = Paint()
       ..color = Colors.orange.withOpacity(0.7);
     Paint ma5PricePaint = Paint()
@@ -102,8 +112,6 @@ class LineChartPainter extends CustomPainter {
     Paint ma13PricePaint = Paint()
       ..color = Colors.blue.withOpacity(0.7);
 
-    // canvas.drawRect(graphRect, graphRectBorder);
-    
     // draw the guides
     // draw vertical lines
     double xLeft = graphRect.left;
@@ -300,8 +308,110 @@ class LineChartPainter extends CustomPainter {
         textColor: Colors.blue[300]!.withOpacity(0.5)
       );
     }
+  }
 
-    // once guidelines finished, we can draw the actual graph
+  void _drawCompare(Canvas canvas, Size size, Offset center) {
+    // get the max and min data from the graph
+    double max = _maxData(data: (compare ?? []));
+    double min = _minData(data: (compare ?? []));
+    double x;
+    double y;
+
+    // create the rect that we will use as a guide for the graph
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
+
+    // calculate the gap and ratio to draw the graph
+    double gap = graphRect.width / (data.length.toDouble() - 1);
+    double ratio;
+    if ((max-min) == 0) {
+      ratio = graphRect.height / min;      
+    }
+    else {
+      ratio = graphRect.height / (max - min);
+    }
+
+    Path pUp = Path();
+    Path pDown = Path();
+    Path pNoChange = Path();
+    bool isFirst = true;
+    double prevPrice = double.minPositive;
+
+    x = graphRect.left;
+    y = 0;
+
+    // loop thru data
+    for (GraphData value in compare!) {
+      y = 10 + graphRect.height - ((value.price - min) * ratio);
+
+      // check whether this is the first data?
+      if(isFirst) {
+        pUp.moveTo(x, y);
+        pDown.moveTo(x, y);
+        pNoChange.moveTo(x, y);
+
+        isFirst = false;
+      }
+      else {
+        // check whether price go up or go down?
+        if(value.price > prevPrice) {
+          pUp.lineTo(x, y);
+          pDown.moveTo(x, y);
+          pNoChange.moveTo(x, y);
+        }
+        else if(value.price < prevPrice) {
+          pUp.moveTo(x, y);
+          pDown.lineTo(x, y);
+          pNoChange.moveTo(x, y);
+        }
+        else {
+          pUp.moveTo(x, y);
+          pDown.moveTo(x, y);
+          pNoChange.lineTo(x, y);
+        }
+      }
+
+      // next column
+      prevPrice = value.price;
+      x += gap;
+    }
+    // end of chart
+
+    // draw the path
+    Paint dpUp = Paint()
+      ..color = extendedColor
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    Paint dpDown = Paint()
+      ..color = extendedDark
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+    
+    Paint dpNoChange = Paint()
+      ..color = extendedColor
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawPath(pUp, dpUp);
+    canvas.drawPath(pDown, dpDown);
+    canvas.drawPath(pNoChange, dpNoChange);
+  }
+
+  void _drawLine(Canvas canvas, Size size, Offset center) {
+    // get the max and min data from the graph
+    double max = _maxData(data: data);
+    double min = _minData(data: data);
+    double x;
+    double y;
+
+    // create the rect that we will use as a guide for the graph
+    Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
+    Paint watchlistPaintBuy = Paint()
+      ..color = accentColor;
+    Paint watchlistPaintSell = Paint()
+      ..color = extendedLight;
+
+    // draw the graph
     double gap = graphRect.width / (data.length.toDouble() - 1);
     double ratio;
     if ((max-min) == 0) {
@@ -401,7 +511,6 @@ class LineChartPainter extends CustomPainter {
       prevPrice = value.price;
       x += gap;
     }
-
     // end of chart
 
     // draw the path

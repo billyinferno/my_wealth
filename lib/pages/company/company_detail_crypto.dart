@@ -358,7 +358,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
               ],
             ),
             const SizedBox(height: 10,),
-            ..._detail(),
+            Expanded(child: _detail()),
             const SizedBox(height: 30,),
           ],
         ),
@@ -366,7 +366,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     );
   }
 
-  List<Widget> _detail() {
+  Widget _detail() {
     switch(_bodyPage) {
       case 0:
         return _showSummary();
@@ -381,426 +381,433 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     }
   }
 
-  List<Widget> _showSummary() {
-    List<Widget> table = [];
-    table.add(
-      Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: SingleChildScrollView(
-            controller: _summaryController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Total Volume",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyTotalUnit),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Circulating",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Total Supply",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyTotalSupply),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Max Supply",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        formatCurrencyWithNull(_companyDetail.companyMaxSupply),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "High 24H",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Low 24H",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Price Change 24H",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "%",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyPriceChangePercentage24H, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "Market Cap Chg 24H",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "\$ ${formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H)}",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "%",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyMarketCapChangePercentage24H, 100, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "ATH",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "%",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyAllTimeHighChangePercentage, 1, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Date",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeHighDate!)),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    CompanyInfoBox(
-                      header: "ATL",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "%",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        "${formatDecimalWithNull(_companyDetail.companyAllTimeLowChangePercentage, 1, 4)}%",
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    CompanyInfoBox(
-                      header: "Date",
-                      headerAlign: MainAxisAlignment.end,
-                      child: Text(
-                        (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeLowDate!)),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        )
-      )
-    );
-
-    return table;
-  }
-
-  List<Widget> _showTable() {
-    List<Widget> table = [];
-
-    table.add(Row(
+  Widget _showSummary() {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(width: 10,),
         Expanded(
           child: Container(
-            color: primaryColor,
             padding: const EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              controller: _summaryController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "Total Volume",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          formatCurrencyWithNull(_companyDetail.companyTotalUnit),
+                          textAlign: TextAlign.right,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "Circulating",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
+                  const SizedBox(height: 3,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "Total Supply",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          formatCurrencyWithNull(_companyDetail.companyTotalSupply),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "Max Supply",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          formatCurrencyWithNull(_companyDetail.companyMaxSupply),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "High 24H",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "Low 24H",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "Price Change 24H",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "%",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "${formatDecimalWithNull(_companyDetail.companyPriceChangePercentage24H, 100, 4)}%",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "Market Cap Chg 24H",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H)}",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "%",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "${formatDecimalWithNull(_companyDetail.companyMarketCapChangePercentage24H, 100, 4)}%",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "ATH",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "%",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "${formatDecimalWithNull(_companyDetail.companyAllTimeHighChangePercentage, 1, 4)}%",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "Date",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeHighDate!)),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CompanyInfoBox(
+                        header: "ATL",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "%",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          "${formatDecimalWithNull(_companyDetail.companyAllTimeLowChangePercentage, 1, 4)}%",
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      CompanyInfoBox(
+                        header: "Date",
+                        headerAlign: MainAxisAlignment.end,
+                        child: Text(
+                          (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeLowDate!)),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          )
+        ),
+      ],
+    );
+  }
+
+  Widget _showTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(width: 10,),
+            Expanded(
+              child: Container(
+                color: primaryColor,
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Price",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
                       )
                     ),
-                    child: const Text(
-                      "Price",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.swap_vertical,
+                            size: 16,
+                          ),
+                        ),
                       )
                     ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.swap_vertical,
-                        size: 16,
-                      ),
-                    ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.pulse_outline,
+                            size: 16,
+                          ),
+                        ),
                       )
                     ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.pulse_outline,
-                        size: 16,
-                      ),
-                    ),
-                  )
+                  ],
                 ),
-              ],
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView.builder(
+            controller: _priceController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: _companyDetail.companyPrices.length,
+            itemBuilder: (context, index) {
+              double? dayDiff;
+              Color dayDiffColor = Colors.transparent;
+              if((index+1) < _companyDetail.companyPrices.length) {
+                double currPrice = _companyDetail.companyPrices[index].priceValue;
+                double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+                dayDiff = currPrice - prevPrice;
+                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+              }
+              return CompanyDetailPriceList(
+                date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
+                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
+                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue, true),
+                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff, true)),
+                dayDiffColor: dayDiffColor,
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _showCalendar() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _calendarScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text("Current Price Comparison"),
+                      const SizedBox(width: 10,),
+                      CupertinoSwitch(
+                        value: _showCurrentPriceComparison,
+                        activeColor: accentColor,
+                        onChanged: ((val) {
+                          setState(() {
+                            _showCurrentPriceComparison = val;
+                          });
+                        })
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  HeatGraph(
+                    data: _heatGraphData,
+                    userInfo: _userInfo!,
+                    currentPrice: _companyDetail.companyNetAssetValue!,
+                    enableDailyComparison: _showCurrentPriceComparison,
+                    weekend: true,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ],
-    ));
-
-    table.add(Expanded(
-      child: ListView(
-        controller: _priceController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: List<Widget>.generate(_companyDetail.companyPrices.length, (index) {
-          double? dayDiff;
-          Color dayDiffColor = Colors.transparent;
-          if((index+1) < _companyDetail.companyPrices.length) {
-            double currPrice = _companyDetail.companyPrices[index].priceValue;
-            double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-            dayDiff = currPrice - prevPrice;
-            dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-          }
-          return CompanyDetailPriceList(
-            date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-            price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
-            diff: formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue, true),
-            riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-            dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff, true)),
-            dayDiffColor: dayDiffColor,
-          );
-        }),
-      ),
-    ));
-
-    return table;
+    );
   }
 
-  List<Widget> _showCalendar() {
-    List<Widget> calendar = [];
-
-    calendar.add(Expanded(
-      child: SingleChildScrollView(
-        controller: _calendarScrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: primaryLight,
-              width: 1.0,
-              style: BorderStyle.solid,
-            ),
+  Widget _showGraph() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SingleChildScrollView(
+          controller: _graphScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: LineChart(
+            data: _graphData,
+            height: 250,
+            watchlist: _watchlistDetail,
+            dateOffset: (_graphData.length ~/ 10),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 5,),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text("Current Price Comparison"),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showCurrentPriceComparison,
-                    activeColor: accentColor,
-                    onChanged: ((val) {
-                      setState(() {
-                        _showCurrentPriceComparison = val;
-                      });
-                    })
-                  )
-                ],
-              ),
-              const SizedBox(height: 5,),
-              HeatGraph(
-                data: _heatGraphData,
-                userInfo: _userInfo!,
-                currentPrice: _companyDetail.companyNetAssetValue!,
-                enableDailyComparison: _showCurrentPriceComparison,
-                weekend: true,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
-
-    return calendar;
-  }
-
-  List<Widget> _showGraph() {
-    List<Widget> graph = [];
-
-    graph.add(SingleChildScrollView(
-      controller: _graphScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: LineChart(
-        data: _graphData,
-        height: 250,
-        watchlist: _watchlistDetail,
-        dateOffset: (_graphData.length ~/ 10),
-      ),
-    ));
-
-    return graph;
+        )
+      ],
+    );
   }
 
   void _generateGraphData(CompanyDetailModel data) {

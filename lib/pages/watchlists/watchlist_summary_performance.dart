@@ -345,7 +345,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                     visible: (_indexCompareName.isNotEmpty),
                     child: InkWell(
                       onTap: (() {
-                        // clear the comare
+                        // clear the compare
                         showCupertinoDialog(
                           context: context,
                           builder: ((BuildContext context) {

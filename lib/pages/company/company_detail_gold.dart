@@ -565,10 +565,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           ],
         ),
         Expanded(
-          child: ListView(
+          child: ListView.builder(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            children: List<Widget>.generate(_priceGold.length, (index) {
+            itemCount: _priceGold.length,
+            itemBuilder: (context, index) {
               double? dayDiff;
               Color dayDiffColor = Colors.transparent;
               double currPrice;
@@ -608,7 +609,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
                 dayDiffColor: dayDiffColor,
               );
-            }),
+            },
           ),
         ),
       ],

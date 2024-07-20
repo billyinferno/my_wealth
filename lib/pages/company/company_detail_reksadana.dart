@@ -1020,10 +1020,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           ],
         ),
         Expanded(
-          child: ListView(
+          child: ListView.builder(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            children: List<Widget>.generate(_infoReksadana.length, (index) {
+            itemCount: _infoReksadana.length,
+            itemBuilder: (context, index) {
               double? dayDiff;
               Color dayDiffColor = Colors.transparent;
 
@@ -1043,8 +1044,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 riskColor: riskColor(_companyDetail.companyNetAssetValue!, _infoReksadana[index].netAssetValue, _userInfo!.risk),
                 dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
                 dayDiffColor: dayDiffColor,
-              );
-            }),
+              ); 
+            },
           ),
         )
       ],
@@ -1719,7 +1720,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         onValueChanged: ((value) {
           setState(() {
             _currentDayIndex = value;
-            _infoReksadana = _infoReksadanaData[_currentDayIndex]!;
+            _infoReksadana = (_infoReksadanaData[_currentDayIndex] ?? []);
 
             _generateGraphData();
             _generateIndexGraph();

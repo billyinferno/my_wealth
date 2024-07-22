@@ -8,6 +8,7 @@ import 'package:my_wealth/widgets/chart/heat_graph.dart';
 class LineChartPainter extends CustomPainter {
   final List<GraphData> data;
   final List<GraphData>? compare;
+  final List<DateTime>? dividend;
   final Map<DateTime, int>? watchlist;
   final bool? showLegend;
   final int? dateOffset;
@@ -15,6 +16,7 @@ class LineChartPainter extends CustomPainter {
   const LineChartPainter({
     required this.data,
     this.compare,
+    this.dividend,
     this.watchlist,
     this.showLegend,
     this.dateOffset
@@ -103,6 +105,10 @@ class LineChartPainter extends CustomPainter {
       ..color = primaryLight.withOpacity(0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
+    Paint graphRectDividend = Paint()
+      ..color = extendedLight.withOpacity(0.5)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
     Paint avgPricePaint = Paint()
       ..color = Colors.orange.withOpacity(0.7);
     Paint ma5PricePaint = Paint()
@@ -130,6 +136,8 @@ class LineChartPainter extends CustomPainter {
     if (data.length < datePrintOffset) {
       datePrintOffset = data.length - 1;
     }
+
+    Map<DateTime, bool> dividendMap = _generateDividendMap();
 
     for(int i = 0; i < data.length; i++) {
       Offset p1 = Offset(xLeft, graphRect.bottom);
@@ -168,6 +176,24 @@ class LineChartPainter extends CustomPainter {
       }
       else {
         canvas.drawLine(p1, p2, graphRectBorder);
+      }
+
+      if (dividendMap.containsKey(data[i].date.toLocal())) {
+        // draw circle in the bottom
+        canvas.drawCircle(Offset(xLeft, graphRect.bottom), 7, graphRectDividend);
+        _drawText(
+          canvas: canvas,
+          position: Offset(xLeft, graphRect.bottom),
+          width: 10,
+          text: "D",
+          left: -3,
+          top: -5,
+          minHeight: 0,
+          maxHeight: graphRect.height + 20,
+          minWidth: 0,
+          maxWidth: graphRect.width + 20,
+          textColor: extendedLight,
+        );
       }
 
       // next
@@ -548,12 +574,25 @@ class LineChartPainter extends CustomPainter {
     }
   }
 
-  void _drawText({required Canvas canvas, required Offset position, required double width, required String text, required double left, required double top, required double minHeight, required double maxHeight, required double minWidth, required double maxWidth, Color? textColor}) {
+  void _drawText({
+    required Canvas canvas,
+    required Offset position,
+    required double width,
+    required String text,
+    required double left,
+    required double top,
+    required double minHeight,
+    required double maxHeight,
+    required double minWidth,
+    required double maxWidth,
+    Color? textColor,
+    double? size,
+  }) {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
         color: (textColor ?? Colors.white.withOpacity(0.5)),
-        fontSize: 10,
+        fontSize: (size ?? 10),
       ),
     );
 
@@ -580,5 +619,17 @@ class LineChartPainter extends CustomPainter {
     }
 
     textPainter.paint(canvas, Offset(dx, dy));
+  }
+
+  Map<DateTime, bool> _generateDividendMap() {
+    Map<DateTime, bool> ret = {};
+
+    if ((dividend ?? []).isNotEmpty) {
+      for(DateTime date in dividend!) {
+        ret[date] = true;
+      }
+    }
+
+    return ret;
   }
 }

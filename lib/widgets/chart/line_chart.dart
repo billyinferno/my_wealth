@@ -6,6 +6,7 @@ import 'package:my_wealth/widgets/chart/line_chart_painter.dart';
 class LineChart extends StatelessWidget {
   final List<GraphData> data;
   final List<GraphData>? compare;
+  final List<DateTime>? dividend;
   final Map<DateTime, int>? watchlist;
   final double? height;
   final bool? showLegend;
@@ -14,6 +15,7 @@ class LineChart extends StatelessWidget {
     super.key,
     required this.data,
     this.compare,
+    this.dividend,
     this.height,
     this.watchlist,
     this.showLegend,
@@ -52,6 +54,7 @@ class LineChart extends StatelessWidget {
             painter: LineChartPainter(
               data: data,
               compare: compare,
+              dividend: dividend,
               watchlist: watchlist,
               showLegend: showLegend,
               dateOffset: datePrintOffset,

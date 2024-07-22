@@ -106,6 +106,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late String _brokerSummaryDailyMonthlyTypeSelected;
   late String _brokerSummaryDailyMonhtlyValueSelected;
   late CompanySahamDividendModel _dividend;
+  late List<DateTime> _dividendDate;
   late CompanySahamSplitModel _split;
 
   final CompanyAPI _companyApi = CompanyAPI();
@@ -207,6 +208,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
     _indexCompareName = "";
     _indexPriceMap = {};
     _indexData = [];
+
+    // initialize dividend date, assume no dividend has been given
+    _dividendDate = [];
 
     // default saham price to 90
     _currentInfoSahamPrice = 90;
@@ -1668,13 +1672,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // loop thru dividend list
     for (Dividend dividend in _dividend.dividend) {
+      // add dividend date to the dividen date list
+      _dividendDate.add(dividend.recordDate.toLocal());
+
+      // generate item dividend
       ret.add(
         _itemDividend(
           cumDate: formatDateWithNulll(date: dividend.cumDividend, format: Globals.dfddMMyy),
-          exDate: Globals.dfddMMyy.format(dividend.exDividend),
-          recordDate: Globals.dfddMMyy.format(dividend.recordDate),
-          paymentDate: Globals.dfddMMyy.format(dividend.paymentDate),
-          cashDividend: formatCurrency(dividend.cashDividend),
+          exDate: Globals.dfddMMyy.format(dividend.exDividend.toLocal()),
+          recordDate: Globals.dfddMMyy.format(dividend.recordDate.toLocal()),
+          paymentDate: Globals.dfddMMyy.format(dividend.paymentDate.toLocal()),
+          cashDividend: formatCurrency(dividend.cashDividend.toDouble()),
           price: formatCurrencyWithNull(dividend.price),
           priceDate: formatDateWithNulll(date: dividend.priceDate, format: Globals.dfddMMyy),
           note: dividend.note,
@@ -3291,6 +3299,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
             LineChart(
               data: _graphData,
               compare: _indexData,
+              dividend: _dividendDate,
               height: 250,
               watchlist: _watchlistDetail,
               dateOffset: (_graphData.length > 10 ? null : 1),

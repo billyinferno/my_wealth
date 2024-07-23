@@ -54,12 +54,20 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _avg;
   late double _max90;
   late double _min90;
+  late double _max90PL;
+  late double _min90PL;
   late double _maxDaily;
   late double _minDaily;
-  late double _maxMonhtly;
-  late double _minMonhtly;
+  late double _maxDailyPL;
+  late double _minDailyPL;
+  late double _maxMonthly;
+  late double _minMonthly;
+  late double _maxMonthlyPL;
+  late double _minMonthlyPL;
   late double _maxYearly;
   late double _minYearly;
+  late double _maxYearlyPL;
+  late double _minYearlyPL;
   late double _maxPL;
   late double _minPL;
 
@@ -300,13 +308,17 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         _dateFormat = "dd/MM";
                         _max = _max90;
                         _min = _min90;
+                        _maxPL = _max90PL;
+                        _minPL = _min90PL;
                         break;
                       case "m":
                         _perfData = _perfDataMonhtly.toList();
                         _indexData = _indexDataMonthly.toList();
                         _dateFormat = "MM/yy";
-                        _max = _maxMonhtly;
-                        _min = _minMonhtly;
+                        _max = _maxMonthly;
+                        _min = _minMonthly;
+                        _maxPL = _maxMonthlyPL;
+                        _minPL = _minMonthlyPL;
                         break;
                       case "y":
                         _perfData = _perfDataYearly.toList();
@@ -314,6 +326,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         _dateFormat = "MM/yy";
                         _max = _maxYearly;
                         _min = _minYearly;
+                        _maxPL = _maxYearlyPL;
+                        _minPL = _minYearlyPL;
                         break;
                       default:
                         _perfData = _perfDataDaily.toList();
@@ -321,6 +335,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         _dateFormat = "dd/MM";
                         _max = _maxDaily;
                         _min = _minDaily;
+                        _maxPL = _maxDailyPL;
+                        _minPL = _minDailyPL;
                         break;
                     }
 
@@ -929,14 +945,29 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     // initialize all the max and min PL
     _max90 = double.negativeInfinity;
     _min90 = double.infinity;
+    _max90PL = double.negativeInfinity;
+    _min90PL = double.infinity;
+
     _maxDaily = double.negativeInfinity;
     _minDaily = double.infinity;
-    _maxMonhtly = double.negativeInfinity;
-    _minMonhtly = double.infinity;
+    _maxDailyPL = double.negativeInfinity;
+    _minDailyPL = double.infinity;
+
+    _maxMonthly = double.negativeInfinity;
+    _minMonthly = double.infinity;
+    _maxMonthlyPL = double.negativeInfinity;
+    _minMonthlyPL = double.infinity;
+
     _maxYearly = double.negativeInfinity;
     _minYearly = double.infinity;
+    _maxYearlyPL = double.negativeInfinity;
+    _minYearlyPL = double.infinity;
+
+    PerformanceData? prevData;
+    double plDiff;
 
     // loop thru all the data to get the min and max for each list
+    prevData = null;
     for (PerformanceData data in _perfData90D) {
       if (data.gain >= _max90) {
         _max90 = data.gain;
@@ -945,8 +976,26 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       if (data.gain <= _min90) {
         _min90 = data.gain;
       }
+
+      // check if prev data is null or not?
+      if (prevData != null) {
+        // check the pl diff
+        plDiff = data.gain - prevData.gain;
+
+        // check if this is more than current PL or not?
+        if (_max90PL < plDiff) {
+          _max90PL = plDiff;
+        }
+        if (_min90PL > plDiff) {
+          _min90PL = plDiff;
+        }
+      }
+      // set current data as prev data
+      prevData = data;
     }
 
+    // set previous data into null before we start next data
+    prevData = null;
     for (PerformanceData data in _perfDataDaily) {
       if (data.gain >= _maxDaily) {
         _maxDaily = data.gain;
@@ -955,18 +1004,54 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       if (data.gain <= _minDaily) {
         _minDaily = data.gain;
       }
+
+      // check if prev data is null or not?
+      if (prevData != null) {
+        // check the pl diff
+        plDiff = data.gain - prevData.gain;
+
+        // check if this is more than current PL or not?
+        if (_maxDailyPL < plDiff) {
+          _maxDailyPL = plDiff;
+        }
+        if (_minDailyPL > plDiff) {
+          _minDailyPL = plDiff;
+        }
+      }
+      // set current data as prev data
+      prevData = data;
     }
 
+    // set previous data into null before we start next data
+    prevData = null;
     for (PerformanceData data in _perfDataMonhtly) {
-      if (data.gain >= _maxMonhtly) {
-        _maxMonhtly = data.gain;
+      if (data.gain >= _maxMonthly) {
+        _maxMonthly = data.gain;
       }
       
-      if (data.gain <= _minMonhtly) {
-        _minMonhtly = data.gain;
+      if (data.gain <= _minMonthly) {
+        _minMonthly = data.gain;
       }
+
+      // check if prev data is null or not?
+      if (prevData != null) {
+        // check the pl diff
+        plDiff = data.gain - prevData.gain;
+
+        // check if this is more than current PL or not?
+        if (_maxMonthlyPL < plDiff) {
+          _maxMonthlyPL = plDiff;
+        }
+        if (_minMonthlyPL > plDiff) {
+          _minMonthlyPL = plDiff;
+        }
+      }
+      // set current data as prev data
+      prevData = data;
     }
 
+    // set previous data into null before we start next data
+    prevData = null;
     for (PerformanceData data in _perfDataYearly) {
       if (data.gain >= _maxYearly) {
         _maxYearly = data.gain;
@@ -975,6 +1060,22 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       if (data.gain <= _minYearly) {
         _minYearly = data.gain;
       }
+
+      // check if prev data is null or not?
+      if (prevData != null) {
+        // check the pl diff
+        plDiff = data.gain - prevData.gain;
+
+        // check if this is more than current PL or not?
+        if (_maxYearlyPL < plDiff) {
+          _maxYearlyPL = plDiff;
+        }
+        if (_minYearlyPL > plDiff) {
+          _minYearlyPL = plDiff;
+        }
+      }
+      // set current data as prev data
+      prevData = data;
     }
 
     // check again to ensure all being set
@@ -984,23 +1085,50 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     if (_min90 == double.infinity) {
       _min90 = 0;
     }
+    if (_max90PL == double.negativeInfinity) {
+      _max90PL = 0;
+    }
+    if (_min90PL == double.infinity) {
+      _min90PL = 0;
+    }
+
     if (_maxDaily == double.negativeInfinity) {
       _maxDaily = 0;
     }
     if (_minDaily == double.infinity) {
       _minDaily = 0;
     }
-    if (_maxMonhtly == double.negativeInfinity) {
-      _maxMonhtly = 0;
+    if (_maxDailyPL == double.negativeInfinity) {
+      _maxDailyPL = 0;
     }
-    if (_minMonhtly == double.infinity) {
-      _minMonhtly = 0;
+    if (_minDailyPL == double.infinity) {
+      _minDailyPL = 0;
     }
+
+    if (_maxMonthly == double.negativeInfinity) {
+      _maxMonthly = 0;
+    }
+    if (_minMonthly == double.infinity) {
+      _minMonthly = 0;
+    }
+    if (_maxMonthlyPL == double.negativeInfinity) {
+      _maxMonthlyPL = 0;
+    }
+    if (_minMonthlyPL == double.infinity) {
+      _minMonthlyPL = 0;
+    }
+
     if (_maxYearly == double.negativeInfinity) {
       _maxYearly = 0;
     }
     if (_minYearly == double.infinity) {
       _minYearly = 0;
+    }
+    if (_maxYearlyPL == double.negativeInfinity) {
+      _maxYearlyPL = 0;
+    }
+    if (_minYearlyPL == double.infinity) {
+      _minYearlyPL = 0;
     }
   }
 

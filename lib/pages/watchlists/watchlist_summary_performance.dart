@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/index_api.dart';
 import 'package:my_wealth/api/watchlist_api.dart';
@@ -21,6 +22,28 @@ import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/chart/performance_chart.dart';
 import 'package:my_wealth/widgets/chart/performance_chart_painter.dart';
 
+class SummaryPerformanceDataList {
+  final DateTime date;
+  final double pl;
+  final Color plColor;
+  final bool isPLMinMax;
+  final double? diff;
+  final Color diffColor;
+  final bool isDiffMinMax;
+  final double? percentage;
+
+  const SummaryPerformanceDataList({
+    required this.date,
+    required this.pl,
+    required this.plColor,
+    required this.isPLMinMax,
+    this.diff,
+    required this.diffColor,
+    required this.isDiffMinMax,
+    this.percentage,
+  });
+}
+
 class WatchlistSummaryPerformancePage extends StatefulWidget {
   final Object? args;
   const WatchlistSummaryPerformancePage({super.key, required this.args});
@@ -38,6 +61,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late UserLoginInfoModel _userInfo;
   late Future<bool> _getData;
   late List<SummaryPerformanceModel> _summaryPerfData;
+  late String _perfSort;
+  late List<SummaryPerformanceDataList> _perfDataSort;
   late List<PerformanceData> _perfData;
   late List<PerformanceData> _perfData90D;
   late List<PerformanceData> _perfDataDaily;
@@ -114,6 +139,10 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
     // defaulted the graph selection into 90 day
     _graphSelection = '9';
+
+    // default the sort as ASC
+    _perfSort = "A";
+    _perfDataSort = [];
 
     // defaulted the date format to dd/MM
     _dateFormat = "dd/MM";
@@ -209,7 +238,27 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
               icon: const Icon(
                 Ionicons.git_compare_outline,
                 color: textPrimary,
-              )
+              ),
+            ),
+            IconButton(
+              onPressed: (() {
+                setState(() {
+                  // check current _perfSort
+                  if (_perfSort == "A") {
+                    _perfSort = "D";
+                  }
+                  else {
+                    _perfSort = "A";
+                  }
+
+                  // just reverse the _perfDataSort
+                  _perfDataSort = _perfDataSort.reversed.toList();
+                });
+              }),
+              icon: Icon(
+                (_perfSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+                color: textPrimary,
+              ),
             ),
             const SizedBox(width: 10,),
           ],
@@ -301,47 +350,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                   setState(() {
                     _graphSelection = selectedValue;
 
-                    switch(_graphSelection) {
-                      case "9":
-                        _perfData = _perfData90D.toList();
-                        _indexData = _indexData90D.toList();
-                        _dateFormat = "dd/MM";
-                        _max = _max90;
-                        _min = _min90;
-                        _maxPL = _max90PL;
-                        _minPL = _min90PL;
-                        break;
-                      case "m":
-                        _perfData = _perfDataMonhtly.toList();
-                        _indexData = _indexDataMonthly.toList();
-                        _dateFormat = "MM/yy";
-                        _max = _maxMonthly;
-                        _min = _minMonthly;
-                        _maxPL = _maxMonthlyPL;
-                        _minPL = _minMonthlyPL;
-                        break;
-                      case "y":
-                        _perfData = _perfDataYearly.toList();
-                        _indexData = _indexDataYearly.toList();
-                        _dateFormat = "MM/yy";
-                        _max = _maxYearly;
-                        _min = _minYearly;
-                        _maxPL = _maxYearlyPL;
-                        _minPL = _minYearlyPL;
-                        break;
-                      default:
-                        _perfData = _perfDataDaily.toList();
-                        _indexData = _indexDataDaily.toList();
-                        _dateFormat = "dd/MM";
-                        _max = _maxDaily;
-                        _min = _minDaily;
-                        _maxPL = _maxDailyPL;
-                        _minPL = _minDailyPL;
-                        break;
-                    }
-
-                    // calculate the gain difference
-                    _calculateGainDifference();
+                    _changeGraphSelection();
                   });
                 }),
                 groupValue: _graphSelection,
@@ -467,10 +476,22 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         style: BorderStyle.solid,
                       ))),
                   width: 100,
-                  child: Text(
-                    "DATE",
-                    textAlign: TextAlign.center,
-                    style: _smallFont,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "DATE",
+                        textAlign: TextAlign.center,
+                        style: _smallFont,
+                      ),
+                      const SizedBox(width: 5,),
+                      Icon(
+                        (_perfSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
+                        size: 10,
+                        color: textPrimary,
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
@@ -536,48 +557,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: _perfData.length,
+                itemCount: _perfDataSort.length,
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  double? plDiff;
-                  Color plDiffColor = textPrimary;
-                  if (index > 0) {
-                    // get the pl diff with pl before and now
-                    plDiff = _perfData[index].gain - _perfData[index - 1].gain;
-
-                    // set the correct plDiffColor
-                    if (plDiff > 0) plDiffColor = Colors.green;
-                    if (plDiff < 0) plDiffColor = secondaryColor;
-                  }
-
-                  // check if this data is the same as _max or _min?
-                  Color plColor = (_perfData[index].gain == 0 ? textPrimary : (_perfData[index].gain < 0 ? secondaryColor : Colors.green));
-
-                  bool isMinMax = false;
-                  if (_perfData[index].gain == _max || _perfData[index].gain == _min) {
-                    // means for this we will need to put color on the container instead of the text
-                    isMinMax = true;
-                    plColor = textPrimary;
-                    if (_perfData[index].gain == _max) {
-                      plColor = Colors.green[900]!;
-                    }
-                    if (_perfData[index].gain == _min) {
-                      plColor = secondaryDark;
-                    }
-                  }
-
-                  bool isPLMinMax = false;
-                  if (plDiff == _maxPL || plDiff == _minPL) {
-                    // means for this we will need to put color on the container instead of the text
-                    isPLMinMax = true;
-                    plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
-                  }
-
-                  String percentGain = "-";
-                  if (_perfData[index].total > 0) {
-                    percentGain = "${formatDecimalWithNull(_perfData[index].gain / _perfData[index].total, 100, 2)}%";
-                  }
-                  
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -586,7 +568,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         padding: const EdgeInsets.all(5),
                         width: 100,
                         child: Text(
-                          Globals.dfddMMyyyy.format(_perfData[index].date),
+                          Globals.dfddMMyyyy.format(_perfDataSort[index].date),
                           textAlign: TextAlign.center,
                           style: _smallFont,
                         ),
@@ -594,12 +576,12 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.all(5),
-                          color: (isMinMax ? plColor : Colors.transparent),
+                          color: (_perfDataSort[index].isPLMinMax ? _perfDataSort[index].plColor : Colors.transparent),
                           child: Text(
-                            formatCurrency(_perfData[index].gain, false, false, false, 0),
+                            formatCurrency(_perfDataSort[index].pl, false, false, false, 0),
                             textAlign: TextAlign.center,
                             style: _smallFont.copyWith(
-                              color: (isMinMax ? Colors.white : plColor),
+                              color: (_perfDataSort[index].isPLMinMax ? Colors.white : _perfDataSort[index].plColor),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -608,12 +590,12 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.all(5),
-                          color: (isPLMinMax ? plDiffColor : Colors.transparent),
+                          color: (_perfDataSort[index].isDiffMinMax ? _perfDataSort[index].diffColor : Colors.transparent),
                           child: Text(
-                            formatCurrencyWithNull(plDiff, false, false, false, 0),
+                            formatCurrencyWithNull(_perfDataSort[index].diff, false, false, false, 0),
                             textAlign: TextAlign.center,
                             style: _smallFont.copyWith(
-                              color: (isPLMinMax ? Colors.white : plDiffColor),
+                              color: (_perfDataSort[index].isDiffMinMax ? Colors.white : _perfDataSort[index].diffColor),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -621,13 +603,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       ),
                       Container(
                         width: 75,
-                        color: (isMinMax ? plColor : Colors.transparent),
+                        color: (_perfDataSort[index].isPLMinMax ? _perfDataSort[index].plColor : Colors.transparent),
                         padding: const EdgeInsets.all(5),
                         child: Text(
-                          percentGain,
+                          "${formatDecimalWithNull(_perfDataSort[index].percentage, 100, 2)}%",
                           textAlign: TextAlign.center,
                           style: _smallFont.copyWith(
-                            color: (isMinMax ? Colors.white : plColor),
+                            color: (_perfDataSort[index].isPLMinMax ? Colors.white : _perfDataSort[index].plColor),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -896,31 +878,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _perfDataMonhtly = monthly.values.toList();
     _perfDataYearly = yearly.values.toList();
 
-    // get the performance data based on graph selection
-    switch(_graphSelection) {
-        case "9":
-          _perfData = _perfData90D.toList();
-          _dateFormat = "dd/MM";
-          break;
-        case "m":
-          _perfData = _perfDataMonhtly.toList();
-          _dateFormat = "MM/yy";
-          break;
-        case "y":
-          _perfData = _perfDataYearly.toList();
-          _dateFormat = "MM/yy";
-          break;
-        default:
-          _perfData = _perfDataDaily.toList();
-          _dateFormat = "dd/MM";
-          break;
-    }
-
-    // calculate the gain difference
-    _calculateGainDifference();
-
     // calculate the min max for each graph
     _calculateMinMax();
+
+    // set which max and min data
+    _changeGraphSelection();
 
     _totalData = _perfData.length;
     if (_totalData > 0) {
@@ -1295,5 +1257,130 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         _indexData = _indexDataDaily.toList();
         break;
     }
+  }
+
+  void _generatePerfDataList() {
+    double? plDiff;
+    Color plDiffColor;
+    Color plColor;
+    bool isPLMinMax;
+    bool isDiffMinMax;
+    double? percentGain;
+    
+    // clear current perf data sort
+    _perfDataSort.clear();
+
+    for(int index=0; index<_perfData.length; index++) {
+      // default the diff color as text primary
+      plDiffColor = textPrimary;
+      plDiff = null;
+
+      // calculate the performance data so we can put it on the list view
+      // builder easier, without performing calcultion every list
+      if (index > 0) {
+        // get the pl diff with pl before and now
+        plDiff = _perfData[index].gain - _perfData[index - 1].gain;
+
+        // set the correct plDiffColor
+        if (plDiff > 0) plDiffColor = Colors.green;
+        if (plDiff < 0) plDiffColor = secondaryColor;
+      }
+
+      // check if this data is the same as _max or _min?
+      plColor = (_perfData[index].gain == 0 ? textPrimary : (_perfData[index].gain < 0 ? secondaryColor : Colors.green));
+
+      isPLMinMax = false;
+      if (_perfData[index].gain == _max || _perfData[index].gain == _min) {
+        // means for this we will need to put color on the container instead of the text
+        isPLMinMax = true;
+        plColor = textPrimary;
+        if (_perfData[index].gain == _max) {
+          plColor = Colors.green[900]!;
+        }
+        if (_perfData[index].gain == _min) {
+          plColor = secondaryDark;
+        }
+      }
+
+      isDiffMinMax = false;
+      if (plDiff == _maxPL || plDiff == _minPL) {
+        // means for this we will need to put color on the container instead of the text
+        isDiffMinMax = true;
+        plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
+      }
+
+      percentGain = null;
+      if (_perfData[index].total > 0) {
+        percentGain = _perfData[index].gain / _perfData[index].total;
+      }
+
+      SummaryPerformanceDataList data = SummaryPerformanceDataList(
+        date: _perfData[index].date,
+        pl: _perfData[index].gain,
+        plColor: plColor,
+        isPLMinMax: isPLMinMax,
+        diff: plDiff,
+        diffColor: plDiffColor, 
+        isDiffMinMax: isDiffMinMax,
+        percentage: percentGain,
+      );
+
+      // add the data to the _perfDataSort list
+      _perfDataSort.add(data);
+    }
+  }
+
+  void _changeGraphSelection() {
+    switch(_graphSelection) {
+      case "9":
+        _perfData = _perfData90D.toList();
+        _indexData = _indexData90D.toList();
+        _dateFormat = "dd/MM";
+        _max = _max90;
+        _min = _min90;
+        _maxPL = _max90PL;
+        _minPL = _min90PL;
+        break;
+      case "m":
+        _perfData = _perfDataMonhtly.toList();
+        _indexData = _indexDataMonthly.toList();
+        _dateFormat = "MM/yy";
+        _max = _maxMonthly;
+        _min = _minMonthly;
+        _maxPL = _maxMonthlyPL;
+        _minPL = _minMonthlyPL;
+        break;
+      case "y":
+        _perfData = _perfDataYearly.toList();
+        _indexData = _indexDataYearly.toList();
+        _dateFormat = "MM/yy";
+        _max = _maxYearly;
+        _min = _minYearly;
+        _maxPL = _maxYearlyPL;
+        _minPL = _minYearlyPL;
+        break;
+      default:
+        _perfData = _perfDataDaily.toList();
+        _indexData = _indexDataDaily.toList();
+        _dateFormat = "dd/MM";
+        _max = _maxDaily;
+        _min = _minDaily;
+        _maxPL = _maxDailyPL;
+        _minPL = _minDailyPL;
+        break;
+    }
+
+    // generate the perf sort data based on the perf graph above
+    _generatePerfDataList();
+
+    // once generated then we can see whether this is sorted as Ascending or
+    // descending?
+    if (_perfSort == "D") {
+      // reverse the _perfDataSort
+      _perfDataSort = _perfDataSort.reversed.toList();
+    }
+
+    // calculate the gain difference
+    _calculateGainDifference();
   }
 }

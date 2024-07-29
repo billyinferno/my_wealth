@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
@@ -55,6 +56,9 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   final Map<int, List<PriceGoldModel>> _priceGoldData = {};
   late int _currentPriceGoldDay;
   late List<PriceGoldModel> _priceGold;
+  late Map<String, List<CompanyDetailList>> _priceGoldSortData;
+  late List<CompanyDetailList> _priceGoldSort;
+  late String _priceSort;
 
   late String _currentPriceCcy;
   
@@ -96,6 +100,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     _currentPriceGoldDay = 90;
 
     _priceGold = [];
+
+    // initialize the price gold sort and default the sort to Ascending
+    _priceGoldSortData = {};
+    _priceGoldSort = [];
+    _priceSort = "A";
 
     // default the price ccy to IDR
     _currentPriceCcy = "IDR";
@@ -161,12 +170,31 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
               Navigator.pop(context);
             }),
           ),
-          actions: const <Widget>[
-            Icon(
+          actions: <Widget>[
+            const Icon(
               Ionicons.star,
               color: accentColor,
             ),
-            SizedBox(width: 20,),
+            IconButton(
+              icon: Icon(
+                (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+                color: textPrimary,
+              ),
+              onPressed: (() {
+                setState(() {
+                  if (_priceSort == "A") {
+                    _priceSort = "D";
+                  }
+                  else {
+                    _priceSort = "A";
+                  }
+
+                  // just reversed the list
+                  _priceGoldSort = _priceGoldSort.reversed.toList();
+                });
+              }),
+            ),
+            const SizedBox(width: 10,),
           ],
         ),
         body: Column(
@@ -480,12 +508,24 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                             )
                           )
                         ),
-                        child: const Text(
-                          "Date",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Text(
+                              "Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(width: 5,),
+                            Icon(
+                              (_priceSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
+                              size: 10,
+                              color: textPrimary,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -568,46 +608,15 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           child: ListView.builder(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: _priceGold.length,
+            itemCount: _priceGoldSort.length,
             itemBuilder: (context, index) {
-              double? dayDiff;
-              Color dayDiffColor = Colors.transparent;
-              double currPrice;
-              double prevPrice = 0;
-              double priceDiff = 0;
-              Color risk = Colors.white;
-
-              // check which CCY we want to show
-              if (_currentPriceCcy.toLowerCase() == 'idr') {
-                currPrice = _priceGold[index].priceGoldIdr;
-                if(index > 0) {
-                  prevPrice = _priceGold[index-1].priceGoldIdr;
-                }
-                priceDiff = _companyDetail.companyNetAssetValue! - _priceGold[index].priceGoldIdr;
-                risk = riskColor(_companyDetail.companyNetAssetValue!, _priceGold[index].priceGoldIdr, _userInfo!.risk);
-              }
-              else {
-                currPrice = _priceGold[index].priceGoldUsd;
-                if(index > 0) {
-                  prevPrice = _priceGold[index-1].priceGoldUsd;
-                }
-                priceDiff = _companyDetail.companyCurrentPriceUsd! - _priceGold[index].priceGoldIdr;
-                risk = riskColor(_companyDetail.companyCurrentPriceUsd!, _priceGold[index].priceGoldUsd, _userInfo!.risk);
-              }
-
-              // check if we have previous price or not?
-              if((index+1) < _priceGold.length) {
-                dayDiff = currPrice - prevPrice;
-                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-              }
-
               return CompanyDetailPriceList(
-                date: _df.format(_priceGold[index].priceGoldDate.toLocal()),
-                price: formatCurrency(currPrice, true),
-                diff: formatCurrency(priceDiff, true),
-                riskColor: risk,
-                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-                dayDiffColor: dayDiffColor,
+                date: _df.format(_priceGoldSort[index].date),
+                price: formatCurrency(_priceGoldSort[index].price, true),
+                diff: formatCurrency(_priceGoldSort[index].diff, true),
+                riskColor: _priceGoldSort[index].riskColor,
+                dayDiff: formatCurrencyWithNull(_priceGoldSort[index].dayDiff),
+                dayDiffColor: _priceGoldSort[index].dayDiffColor,
               );
             },
           ),
@@ -758,6 +767,9 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
           _priceGold = (_priceGoldData[_currentPriceGoldDay] ?? []);
 
+          // generate price gold sort
+          _generateGoldSort();
+
           _generateGraphData();
         }).onError((error, stackTrace) {
           debugPrint("Error: ${error.toString()}");
@@ -824,6 +836,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             _currentPriceGoldDay = value;
             _priceGold = _priceGoldData[_currentPriceGoldDay]!;
 
+            _generateGoldSort();
             _generateGraphData();
           });
         }),
@@ -846,6 +859,16 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
         onValueChanged: ((value) {
           setState(() {
             _currentPriceCcy = value;
+            
+            // change the _priceGoldSort based on the selection
+            _priceGoldSort = (_priceGoldSortData[_currentPriceCcy.toUpperCase()] ?? []);
+
+            // check if this is ascending or descending
+            if (_priceSort == "D") {
+              // reverse the data
+              _priceGoldSort = _priceGoldSort.reversed.toList();
+            }
+
             _generateGraphData();
           });
         }),
@@ -894,6 +917,96 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     }
     else {
       _numPrice = 1;
+    }
+  }
+
+  void _generateGoldSort() {
+    double? dayDiff;
+    Color dayDiffColor;
+    double currPrice;
+    double prevPrice;
+    double priceDiff;
+    Color risk;
+
+    List<CompanyDetailList> priceIDR = [];
+    List<CompanyDetailList> priceUSD = [];
+
+    // clear current gold sort data
+    _priceGoldSortData.clear();
+
+    // loop thru price gold to generate the gold sort data
+    for(int index=0; index < _priceGold.length; index++) {
+      // generate IDR data first
+      dayDiff = null;
+      dayDiffColor = Colors.transparent;
+      prevPrice = 0;
+      priceDiff = 0;
+      risk = Colors.white;
+
+      currPrice = _priceGold[index].priceGoldIdr;
+      if(index > 0) {
+        prevPrice = _priceGold[index-1].priceGoldIdr;
+      }
+      priceDiff = _companyDetail.companyNetAssetValue! - _priceGold[index].priceGoldIdr;
+      risk = riskColor(_companyDetail.companyNetAssetValue!, _priceGold[index].priceGoldIdr, _userInfo!.risk);
+
+      dayDiff = currPrice - prevPrice;
+      dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+
+      CompanyDetailList dataIDR = CompanyDetailList(
+        date: _priceGold[index].priceGoldDate.toLocal(),
+        price: currPrice,
+        diff: priceDiff,
+        riskColor: risk,
+        dayDiff: dayDiff,
+        dayDiffColor: dayDiffColor,
+      );
+
+      // add to IDR list
+      priceIDR.add(dataIDR);
+
+      // after that generate USD
+      dayDiff = null;
+      dayDiffColor = Colors.transparent;
+      prevPrice = 0;
+      priceDiff = 0;
+      risk = Colors.white;
+
+      currPrice = _priceGold[index].priceGoldUsd;
+      if(index > 0) {
+        prevPrice = _priceGold[index-1].priceGoldUsd;
+      }
+      priceDiff = _companyDetail.companyCurrentPriceUsd! - _priceGold[index].priceGoldUsd;
+      risk = riskColor(_companyDetail.companyCurrentPriceUsd!, _priceGold[index].priceGoldUsd, _userInfo!.risk);
+
+      dayDiff = currPrice - prevPrice;
+      dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+
+      CompanyDetailList dataUSD = CompanyDetailList(
+        date: _priceGold[index].priceGoldDate.toLocal(),
+        price: currPrice,
+        diff: priceDiff,
+        riskColor: risk,
+        dayDiff: dayDiff,
+        dayDiffColor: dayDiffColor,
+      );
+
+      // add to USD list
+      priceUSD.add(dataUSD);
+    }
+
+    // now add on the map for both IDR and USD
+    if (_priceSort == "A") {
+      _priceGoldSortData["IDR"] = priceIDR;
+      _priceGoldSortData["USD"] = priceUSD;
+    }
+
+    // set the current _priceGoldSort based on the currency
+    _priceGoldSort = (_priceGoldSortData[_currentPriceCcy.toUpperCase()] ?? []);
+
+    // check the sort, if this is descending then reverse the data
+    if (_priceSort == "D") {
+      _priceGoldSort = _priceGoldSort.reversed.toList();
     }
   }
 }

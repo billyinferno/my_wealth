@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/themes/colors.dart';
 
+class CompanyDetailList {
+  final DateTime date;
+  final double price;
+  final double diff;
+  final Color riskColor;
+  final double? dayDiff;
+  final Color dayDiffColor;
+
+  const CompanyDetailList({
+    required this.date,
+    required this.price,
+    required this.diff,
+    required this.riskColor,
+    this.dayDiff,
+    required this.dayDiffColor,
+  });
+}
+
 class CompanyDetailPriceList extends StatelessWidget {
   final String date;
   final String price;

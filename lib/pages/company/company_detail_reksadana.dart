@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/company_api.dart';
@@ -71,6 +72,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   
   final Map<int, List<InfoReksadanaModel>> _infoReksadanaData = {};
   late List<InfoReksadanaModel> _infoReksadana;
+  late List<CompanyDetailList> _infoReksadanaSort;
+  late String _infoSort;
   late int _currentDayIndex;
 
   final DateFormat _df = DateFormat("dd/MM/yyyy");
@@ -159,6 +162,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     // defaulted the current day index into 90 days
     _currentDayIndex = 90;
     _infoReksadana = [];
+
+    // initialize info reksadana sort, and default the sort to Ascending
+    _infoReksadanaSort = [];
+    _infoSort = "A";
 
     // initialize index compare data
     _indexCompareName = "";
@@ -253,7 +260,26 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
               color: accentColor,
             ),
-            const SizedBox(width: 20,),
+            IconButton(
+              icon: Icon(
+                (_infoSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+                color: textPrimary,
+              ),
+              onPressed: (() {
+                setState(() {
+                  if (_infoSort == "A") {
+                    _infoSort = "D";
+                  }
+                  else {
+                    _infoSort = "A";
+                  }
+
+                  // just reversed the list
+                  _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
+                });
+              }),
+            ),
+            const SizedBox(width: 10,),
           ],
         ),
         body: Column(
@@ -935,12 +961,24 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             )
                           )
                         ),
-                        child: const Text(
-                          "Date",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Text(
+                              "Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(width: 5,),
+                            Icon(
+                              (_infoSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
+                              size: 10,
+                              color: textPrimary,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -1023,27 +1061,16 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           child: ListView.builder(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: _infoReksadana.length,
+            itemCount: _infoReksadanaSort.length,
             itemBuilder: (context, index) {
-              double? dayDiff;
-              Color dayDiffColor = Colors.transparent;
-
-              // check if we already got previous date price
-              if((index+1) < _infoReksadana.length) {
-                double currPrice = _companyDetail.companyPrices[index].priceValue;
-                double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
-                dayDiff = currPrice - prevPrice;
-                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
-              }
-
               // generate the company detail price list
               return CompanyDetailPriceList(
-                date: _df.format(_infoReksadana[index].date.toLocal()),
-                price: formatCurrency(_infoReksadana[index].netAssetValue),
-                diff: formatCurrency(_companyDetail.companyNetAssetValue! - _infoReksadana[index].netAssetValue),
-                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _infoReksadana[index].netAssetValue, _userInfo!.risk),
-                dayDiff: (dayDiff == null ? "-" : formatCurrency(dayDiff)),
-                dayDiffColor: dayDiffColor,
+                date: _df.format(_infoReksadanaSort[index].date.toLocal()),
+                price: formatCurrency(_infoReksadanaSort[index].price),
+                diff: formatCurrency(_infoReksadanaSort[index].diff),
+                riskColor: _infoReksadanaSort[index].riskColor,
+                dayDiff: formatCurrencyWithNull(_infoReksadanaSort[index].dayDiff),
+                dayDiffColor: _infoReksadanaSort[index].dayDiffColor,
               ); 
             },
           ),
@@ -1722,6 +1749,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             _currentDayIndex = value;
             _infoReksadana = (_infoReksadanaData[_currentDayIndex] ?? []);
 
+            _generateInfoSort();
             _generateGraphData();
             _generateIndexGraph();
           });
@@ -1833,6 +1861,9 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           // set the info reksadana list based on the current day index
           // selected.
           _infoReksadana = (_infoReksadanaData[_currentDayIndex] ?? []);
+
+          // generate info sort from _infoReksadana
+          _generateInfoSort();
 
           // generate the graph data
           _generateGraphData();
@@ -2057,6 +2088,48 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       // clear index data, and copy it from tempGraph
       _indexData.clear();
       _indexData = tempGraph.toList();
+    }
+  }
+
+  void _generateInfoSort() {
+    double? dayDiff;
+    Color dayDiffColor;
+    double currPrice;
+    double prevPrice;
+
+    // first clear the info reksadana sort
+    _infoReksadanaSort.clear();
+
+    // loop thru info reksadana
+    for(int index=0; index < _infoReksadana.length; index++) {
+      dayDiff = null;
+      dayDiffColor = Colors.transparent;
+
+      // check if we already got previous date price
+      if((index+1) < _infoReksadana.length) {
+        currPrice = _infoReksadana[index].netAssetValue;
+        prevPrice = _infoReksadana[index + 1].netAssetValue;
+        dayDiff = currPrice - prevPrice;
+        dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+      }
+
+      // create the list data
+      CompanyDetailList data = CompanyDetailList(
+        date: _infoReksadana[index].date,
+        price: _infoReksadana[index].netAssetValue,
+        diff: _companyDetail.companyNetAssetValue! - _infoReksadana[index].netAssetValue,
+        riskColor: riskColor(_companyDetail.companyNetAssetValue!, _infoReksadana[index].netAssetValue, _userInfo!.risk),
+        dayDiff: dayDiff,
+        dayDiffColor: dayDiffColor
+      );
+
+      // add to info reksadana sort
+      _infoReksadanaSort.add(data);
+    }
+
+    // check whether it's descending, if so then reverse the list
+    if (_infoSort == "D") {
+      _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
     }
   }
 }

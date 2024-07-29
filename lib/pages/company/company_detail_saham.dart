@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
@@ -31,6 +32,7 @@ import 'package:my_wealth/utils/arguments/broker_detail_args.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
+import 'package:my_wealth/utils/extensions/double.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
@@ -52,6 +54,32 @@ import 'package:my_wealth/widgets/chart/heat_graph.dart';
 import 'package:my_wealth/widgets/chart/line_chart.dart';
 import 'package:my_wealth/widgets/chart/seasonality_table.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
+
+class SahamPriceList {
+  final DateTime date;
+  final int volume;
+  final double lastPrice;
+  final Color lastPriceColor;
+  final double adjustedLowPrice;
+  final double adjustedHighPrice;
+  final double lowDiff;
+  final double highDiff;
+  final double? dayDiff;
+  final Color dayDiffColor;
+
+  const SahamPriceList({
+    required this.date,
+    required this.volume,
+    required this.lastPrice,
+    required this.lastPriceColor,
+    required this.adjustedLowPrice,
+    required this.adjustedHighPrice,
+    required this.lowDiff,
+    required this.highDiff,
+    required this.dayDiff,
+    required this.dayDiffColor,
+  });
+}
 
 class CompanyDetailSahamPage extends StatefulWidget {
   final Object? companyData;
@@ -92,6 +120,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
   late List<InfoFundamentalsModel> _infoFundamental;
   late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
+  late String _priceSort;
+  late List<SahamPriceList> _infoSahamPriceSort;
   final Map<int, List<InfoSahamPriceModel>> _infoSahamPriceData = {};
   late int _currentInfoSahamPrice;
   late String _brokerSummarySelected;
@@ -194,6 +224,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
     // initialize the info price saham
     _infoSahamPrice = [];
+
+    // initialize array and defaulted the sort as ascending
+    _infoSahamPriceSort = [];
+    _priceSort = "A";
+
     _infoSahamPriceData.clear();
     
     // initialize all the info
@@ -291,7 +326,26 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
               (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
               color: accentColor,
             ),
-            const SizedBox(width: 20,),
+            IconButton(
+              icon: Icon(
+                (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+                color: textPrimary,
+              ),
+              onPressed: (() {
+                setState(() {
+                  if (_priceSort == "A") {
+                    _priceSort = "D";
+                  }
+                  else {
+                    _priceSort = "A";
+                  }
+
+                  // just reversed the list
+                  _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
+                });
+              }),
+            ),
+            const SizedBox(width: 10,),
           ],
         ),
         body: Column(
@@ -2654,12 +2708,24 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                             )
                           )
                         ),
-                        child: const Text(
-                          "Date",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Text(
+                              "Date",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(width: 5,),
+                            Icon(
+                              (_priceSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
+                              size: 10,
+                              color: textPrimary,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -2741,31 +2807,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
         Expanded(
           child: ListView.builder(
             controller: _priceController,
-            itemCount: _infoSahamPrice.length,
+            itemCount: _infoSahamPriceSort.length,
             physics: const AlwaysScrollableScrollPhysics(),
             itemBuilder: ((context, index) {
-              int? dayDiff;
-              Color dayDiffColor = Colors.transparent;
-              Color priceToCurrentColor = riskColor(_companyDetail.companyNetAssetValue!, _infoSahamPrice[index].lastPrice.toDouble(), _userInfo!.risk);
-              int lowDiff = _infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedLowPrice;
-              int highDiff = (_infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedHighPrice) * -1;
-
-              if((index+1) < _infoSahamPrice.length) {
-                int currPrice = _infoSahamPrice[index].lastPrice;
-                int prevPrice = _infoSahamPrice[index + 1].lastPrice;
-                dayDiff = currPrice - prevPrice;
-
-                // ensure day diff is positive
-                if (dayDiff < 0) {
-                  dayDiff *= -1;
-                }
-
-                dayDiffColor = riskColor(currPrice.toDouble(), prevPrice.toDouble(), _userInfo!.risk);
-              }
-
               return Container(
                 width: double.infinity,
-                color: priceToCurrentColor,
+                color: _infoSahamPriceSort[index].lastPriceColor,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -2773,7 +2820,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                     const SizedBox(width: 5,),
                     Expanded(
                       child: Container(
-                        color: dayDiffColor,
+                        color: _infoSahamPriceSort[index].dayDiffColor,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -2794,13 +2841,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            _df.format(_infoSahamPrice[index].date.toLocal()),
+                                            _df.format(_infoSahamPriceSort[index].date.toLocal()),
                                             style: const TextStyle(
                                               fontSize: 12,
                                             ),
                                           ),
                                           Text(
-                                            formatIntWithNull(_infoSahamPrice[index].volume, false, true),
+                                            formatIntWithNull(_infoSahamPriceSort[index].volume, false, true),
                                             style: const TextStyle(
                                               fontSize: 10,
                                             ),
@@ -2816,21 +2863,21 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            formatCurrency(_infoSahamPrice[index].lastPrice.toDouble()),
+                                            formatCurrency(_infoSahamPriceSort[index].lastPrice, false, false),
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 12,
                                             ),
                                           ),
                                           Text(
-                                            formatCurrency(_infoSahamPrice[index].adjustedLowPrice.toDouble()),
+                                            formatCurrency(_infoSahamPriceSort[index].adjustedLowPrice, false, false),
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 10,
                                             ),
                                           ),
                                           Text(
-                                            formatCurrency(_infoSahamPrice[index].adjustedHighPrice.toDouble()),
+                                            formatCurrency(_infoSahamPriceSort[index].adjustedHighPrice, false, false),
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 10,
@@ -2850,14 +2897,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(
-                                                  color: riskColor(_companyDetail.companyNetAssetValue!, _infoSahamPrice[index].lastPrice.toDouble(), _userInfo!.risk),
+                                                  color: riskColor(_companyDetail.companyNetAssetValue!, _infoSahamPriceSort[index].lastPrice, _userInfo!.risk),
                                                   width: 2.0,
                                                   style: BorderStyle.solid,
                                                 )
                                               )
                                             ),
                                             child: Text(
-                                              formatCurrency(_companyDetail.companyNetAssetValue! - _infoSahamPrice[index].lastPrice.toDouble()),
+                                              formatCurrency(_companyDetail.companyNetAssetValue! - _infoSahamPriceSort[index].lastPrice, false, false),
                                               textAlign: TextAlign.right,
                                               style: const TextStyle(
                                                 fontSize: 12,
@@ -2865,7 +2912,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                             )
                                           ),
                                           Text(
-                                            formatIntWithNull(lowDiff, false, false),
+                                            formatCurrency(_infoSahamPriceSort[index].lowDiff, false, false),
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 10,
@@ -2873,7 +2920,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                             ),
                                           ),
                                           Text(
-                                            formatIntWithNull(highDiff, false, false),
+                                            formatCurrency(_infoSahamPriceSort[index].highDiff, false, false),
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 10,
@@ -2894,14 +2941,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(
-                                                  color: dayDiffColor,
+                                                  color: _infoSahamPriceSort[index].dayDiffColor,
                                                   width: 2.0,
                                                   style: BorderStyle.solid,
                                                 )
                                               )
                                             ),
                                             child: Text(
-                                              (dayDiff == null ? "-" : formatCurrency(dayDiff.toDouble())),
+                                              formatCurrencyWithNull(_infoSahamPriceSort[index].dayDiff, false, false),
                                               textAlign: TextAlign.right,
                                               style: const TextStyle(
                                                 fontSize: 12,
@@ -2909,7 +2956,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                             )
                                           ),
                                           Text(
-                                            '${formatDecimalWithNull(lowDiff / _infoSahamPrice[index].lastPrice, 100, 2)}%',
+                                            '${formatDecimalWithNull(_infoSahamPriceSort[index].lowDiff / _infoSahamPriceSort[index].lastPrice, 100, 2)}%',
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 10,
@@ -2917,7 +2964,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
                                             ),
                                           ),
                                           Text(
-                                            '${formatDecimalWithNull(highDiff / _infoSahamPrice[index].lastPrice, 100, 2)}%',
+                                            '${formatDecimalWithNull(_infoSahamPriceSort[index].highDiff / _infoSahamPriceSort[index].lastPrice, 100, 2)}%',
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               fontSize: 10,
@@ -3324,6 +3371,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
           setState(() {
             _currentInfoSahamPrice = value;
             _infoSahamPrice = _infoSahamPriceData[_currentInfoSahamPrice]!;
+            _generateSahamPriceSort();
 
             _calculateMinMaxPrice(_infoSahamPrice);
             _generateGraphData(_infoSahamPrice, _companyDetail);
@@ -3430,39 +3478,19 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(company.companyPerAnnualized, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((otherCompany.companyPerAnnualized ?? 0) - (company.companyPerAnnualized ?? 0))),
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(company.companyBetaOneYear, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((company.companyBetaOneYear ?? 0) - (otherCompany.companyBetaOneYear ?? 0))),
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.bvps, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((fundamental.bvps ?? 0) - (otherFundamental.bvps ?? 0))),
-      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.pbv, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: _noMinusComparison((fundamental.pbv ?? 0), (otherFundamental.pbv ?? 0), '<')),
+      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.pbv, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: (fundamental.pbv ?? 0).noMinCompare((otherFundamental.pbv ?? 0), '<')),
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(company.companyPsrAnnualized, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((otherCompany.companyPsrAnnualized ?? 0) - (company.companyPsrAnnualized ?? 0))),
-      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(company.companyPcfrAnnualized, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: _noMinusComparison((company.companyPcfrAnnualized ?? 0), (otherCompany.companyPcfrAnnualized ?? 0), '<')),
+      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(company.companyPcfrAnnualized, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: (company.companyPcfrAnnualized ?? 0).noMinCompare((otherCompany.companyPcfrAnnualized ?? 0), '<')),
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.roa, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((fundamental.roa ?? 0) - (otherFundamental.roa ?? 0))),
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.roe, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((fundamental.roe ?? 0) - (otherFundamental.roe ?? 0))),
-      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.evEbitda, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: _noMinusComparison((fundamental.evEbitda ?? 0), (otherFundamental.evEbitda ?? 0), '<')),
-      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.debtEquity, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: _noMinusComparison((fundamental.debtEquity ?? 0), (otherFundamental.debtEquity ?? 0), '<')),
-      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.debtTotalcap, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: _noMinusComparison((fundamental.debtTotalcap ?? 0), (otherFundamental.debtTotalcap ?? 0), '<')),
-      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.debtEbitda, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: _noMinusComparison((fundamental.debtEbitda ?? 0), (otherFundamental.debtEbitda ?? 0), '<')),
+      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.evEbitda, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: (fundamental.evEbitda ?? 0).noMinCompare((otherFundamental.evEbitda ?? 0), '<')),
+      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.debtEquity, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: (fundamental.debtEquity ?? 0).noMinCompare((otherFundamental.debtEquity ?? 0), '<')),
+      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.debtTotalcap, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: (fundamental.debtTotalcap ?? 0).noMinCompare((otherFundamental.debtTotalcap ?? 0), '<')),
+      CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.debtEbitda, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: (fundamental.debtEbitda ?? 0).noMinCompare((otherFundamental.debtEbitda ?? 0), '<')),
       CompareFields(color: primaryDark, borderColor: borderColor, text: formatDecimalWithNull(fundamental.ebitdaInterestexpense, 1, 2), showCompare: (_otherCompanyCode != null), isBigger: ((fundamental.ebitdaInterestexpense ?? 0) - (otherFundamental.ebitdaInterestexpense ?? 0))),
     ];
 
     return returnWidget;
-  }
-
-  double _noMinusComparison(double cmp1, double cmp2, String compare) {
-    if (cmp1 > 0 && cmp2 > 0) {
-      switch(compare.toLowerCase()) {
-        case '<':
-          return cmp2 - cmp1;
-        case '>':
-          return cmp1 - cmp2;
-        default:
-          return 0;
-      }
-    }
-    else {
-      if (cmp1 < 0) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
   }
 
   void _generateGraphData(List<InfoSahamPriceModel> prices, CompanyDetailModel company) {
@@ -3931,6 +3959,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
 
           // once got we can set the info saham price into the correct data
           _infoSahamPrice = _infoSahamPriceData[_currentInfoSahamPrice]!;
+          _generateSahamPriceSort();
 
           // calculate the high and low for this data
           _calculateMinMaxPrice(_infoSahamPriceData[_currentInfoSahamPrice]!);
@@ -4164,6 +4193,56 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage> with Si
       // clear index data, and copy it from tempGraph
       _indexData.clear();
       _indexData = tempGraph.toList();
+    }
+  }
+
+  void _generateSahamPriceSort() {
+    double? dayDiff;
+    Color dayDiffColor;
+    Color priceToCurrentColor;
+    int lowDiff;
+    int highDiff;
+    double currPrice;
+    double prevPrice;
+
+    // clear the info price saham sort
+    _infoSahamPriceSort.clear();
+
+    // loop thru info price saham
+    for(int index=0; index<_infoSahamPrice.length; index++) {
+      dayDiff = null;
+      dayDiffColor = Colors.transparent;
+      priceToCurrentColor = riskColor(_companyDetail.companyNetAssetValue!, _infoSahamPrice[index].lastPrice.toDouble(), _userInfo!.risk);
+      lowDiff = _infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedLowPrice;
+      highDiff = (_infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedHighPrice) * -1;
+
+      if((index+1) < _infoSahamPrice.length) {
+        currPrice = _infoSahamPrice[index].lastPrice.toDouble();
+        prevPrice = _infoSahamPrice[index + 1].lastPrice.toDouble();
+        dayDiff = currPrice - prevPrice;
+
+        dayDiffColor = riskColor(currPrice.toDouble(), prevPrice.toDouble(), _userInfo!.risk);
+      }
+
+      SahamPriceList data = SahamPriceList(
+        date: _infoSahamPrice[index].date,
+        volume: _infoSahamPrice[index].volume,
+        lastPrice: _infoSahamPrice[index].lastPrice.toDouble(),
+        lastPriceColor: priceToCurrentColor,
+        adjustedLowPrice: _infoSahamPrice[index].adjustedLowPrice.toDouble(),
+        adjustedHighPrice: _infoSahamPrice[index].adjustedHighPrice.toDouble(),
+        lowDiff: lowDiff.toDouble(),
+        highDiff: highDiff.toDouble(),
+        dayDiff: dayDiff,
+        dayDiffColor: dayDiffColor
+      );
+
+      _infoSahamPriceSort.add(data);
+    }
+
+    // check whether this is ascending or descending
+    if (_priceSort == "D") {
+      _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
     }
   }
 }

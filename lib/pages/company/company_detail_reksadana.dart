@@ -16,6 +16,7 @@ import 'package:my_wealth/model/user/user_login.dart';
 import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/arguments/company_find_other_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/binary_computation.dart';
@@ -727,7 +728,28 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               children: <Widget>[
                 InkWell(
                   onTap: (() async {
-                    await Navigator.pushNamed(context, '/company/detail/find', arguments: 'reksadana').then((value) async {
+                    String? type;
+                    switch(_companyDetail.companyType) {
+                      case "reksadanapendapatantetap":
+                          type = "Pendapatan Tetap";
+                          break;
+                      case "reksadanacampuran":
+                          type = "Campuran";
+                          break;
+                      case "reksadanapasaruang":
+                          type = "Pasar Uang";
+                          break;
+                      case "reksadanasaham":
+                          type = "Saham";
+                          break;
+                    }
+
+                    CompanyFindOtherArgs args = CompanyFindOtherArgs(
+                      type: 'reksadana',
+                      filter: type,
+                    );
+
+                    await Navigator.pushNamed(context, '/company/detail/find', arguments: args).then((value) async {
                       // check if value is not null?
                       if (value != null) {
                         // convert the value to company list model

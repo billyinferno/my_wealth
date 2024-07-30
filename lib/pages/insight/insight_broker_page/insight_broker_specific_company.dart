@@ -9,6 +9,7 @@ import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/model/company/company_top_broker_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/arguments/company_detail_args.dart';
+import 'package:my_wealth/utils/arguments/company_find_other_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
@@ -36,6 +37,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   );
   final TextStyle _topBrokerRow = const TextStyle(
     fontSize: 10,
+  );
+  final CompanyFindOtherArgs _companyFindOtherArgs = const CompanyFindOtherArgs(
+    type: 'saham',
   );
 
   late List<Widget> _pageItemsSummary;
@@ -160,7 +164,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                           InkWell(
                             onTap: (() async {
                               // navigate to the find other company list and we will get the value from there
-                              await Navigator.pushNamed(context, '/company/detail/find', arguments: 'Saham').then((value) {
+                              await Navigator.pushNamed(context, '/company/detail/find', arguments: _companyFindOtherArgs).then((value) {
                                 if (value != null) {
                                   // convert value to company list model
                                   _companyData = value as CompanyListModel;

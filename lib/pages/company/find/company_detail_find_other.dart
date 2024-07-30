@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/company/company_list_model.dart';
 import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/utils/arguments/company_find_other_args.dart';
+import 'package:my_wealth/utils/extensions/string.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
 class CompanyDetailFindOtherPage extends StatefulWidget {
-  final Object? type;
-  const CompanyDetailFindOtherPage({super.key, required this.type});
+  final Object? args;
+  const CompanyDetailFindOtherPage({super.key, required this.args});
 
   @override
   State<CompanyDetailFindOtherPage> createState() => _CompanyDetailFindOtherPageState();
@@ -20,15 +22,16 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
   final ScrollController _companyListController = ScrollController();
 
   late Future<bool> _getData;
-  late String _companyType;
+  late CompanyFindOtherArgs _companyFindArgs;
   late List<CompanyListModel> _companyList;
   late List<CompanyListModel> _filterList;
 
   @override
   void initState() {
     super.initState();
-    _companyType = widget.type as String;
+    _companyFindArgs = widget.args as CompanyFindOtherArgs;
     _companyList = [];
+    _filterList = [];
     _getData = _getCompanyList();
   }
 
@@ -64,7 +67,7 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
         appBar: AppBar(
           title: Center(
             child: Text(
-              "Find $_companyType",
+              "Find ${_companyFindArgs.type.toTitleCase()}",
               style: const TextStyle(
                 color: secondaryColor,
               ),
@@ -184,9 +187,13 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
   Future<bool> _getCompanyList() async {
     // try to get the company data from server
     try {
-      await _companyAPI.findCompany(_companyType).then((resp) {
+      await _companyAPI.findCompany(_companyFindArgs.type).then((resp) {
         _companyList = resp;
-        _filterList = _companyList.toList();
+        
+        // check whether we have filter or not, if got then we will filter
+        // the first result here, if not then we will just copy whatever in
+        // the _companyList to the filter result.
+        _searchFilter();
       });
     }
     catch(error) {
@@ -194,6 +201,29 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
     }
 
     return true;
+  }
+
+  void _searchFilter() {
+    // get the filter being set on the arguments
+    String filter = (_companyFindArgs.filter ?? '').toLowerCase();
+
+    // check if we got filter or not on the arguments
+    if (filter.isNotEmpty) {
+      // clear filter list
+      _filterList.clear();
+      
+      // loop thru the _companyList and check whether the company type
+      // is the same as filter or not?
+      for(int i=0; i<_companyList.length; i++) {
+        // check if company type the same as filter or not?
+        if (_companyList[i].companyType.toLowerCase().contains(filter)) {
+          _filterList.add(_companyList[i]);
+        }
+      }
+    }
+    else {
+      _filterList = _companyList.toList();
+    }
   }
 
   void _searchList(String find) {

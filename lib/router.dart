@@ -160,7 +160,7 @@ class RouterPageState extends State<RouterPage> {
       }
       case '/company/detail/find':
       {
-        return createAnimationRoute(CompanyDetailFindOtherPage(type: settings.arguments,));
+        return createAnimationRoute(CompanyDetailFindOtherPage(args: settings.arguments,));
       }
       case '/company/detail/saham':
       {

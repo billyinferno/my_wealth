@@ -16,6 +16,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_detail_price_list.dart';
@@ -922,8 +923,12 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         throw Exception('Error while get data from server');
       });
     }
-    catch(error) {
-      debugPrint(error.toString());
+    catch(error, stackTrace) {
+      Log.error(
+        message: 'Error when try to get the data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw 'Error when try to get the data from server';
     }
 

@@ -17,6 +17,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:my_wealth/widgets/list/company_detail_price_list.dart';
@@ -715,8 +716,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
         _toDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
         _fromDate = _toDate.subtract(const Duration(days: 365)).toLocal();
       }).onError((error, stackTrace) {
-        debugPrint("Error: ${error.toString()}");
-        debugPrintStack(stackTrace: stackTrace);
+        Log.error(
+          message: "Error when get gold information",
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw Exception("Error when get gold information");
       },);
 
@@ -772,8 +776,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
           _generateGraphData();
         }).onError((error, stackTrace) {
-          debugPrint("Error: ${error.toString()}");
-          debugPrintStack(stackTrace: stackTrace);
+          Log.error(
+            message: "Error when get price gold data",
+            error: error,
+            stackTrace: stackTrace,
+          );
           throw Exception("Error when get price gold data");
         },),
 
@@ -805,15 +812,27 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             }
           }
         }).onError((error, stackTrace) {
-          debugPrint("Error: ${error.toString()}");
-          debugPrintStack(stackTrace: stackTrace);
+          Log.error(
+            message: "Error when get gold watchlist data",
+            error: error,
+            stackTrace: stackTrace,
+          );
           throw Exception("Error when get gold watchlist data");
         },),
       ]).onError((error, stackTrace) {
+        Log.error(
+          message: 'Error while getting data from server',
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw Exception('Error while getting data from server');
       });
     }
     catch(error) {
+      Log.error(
+        message: 'Error when try to get the data from server',
+        error: error,
+      );
       throw 'Error when try to get the data from server';
     }
 

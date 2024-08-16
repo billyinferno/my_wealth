@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/broker_api.dart';
 import 'package:my_wealth/api/broker_summary_api.dart';
@@ -28,6 +29,7 @@ import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -299,11 +301,11 @@ class LoginPageState extends State<LoginPage> {
                               if (mounted) {
                                 // check whether user is able to login or not?
                                 if(res) {
-                                  debugPrint("🏠 Login success, redirect to home");
+                                  Log.success(message: "🏠 Login success, redirect to home");
                                   Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
                                 }
                                 else {
-                                  debugPrint("⛔ Wrong login information");
+                                  Log.error(message: "⛔ Wrong login information");
                                 }
                               }
                             });
@@ -347,35 +349,35 @@ class LoginPageState extends State<LoginPage> {
     bool ret = false;
     String currJwtToken = UserSharedPreferences.getUserJWT();
 
-    await _userAPI.me().then((resp) async {
-      // check if user confirmed and not blocked
-      if(resp.confirmed == true && resp.blocked == false) {
-        ret = true;
+    try {
+      await _userAPI.me().then((resp) async {
+        // check if user confirmed and not blocked
+        if(resp.confirmed == true && resp.blocked == false) {
+          ret = true;
 
-        // stored this information on the shared preference,
-        // in case there are update from user that directly performed
-        // on server.
-        await UserSharedPreferences.setUserInfo(resp).then((_) {
-          if (mounted) {
-            // put the user information on the provider
-            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-            debugPrint("3️⃣ Update user information");
+          // stored this information on the shared preference,
+          // in case there are update from user that directly performed
+          // on server.
+          await UserSharedPreferences.setUserInfo(resp).then((_) {
+            if (mounted) {
+              // put the user information on the provider
+              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+              Log.info(message: "3️⃣ Update user information");
 
-            // set the current visibility configuration on the provider
-            Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: resp.visibility);
-            Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: resp.showLots);
-            Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: resp.showEmptyWatchlist);
-          }
-        });
-      }
-    }).onError((NetException error, stackTrace) async {
-      debugPrint("⛔ ${error.message}");
+              // set the current visibility configuration on the provider
+              Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: resp.visibility);
+              Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: resp.showLots);
+              Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: resp.showEmptyWatchlist);
+            }
+          });
+        }
+      });
+    }
+    on NetException catch (error, _) {
+      Log.error(message: "⛔ ${error.message}");
 
-      if(error.message.toLowerCase() == "xmlhttprequest error.") {
-        // show no connection to API
-        _showScaffoldMessage(text: "Unable to connect to API");
-      }
-      else {
+      // check if this is rejection from server
+      if(error.code != 200) {
         // check if we have jwt token or not?
         if (currJwtToken.isNotEmpty) {
           // if already got token but unable to login, it means that the token already invalid
@@ -390,7 +392,27 @@ class LoginPageState extends State<LoginPage> {
           _showScaffoldMessage(text: "Token expired, please re-login");
         }
       }
-    });
+    }
+    on ClientException catch (error, stackTrace) {
+      Log.error(
+        message: "⛔ Client exception with error ${error.message}",
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show no connection to API
+      _showScaffoldMessage(text: "Unable to connect to server");
+    }
+    catch (error, stackTrace) {
+      Log.error(
+        message: "⛔ Generic error ${error.toString()}",
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show generic error on application
+      _showScaffoldMessage(text: "Error processing on applicatoin");
+    }
 
     // return the result of the check login to the caller
     return ret;
@@ -398,54 +420,62 @@ class LoginPageState extends State<LoginPage> {
 
   Future<bool> _login(String username, String password) async {
     bool ret = false;
-    debugPrint("🔑 Try to login");
+    Log.info(message: "🔑 Try to login");
     
     // show the loading screen
     LoadingScreen.instance().show(context: context);
 
     // check user credentials
-    await _userAPI.login(username, password).then((resp) async {
-      // login success, check and ensure that user is confirmed and not blocked
-      if(resp.user.confirmed == true && resp.user.blocked == false) {
-        ret = true;
+    try {
+      await _userAPI.login(username, password).then((resp) async {
+        // login success, check and ensure that user is confirmed and not blocked
+        if(resp.user.confirmed == true && resp.user.blocked == false) {
+          ret = true;
 
-        // clear the local box as we will refresh everything when we perform check login
-        await LocalBox.clear().then((_) {
-          debugPrint("🧹 Cleaning local storage before login");
-        });
+          // clear the local box as we will refresh everything when we perform check login
+          await LocalBox.clear().then((_) {
+            Log.info(message: "🧹 Cleaning local storage before login");
+          });
 
-        // as we already got the model here, we can store the JWT to the secured box here
-        await UserSharedPreferences.setUserJWT(resp.jwt).then((_) {
-          debugPrint("1️⃣ Set user JWT token");
-        });
+          // as we already got the model here, we can store the JWT to the secured box here
+          await UserSharedPreferences.setUserJWT(resp.jwt).then((_) {
+            Log.info(message: "1️⃣ Set user JWT token");
+          });
 
-        // refresh JWT token on the NetUtils after login
-        NetUtils.refreshJWT();
+          // refresh JWT token on the NetUtils after login
+          NetUtils.refreshJWT();
 
-        // then we can store the user information to the local storage
-        await UserSharedPreferences.setUserInfo(resp.user).then((_) {
-          if (mounted) {
-            // put the user information on the provider
-            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp.user);
-            debugPrint("2️⃣ Set user information");
-          }
-        });
-      }
-    }).onError((error, stackTrace) {
-      // show error
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
-      // check if the error message is "XMLHttpRequest error."
-      if (error.toString() == "XMLHttpRequest error.") {
-        debugPrint("🌏 No Internet Connection");
-        _showScaffoldMessage(text: "Unable to connect to API");
-      }
-      else {
-        // login failed
-        debugPrint("🔐 Login failed");
-        _showScaffoldMessage(text: "Invalid identifier or password");
-      }
-    });
+          // then we can store the user information to the local storage
+          await UserSharedPreferences.setUserInfo(resp.user).then((_) {
+            if (mounted) {
+              // put the user information on the provider
+              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp.user);
+              Log.info(message: "2️⃣ Set user information");
+            }
+          });
+        }
+      });
+    }
+    on NetException catch (error, _) {
+      // login failed
+      Log.error(message: "🔐 Login failed");
+      _showScaffoldMessage(text: "Invalid identifier or password");
+    }
+    on ClientException catch (error, _) {
+      Log.error(message: "🌏 No Internet Connection");
+      _showScaffoldMessage(text: "Unable to connect to API");
+    }
+    catch (error, stackTrace) {
+      // generic error
+      Log.error(
+        message: "⛔ Generic error ${error.toString()}",
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show generic error on application
+      _showScaffoldMessage(text: "Error processing on applicatoin");
+    }
 
     // and we can call all the rest of the API that we also need when user already
     // login.
@@ -454,9 +484,11 @@ class LoginPageState extends State<LoginPage> {
       ret = false;
 
       // print error on the console
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
-      debugPrint("ℹ️ Unable to get additional information");
+      Log.error(
+        message: "ℹ️ Unable to get additional information",
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       // show the error on the scaffold
       _showScaffoldMessage(text: "Unable to get additional info");
@@ -481,186 +513,186 @@ class LoginPageState extends State<LoginPage> {
         await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
         if (!mounted) return;
         Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
-        debugPrint("4️⃣ Get user favourites reksadana");
+        Log.info(message: "4️⃣ Get user favourites reksadana");
       }),
       _faveAPI.getFavourites("saham").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("saham", resp);
         if (!mounted) return;
         Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
-        debugPrint("5️⃣ Get user favourites saham");
+        Log.info(message: "5️⃣ Get user favourites saham");
       }),
       _faveAPI.getFavourites("crypto").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
         if (!mounted) return;
         Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
-        debugPrint("6️⃣ Get user favourites crypto");
+        Log.info(message: "6️⃣ Get user favourites crypto");
       }),
       _watchlistApi.getWatchlist("reksadana").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
-        debugPrint("7️⃣ Get user watchlist reksadana");
+        Log.info(message: "7️⃣ Get user watchlist reksadana");
       }),
       _watchlistApi.getWatchlist("saham").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("saham", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
-        debugPrint("8️⃣ Get user watchlist saham");
+        Log.info(message: "8️⃣ Get user watchlist saham");
       }),
       _watchlistApi.getWatchlist("crypto").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("crypto", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
-        debugPrint("9️⃣ Get user watchlist crypto");
+        Log.info(message: "9️⃣ Get user watchlist crypto");
       }),
       _watchlistApi.getWatchlist("gold").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("gold", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
-        debugPrint("1️⃣0️⃣ Get user watchlist gold");
+        Log.info(message: "1️⃣0️⃣ Get user watchlist gold");
       }),
       _indexApi.getIndex().then((resp) async {
         await IndexSharedPreferences.setIndexList(resp);
         if (!mounted) return;
         Provider.of<IndexProvider>(context, listen: false).setIndexList(resp);
-        debugPrint("🔟1️⃣ Get index");
+        Log.info(message: "🔟1️⃣ Get index");
       }),
       _brokerApi.getBroker().then((resp) async {
         await BrokerSharedPreferences.setBrokerList(resp);
         if (!mounted) return;
         Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
-        debugPrint('🔟2️⃣ Get Broker');
+        Log.info(message: '🔟2️⃣ Get Broker');
       }),
       _brokerSummaryApi.getBrokerSummaryTop().then((resp) async {
         await BrokerSharedPreferences.setBroketTopList(resp);
         if (!mounted) return;
         Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
-        debugPrint('🔟3️⃣ Get Broker Top List');
+        Log.info(message: '🔟3️⃣ Get Broker Top List');
       }),
       _insightAPI.getBrokerTopTransaction().then((resp) async {
         await InsightSharedPreferences.setBrokerTopTxn(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
-        debugPrint('🔟4️⃣ Get Broker Top Transaction List');
+        Log.info(message: '🔟4️⃣ Get Broker Top Transaction List');
       }),
       _insightAPI.getMarketToday().then((resp) async {
         await InsightSharedPreferences.setBrokerMarketToday(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
-        debugPrint('🔟5️⃣ Get Broker Market Today');
+        Log.info(message: '🔟5️⃣ Get Broker Market Today');
       }),
       _insightAPI.getMarketCap().then((resp) async {
         await InsightSharedPreferences.setMarketCap(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
-        debugPrint('🔟6️⃣ Get Broker Market Cap');
+        Log.info(message: '🔟6️⃣ Get Broker Market Cap');
       }),
       _insightAPI.getSectorSummary().then((resp) async {
         await InsightSharedPreferences.setSectorSummaryList(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
-        debugPrint('🔟7️⃣ Get Sector Summary List');
+        Log.info(message: '🔟7️⃣ Get Sector Summary List');
       }),
       _insightAPI.getTopWorseCompany('top').then((resp) async {
         await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
-        debugPrint('🔟8️⃣ Get Top Company Summary List');
+        Log.info(message: '🔟8️⃣ Get Top Company Summary List');
       }),
       _insightAPI.getTopWorseCompany('worse').then((resp) async {
         await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
-        debugPrint('🔟9️⃣ Get Worse Company Summary List');
+        Log.info(message: '🔟9️⃣ Get Worse Company Summary List');
       }),
       _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('saham', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
-        debugPrint('🔟🔟1️⃣ Get Top Reksadana Saham Summary List');
+        Log.info(message: '🔟🔟1️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
-        debugPrint('🔟🔟2️⃣ Get Top Reksadana Campuran Summary List');
+        Log.info(message: '🔟🔟2️⃣ Get Top Reksadana Campuran Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
-        debugPrint('🔟🔟3️⃣ Get Top Reksadana Pasar Uang Summary List');
+        Log.info(message: '🔟🔟3️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
-        debugPrint('🔟🔟4️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
+        Log.info(message: '🔟🔟4️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
-        debugPrint('🔟🔟5️⃣ Get Top Reksadana Saham Summary List');
+        Log.info(message: '🔟🔟5️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
-        debugPrint('🔟🔟6️⃣ Get Top Reksadana Campuran Summary List');
+        Log.info(message: '🔟🔟6️⃣ Get Top Reksadana Campuran Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
-        debugPrint('🔟🔟7️⃣ Get Top Reksadana Pasar Uang Summary List');
+        Log.info(message: '🔟🔟7️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
       _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
-        debugPrint('🔟🔟8️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
+        Log.info(message: '🔟🔟8️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getBandarInteresting().then((resp) async {
         await InsightSharedPreferences.setBandarInterestingList(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setBandarInterestingList(resp);
-        debugPrint('🔟🔟9️⃣ Get Bandar Interesting List');
+        Log.info(message: '🔟🔟9️⃣ Get Bandar Interesting List');
       }),
       _companyAPI.getSectorNameList().then((resp) async {
         await CompanySharedPreferences.setSectorNameList(resp);
         if (!mounted) return;
         Provider.of<CompanyProvider>(context, listen: false).setSectorList(resp);
-        debugPrint('🔟🔟🔟 Get Saham Sector Name List');
+        Log.info(message: '🔟🔟🔟 Get Saham Sector Name List');
       }),
       _watchlistApi.getWatchlistHistory().then((resp) async {
         await WatchlistSharedPreferences.setWatchlistHistory(resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
-        debugPrint("🔟🔟🔟1️⃣ Get user watchlist history");
+        Log.info(message: "🔟🔟🔟1️⃣ Get user watchlist history");
       }),
       _insightAPI.getStockNewListed().then((resp) async {
         await InsightSharedPreferences.setStockNewListed(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockNewListed(resp);
-        debugPrint('🔟🔟🔟2️⃣ Get Stock New Listed');
+        Log.info(message: '🔟🔟🔟2️⃣ Get Stock New Listed');
       }),
       _insightAPI.getStockDividendList().then((resp) async {
         await InsightSharedPreferences.setStockDividendList(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockDividendList(resp);
-        debugPrint('🔟🔟🔟3️⃣ Get Stock Dividend List');
+        Log.info(message: '🔟🔟🔟3️⃣ Get Stock Dividend List');
       }),
       _insightAPI.getStockSplitList().then((resp) async {
         await InsightSharedPreferences.setStockSplitList(resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
-        debugPrint('🔟🔟🔟4️⃣ Get Stock Split List');
+        Log.info(message: '🔟🔟🔟4️⃣ Get Stock Split List');
       }),
       _brokerSummaryApi.getBrokerSummaryDate().then((resp) async {
         if (!mounted) return;
         await BrokerSharedPreferences.setBrokerMinMaxDate(resp.brokerMinDate, resp.brokerMaxDate);
-        debugPrint('🔟🔟🔟6️⃣ Get Broker Min and Max Date');
+        Log.info(message: '🔟🔟🔟6️⃣ Get Broker Min and Max Date');
       }),
       
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
@@ -670,7 +702,7 @@ class LoginPageState extends State<LoginPage> {
       InsightSharedPreferences.clearStockCollect(), // clear stock collect result
       InsightSharedPreferences.clearBrokerCollect(), // clear broker collect result
     ]).then((_) {
-      debugPrint("💯 Finished get additional information");
+      Log.success(message: "💯 Finished get additional information");
     });
   }
 
@@ -678,7 +710,7 @@ class LoginPageState extends State<LoginPage> {
     // check whether user already login or not?
     await _checkLogin().then((isLogin) async {
       if(isLogin) {
-        debugPrint("🔓 Already login");
+        Log.info(message: "🔓 Already login");
 
         // set the _isLogin variable to true
         _isLogin = true;
@@ -687,17 +719,20 @@ class LoginPageState extends State<LoginPage> {
         await _getAdditionalInfo().then((_) {
           if (mounted) {
             // once finished get the additional information route this to home
-            debugPrint("🏠 Redirect to home");
+            Log.info(message: "🏠 Redirect to home");
             Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
           }
         }).onError((error, stackTrace) {
-          debugPrint("Error: ${error.toString()}");
-          debugPrintStack(stackTrace: stackTrace);
+          Log.error(
+            message: "Error when get additional data",
+            error: error,
+            stackTrace: stackTrace,
+          );
           throw Exception('Error when get the additional data');
         },);
       }
       else {
-        debugPrint("🔐 Not yet login");
+        Log.info(message: "🔐 Not yet login");
       }
     });
 

@@ -61,7 +61,6 @@ class StockVolumePainter extends CustomPainter {
       // check if current record is the more than the previous one?
       volumePaint = _neutralPaint;
 
-      // debugPrint("Date: ${stockData[i].date}, Open: ${stockData[i].adjustedOpenPrice}, Last: ${stockData[i].lastPrice}, Closing: ${stockData[i].adjustedClosingPrice}");
       // instead checking with previous data (as the order is descending)
       // we can just check what is the open price and the close price?
       // if close price > open price, then it means that we got some gain

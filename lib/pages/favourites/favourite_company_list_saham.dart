@@ -187,7 +187,6 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
                   itemBuilder: ((context, index) {
                     return InkWell(
                       onTap: (() {
-                        // debugPrint("Open Company ${_filterList[index].favouritesCompanyName}");
                         CompanyDetailArgs args = CompanyDetailArgs(
                           companyId: _sortedFaveList[index].favouritesCompanyId,
                           companyName: _sortedFaveList[index].favouritesCompanyName,

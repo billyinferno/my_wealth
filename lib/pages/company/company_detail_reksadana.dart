@@ -26,6 +26,7 @@ import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/chart/multi_line_chart.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -1824,8 +1825,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         _to = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
         _from = _to.subtract(const Duration(days: 365));
       }).onError((error, stackTrace) {
-        debugPrint("Error ${error.toString()}");
-        debugPrintStack(stackTrace: stackTrace);
+        Log.error(
+          message: "Error when get company information",
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw Exception ("Error when get company information");  
       });
 
@@ -1938,8 +1942,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     await _companyApi.getCompanyByID(_otherCompany.companyId, 'reksadana').then((resp) {
       _otherCompanyDetail = resp;
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: "Error when get other company detail",
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       // show error on the screen
       if (mounted) {
@@ -2032,7 +2039,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         _indexComparePrice = resp;
 
         // generate the index performance data
-        Future.microtask(() async {
+        await Future.microtask(() async {
           // first generate the index map
           await _generateIndexMap();
 
@@ -2044,8 +2051,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         setState(() {
         });
       },).onError((error, stackTrace) {
-        debugPrint("Error: ${error.toString()}");
-        debugPrintStack(stackTrace: stackTrace);
+        Log.error(
+          message: "Error when get index price",
+          error: error,
+          stackTrace: stackTrace,
+        );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when get index price"));

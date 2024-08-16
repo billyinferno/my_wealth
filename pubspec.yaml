@@ -50,6 +50,7 @@ dependencies:
   month_picker_dialog: ^5.0.0
   flutter_lucide: ^1.2.0
   flutter_launcher_icons: ^0.13.1
+  logger: ^2.4.0
 
 dev_dependencies:
   flutter_test:

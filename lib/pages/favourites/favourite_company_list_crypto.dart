@@ -156,7 +156,6 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                   itemBuilder: ((context, index) {
                     return InkWell(
                       onTap: (() {
-                        // debugPrint("Open Company ${_filterList[index].favouritesCompanyName}");
                         CompanyDetailArgs args = CompanyDetailArgs(
                           companyId: _filterList[index].favouritesCompanyId,
                           companyName: _filterList[index].favouritesCompanyName,

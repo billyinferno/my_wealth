@@ -203,7 +203,6 @@ class LineChartPainter extends CustomPainter {
     ma5 = ma5 / ma5Count;
     ma8 = ma8 / ma8Count;
     ma13 = ma13 / ma13Count;
-    // debugPrint("$ma5 - $ma5Count, $ma8 - $ma8Count, $ma13 - $ma13Count");
 
     // draw horizontal line
     double yD = graphRect.size.height / 4;

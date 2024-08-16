@@ -12,6 +12,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
@@ -101,7 +102,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 Navigator.pop(context);
               }
               catch(error) {
-                debugPrint(error.toString());
+                Log.error(
+                  message: "Error when pop to previous screen",
+                  error: error,
+                );
               }
             }),
           ),
@@ -807,9 +811,12 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   Future<void> _refreshTransactionList() async {
     LoadingScreen.instance().show(context: context);
     await _getTransactionList().onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
-      throw Exception('Error when get transaction list');
+      Log.error(
+        message: 'Error when get transaction list',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw Exception();
     });
     LoadingScreen.instance().hide();                       
   }
@@ -878,7 +885,11 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     await _brokerSummaryAPI.getBrokerTransactionList(_args.brokerFirmID, _start, _limit, _fromDateCurrent, _toDateCurrent).then((resp) {
       _updateTransactionList(resp);
     }).onError((error, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: "Error when loading more data",
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception('Error when loading more data');
     });
   }
@@ -924,7 +935,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         });
       });
     } catch(error) {
-      debugPrint(error.toString());
+      Log.error(
+        message: "Error when get broker detail data",
+        error: error,
+      );
       throw 'Error when get broker detail data';
     }
 

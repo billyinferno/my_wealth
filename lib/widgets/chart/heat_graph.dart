@@ -136,7 +136,6 @@ class HeatGraph extends StatelessWidget {
           // now loop from this weekday until friday, in case this is friday
           // then it will be only loop once
           for (var day=dataExpand[i].date.weekday; day <= loopLimit && i < dataExpand.length; day++, i++, totalData++) {
-            // debugPrint(_dataExpand[i].date.toString());
             if(dataExpand[i].price > 0) {
               // change the box data with the current data
               // generate the color
@@ -167,7 +166,6 @@ class HeatGraph extends StatelessWidget {
             boxes[day-1] = _generateBox(boxColor, Colors.transparent);
             endDate = dataExpand[i].date;
           }
-          // debugPrint("--- END OF WEEK ---");
           
           // last box will be put with text
           boxes.add(Container(

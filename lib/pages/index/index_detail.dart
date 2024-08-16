@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/chart/seasonality_table.dart';
 import 'package:my_wealth/widgets/list/company_info_box.dart';
 import 'package:my_wealth/widgets/chart/heat_graph.dart';
@@ -424,17 +425,20 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   Future<bool> _getAllData() async {
     await Future.wait([
       _getIndexPriceDate().then((_) {
-        debugPrint("🏁 Get index price detail");
+        Log.success(message: "🏁 Get index price detail");
       }),
 
       _indexApi.getSeasonality(_index.indexId).then((resp) {
-        debugPrint("🏁 Get index seasonility");
+        Log.success(message: "🏁 Get index seasonility");
 
         _seasonality = resp;
       })
     ]).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting index data',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception("Error when get indices price data");
     },);
     

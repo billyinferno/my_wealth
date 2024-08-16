@@ -9,6 +9,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -88,7 +89,11 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
                 // on the new favorites being add/remove from this page
                 await getUserFavourites().onError((error, stackTrace) {
                   // in case error showed it on debug
-                  debugPrint(error.toString());
+                  Log.error(
+                    message: 'Error getting user favourites',
+                    error: error,
+                    stackTrace: stackTrace,
+                  );
 
                   // print on the scaffold snack bar
                   if (mounted) {
@@ -222,7 +227,7 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
       await _faveAPI.delete(faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID $faveId for Crypto company ${_filterList[index].favouritesCompanyName}");
+        Log.success(message: "🧹 Delete Favourite ID $faveId for Crypto company ${_filterList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
@@ -238,7 +243,11 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
         // update the list and re-render the page
         updateFaveList(index, resp);
       }).onError((error, stackTrace) {
-        debugPrint(error.toString());
+        Log.error(
+          message: 'Error deleting favourites',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
         }
@@ -246,11 +255,15 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
     }
     else {
       await _faveAPI.add(_filterList[index].favouritesCompanyId, "crypto").then((resp) {
-        debugPrint("➕ Add Crypto company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
+        Log.success(message: "➕ Add Crypto company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         updateFaveList(index, resp);
       }).onError((error, stackTrace) {
-        debugPrint(error.toString());
+        Log.error(
+          message: 'Error adding favourites',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));
         }
@@ -296,8 +309,11 @@ class _FavouriteCompanyListCryptoPageState extends State<FavouriteCompanyListCry
 
   Future<bool> _getInitData() async {
     await getFavouriteCompanyList().onError((error, stackTrace) {
-      debugPrint(error.toString());
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting crypto company list',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception('Error when get crypto company list');
     });
 

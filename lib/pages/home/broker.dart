@@ -9,6 +9,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -103,7 +104,7 @@ class _BrokerPageState extends State<BrokerPage> {
               child: RefreshIndicator(
                 onRefresh: (() async {
                   await _refreshBroker().then((value) {
-                    debugPrint("🔃 Refresh Index");
+                    Log.success(message: "🔃 Refresh Index");
                   }).onError((error, stackTrace) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));

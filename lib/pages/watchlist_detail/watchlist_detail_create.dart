@@ -9,6 +9,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/components/watchlist_detail_create_calendar.dart';
 import 'package:my_wealth/widgets/components/watchlist_detail_create_textfields.dart';
@@ -106,7 +107,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                   icon: Ionicons.bag_add,
                   callback: (() async {
                     await _addDetail().then((_) {
-                      debugPrint("💾 Saved the watchlist detail for ${_watchlist.watchlistId}");
+                      Log.success(message: "💾 Saved the watchlist detail for ${_watchlist.watchlistId}");
                       if (context.mounted) {
                         // return back to the previous page
                         Navigator.pop(context);

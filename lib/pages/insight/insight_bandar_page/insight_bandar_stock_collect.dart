@@ -7,6 +7,7 @@ import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/list/stock_collect_expanded.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
@@ -228,8 +229,11 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                   InsightSharedPreferences.setStockCollect(_stockCollectList!, _fromDate!, _toDate!, _accumRate);
                 });
               }).onError((error, stackTrace) {
-                debugPrint("Error: ${error.toString()}");
-                debugPrintStack(stackTrace: stackTrace);
+                Log.error(
+                  message: 'Error getting accumulation data',
+                  error: error,
+                  stackTrace: stackTrace,
+                );
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
                 }
@@ -372,8 +376,12 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
       // already got the data show the page
       return true;
     }
-    catch(error) {
-      debugPrint(error.toString());
+    catch(error, stackTrace) {
+      Log.error(
+        message: 'Error getting stock collection data',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw 'Error when try to get the stock collection data from server';
     }
   }

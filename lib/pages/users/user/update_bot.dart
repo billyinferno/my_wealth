@@ -6,6 +6,7 @@ import 'package:my_wealth/provider/user_provider.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
 
@@ -99,7 +100,7 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                       Navigator.pop(context);
                     } else {
                       if (_controller.text.isNotEmpty) {
-                        debugPrint("💾 Save the updated bot token");
+                        Log.success(message: "💾 Save the updated bot token");
                         // show loading screen
                         LoadingScreen.instance().show(context: context);
 

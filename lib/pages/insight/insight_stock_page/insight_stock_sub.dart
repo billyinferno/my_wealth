@@ -15,6 +15,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
@@ -535,8 +536,11 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
         _industryList = resp;
       }),
     ]).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting stock PER sector information',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception('Error when get stock per sector information');
     },);
 

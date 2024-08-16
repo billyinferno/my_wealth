@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
@@ -963,8 +964,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       // stre the broker collection query result to the shared preferences
       await InsightSharedPreferences.setBrokerCollect(_brokerCollect!, _brokerCode, _fromDate!, _toDate!, _accumRate);
     }).onError((error, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
-      debugPrint("Error: ${error.toString()}");
+      Log.error(
+        message: 'Error getting broker summary data',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       throw Exception('Error when trying to get the broker summary data');
     }).whenComplete(() {

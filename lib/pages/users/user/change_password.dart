@@ -3,6 +3,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/api/user_api.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/password_textfields.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
@@ -84,7 +85,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                     if(_validateForm()) {
                       await _changePassword().then((resp) {
                         if(resp) {
-                          debugPrint("🔓 Change Password");
+                          Log.success(message: "🔓 Change Password");
                           if (context.mounted) {
                             // update password success, show the message
                             ScaffoldMessenger.of(context).showSnackBar(

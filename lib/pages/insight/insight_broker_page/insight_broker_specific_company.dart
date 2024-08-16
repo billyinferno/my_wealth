@@ -14,6 +14,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 
 class InsightBrokerSpecificCompanyPage extends StatefulWidget {
@@ -1050,8 +1051,11 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       _showNet = false;
     }).onError((error, stackTrace) {
       // print the stack trace
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting broker data',
+        error: error,
+        stackTrace: stackTrace,
+      );
       if (mounted) {
         // show snack bar for the error
         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch broker data"));
@@ -1073,8 +1077,11 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
         _companyDetail = resp;
       }).onError((error, stackTrace) {
-        debugPrint("Error: ${error.toString()}");
-        debugPrintStack(stackTrace: stackTrace);
+        Log.error(
+          message: 'Error getting company info',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           // show snack bar for the error
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to fetch company info"));

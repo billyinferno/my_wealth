@@ -1,6 +1,6 @@
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:my_wealth/utils/log.dart';
 
 class LocalBox {
   static Box<dynamic>? keyBox;
@@ -8,7 +8,7 @@ class LocalBox {
 
   static Future<void> init() async {
     if(keyBox == null) {
-      debugPrint("📦 Initialize Box");
+      Log.info(message: "📦 Initialize Box");
       keyBox = await Hive.openBox('storage', compactionStrategy: ((entries, deletedEntries) {
         return deletedEntries > 50;
       }));
@@ -31,7 +31,7 @@ class LocalBox {
 
     // open the encrypted box based on the key we have
     if (encryptedBox == null) {
-      debugPrint("🔐 Initialized Secured Box");
+      Log.info(message: "🔐 Initialized Secured Box");
       encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(keyInt), compactionStrategy: (entries, deletedEntries) {
         return deletedEntries > 10;
       },);

@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/list/product_list_item.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -454,7 +455,11 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
       // call filter
       _filterList();
     }).onError((error, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting portofolio detail',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception("Error when get portofolio detail");
     });
 

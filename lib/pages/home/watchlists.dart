@@ -20,6 +20,7 @@ import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/list/expanded_tile_view.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/header/watchlist_sub_summary.dart';
@@ -658,7 +659,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                             if(resp!) {
                               // delete the watchlist
                               await _deleteWatchlist(type, data[idx].watchlistId).then((value) {
-                                debugPrint("🗑️ Delete Watchlist ${data[idx].watchlistCompanyName}");
+                                Log.success(message: "🗑️ Delete Watchlist ${data[idx].watchlistCompanyName}");
                               }).onError((error, stackTrace) {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
@@ -711,7 +712,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
-        debugPrint("🔃 Refresh watchlist reksadana");
+        Log.success(message: "🔃 Refresh watchlist reksadana");
       }),
 
       _watchlistAPI.getWatchlist("saham").then((resp) async {
@@ -719,7 +720,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         await WatchlistSharedPreferences.setWatchlist("saham", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
-        debugPrint("🔃 Refresh watchlist saham");
+        Log.success(message: "🔃 Refresh watchlist saham");
       }),
 
        _watchlistAPI.getWatchlist("crypto").then((resp) async {
@@ -727,7 +728,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         await WatchlistSharedPreferences.setWatchlist("crypto", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
-        debugPrint("🔃 Refresh watchlist crypto");
+        Log.success(message: "🔃 Refresh watchlist crypto");
       }),
 
       _watchlistAPI.getWatchlist("gold").then((resp) async {
@@ -735,7 +736,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         await WatchlistSharedPreferences.setWatchlist("gold", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
-        debugPrint("🔃 Refresh watchlist gold");
+        Log.success(message: "🔃 Refresh watchlist gold");
       }),
 
       _watchlistAPI.getWatchlistHistory().then((resp) async {
@@ -743,7 +744,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         await WatchlistSharedPreferences.setWatchlistHistory(resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
-        debugPrint("🔃 Refresh watchlist history");
+        Log.success(message: "🔃 Refresh watchlist history");
       }),
     ]).onError((error, stackTrace) {
       throw Exception("Error when refresh watchlist");

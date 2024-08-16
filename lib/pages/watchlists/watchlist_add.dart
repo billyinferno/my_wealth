@@ -14,6 +14,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/list/watchlist_list.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +94,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 ),
                 onSubmitted: ((searchText) async {
                   if(searchText.isNotEmpty) {
-                    debugPrint("🔎 Searching for $searchText");
+                    Log.info(message: "🔎 Searching for $searchText");
     
                     await _searchCompany(searchText).then((resp) {
                       _setSearchResult(resp);
@@ -164,7 +165,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 fca: (_companySearchResult![index].companyFCA ?? false),
                 onPress: (() async {
                   await _addCompanyToWatchlist(index).then((_) async {
-                    debugPrint("🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
+                    Log.success(message: "🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
                   }).onError((error, stackTrace) {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -245,7 +246,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
         await WatchlistSharedPreferences.setWatchlist(_args.type, resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_args.type, resp);
-        debugPrint("🔃 Refresh watchlist ${_args.type} after add");
+        Log.success(message: "🔃 Refresh watchlist ${_args.type} after add");
       }).onError((error, stackTrace) {
         throw Exception("Error when refresh watchlist ${_args.type} after add");
       });

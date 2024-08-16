@@ -10,6 +10,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/utils/net/netutils.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -208,7 +209,7 @@ class _UserPageState extends State<UserPage> {
                             onChanged: ((value) async {
                               _isVisible = !_isVisible;
                               await _updateVisibilitySummary(_isVisible).then((resp) {
-                                debugPrint("🔃 Update Visibility to $_isVisible");
+                                Log.success(message: "🔃 Update Visibility to $_isVisible");
                                 setSummaryVisible(_isVisible);
                               }).onError((error, stackTrace) {
                                 _showScaffoldMessage(text: error.toString());
@@ -266,7 +267,7 @@ class _UserPageState extends State<UserPage> {
                             onChanged: ((value) async {
                               _showLots = !_showLots;
                               await _updateShowLots(_showLots).then((resp) {
-                                debugPrint("🔃 Update Show Lots to $_showLots");
+                                Log.success(message: "🔃 Update Show Lots to $_showLots");
                                 setShowLots(_showLots);
                               }).onError((error, stackTrace) {
                                 _showScaffoldMessage(text: error.toString());
@@ -324,7 +325,7 @@ class _UserPageState extends State<UserPage> {
                             onChanged: ((value) async {
                               _showEmptyWatchlist = !_showEmptyWatchlist;
                               await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
-                                debugPrint("🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
+                                Log.success(message: "🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
                                 setShowEmptywatchlist(_showEmptyWatchlist);
                               }).onError((error, stackTrace) {
                                 _showScaffoldMessage(text: error.toString());
@@ -489,7 +490,7 @@ class _UserPageState extends State<UserPage> {
                         result.then((value) async {
                           if(value == true) {
                             await LocalBox.clear().then((_) {
-                              debugPrint("🧹 Cleaning Local Storage");
+                              Log.success(message: "🧹 Cleaning Local Storage");
                               // clear the JWT token from NetUtils
                               NetUtils.clearJWT();
                               

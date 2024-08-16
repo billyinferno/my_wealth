@@ -10,6 +10,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
@@ -403,7 +404,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
       await _faveAPI.delete(faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID $faveId for stock company ${_sortedFaveList[index].favouritesCompanyName}");
+        Log.success(message: "🧹 Delete Favourite ID $faveId for stock company ${_sortedFaveList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
@@ -428,7 +429,11 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
         // update the list and re-render the page
         _updateFaveList(index, resp);
       }).onError((error, stackTrace) {
-        debugPrint(error.toString());
+        Log.error(
+          message: 'Error delete favourites',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
         }
@@ -436,7 +441,7 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
     }
     else {
       await _faveAPI.add(_sortedFaveList[index].favouritesCompanyId, "saham").then((resp) {
-        debugPrint("➕ Add stock company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
+        Log.success(message: "➕ Add stock company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         FavouritesListModel ret = FavouritesListModel(
           favouritesCompanyId: _sortedFaveList[index].favouritesCompanyId,
@@ -458,7 +463,11 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
 
         _updateFaveList(index, ret);
       }).onError((error, stackTrace) {
-        debugPrint(error.toString());
+        Log.error(
+          message: 'Error adding favourites',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));
         }
@@ -491,8 +500,11 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
       if (!mounted) return;
       Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error when get user favourites',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception('Error when get user favourites');
     },);
 
@@ -505,8 +517,11 @@ class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSaha
       _setFavouriteList(resp);
       _setFilterList(resp);
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting saham list',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       throw Exception('Error when get saham list');
     },);

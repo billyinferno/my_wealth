@@ -23,6 +23,7 @@ import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_company.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/selectable_list.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -110,8 +111,11 @@ class _InsightStockPageState extends State<InsightStockPage> {
 
             // refresh all the information
             await _refreshInformation(context).onError((error, stackTrace) {
-              debugPrint("Error ${error.toString()}");
-              debugPrintStack(stackTrace: stackTrace);
+              Log.error(
+                message: 'Error getting insight stock information',
+                error: error,
+                stackTrace: stackTrace,
+              );
             }).then((_) {
               // rebuild widget once finished
               setState(() {
@@ -825,45 +829,48 @@ class _InsightStockPageState extends State<InsightStockPage> {
     // refresh all the information
     await Future.wait([
       _insightAPI.getSectorSummary().then((resp) async {
-        debugPrint("🔃 Refresh Sector Summary");
+        Log.success(message: "🔃 Refresh Sector Summary");
         await InsightSharedPreferences.setSectorSummaryList(resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
       }),
       _insightAPI.getTopWorseCompany('top').then((resp) async {
-        debugPrint("🔃 Refresh Top Company Summary");
+        Log.success(message: "🔃 Refresh Top Company Summary");
         await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
       }),
       _insightAPI.getTopWorseCompany('worse').then((resp) async {
-        debugPrint("🔃 Refresh Worse Company Summary");
+        Log.success(message: "🔃 Refresh Worse Company Summary");
         await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
       }),
       _insightAPI.getStockNewListed().then((resp) async {
-        debugPrint("🔃 Refresh Stock Newly Listed");
+        Log.success(message: "🔃 Refresh Stock Newly Listed");
         await InsightSharedPreferences.setStockNewListed(resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockNewListed(resp);
       }),
       _insightAPI.getStockDividendList().then((resp) async {
-        debugPrint("🔃 Refresh Stock Dividend List");
+        Log.success(message: "🔃 Refresh Stock Dividend List");
         await InsightSharedPreferences.setStockDividendList(resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockDividendList(resp);
       }),
       _insightAPI.getStockSplitList().then((resp) async {
-        debugPrint("🔃 Refresh Stock Split");
+        Log.success(message: "🔃 Refresh Stock Split");
         await InsightSharedPreferences.setStockSplitList(resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
       }),
     ]).onError((error, stackTrace) {
-      debugPrint("Error ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
-      throw Exception("Error when get price gold data");
+      Log.error(
+        message: 'Error getting stock insight information',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw Exception("Error when get stock insight");
     });
   }
 
@@ -905,8 +912,11 @@ class _InsightStockPageState extends State<InsightStockPage> {
         Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
       }
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting company detail information',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       if (mounted) {
         // show the error message

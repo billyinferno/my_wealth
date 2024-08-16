@@ -12,6 +12,7 @@ import 'package:my_wealth/utils/function/date_utils.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_favourites.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_company_list.dart';
 import 'package:my_wealth/widgets/components/stepper_selector.dart';
@@ -125,7 +126,11 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
                 await _getUserFavourites().then((_) {
                 }).onError((error, stackTrace) {
                   // in case error showed it on debug
-                  debugPrint(error.toString());
+                  Log.error(
+                    message: 'Error getting user favourites',
+                    error: error,
+                    stackTrace: stackTrace,
+                  );
                 }).whenComplete(() {
                   if (mounted) {
                     // return back to the previous page
@@ -750,7 +755,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
       await _faveAPI.delete(faveId).then((_) {
-        debugPrint("🧹 Delete Favourite ID $faveId for reksadana company ${_sortedFaveList[index].favouritesCompanyName}");
+        Log.success(message: "🧹 Delete Favourite ID $faveId for reksadana company ${_sortedFaveList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
         // favourited by user
@@ -777,7 +782,11 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
         // update the list and re-render the page
         _updateFaveList(index, resp);
       }).onError((error, stackTrace) {
-        debugPrint(error.toString());
+        Log.error(
+          message: 'Error delete favourites',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to delete favourites"));
         }
@@ -785,7 +794,7 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     }
     else {
       await _faveAPI.add(_sortedFaveList[index].favouritesCompanyId, "reksadana").then((resp) {
-        debugPrint("➕ Add reksadana company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
+        Log.success(message: "➕ Add reksadana company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
         
         FavouritesListModel ret = FavouritesListModel(
           favouritesCompanyId: _sortedFaveList[index].favouritesCompanyId,
@@ -810,7 +819,11 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
         // update the list with the updated response and re-render the page
         _updateFaveList(index, ret);
       }).onError((error, stackTrace) {
-        debugPrint(error.toString());
+        Log.error(
+          message: 'Error adding favourites',
+          error: error,
+          stackTrace: stackTrace,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Unable to add favourites"));
         }
@@ -855,8 +868,11 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
       _setFavouriteList(resp);
       _setFilterList(resp);
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting reksadana favourite list',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       throw Exception('Error when get reksadana favourite list');
     },);

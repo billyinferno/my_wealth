@@ -9,6 +9,7 @@ import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
 import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/chart/bar_chart.dart';
 import 'package:my_wealth/widgets/list/product_list_item.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -559,8 +560,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         }
       });
     }
-    catch(error) {
-      debugPrint(error.toString());
+    catch(error, stackTrace) {
+      Log.error(
+        message: 'Error getting data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw 'Error when try to get the data from server';
     }
 

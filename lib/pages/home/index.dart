@@ -8,6 +8,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_index.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/favourite_list.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
@@ -85,8 +86,13 @@ class IndexPageState extends State<IndexPage> {
               child: RefreshIndicator(
                 onRefresh: (() async {
                   await _refreshIndex().then((value) {
-                    debugPrint("🔃 Refresh Index");
+                    Log.success(message: "🔃 Refresh Index");
                   }).onError((error, stackTrace) {
+                    Log.error(
+                      message: 'Error when refresh index',
+                      error: error,
+                      stackTrace: stackTrace,
+                    );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                     }

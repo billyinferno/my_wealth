@@ -5,6 +5,7 @@ import 'package:my_wealth/api/company_api.dart';
 import 'package:my_wealth/model/company/company_saham_find_other_model.dart';
 import 'package:my_wealth/themes/colors.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
 
@@ -281,8 +282,11 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
       _companyList = resp.all;
       _similarList = resp.similar;
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       throw Exception('Error when get the data from server');
     },);

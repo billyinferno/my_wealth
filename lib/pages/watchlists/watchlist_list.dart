@@ -19,6 +19,7 @@ import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/list/watchlist_detail_summary_box.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
@@ -536,12 +537,17 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   if(resp!) {
                                     await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
                                       if(resp) {
-                                        debugPrint("🧹 Delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
+                                        Log.success(message: "🧹 Delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
                                       }
                                       else {
-                                        debugPrint("🧹 Unable to delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
+                                        Log.error(message: "🧹 Unable to delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
                                       }
                                     }).onError((error, stackTrace) {
+                                      Log.error(
+                                        message: 'Error deleting watchlist detail',
+                                        error: error,
+                                        stackTrace: stackTrace,
+                                      );
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                                       }
@@ -708,7 +714,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     // call API server to delete the watchlist
     await _watchlistApi.delete(_watchlist.watchlistId).then((resp) async {
       if(resp) {
-        debugPrint("🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
+        Log.success(message: "🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
         
         // delete the current watchlist
         List<WatchlistListModel> newWatchlist = [];

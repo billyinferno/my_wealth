@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
@@ -237,8 +238,11 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                   _listAccumulation = resp;
                 });
               }).onError((error, stackTrace) {
-                debugPrint("Error: ${error.toString()}");
-                debugPrintStack(stackTrace: stackTrace);
+                Log.error(
+                  message: 'Error getting accumulation data',
+                  error: error,
+                  stackTrace: stackTrace,
+                );
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
                 }
@@ -499,8 +503,11 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
           await BrokerSharedPreferences.setBrokerMinMaxDate(_brokerSummaryDate.brokerMinDate, _brokerSummaryDate.brokerMaxDate);
         }).onError((error, stackTrace) {
-          debugPrint("Error: ${error.toString()}");
-          debugPrintStack(stackTrace: stackTrace);
+          Log.error(
+            message: 'Error getting broker summary date',
+            error: error,
+            stackTrace: stackTrace,
+          );
 
           throw Exception('Error when get broker summary date');
         },);
@@ -512,8 +519,11 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
           // stored all the data to shared preferences
           await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, _listAccumulation);
         }).onError((error, stackTrace) {
-          debugPrint("Error: ${error.toString()}");
-          debugPrintStack(stackTrace: stackTrace);
+          Log.error(
+            message: 'Error getting broker top accumulation',
+            error: error,
+            stackTrace: stackTrace,
+          );
 
           throw Exception('Error when get top accumulation');
         },);

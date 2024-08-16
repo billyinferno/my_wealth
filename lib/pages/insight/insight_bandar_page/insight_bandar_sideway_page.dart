@@ -9,6 +9,7 @@ import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/number_stepper.dart';
 import 'package:my_wealth/widgets/components/search_box.dart';
 import 'package:my_wealth/widgets/list/column_info.dart';
@@ -234,7 +235,11 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                 // remove loading screen
                 LoadingScreen.instance().hide();
               }).onError((error, stackTrace) {
-                debugPrintStack(stackTrace: stackTrace);
+                Log.error(
+                  message: 'Error getting sideway data',
+                  error: error,
+                  stackTrace: stackTrace,
+                );
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when try to retrieve sideway data"));
                 }
@@ -495,8 +500,11 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
         // set the sorted from side way
         _sortedList = List<InsightSidewayModel>.from(_sidewayList);
       }).onError((error, stackTrace) {
-        debugPrint("Error: ${error.toString()}");
-        debugPrintStack(stackTrace: stackTrace);
+        Log.error(
+          message: 'Error getting sideway data',
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw Exception('Error when get sideway data');
       },);
     }

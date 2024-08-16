@@ -8,6 +8,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/selectable_list.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -459,49 +460,49 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     // get the insight reksadana information
     await Future.wait([
       _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
-        debugPrint("🔃 Refresh Reksdana Saham Top");
+        Log.success(message: "🔃 Refresh Reksdana Saham Top");
         await InsightSharedPreferences.setTopReksadanaList('saham', resp);
         topSaham = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
-        debugPrint("🔃 Refresh Reksadana Campuran Top");
+        Log.success(message: "🔃 Refresh Reksadana Campuran Top");
         await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
         topCampuran = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
-        debugPrint("🔃 Refresh Reksadana Pasar Uang Top");
+        Log.success(message: "🔃 Refresh Reksadana Pasar Uang Top");
         await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
         topPasarUang = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
-        debugPrint("🔃 Refresh Reksadana Pendapatan Tetap Top");
+        Log.success(message: "🔃 Refresh Reksadana Pendapatan Tetap Top");
         await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
         topPendapatanTetap = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
-        debugPrint("🔃 Refresh Reksdana Saham Loser");
+        Log.success(message: "🔃 Refresh Reksdana Saham Loser");
         await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
         worseSaham = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
-        debugPrint("🔃 Refresh Reksadana Campuran");
+        Log.success(message: "🔃 Refresh Reksadana Campuran");
         await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
         worseCampuran = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
-        debugPrint("🔃 Refresh Reksadana Pasar Uang");
+        Log.success(message: "🔃 Refresh Reksadana Pasar Uang");
         await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
         worsePasarUang = resp;
       }),
 
       _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
-        debugPrint("🔃 Refresh Reksadana Pendapatan Tetap");
+        Log.success(message: "🔃 Refresh Reksadana Pendapatan Tetap");
         await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
         worsePendapatanTetap = resp;
       }),
@@ -521,8 +522,11 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', worsePendapatanTetap!);
       }
     }).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting reksadana top and worse information',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       throw Exception('Error when get reksdanda top and worse information');
     },).whenComplete(() {

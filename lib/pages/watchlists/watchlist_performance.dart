@@ -11,6 +11,7 @@ import 'package:my_wealth/utils/function/computation.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_user.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/list/row_child.dart';
 import 'package:my_wealth/widgets/list/watchlist_performance_builder.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -684,9 +685,13 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
         }
       });
     }
-    catch(error) {
-      debugPrint(error.toString());
-      throw 'Error when try to get the data from server';
+    catch(error, stackTrace) {
+      Log.error(
+        message: 'Error getting data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw Exception('Error when try to get the data from server');
     }
 
     return true;

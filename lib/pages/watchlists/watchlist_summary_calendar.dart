@@ -13,6 +13,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/function/map_sorted.dart';
 import 'package:my_wealth/utils/function/risk_color.dart';
 import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/performance_calendar.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
@@ -1080,9 +1081,12 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
       _getPerformanceDataYear(type: type, currentDate: currentDate, newDate: newDate),
       _getFirstAndLastDate((firstRun ?? false)),
     ]).onError((error, stackTrace) {
-      debugPrint(error.toString());
-      debugPrintStack(stackTrace: stackTrace);
-      throw 'Error when try to get the data from server';
+      Log.error(
+        message: 'Error getting data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw Exception('Error when try to get the data from server');
     }).whenComplete(() {
       // if not first run, remove the loading screen
       if ((firstRun ?? false) == false) {

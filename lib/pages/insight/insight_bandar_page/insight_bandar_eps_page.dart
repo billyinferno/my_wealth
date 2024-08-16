@@ -8,6 +8,7 @@ import 'package:my_wealth/utils/arguments/company_detail_args.dart';
 import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
 import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:my_wealth/widgets/page/common_error_page.dart';
 import 'package:my_wealth/widgets/page/common_loading_page.dart';
@@ -422,8 +423,11 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
         // put on the shared preferences
         await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
       }).onError((error, stackTrace) {
-        debugPrint("Error: ${error.toString()}");
-        debugPrintStack(stackTrace: stackTrace);
+        Log.error(
+          message: 'Error getting top EPS data',
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw Exception('Error when get Top EPS data from server');
       },);
     }

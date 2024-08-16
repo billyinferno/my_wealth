@@ -18,6 +18,7 @@ import 'package:my_wealth/utils/function/format_currency.dart';
 import 'package:my_wealth/utils/globals.dart';
 import 'package:my_wealth/storage/prefs/shared_broker.dart';
 import 'package:my_wealth/storage/prefs/shared_insight.dart';
+import 'package:my_wealth/utils/log.dart';
 import 'package:my_wealth/widgets/components/transparent_button.dart';
 import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
@@ -939,7 +940,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     // get all the insight and broker summary information
     await Future.wait([
       _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
-        debugPrint("🔃 Refresh Broker Summary Top");
+        Log.success(message: "🔃 Refresh Broker Summary Top");
         await BrokerSharedPreferences.setBroketTopList(resp);
         if (mounted) {
           Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
@@ -947,7 +948,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       }),
       
       _insightAPI.getBrokerTopTransaction().then((resp) async {
-        debugPrint("🔃 Refresh Broker Top Transaction List");
+        Log.success(message: "🔃 Refresh Broker Top Transaction List");
         await InsightSharedPreferences.setBrokerTopTxn(resp);
         if (mounted) {
           Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
@@ -955,7 +956,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       }),
 
       _insightAPI.getMarketToday().then((resp) async {
-        debugPrint("🔃 Refresh Broker Market Today");
+        Log.success(message: "🔃 Refresh Broker Market Today");
         await InsightSharedPreferences.setBrokerMarketToday(resp);
         if (mounted) {
           Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
@@ -963,15 +964,18 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       }),
 
        _insightAPI.getMarketCap().then((resp) async {
-        debugPrint("🔃 Refresh Broker Market Cap");
+        Log.success(message: "🔃 Refresh Broker Market Cap");
         await InsightSharedPreferences.setMarketCap(resp);
         if (mounted) {
           Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
         }
       }),
     ]).onError((error, stackTrace) {
-      debugPrint("Error: ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
+      Log.error(
+        message: 'Error getting broker insight information',
+        error: error,
+        stackTrace: stackTrace,
+      );
 
       throw Exception('Error when get broker insight information');
     }).whenComplete(() {

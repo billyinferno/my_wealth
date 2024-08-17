@@ -458,7 +458,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Offering Price", value: formatCurrencyWithNull(_stockNewListedList[index].offering as double, false, false, false, 0)),
+                                    _smallBox(title: "Offering Price", value: formatCurrencyWithNull((_stockNewListedList[index].offering ?? 0).toDouble(), false, false, false, 0)),
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Fund Raised", value: formatIntWithNull(_stockNewListedList[index].fundRaised, true, true, 2)),
                                     const SizedBox(width: 10,),
@@ -470,7 +470,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Current Price", value: formatCurrencyWithNull(_stockNewListedList[index].currentPrice as double, false, false, false, 0)),
+                                    _smallBox(title: "Current Price", value: formatCurrencyWithNull((_stockNewListedList[index].currentPrice ?? 0).toDouble(), false, false, false, 0)),
                                     const SizedBox(width: 10,),
                                     _smallBox(title: "Diff Price", value: formatIntWithNull((_stockNewListedList[index].currentPrice! > 0 ? _stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering! : null), false, false, 0)),
                                     const SizedBox(width: 10,),

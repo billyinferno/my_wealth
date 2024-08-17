@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistSummaryInfo extends StatelessWidget {
   final String text;

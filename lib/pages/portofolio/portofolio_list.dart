@@ -2,18 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/portofolio_api.dart';
-import 'package:my_wealth/model/portofolio/portofolio_summary_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/portofolio_list_args.dart';
-import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/chart/bar_chart.dart';
-import 'package:my_wealth/widgets/list/product_list_item.dart';
-import 'package:my_wealth/widgets/page/common_error_page.dart';
-import 'package:my_wealth/widgets/page/common_loading_page.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class PortofolioListPage extends StatefulWidget {
   final Object? args;

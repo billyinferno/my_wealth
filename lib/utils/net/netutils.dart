@@ -1,43 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:my_wealth/model/common/error_model.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/utils/function/parse_error.dart';
-import 'package:my_wealth/utils/globals.dart';
-
-enum NetType {
-  initialize,
-  get,
-  put,
-  patch,
-  post,
-  delete
-}
-
-class NetException {
-  final int code;
-  final NetType type;
-  final String message;
-  final String? body;
-
-  const NetException({required this.code, required this.type, required this.message, this.body});
-
-  @override
-  String toString() {
-    return '[$type][$code] $message';
-  }
-
-  ErrorModel? error() {
-    // check if body is not null
-    if (body != null) {
-      return parseError(body!);
-    }
-
-    // return null if body is null
-    return null;
-  }
-}
+import 'package:my_wealth/_index.g.dart';
 
 class NetUtils {
   static String? bearerToken;

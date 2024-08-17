@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/favourites/favourites_model.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class FavouritesProvider extends ChangeNotifier {
   List<FavouritesModel>? favouriteListReksadana;

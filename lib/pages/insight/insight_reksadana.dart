@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/api/insight_api.dart';
-import 'package:my_wealth/model/insight/insight_top_worse_company_list_model.dart';
-import 'package:my_wealth/provider/inisght_provider.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/storage/prefs/shared_insight.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/selectable_list.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightReksadanaPage extends StatefulWidget {
   const InsightReksadanaPage({super.key});

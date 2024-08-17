@@ -1,4 +1,4 @@
-import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistSummaryPerformanceArgs {
   final String type;

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistComputationResult {
   final int totalBuy;

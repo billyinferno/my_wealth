@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/_index.g.dart';
 
 ThemeData themeData = ThemeData(
   fontFamily: '--apple-system',

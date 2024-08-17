@@ -1,19 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/user_api.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/provider/user_provider.dart';
-import 'package:my_wealth/storage/box/local_box.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});

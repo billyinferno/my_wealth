@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/index/index_model.dart';
-import 'package:my_wealth/storage/box/local_box.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class IndexSharedPreferences {
   static const _indexKey = "index_list";

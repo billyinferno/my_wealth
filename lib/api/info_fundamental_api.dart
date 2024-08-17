@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/company/company_info_fundamentals_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InfoFundamentalAPI {
   Future<List<InfoFundamentalsModel>> getInfoFundamental(String code, [int? quarter]) async {

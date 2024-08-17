@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class SimpleListItem extends StatelessWidget {
   final bool? fca;

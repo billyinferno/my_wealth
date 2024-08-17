@@ -1,4 +1,4 @@
-import 'package:my_wealth/model/insight/insight_sector_summary_model.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class IndustrySummaryArgs {
   final SectorSummaryModel sectorData;

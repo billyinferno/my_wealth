@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class UserAPI {
   Future<UserLoginModel> login(String username, String password) async {

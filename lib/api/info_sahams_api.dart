@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InfoSahamsAPI {
   Future<List<InfoSahamPriceModel>> getInfoSahamPrice(String code, [int? offset, int? limit]) async {

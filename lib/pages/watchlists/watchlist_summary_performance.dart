@@ -2,26 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/index_api.dart';
-import 'package:my_wealth/api/watchlist_api.dart';
-import 'package:my_wealth/model/index/index_model.dart';
-import 'package:my_wealth/model/index/index_price_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_summary_performance_model.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/wacthlist_summary_performance_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/extensions/string.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
-import 'package:my_wealth/widgets/page/common_error_page.dart';
-import 'package:my_wealth/widgets/page/common_loading_page.dart';
-import 'package:my_wealth/widgets/chart/performance_chart.dart';
-import 'package:my_wealth/widgets/chart/performance_chart_painter.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class SummaryPerformanceDataList {
   final DateTime date;

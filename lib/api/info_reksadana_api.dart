@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/company/company_info_reksadana_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InfoReksadanaAPI {
   Future<List<InfoReksadanaModel>> getInfoReksadana(int companyId, [int? limit]) async {

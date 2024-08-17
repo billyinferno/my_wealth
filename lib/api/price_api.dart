@@ -1,11 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/common/common_single_model.dart';
-import 'package:my_wealth/model/price/price_gold_model.dart';
-import 'package:my_wealth/model/price/price_saham_ma_model.dart';
-import 'package:my_wealth/model/price/price_saham_movement_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class PriceAPI {
   Future<PriceSahamMovingAverageModel> getPriceMovingAverage(String stockCode) async {

@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_wealth/router.dart';
-import 'package:my_wealth/storage/box/local_box.dart';
-import 'package:my_wealth/utils/log.dart';
+import 'package:my_wealth/_index.g.dart';
 
 void main() async {
   // run all the initialisation on the runZonedGuarded to ensure that all the

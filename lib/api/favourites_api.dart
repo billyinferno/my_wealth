@@ -1,10 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/common/common_single_model.dart';
-import 'package:my_wealth/model/favourites/favourites_list_model.dart';
-import 'package:my_wealth/model/favourites/favourites_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class FavouritesAPI {
   Future<List<FavouritesModel>> getFavourites(String type) async {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/color_utils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor, Color? negativeColor]) {
   // assuming that the colors is green

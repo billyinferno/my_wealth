@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/_index.g.dart';
 
 SnackBar createSnackBar({required String message, Icon? icon, int? duration}) {
   Icon snackBarIcon = (icon ?? const Icon(Ionicons.alert_circle_outline, size: 20, color: secondaryDark,));

@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/broker/broker_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/storage/prefs/shared_broker.dart';
-import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class BrokerFindOtherPage extends StatefulWidget {
   const BrokerFindOtherPage({super.key});

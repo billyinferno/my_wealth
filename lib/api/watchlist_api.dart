@@ -1,14 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/common/common_single_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_history_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_price_first_last_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_summary_performance_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_performance_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistAPI {
   Future<List<WatchlistListModel>> getWatchlist(String type) async {

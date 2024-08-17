@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:my_wealth/model/company/company_info_saham_price_model.dart';
-import 'package:my_wealth/widgets/chart/stock_candlestick_painter.dart';
-import 'package:my_wealth/widgets/chart/stock_volume_painter.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class StockChart extends StatelessWidget {
   final List<InfoSahamPriceModel> data;

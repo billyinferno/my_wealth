@@ -1,5 +1,4 @@
-import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class ComputeWatchlistAllResult {
   final double totalDayGain;

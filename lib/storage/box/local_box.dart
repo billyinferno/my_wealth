@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:my_wealth/utils/log.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class LocalBox {
   static Box<dynamic>? keyBox;

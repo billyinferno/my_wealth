@@ -1,16 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_accumulation_page.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_atl_page.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_broker_collect.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_eps_page.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_index_beater_page.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_sideway_page.dart';
-import 'package:my_wealth/pages/insight/insight_bandar_page/insight_bandar_stock_collect.dart';
-import 'package:my_wealth/provider/inisght_provider.dart';
-import 'package:my_wealth/storage/prefs/shared_insight.dart';
-import 'package:my_wealth/widgets/components/scroll_segmented_control.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightBandarPage extends StatefulWidget {
   const InsightBandarPage({super.key});

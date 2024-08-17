@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/model/insight/insight_bandar_interest_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/dialog/show_info_dialog.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/widgets/list/column_info.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightBandarAtlPage extends StatefulWidget {
   final String title;

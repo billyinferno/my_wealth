@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/user_api.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/password_textfields.dart';
-import 'package:my_wealth/widgets/components/transparent_button.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({ super.key });

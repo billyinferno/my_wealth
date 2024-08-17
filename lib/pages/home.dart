@@ -2,13 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/pages/home/broker.dart';
-import 'package:my_wealth/pages/home/favourites.dart';
-import 'package:my_wealth/pages/home/index.dart';
-import 'package:my_wealth/pages/home/insight.dart';
-import 'package:my_wealth/pages/home/portofolio.dart';
-import 'package:my_wealth/pages/home/watchlists.dart';
-import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({ super.key });

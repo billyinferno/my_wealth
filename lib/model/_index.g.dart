@@ -1,0 +1,10 @@
+export './broker/_index.g.dart';
+export './common/_index.g.dart.dart';
+export './company/_index.g.dart';
+export './favourites/_index.g.dart';
+export './index/_index.g.dart';
+export './insight/_index.g.dart';
+export './portofolio/_index.g.dart';
+export './price/_index.g.dart';
+export './user/_index.g.dart';
+export './watchlist/_index.g.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/watchlist/watchlist_history_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistProvider extends ChangeNotifier {
   List<WatchlistListModel>? watchlistReksadana;

@@ -3,8 +3,7 @@
 //     final sectorNameModel = sectorNameModelFromJson(jsonString);
 
 import 'dart:convert';
-
-import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/_index.g.dart';
 
 SectorNameModel sectorNameModelFromJson(String str) => SectorNameModel.fromJson(json.decode(str));
 

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/wacthlist_summary_performance_args.dart';
-import 'package:my_wealth/utils/function/compute_watchlist_all.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/widgets/header/watchlist_summary_info.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistSummary extends StatelessWidget {
   final double dayGain;

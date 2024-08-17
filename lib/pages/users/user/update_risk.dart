@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/user_api.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/provider/user_provider.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class UpdateRiskPage extends StatefulWidget {
   const UpdateRiskPage({ super.key });

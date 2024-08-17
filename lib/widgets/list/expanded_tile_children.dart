@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class ExpandedTileChildren extends StatelessWidget {
   final String date;

@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/model/insight/insight_stock_collect_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class StockCollectExpanded extends StatelessWidget {
   final InsightStockCollectModel data;

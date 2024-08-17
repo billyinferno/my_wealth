@@ -2,25 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/favourites_api.dart';
-import 'package:my_wealth/model/favourites/favourites_list_model.dart';
-import 'package:my_wealth/provider/favourites_provider.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/function/date_utils.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_favourites.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/search_box.dart';
-import 'package:my_wealth/widgets/list/favourite_company_list.dart';
-import 'package:my_wealth/widgets/components/stepper_selector.dart';
-import 'package:my_wealth/widgets/components/stepper_selector_controller.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
-import 'package:my_wealth/widgets/page/common_error_page.dart';
-import 'package:my_wealth/widgets/page/common_loading_page.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class FavouriteCompanyListReksadanaPage extends StatefulWidget {
   const FavouriteCompanyListReksadanaPage({ super.key });

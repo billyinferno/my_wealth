@@ -1,23 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/api/broker_summary_api.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/api/insight_api.dart';
-import 'package:my_wealth/model/broker/broker_summary_date_model.dart';
-import 'package:my_wealth/model/insight/insight_accumulation_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_broker.dart';
-import 'package:my_wealth/storage/prefs/shared_insight.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/number_stepper.dart';
-import 'package:my_wealth/widgets/components/search_box.dart';
-import 'package:my_wealth/widgets/list/column_info.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
-import 'package:my_wealth/widgets/page/common_error_page.dart';
-import 'package:my_wealth/widgets/page/common_loading_page.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightBandarAccumulationPage extends StatefulWidget {
   const InsightBandarAccumulationPage({super.key});

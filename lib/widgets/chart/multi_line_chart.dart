@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/widgets/chart/multi_line_chart_painter.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class MultiLineChart extends StatelessWidget {
   final double? height;

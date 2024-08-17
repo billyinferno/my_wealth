@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/animation/animation_expand.dart';
-import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistDetailCreateCalendar extends StatefulWidget {
   final Function(DateTime) onDateChange;

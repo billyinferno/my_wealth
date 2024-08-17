@@ -2,21 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/favourites_api.dart';
-import 'package:my_wealth/model/favourites/favourites_model.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/provider/favourites_provider.dart';
-import 'package:my_wealth/provider/user_provider.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
-import 'package:my_wealth/storage/prefs/shared_favourites.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/list/favourite_list.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class FavouritesPage extends StatefulWidget {
   const FavouritesPage({super.key});

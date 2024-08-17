@@ -1,0 +1,12 @@
+export './company_detail_model.dart';
+export './company_info_fundamentals_model.dart';
+export './company_info_reksadana_model.dart';
+export './company_info_saham_price_model.dart';
+export './company_list_model.dart';
+export './company_saham_dividend_model.dart';
+export './company_saham_find_other_model.dart';
+export './company_saham_list_model.dart';
+export './company_saham_split_model.dart';
+export './company_search_model.dart';
+export './company_seasonality_model.dart';
+export './company_top_broker_model.dart';

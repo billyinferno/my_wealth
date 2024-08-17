@@ -1,20 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/model/insight/insight_sector_per_detail_model.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/arguments/insight_stock_sub_list_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/search_box.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
-import 'package:my_wealth/widgets/page/common_error_page.dart';
-import 'package:my_wealth/widgets/page/common_loading_page.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightStockPERListPage extends StatefulWidget {
   final Object? args;

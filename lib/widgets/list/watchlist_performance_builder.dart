@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/watchlist/watchlist_performance_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/globals.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistBuilder extends StatelessWidget {
   final List<WatchlistPerformanceModel> data;

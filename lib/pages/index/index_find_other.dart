@@ -1,12 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/index/index_model.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/storage/prefs/shared_index.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/widgets/list/favourite_list.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class IndexFindOtherPage extends StatefulWidget {
   const IndexFindOtherPage({super.key});

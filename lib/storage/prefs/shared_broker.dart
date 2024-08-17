@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/broker/broker_model.dart';
-import 'package:my_wealth/model/broker/broker_summary_top_model.dart';
-import 'package:my_wealth/storage/box/local_box.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class BrokerSharedPreferences {
   static const _brokerKey = "broker_list";

@@ -1,12 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/model/company/company_list_model.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_find_other_args.dart';
-import 'package:my_wealth/utils/extensions/string.dart';
-import 'package:my_wealth/widgets/page/common_error_page.dart';
-import 'package:my_wealth/widgets/page/common_loading_page.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class CompanyDetailFindOtherPage extends StatefulWidget {
   final Object? args;

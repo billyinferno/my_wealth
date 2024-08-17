@@ -2,20 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/company_api.dart';
-import 'package:my_wealth/api/insight_api.dart';
-import 'package:my_wealth/model/broker/broker_model.dart';
-import 'package:my_wealth/model/insight/insight_broker_collect_model.dart';
-import 'package:my_wealth/storage/prefs/shared_broker.dart';
-import 'package:my_wealth/storage/prefs/shared_insight.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/number_stepper.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightBandarBrokerCollectPage extends StatefulWidget {
   const InsightBandarBrokerCollectPage({super.key});

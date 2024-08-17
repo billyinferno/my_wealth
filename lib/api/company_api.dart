@@ -1,19 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/common/common_array_model.dart';
-import 'package:my_wealth/model/common/common_single_model.dart';
-import 'package:my_wealth/model/company/company_detail_model.dart';
-import 'package:my_wealth/model/company/company_list_model.dart';
-import 'package:my_wealth/model/company/company_saham_dividend_model.dart';
-import 'package:my_wealth/model/company/company_saham_list_model.dart';
-import 'package:my_wealth/model/company/company_saham_split_model.dart';
-import 'package:my_wealth/model/company/company_search_model.dart';
-import 'package:my_wealth/model/company/company_top_broker_model.dart';
-import 'package:my_wealth/model/company/company_seasonality_model.dart';
-import 'package:my_wealth/model/company/company_saham_find_other_model.dart';
-import 'package:my_wealth/model/insight/insight_sector_name_list_model.dart';
-import 'package:my_wealth/model/insight/insight_sector_per_detail_model.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/utils/net/netutils.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class CompanyAPI {
   Future<List<CompanyListModel>> findCompany(String type) async {

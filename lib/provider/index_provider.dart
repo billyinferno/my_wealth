@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/model/index/index_model.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class IndexProvider extends ChangeNotifier {
   List<IndexModel>? indexList;

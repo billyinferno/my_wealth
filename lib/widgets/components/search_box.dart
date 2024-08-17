@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/dialog/show_my_modal_bottom_sheet.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class SearchBox extends StatefulWidget {
   final String filterMode;

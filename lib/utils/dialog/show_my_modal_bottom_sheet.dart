@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class ShowMyModalBottomSheet {
   final BuildContext context;

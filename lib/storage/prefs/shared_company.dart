@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/insight/insight_sector_name_list_model.dart';
-import 'package:my_wealth/storage/box/local_box.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class CompanySharedPreferences {
   static const _sectorNameListKey = "sector_name_list";

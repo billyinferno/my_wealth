@@ -5,7 +5,7 @@
 // ignore_for_file: prefer_null_aware_operators
 
 import 'dart:convert';
-import 'package:my_wealth/model/price/price_model.dart';
+import 'package:my_wealth/_index.g.dart';
 
 CompanyDetailModel companyDetailModelFromJson(String str) => CompanyDetailModel.fromJson(json.decode(str));
 

@@ -1,29 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:my_wealth/api/watchlist_api.dart';
-import 'package:my_wealth/model/user/user_login.dart';
-import 'package:my_wealth/model/watchlist/watchlist_detail_list_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
-import 'package:my_wealth/provider/watchlist_provider.dart';
-import 'package:my_wealth/themes/colors.dart';
-import 'package:my_wealth/utils/arguments/company_detail_args.dart';
-import 'package:my_wealth/utils/arguments/watchlist_detail_edit_args.dart';
-import 'package:my_wealth/utils/arguments/watchlist_list_args.dart';
-import 'package:my_wealth/utils/dialog/create_snack_bar.dart';
-import 'package:my_wealth/utils/dialog/show_my_dialog.dart';
-import 'package:my_wealth/utils/function/computation.dart';
-import 'package:my_wealth/utils/function/date_utils.dart';
-import 'package:my_wealth/utils/function/format_currency.dart';
-import 'package:my_wealth/utils/function/risk_color.dart';
-import 'package:my_wealth/utils/globals.dart';
-import 'package:my_wealth/storage/prefs/shared_user.dart';
-import 'package:my_wealth/storage/prefs/shared_watchlist.dart';
-import 'package:my_wealth/utils/log.dart';
-import 'package:my_wealth/widgets/components/transparent_button.dart';
-import 'package:my_wealth/widgets/list/watchlist_detail_summary_box.dart';
-import 'package:my_wealth/widgets/modal/overlay_loading_modal.dart';
 import 'package:provider/provider.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistListPage extends StatefulWidget {
   final Object? watchlistArgs;

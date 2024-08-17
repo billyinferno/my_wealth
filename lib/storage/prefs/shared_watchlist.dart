@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:my_wealth/model/watchlist/watchlist_history_model.dart';
-import 'package:my_wealth/model/watchlist/watchlist_list_model.dart';
-import 'package:my_wealth/storage/box/local_box.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class WatchlistSharedPreferences {
   static const _watchlistKey = "watchlists_list";

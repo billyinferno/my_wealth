@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/pages/insight/insight_bandar.dart';
-import 'package:my_wealth/pages/insight/insight_broker.dart';
-import 'package:my_wealth/pages/insight/insight_reksadana.dart';
-import 'package:my_wealth/pages/insight/insight_stock.dart';
-import 'package:my_wealth/themes/colors.dart';
+import 'package:my_wealth/_index.g.dart';
 
 class InsightPage extends StatefulWidget {
   const InsightPage({super.key});

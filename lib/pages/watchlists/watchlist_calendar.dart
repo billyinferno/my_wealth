@@ -79,13 +79,13 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // set the company args so we can navigate to company detail page
     _companyArgs = CompanyDetailArgs(
-        companyId: _watchlistArgs.watchList.watchlistCompanyId,
-        companyName: _watchlistArgs.watchList.watchlistCompanyName,
-        companyCode: _watchlistArgs.watchList.watchlistCompanySymbol ?? '',
-        companyFavourite:
-            (_watchlistArgs.watchList.watchlistFavouriteId > 0 ? true : false),
-        favouritesId: _watchlistArgs.watchList.watchlistFavouriteId,
-        type: _watchlistArgs.type);
+      companyId: _watchlistArgs.watchList.watchlistCompanyId,
+      companyName: _watchlistArgs.watchList.watchlistCompanyName,
+      companyCode: _watchlistArgs.watchList.watchlistCompanySymbol ?? '',
+      companyFavourite: (_watchlistArgs.watchList.watchlistFavouriteId > 0 ? true : false),
+      favouritesId: _watchlistArgs.watchList.watchlistFavouriteId,
+      type: _watchlistArgs.type
+    );
 
     // default the calendar selection to month
     _calendarSelection = "m";
@@ -95,7 +95,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // get the computation for the watchlist
     _watchlistComputation = detailWatchlistComputation(
-        watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk);
+      watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk
+    );
 
     // set the unrealised and realised default color
     _unrealisedColor = textPrimary;
@@ -148,47 +149,66 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _getData,
-        builder: ((context, snapshot) {
-          if (snapshot.hasError) {
-            return const CommonErrorPage(
-                errorText: 'Error loading watchlist performance');
-          } else if (snapshot.hasData) {
-            return _generatePage();
-          } else {
-            return const CommonLoadingPage();
-          }
-        }));
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading watchlist performance');
+        } else if (snapshot.hasData) {
+          return _generatePage();
+        } else {
+          return const CommonLoadingPage();
+        }
+      }
+    ));
   }
 
   Widget _generatePage() {
+    Color color = textPrimary;
+    IconData iconToUsed = Ionicons.remove_outline;
+    String avgPrice = '-';
+
+    // get the icon and color that we will used on the page
+    if (_watchlistComputation.priceDiff > 0) {
+      color = Colors.green;
+      iconToUsed = Ionicons.caret_up;
+    }
+    else if (_watchlistComputation.priceDiff < 0) {
+      color = secondaryColor;
+      iconToUsed = Ionicons.caret_down;
+    }
+
+    // check whether we need to calculate the average price or not?
+    if (_watchlistComputation.totalCurrentShares > 0 ) {
+      avgPrice = formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares);
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: ((() {
-              // return back to the previous page
-              Navigator.pop(context);
-            })),
-            icon: const Icon(
-              Ionicons.arrow_back,
-            )),
+          onPressed: (() {
+            // return back to the previous page
+            Navigator.pop(context);
+          }),
+          icon: const Icon(
+            Ionicons.arrow_back,
+          ),
+        ),
         actions: <Widget>[
           IconButton(
             onPressed: (() {
-              Navigator.pushNamed(
-                  context, '/company/detail/${_watchlistArgs.type}',
-                  arguments: _companyArgs);
+              Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
             }),
             icon: const Icon(Ionicons.business_outline),
-          )
+          ),
         ],
         title: const Center(
-            child: Text(
-          "Performance Calendar",
-          style: TextStyle(
-            color: secondaryColor,
-          ),
-        )),
+          child: Text(
+            "Performance Calendar",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,9 +221,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10,),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -230,55 +248,38 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                               children: <Widget>[
                                 Text(
                                   formatCurrencyWithNull(
-                                      _watchlistArgs.watchList
-                                          .watchlistCompanyNetAssetValue,
+                                    _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                                    false,
+                                    true,
+                                    false,
+                                    2
+                                  ),
+                                ),
+                                const SizedBox(width: 5,),
+                                Icon(
+                                  iconToUsed,
+                                  color: color,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 5,),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: color,
+                                        width: 2.0,
+                                        style: BorderStyle.solid,
+                                      )
+                                    )
+                                  ),
+                                  child: Text(
+                                    formatCurrencyWithNull(
+                                      _watchlistComputation.priceDiff,
                                       false,
                                       true,
                                       false,
-                                      2),
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                (_watchlistComputation.priceDiff == 0
-                                    ? const Icon(
-                                        Ionicons.remove_outline,
-                                        color: textPrimary,
-                                        size: 15,
-                                      )
-                                    : (_watchlistComputation.priceDiff > 0
-                                        ? const Icon(
-                                            Ionicons.caret_up,
-                                            color: Colors.green,
-                                            size: 12,
-                                          )
-                                        : const Icon(
-                                            Ionicons.caret_down,
-                                            color: secondaryColor,
-                                            size: 12,
-                                          ))),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(
-                                    color: (_watchlistComputation.priceDiff == 0
-                                        ? textPrimary
-                                        : (_watchlistComputation.priceDiff > 0
-                                            ? Colors.green
-                                            : secondaryColor)),
-                                    width: 2.0,
-                                    style: BorderStyle.solid,
-                                  ))),
-                                  child: Text(
-                                    formatCurrencyWithNull(
-                                        _watchlistComputation.priceDiff,
-                                        false,
-                                        true,
-                                        false,
-                                        2),
+                                      2
+                                    ),
                                   ),
                                 )
                               ],
@@ -293,78 +294,56 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                                   color: primaryLight,
                                   size: 15,
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
+                                const SizedBox(width: 5,),
                                 Text(
-                                  Globals.dfddMMyyyy.format(_watchlistArgs
-                                      .watchList.watchlistCompanyLastUpdate!
-                                      .toLocal()),
+                                  Globals.dfddMMyyyy.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
+                        const SizedBox(height: 8,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             RowChild(
-                                headerText: "AVG PRICE",
-                                valueText:
-                                    (_watchlistComputation.totalCurrentShares >
-                                            0
-                                        ? formatCurrency(
-                                            _watchlistComputation.totalCost /
-                                                _watchlistComputation
-                                                    .totalCurrentShares)
-                                        : "-")),
-                            const SizedBox(
-                              width: 10,
+                              headerText: "AVG PRICE",
+                              valueText:avgPrice
                             ),
+                            const SizedBox(width: 10,),
                             RowChild(
-                                headerText: "COST",
-                                valueText: formatCurrency(
-                                    _watchlistComputation.totalCost)),
-                            const SizedBox(
-                              width: 10,
+                              headerText: "COST",
+                              valueText: formatCurrency(_watchlistComputation.totalCost)
                             ),
+                            const SizedBox(width: 10,),
                             RowChild(
-                                headerText: "VALUE",
-                                valueText: formatCurrency(
-                                    _watchlistComputation.totalValue)),
+                              headerText: "VALUE",
+                              valueText: formatCurrency(_watchlistComputation.totalValue)
+                            ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                        const SizedBox(height: 5,),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             RowChild(
-                                headerText: "SHARES",
-                                valueText: formatCurrency(
-                                    _watchlistComputation.totalCurrentShares)),
-                            const SizedBox(
-                              width: 10,
+                              headerText: "SHARES",
+                              valueText: formatCurrency(_watchlistComputation.totalCurrentShares),
                             ),
+                            const SizedBox(width: 10,),
                             RowChild(
-                                headerText: "UNREALISED",
-                                valueText: formatCurrency(
-                                    _watchlistComputation.totalUnrealisedGain),
-                                valueColor: _unrealisedColor),
-                            const SizedBox(
-                              width: 10,
+                              headerText: "UNREALISED",
+                              valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain),
+                              valueColor: _unrealisedColor,
                             ),
+                            const SizedBox(width: 10,),
                             RowChild(
-                                headerText: "REALISED",
-                                valueText: formatCurrency(
-                                    _watchlistComputation.totalRealisedGain),
-                                valueColor: _realisedColor),
+                              headerText: "REALISED",
+                              valueText: formatCurrency(_watchlistComputation.totalRealisedGain),
+                              valueColor: _realisedColor,
+                            ),
                           ],
                         ),
                       ],
@@ -374,9 +353,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
               ],
             ),
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15,),
           Expanded(
             child: SingleChildScrollView(
               controller: _scrollController,
@@ -412,9 +389,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                       _dateSelector(),
                     ],
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
+                  const SizedBox(height: 15,),
                   _getSubPage(),
                 ],
               ),
@@ -428,112 +403,110 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   Widget _dateSelector() {
     if (_calendarSelection == "m") {
       return Container(
-          width: 100,
-          height: 20,
-          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-          child: GestureDetector(
-            onTap: (() {
-              showMonthPicker(
-                context: context,
-                initialDate: _currentDate,
-                firstDate: _firstDate,
-                lastDate: _endDate,
-              ).then((newDate) {
-                if (newDate != null) {
-                  setState(() {
-                    // get the data
-                    _getData = _getInitData(
-                        currentDate: _currentDate, newDate: newDate);
+        width: 100,
+        height: 20,
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: GestureDetector(
+          onTap: (() {
+            showMonthPicker(
+              context: context,
+              initialDate: _currentDate,
+              firstDate: _firstDate,
+              lastDate: _endDate,
+            ).then((newDate) {
+              if (newDate != null) {
+                setState(() {
+                  // get the data
+                  _getData = _getInitData(currentDate: _currentDate, newDate: newDate);
 
-                    // set new date as current date, in case the same it will not
-                    // matter also.
-                    _currentDate = newDate;
-                  });
-                }
-              });
-            }),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Text(Globals.dfyyyyMM.format(_currentDate)),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Icon(
-                  Ionicons.caret_down_sharp,
-                  color: primaryLight,
-                  size: 10,
-                ),
-              ],
-            ),
-          ));
+                  // set new date as current date, in case the same it will not
+                  // matter also.
+                  _currentDate = newDate;
+                });
+              }
+            });
+          }),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text(Globals.dfyyyyMM.format(_currentDate)),
+              const SizedBox(width: 5,),
+              const Icon(
+                Ionicons.caret_down_sharp,
+                color: primaryLight,
+                size: 10,
+              ),
+            ],
+          ),
+        )
+      );
     } else {
       return Container(
-          width: 100,
-          height: 20,
-          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-          child: GestureDetector(
-            onTap: (() {
-              showDialog(
-                  context: context,
-                  builder: ((context) {
-                    return AlertDialog(
-                      title: const Text("Select Year"),
-                      content: SizedBox(
-                        width: 300,
-                        height: 300,
-                        child: YearPicker(
-                          firstDate: _firstDate,
-                          lastDate: _endDate,
-                          selectedDate: _currentDate,
-                          onChanged: ((newDate) {
-                            // remove the dialog
-                            Navigator.pop(context);
+        width: 100,
+        height: 20,
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: GestureDetector(
+          onTap: (() {
+            showDialog(
+              context: context,
+              builder: ((context) {
+                return AlertDialog(
+                  title: const Text("Select Year"),
+                  content: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: YearPicker(
+                      firstDate: _firstDate,
+                      lastDate: _endDate,
+                      selectedDate: _currentDate,
+                      onChanged: ((newDate) {
+                        // remove the dialog
+                        Navigator.pop(context);
 
-                            // check the new date year and current date year
-                            // if different then process to get the data
-                            if (newDate.year == _currentDate.year) {
-                              // check month whether same or not??
-                              if (newDate.month == _currentDate.month) {
-                                // all the same, no need to fetch the data
-                                return;
-                              }
-                            }
+                        // check the new date year and current date year
+                        // if different then process to get the data
+                        if (newDate.year == _currentDate.year) {
+                          // check month whether same or not??
+                          if (newDate.month == _currentDate.month) {
+                            // all the same, no need to fetch the data
+                            return;
+                          }
+                        }
 
-                            // set state and get the data if the selected year is
-                            // different with current year.
-                            setState(() {
-                              // get the data
-                              _getData = _getInitData(
-                                  currentDate: _currentDate, newDate: newDate);
+                        // set state and get the data if the selected year is
+                        // different with current year.
+                        setState(() {
+                          // get the data
+                          _getData = _getInitData(
+                              currentDate: _currentDate, newDate: newDate);
 
-                              // set the current date with the selected
-                              // year.
-                              _currentDate = newDate;
-                            });
-                          }),
-                        ),
-                      ),
-                    );
-                  }));
-            }),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Text("${_currentDate.year}"),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Icon(
-                  Ionicons.caret_down_sharp,
-                  color: primaryLight,
-                  size: 10,
-                ),
-              ],
-            ),
-          ));
+                          // set the current date with the selected
+                          // year.
+                          _currentDate = newDate;
+                        });
+                      }),
+                    ),
+                  ),
+                );
+              }),
+            );
+          }),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text("${_currentDate.year}"),
+              const SizedBox(width: 5,),
+              const Icon(
+                Ionicons.caret_down_sharp,
+                color: primaryLight,
+                size: 10,
+              ),
+            ],
+          ),
+        ),
+      );
     }
   }
 
@@ -603,9 +576,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ],
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10,),
         PerformanceCalendar(
           month: _currentDate.month,
           year: _currentDate.year,
@@ -674,9 +645,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ],
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10,),
         PerformanceCalendar(
           month: _currentDate.month,
           year: _currentDate.year,
@@ -687,8 +656,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     );
   }
 
-  Future<void> _getMonthYearData(
-      {required DateTime currentDate, DateTime? newDate}) async {
+  Future<void> _getMonthYearData({
+    required DateTime currentDate,
+    DateTime? newDate
+  }) async {
     // create variable to knew which date to use
     DateTime useDate = currentDate;
 
@@ -706,10 +677,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     }
 
     // if not then fetch the data
-    await _watchlistAPI
-        .getWatchlistPerformanceMonthYear(_watchlistArgs.type,
-            _watchlistArgs.watchList.watchlistId, useDate.month, useDate.year)
-        .then((resp) {
+    await _watchlistAPI.getWatchlistPerformanceMonthYear(
+      _watchlistArgs.type,
+      _watchlistArgs.watchList.watchlistId,
+      useDate.month,
+      useDate.year
+    ).then((resp) {
       // pl calculation helper
       double? plBefore;
       double plCurrent;
@@ -749,7 +722,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         // date shouldn't be duplicate, but if duplicate then API is fucked
         // up, just throw some error here if we found the date is duplicate
         if (_watchlistMapPerformance.containsKey(resp[i].buyDate)) {
-          Log.error(message: 'Duplicate date in the API result');
+          Log.error(message: 'Duplicate date ${resp[i].buyDate} in the API result');
           throw Exception('Duplicate Key found in the API Result');
         } else {
           // this is new data
@@ -779,8 +752,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     });
   }
 
-  Future<void> _getYearData(
-      {required DateTime currentDate, DateTime? newDate}) async {
+  Future<void> _getYearData({
+    required DateTime currentDate,
+    DateTime? newDate
+  }) async {
     // create variable to knew which date to use
     DateTime useDate = currentDate;
 
@@ -796,10 +771,11 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     }
 
     // get the performance year
-    await _watchlistAPI
-        .getWatchlistPerformanceYear(_watchlistArgs.type,
-            _watchlistArgs.watchList.watchlistId, useDate.year)
-        .then((resp) {
+    await _watchlistAPI.getWatchlistPerformanceYear(
+      _watchlistArgs.type,
+      _watchlistArgs.watchList.watchlistId,
+      useDate.year
+    ).then((resp) {
       // pl calculation helper
       double plCurrent;
       double plCurrentRatio;
@@ -843,6 +819,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
           // we can just perform normal pl calculation
           plCurrent =
               (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
+          
           _plTotalYear += (plCurrent - plBefore);
 
           plCurrentRatio = 0;
@@ -884,10 +861,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   Future<void> _getFirstAndLastDate(bool firstRun) async {
     if (firstRun) {
       // get first and last date
-      await _watchlistAPI
-          .findFirstLastDate(
-              _watchlistArgs.type, _watchlistArgs.watchList.watchlistId)
-          .then((resp) {
+      await _watchlistAPI.findFirstLastDate(
+        _watchlistArgs.type,
+        _watchlistArgs.watchList.watchlistId
+      ).then((resp) {
         // set the first and end date
         _firstDate = resp.firstdate;
         _endDate = resp.enddate;
@@ -922,8 +899,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         stackTrace: stackTrace,
       );
       throw Exception('Error when try to get the data from server');
-    }).whenComplete(
-      () {
+    }).whenComplete(() {
         // if this is not the  first run, it means that the loader dialog is being
         // called on top, close the loader dialog.
         if ((firstRun ?? false) == false) {
@@ -967,17 +943,23 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
       // in the watchlist map performance.
       beforeDate = firstDate.subtract(const Duration(days: 1));
       if (_watchlistMapPerformance.containsKey(beforeDate)) {
-        plBefore = (_watchlistMapPerformance[beforeDate]!.buyTotal *
-                _watchlistMapPerformance[beforeDate]!.currentPrice) -
-            (_watchlistMapPerformance[beforeDate]!.buyTotal *
-                _watchlistMapPerformance[beforeDate]!.buyAvg);
+        plBefore = (
+          _watchlistMapPerformance[beforeDate]!.buyTotal *
+          _watchlistMapPerformance[beforeDate]!.currentPrice
+        ) - (
+          _watchlistMapPerformance[beforeDate]!.buyTotal *
+          _watchlistMapPerformance[beforeDate]!.buyAvg
+        );
       }
 
       if (_watchlistMapPerformance.containsKey(firstDate) && plBefore != null) {
-        plCurrent = (_watchlistMapPerformance[firstDate]!.buyTotal *
-                _watchlistMapPerformance[firstDate]!.currentPrice) -
-            (_watchlistMapPerformance[firstDate]!.buyTotal *
-                _watchlistMapPerformance[firstDate]!.buyAvg);
+        plCurrent = (
+          _watchlistMapPerformance[firstDate]!.buyTotal *
+          _watchlistMapPerformance[firstDate]!.currentPrice
+        ) - (
+          _watchlistMapPerformance[firstDate]!.buyTotal *
+          _watchlistMapPerformance[firstDate]!.buyAvg
+        );
 
         // calculate pl and pl ratio
         pl = plCurrent - plBefore;

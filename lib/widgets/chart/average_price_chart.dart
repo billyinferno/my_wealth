@@ -51,8 +51,8 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
 
   @override
   void initState() {
-    _min = double.infinity as int;
-    _max = double.negativeInfinity as int;
+    _min = double.maxFinite.toInt();
+    _max = _min * (-1);
     _ma10 = 0;
     _ma20 = 0;
     _ma30 = 0;

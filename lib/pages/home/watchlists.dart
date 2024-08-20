@@ -483,10 +483,6 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                 ),
                               ],
                             ),
-                            // "${_watchlistHistory![index].watchlistDetailShare < 0 ? "Sell": "Buy"} ${_watchlistHistory![index].companyName} for ${formatDecimal(_watchlistHistory![index].watchlistDetailShare, 2)}@${formatCurrency(_watchlistHistory![index].watchlistDetailPrice)} at ${_df.format(_watchlistHistory![index].watchlistDetailDate.toLocal())}",
-                            // style: const TextStyle(
-                            //   fontSize: 12,
-                            // ),
                           ),
                         ),
                       ],

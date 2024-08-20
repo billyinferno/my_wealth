@@ -1,6 +1,6 @@
 export './broker/_index.g.dart';
 export './company/_index.g.dart';
-export './favourites/_index.g.dart';
+export './search/_index.g.dart';
 export './home/_index.g.dart';
 export './index/_index.g.dart';
 export './insight/_index.g.dart';

@@ -4,14 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
-class FavouriteCompanyListSahamPage extends StatefulWidget {
-  const FavouriteCompanyListSahamPage({super.key});
+class SearchCompanyListSahamPage extends StatefulWidget {
+  const SearchCompanyListSahamPage({super.key});
 
   @override
-  State<FavouriteCompanyListSahamPage> createState() => _FavouriteCompanyListSahamPageState();
+  State<SearchCompanyListSahamPage> createState() => _SearchCompanyListSahamPageState();
 }
 
-class _FavouriteCompanyListSahamPageState extends State<FavouriteCompanyListSahamPage> {
+class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage> {
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();

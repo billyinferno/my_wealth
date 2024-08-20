@@ -98,15 +98,15 @@ class RouterPageState extends State<RouterPage> {
       }
       case '/favourites/list/reksadana':
       {
-        return createAnimationRoute(const FavouriteCompanyListReksadanaPage());
+        return createAnimationRoute(const SearchCompanyListReksadanaPage());
       }
       case '/favourites/list/saham':
       {
-        return createAnimationRoute(const FavouriteCompanyListSahamPage());
+        return createAnimationRoute(const SearchCompanyListSahamPage());
       }
       case '/favourites/list/crypto':
       {
-        return createAnimationRoute(const FavouriteCompanyListCryptoPage());
+        return createAnimationRoute(const SearchCompanyListCryptoPage());
       }
       case '/company/detail/reksadana':
       {

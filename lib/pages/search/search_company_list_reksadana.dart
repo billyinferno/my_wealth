@@ -5,14 +5,14 @@ import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
-class FavouriteCompanyListReksadanaPage extends StatefulWidget {
-  const FavouriteCompanyListReksadanaPage({ super.key });
+class SearchCompanyListReksadanaPage extends StatefulWidget {
+  const SearchCompanyListReksadanaPage({ super.key });
 
   @override
-  FavouriteCompanyListReksadanaPageState createState() => FavouriteCompanyListReksadanaPageState();
+  SearchCompanyListReksadanaPageState createState() => SearchCompanyListReksadanaPageState();
 }
 
-class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListReksadanaPage> {
+class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksadanaPage> {
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final ScrollController _scrollController = ScrollController();
   final DateFormat _dt = DateFormat("dd/MM/yyyy");
@@ -50,6 +50,8 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
     _filterList["6m"] = "Six Month";
     _filterList["yt"] = "Year To Date";
     _filterList["1y"] = "One Year";
+    _filterList["rt"] = "Rating";
+    _filterList["rs"] = "Risk";
 
     // default filter mode to Code and ASC
     _filterMode = "nm";
@@ -695,6 +697,12 @@ class FavouriteCompanyListReksadanaPageState extends State<FavouriteCompanyListR
           break;
         case "1y":
           tempFilter.sort(((a, b) => (a.favouritesCompanyYearlyReturn ?? 0).compareTo((b.favouritesCompanyYearlyReturn ?? 0))));
+          break;
+        case "rt":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyYearlyRating ?? -1).compareTo((b.favouritesCompanyYearlyRating ?? -1))));
+          break;
+        case "rs":
+          tempFilter.sort(((a, b) => (a.favouritesCompanyYearlyRisk ?? 99).compareTo((b.favouritesCompanyYearlyRisk ?? 99))));
           break;
         default:
           tempFilter.sort(((a, b) => (a.favouritesCompanyDailyReturn ?? 0).compareTo((b.favouritesCompanyDailyReturn ?? 0))));

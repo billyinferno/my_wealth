@@ -284,8 +284,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                   return CupertinoAlertDialog(
                                     title: const Text("Select Company Code"),
                                     content: const Text("Please company code from the list, before run the query."),
-                                    actions: <CupertinoActionSheetAction>[
-                                      CupertinoActionSheetAction(
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
                                         onPressed: (() {
                                           Navigator.pop(context);
                                         }),

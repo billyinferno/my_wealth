@@ -321,8 +321,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                   return CupertinoAlertDialog(
                                     title: const Text("Select Broker and Company"),
                                     content: const Text("Please select broker and company from the list, before run the query."),
-                                    actions: <CupertinoActionSheetAction>[
-                                      CupertinoActionSheetAction(
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
                                         onPressed: (() {
                                           Navigator.pop(context);
                                         }),

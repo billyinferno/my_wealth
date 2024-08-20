@@ -192,26 +192,29 @@ class ExpandedTileTitle extends StatelessWidget {
                                     size: 12,
                                   ),
                                   const SizedBox(width: 2,),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: trendColor,
-                                          width: 2.0,
-                                          style: BorderStyle.solid,
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: trendColor,
+                                            width: 2.0,
+                                            style: BorderStyle.solid,
+                                          )
                                         )
-                                      )
-                                    ),
-                                    child: Text(
-                                      formatCurrency(
-                                        price,
-                                        (checkThousandOnPrice ?? false),
-                                        (showDecimal ?? true),
                                       ),
-                                      style: const TextStyle(
-                                        fontSize: 12,
+                                      child: Text(
+                                        formatCurrency(
+                                          price,
+                                          (checkThousandOnPrice ?? false),
+                                          (showDecimal ?? true),
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.right,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   )
                                 ],

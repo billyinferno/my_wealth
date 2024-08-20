@@ -383,7 +383,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       children: <Widget>[
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: SingleChildScrollView(
               controller: _summaryController,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -791,14 +791,16 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SingleChildScrollView(
-          controller: _graphScrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: LineChart(
-            data: _graphData,
-            height: 250,
-            watchlist: _watchlistDetail,
-            dateOffset: (_graphData.length ~/ 10),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _graphScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: LineChart(
+              data: _graphData,
+              height: 250,
+              watchlist: _watchlistDetail,
+              dateOffset: (_graphData.length ~/ 10),
+            ),
           ),
         )
       ],

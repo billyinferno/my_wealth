@@ -1380,7 +1380,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             child: _selectedGraph(),
           ),
         ),
-        const SizedBox(height: 15,),
       ],
     );
   }

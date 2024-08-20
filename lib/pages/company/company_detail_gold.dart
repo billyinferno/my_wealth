@@ -386,7 +386,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
       controller: _summaryController,
       physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -468,7 +468,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             Expanded(
               child: Container(
                 color: primaryColor,
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,

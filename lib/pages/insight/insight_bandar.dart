@@ -48,7 +48,6 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
                   "nearAtl30": "Near-ATL30",
                   "topAcq": "Accumulation",
                   "stockCollect": "Stock Collection",
-                  "brokerCollect": "Broker Collection",
                   "topEps": "EPS",
                   "sideways": "Sideways",
                   "indexBeater": "Index Beater",
@@ -90,9 +89,6 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
     }
     if (_selectedBandarPage == "stockCollect") {
       return const InsightBandarStockCollectPage();
-    }
-    if (_selectedBandarPage == "brokerCollect") {
-      return const InsightBandarBrokerCollectPage();
     }
     if (_selectedBandarPage == "topEps") {
       return const InsightBandarEPSPage();

@@ -267,8 +267,20 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                             iconSize: 12,
                             bgColor: primaryDark,
                             borderColor: primaryLight,
-                            text: "Broker and Code",
-                            // vertical: true,
+                            text: "Broker\nAccumulation",
+                            vertical: true,
+                            callback: (() {
+                              Navigator.pushNamed(context, '/insight/broker/specificbroker');
+                            })
+                          ),
+                          const SizedBox(width: 10,),
+                          TransparentButton(
+                            icon: Ionicons.funnel,
+                            iconSize: 12,
+                            bgColor: primaryDark,
+                            borderColor: primaryLight,
+                            text: "Broker and\nCode",
+                            vertical: true,
                             callback: (() {
                               Navigator.pushNamed(context, '/insight/broker/specificquery');
                             })
@@ -279,8 +291,8 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                             iconSize: 12,
                             bgColor: primaryDark,
                             borderColor: primaryLight,
-                            text: "Code Only",
-                            // vertical: true,
+                            text: "Code\nOnly",
+                            vertical: true,
                             callback: (() {
                               Navigator.pushNamed(context, '/insight/broker/specificcode');
                             })

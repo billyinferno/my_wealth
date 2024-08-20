@@ -70,246 +70,269 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Ionicons.arrow_back,
+          ),
+          onPressed: (() {
+            Navigator.pop(context);
+          }),
+        ),
+        title: const Center(
+          child: Text(
+            "Broker Accumulation",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          ),
+        ),
+      ),
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Broker",
-                          style: TextStyle(
-                            color: accentColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5,),
-                        InkWell(
-                          onTap: (() async {
-                            // navigate to the find other company list and we will get the value from there
-                            await Navigator.pushNamed(context, '/broker/find').then((value) {
-                              if (value != null) {
-                                // convert value to company list model
-                                _brokerData = value as BrokerModel;
-
-                                // set the data
-                                setState(() {
-                                  _brokerCode = _brokerData.brokerFirmId;
-                                });
-                              }
-                            });
-                          }),
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                              color: primaryDark,
-                              borderRadius: BorderRadius.circular(5),
+          Container(
+            padding: const EdgeInsets.all(10),
+            color: primaryDark,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "Broker",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
                             ),
-                            child: Center(
-                              child: Text(
-                                (_brokerCode.isEmpty ? '-' : _brokerCode),
-                                style: const TextStyle(
-                                  fontSize: 12,
+                          ),
+                          const SizedBox(height: 5,),
+                          InkWell(
+                            onTap: (() async {
+                              // navigate to the find other company list and we will get the value from there
+                              await Navigator.pushNamed(context, '/broker/find').then((value) {
+                                if (value != null) {
+                                  // convert value to company list model
+                                  _brokerData = value as BrokerModel;
+                  
+                                  // set the data
+                                  setState(() {
+                                    _brokerCode = _brokerData.brokerFirmId;
+                                  });
+                                }
+                              });
+                            }),
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
+                                color: primaryDark,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  (_brokerCode.isEmpty ? '-' : _brokerCode),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 5,),
-                  Expanded(
-                    flex: 4,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Accum %",
-                          style: TextStyle(
-                            color: accentColor,
-                            fontWeight: FontWeight.bold,
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "Accum %",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5,),
-                        NumberStepper(
-                          height: 25,
-                          borderColor: primaryLight,
-                          buttonColor: secondaryColor,
-                          bgColor: primaryDark,
-                          textColor: textPrimary,
-                          initialRate: _accumRate,
-                          onTap: ((newRate) {
-                            _accumRate = newRate;
-                          }),
-                        ),
-                      ],
+                          const SizedBox(height: 5,),
+                          NumberStepper(
+                            height: 29,
+                            borderColor: primaryLight,
+                            buttonColor: secondaryColor,
+                            bgColor: primaryDark,
+                            textColor: textPrimary,
+                            initialRate: _accumRate,
+                            onTap: ((newRate) {
+                              _accumRate = newRate;
+                            }),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 5,),
-                  Expanded(
-                    flex: 7,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          "Date",
-                          style: TextStyle(
-                            color: accentColor,
-                            fontWeight: FontWeight.bold,
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      flex: 7,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "Date",
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5,),
-                        InkWell(
-                          onTap: (() async {
-                            await _showCalendar();
-                          }),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
+                          const SizedBox(height: 5,),
+                          InkWell(
+                            onTap: (() async {
+                              await _showCalendar();
+                            }),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: primaryLight,
+                                        width: 1.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                      color: primaryDark,
+                                      borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(5),
+                                        topLeft: Radius.circular(5)
+                                      ),
                                     ),
-                                    color: primaryDark,
-                                    borderRadius: const BorderRadius.only(
-                                      bottomLeft: Radius.circular(5),
-                                      topLeft: Radius.circular(5)
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      Globals.dfddMMyy.format(_fromDate!),
-                                      style: const TextStyle(
-                                        fontSize: 12,
+                                    child: Center(
+                                      child: Text(
+                                        Globals.dfddMMyy.format(_fromDate!),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: primaryLight,
+                                        width: 1.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                      color: primaryDark,
+                                      borderRadius: const BorderRadius.only(
+                                        bottomRight: Radius.circular(5),
+                                        topRight: Radius.circular(5)
+                                      ),
                                     ),
-                                    color: primaryDark,
-                                    borderRadius: const BorderRadius.only(
-                                      bottomRight: Radius.circular(5),
-                                      topRight: Radius.circular(5)
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      Globals.dfddMMyy.format(_toDate!),
-                                      style: const TextStyle(
-                                        fontSize: 12,
+                                    child: Center(
+                                      child: Text(
+                                        Globals.dfddMMyy.format(_toDate!),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5,),
+                InkWell(
+                  onTap: (() async {
+                    // check that broker and code already filled
+                    if (_brokerCode.isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CupertinoAlertDialog(
+                            title: const Text("Select Broker"),
+                            content: const Text("Please select broker from the list, before run the query."),
+                            actions: <CupertinoDialogAction>[
+                              CupertinoDialogAction(
+                                onPressed: (() {
+                                  Navigator.pop(context);
+                                }),
+                                child: const Text("OK"),
                               )
                             ],
-                          ),
-                        ),
-                      ],
+                          );
+                        }
+                      );
+                    }
+                    else {
+                      // get the broker collection
+                      await _getBrokerCollect().then((_) {  
+                        setState(() {
+                          // rebuild widget
+                        });
+                      }).onError((error, stackTrace) {
+                        if (context.mounted) {
+                          // show the error
+                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+                        }
+                      },);
+                    }
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: primaryDark,
+                      border: Border.all(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      )
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 5,),
-              InkWell(
-                onTap: (() async {
-                  // check that broker and code already filled
-                  if (_brokerCode.isEmpty) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CupertinoAlertDialog(
-                          title: const Text("Select Broker"),
-                          content: const Text("Please select broker from the list, before run the query."),
-                          actions: <CupertinoActionSheetAction>[
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                Navigator.pop(context);
-                              }),
-                              child: const Text("OK"),
-                            )
-                          ],
-                        );
-                      }
-                    );
-                  }
-                  else {
-                    // get the broker collection
-                    await _getBrokerCollect().then((_) {  
-                      setState(() {
-                        // rebuild widget
-                      });
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {
-                        // show the error
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
-                      }
-                    },);
-                  }
-                }),
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: primaryDark,
-                    border: Border.all(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    )
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "SEARCH",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                    child: const Center(
+                      child: Text(
+                        "SEARCH",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 10,),
           _generateSummary(),
           const SizedBox(height: 10,),
           _generateList(),
+          const SizedBox(height: 20,),
         ],
       ),
     );
@@ -323,6 +346,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
 
     // create the summary box
     return Container(
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
         border: Border.all(

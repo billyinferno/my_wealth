@@ -3804,33 +3804,36 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         return CupertinoAlertDialog(
                           title: const Text("Clear Compare"),
                           content: Text(
-                              "Do you want to clear comparison with $_indexCompareName?"),
+                            "Do you want to clear comparison with $_indexCompareName?"
+                          ),
                           actions: <CupertinoDialogAction>[
                             CupertinoDialogAction(
-                                onPressed: (() {
-                                  setState(() {
-                                    // clear the index compare data
-                                    _indexCompareName = "";
-                                    _indexComparePrice.clear();
-                                    _indexPriceMap.clear();
-                                    _indexData.clear();
-                                  });
+                              onPressed: (() {
+                                setState(() {
+                                  // clear the index compare data
+                                  _indexCompareName = "";
+                                  _indexComparePrice.clear();
+                                  _indexPriceMap.clear();
+                                  _indexData.clear();
+                                });
 
-                                  // remove the dialog
-                                  Navigator.pop(context);
-                                }),
-                                child: const Text(
-                                  "Yes",
-                                  style: TextStyle(
-                                    color: textPrimary,
-                                  ),
-                                )),
+                                // remove the dialog
+                                Navigator.pop(context);
+                              }),
+                              child: const Text(
+                                "Yes",
+                                style: TextStyle(
+                                  color: textPrimary,
+                                ),
+                              ),
+                            ),
                             CupertinoDialogAction(
-                                onPressed: (() {
-                                  // remove the dialog
-                                  Navigator.pop(context);
-                                }),
-                                child: const Text("No")),
+                              onPressed: (() {
+                                // remove the dialog
+                                Navigator.pop(context);
+                              }),
+                              child: const Text("No")
+                            ),
                           ],
                         );
                       }));
@@ -3877,8 +3880,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 InkWell(
                   onTap: (() async {
                     // go to index list page
-                    await Navigator.pushNamed(context, '/index/find')
-                        .then((value) async {
+                    await Navigator.pushNamed(
+                      context,
+                      '/index/find'
+                    ).then((value) async {
                       if (value != null) {
                         // convert value to company list model
                         _indexCompare = value as IndexModel;
@@ -4042,251 +4047,295 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     );
   }
 
-  List<Widget> _generateCompareFields(
-      {required CompanyDetailModel company,
-      required InfoFundamentalsModel fundamental,
-      required CompanyDetailModel otherCompany,
-      required InfoFundamentalsModel otherFundamental,
-      required Color borderColor}) {
+  List<Widget> _generateCompareFields({
+    required CompanyDetailModel company,
+    required InfoFundamentalsModel fundamental,
+    required CompanyDetailModel otherCompany,
+    required InfoFundamentalsModel otherFundamental,
+    required Color borderColor}
+  ) {
     List<Widget> returnWidget = [
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.lastPrice, false, false)),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.lastPrice, false, false)
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text:
-              "${formatDecimalWithNull(company.companyYearlyReturn, 100, 4)}%",
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((company.companyYearlyReturn ?? 0) -
-              (otherCompany.companyYearlyReturn ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text:
+            "${formatDecimalWithNull(company.companyYearlyReturn, 100, 4)}%",
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((company.companyYearlyReturn ?? 0) -
+            (otherCompany.companyYearlyReturn ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: "${formatDecimalWithNull(company.companyThreeYear, 100, 4)}%",
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((company.companyThreeYear ?? 0) -
-              (otherCompany.companyThreeYear ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: "${formatDecimalWithNull(company.companyThreeYear, 100, 4)}%",
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((company.companyThreeYear ?? 0) -
+            (otherCompany.companyThreeYear ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: "${formatDecimalWithNull(company.companyFiveYear, 100, 4)}%",
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((company.companyFiveYear ?? 0) -
-              (otherCompany.companyFiveYear ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: "${formatDecimalWithNull(company.companyFiveYear, 100, 4)}%",
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((company.companyFiveYear ?? 0) -
+            (otherCompany.companyFiveYear ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: "${formatDecimalWithNull(company.companyTenYear, 100, 4)}%",
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((company.companyTenYear ?? 0) -
-              (otherCompany.companyTenYear ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: "${formatDecimalWithNull(company.companyTenYear, 100, 4)}%",
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((company.companyTenYear ?? 0) -
+            (otherCompany.companyTenYear ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: (_otherCompanyCode == null
-              ? '-'
-              : "${fundamental.period}M ${_otherInfoFundamental.year}")),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: (_otherCompanyCode == null
+            ? '-'
+            : "${fundamental.period}M ${_otherInfoFundamental.year}")
+      ),
       const CompareFields(
-          color: Colors.transparent, borderColor: Colors.transparent, text: ""),
+        color: Colors.transparent,
+        borderColor: Colors.transparent,
+        text: ""
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.cash, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.cash ?? 0) - (otherFundamental.cash ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.cash, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.cash ?? 0) - (otherFundamental.cash ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.totalAsset, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.totalAsset ?? 0) -
-                  (otherFundamental.totalAsset ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.totalAsset, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.totalAsset ?? 0) -
+                (otherFundamental.totalAsset ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.stBorrowing, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((otherFundamental.stBorrowing ?? 0) -
-                  (fundamental.stBorrowing ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.stBorrowing, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((otherFundamental.stBorrowing ?? 0) -
+                (fundamental.stBorrowing ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.ltBorrowing, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((otherFundamental.ltBorrowing ?? 0) -
-                  (fundamental.ltBorrowing ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.ltBorrowing, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((otherFundamental.ltBorrowing ?? 0) -
+                (fundamental.ltBorrowing ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.totalEquity, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.totalEquity ?? 0) -
-                  (otherFundamental.totalEquity ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.totalEquity, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.totalEquity ?? 0) -
+                (otherFundamental.totalEquity ?? 0))
+            .toDouble()
+      ),
       const CompareFields(
-          color: Colors.transparent, borderColor: Colors.transparent, text: ""),
+        color: Colors.transparent,
+        borderColor: Colors.transparent,
+        text: ""
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.revenue, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger:
-              ((fundamental.revenue ?? 0) - (otherFundamental.revenue ?? 0))
-                  .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.revenue, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger:
+            ((fundamental.revenue ?? 0) - (otherFundamental.revenue ?? 0))
+                .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.grossProfit, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.grossProfit ?? 0) -
-                  (otherFundamental.grossProfit ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.grossProfit, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.grossProfit ?? 0) -
+                (otherFundamental.grossProfit ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.operatingProfit, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.operatingProfit ?? 0) -
-                  (otherFundamental.operatingProfit ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.operatingProfit, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.operatingProfit ?? 0) -
+                (otherFundamental.operatingProfit ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.netProfit, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger:
-              ((fundamental.netProfit ?? 0) - (otherFundamental.netProfit ?? 0))
-                  .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.netProfit, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger:
+            ((fundamental.netProfit ?? 0) - (otherFundamental.netProfit ?? 0))
+                .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.ebitda, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.ebitda ?? 0) - (otherFundamental.ebitda ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.ebitda, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.ebitda ?? 0) - (otherFundamental.ebitda ?? 0))
+            .toDouble()
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatIntWithNull(fundamental.interestExpense, false, true),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((otherFundamental.interestExpense ?? 0) -
-                  (fundamental.interestExpense ?? 0))
-              .toDouble()),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatIntWithNull(fundamental.interestExpense, false, true),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((otherFundamental.interestExpense ?? 0) -
+                (fundamental.interestExpense ?? 0))
+            .toDouble()
+      ),
       const CompareFields(
-          color: Colors.transparent, borderColor: Colors.transparent, text: ""),
+        color: Colors.transparent,
+        borderColor: Colors.transparent,
+        text: ""
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.eps, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.eps ?? 0) - (otherFundamental.eps ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.eps, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.eps ?? 0) - (otherFundamental.eps ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.per, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((otherFundamental.per ?? 0) - (fundamental.per ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.per, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((otherFundamental.per ?? 0) - (fundamental.per ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(company.companyPerAnnualized, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((otherCompany.companyPerAnnualized ?? 0) -
-              (company.companyPerAnnualized ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(company.companyPerAnnualized, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((otherCompany.companyPerAnnualized ?? 0) -
+            (company.companyPerAnnualized ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(company.companyBetaOneYear, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((company.companyBetaOneYear ?? 0) -
-              (otherCompany.companyBetaOneYear ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(company.companyBetaOneYear, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((company.companyBetaOneYear ?? 0) -
+            (otherCompany.companyBetaOneYear ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.bvps, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.bvps ?? 0) - (otherFundamental.bvps ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.bvps, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.bvps ?? 0) - (otherFundamental.bvps ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.pbv, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: (fundamental.pbv ?? 0)
-              .noMinCompare((otherFundamental.pbv ?? 0), '<')),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.pbv, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: (fundamental.pbv ?? 0)
+            .noMinCompare((otherFundamental.pbv ?? 0), '<')
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(company.companyPsrAnnualized, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((otherCompany.companyPsrAnnualized ?? 0) -
-              (company.companyPsrAnnualized ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(company.companyPsrAnnualized, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((otherCompany.companyPsrAnnualized ?? 0) -
+            (company.companyPsrAnnualized ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(company.companyPcfrAnnualized, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: (company.companyPcfrAnnualized ?? 0)
-              .noMinCompare((otherCompany.companyPcfrAnnualized ?? 0), '<')),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(company.companyPcfrAnnualized, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: (company.companyPcfrAnnualized ?? 0)
+            .noMinCompare((otherCompany.companyPcfrAnnualized ?? 0), '<')
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.roa, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.roa ?? 0) - (otherFundamental.roa ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.roa, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.roa ?? 0) - (otherFundamental.roa ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.roe, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.roe ?? 0) - (otherFundamental.roe ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.roe, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.roe ?? 0) - (otherFundamental.roe ?? 0))
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.evEbitda, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: (fundamental.evEbitda ?? 0)
-              .noMinCompare((otherFundamental.evEbitda ?? 0), '<')),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.evEbitda, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: (fundamental.evEbitda ?? 0)
+            .noMinCompare((otherFundamental.evEbitda ?? 0), '<')
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.debtEquity, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: (fundamental.debtEquity ?? 0)
-              .noMinCompare((otherFundamental.debtEquity ?? 0), '<')),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.debtEquity, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: (fundamental.debtEquity ?? 0)
+            .noMinCompare((otherFundamental.debtEquity ?? 0), '<')
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.debtTotalcap, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: (fundamental.debtTotalcap ?? 0)
-              .noMinCompare((otherFundamental.debtTotalcap ?? 0), '<')),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.debtTotalcap, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: (fundamental.debtTotalcap ?? 0)
+            .noMinCompare((otherFundamental.debtTotalcap ?? 0), '<')
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.debtEbitda, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: (fundamental.debtEbitda ?? 0)
-              .noMinCompare((otherFundamental.debtEbitda ?? 0), '<')),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.debtEbitda, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: (fundamental.debtEbitda ?? 0)
+            .noMinCompare((otherFundamental.debtEbitda ?? 0), '<')
+      ),
       CompareFields(
-          color: primaryDark,
-          borderColor: borderColor,
-          text: formatDecimalWithNull(fundamental.ebitdaInterestexpense, 1, 2),
-          showCompare: (_otherCompanyCode != null),
-          isBigger: ((fundamental.ebitdaInterestexpense ?? 0) -
-              (otherFundamental.ebitdaInterestexpense ?? 0))),
+        color: primaryDark,
+        borderColor: borderColor,
+        text: formatDecimalWithNull(fundamental.ebitdaInterestexpense, 1, 2),
+        showCompare: (_otherCompanyCode != null),
+        isBigger: ((fundamental.ebitdaInterestexpense ?? 0) -
+            (otherFundamental.ebitdaInterestexpense ?? 0))
+      ),
     ];
 
     return returnWidget;
   }
 
   void _generateGraphData(
-      List<InfoSahamPriceModel> prices, CompanyDetailModel company) {
+    List<InfoSahamPriceModel> prices,
+    CompanyDetailModel company
+  ) {
     // map the price date on company
     List<GraphData> tempData = [];
     double totalPrice = 0;
@@ -4466,18 +4515,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     // get the broker summary
     await Future.wait([
       // get the broker summary gross
-      _brokerSummaryAPI
-          .getBrokerSummary(_companyData.companyCode,
-              _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal())
-          .then((resp) {
+      _brokerSummaryAPI.getBrokerSummary(
+        _companyData.companyCode,
+        _brokerSummaryDateFrom.toLocal(),
+        _brokerSummaryDateTo.toLocal()
+      ).then((resp) {
         _brokerSummaryGross = resp;
       }),
 
       // get the broker summary net
-      _brokerSummaryAPI
-          .getBrokerSummaryNet(_companyData.companyCode,
-              _brokerSummaryDateFrom.toLocal(), _brokerSummaryDateTo.toLocal())
-          .then((resp) {
+      _brokerSummaryAPI.getBrokerSummaryNet(
+        _companyData.companyCode,
+        _brokerSummaryDateFrom.toLocal(),
+        _brokerSummaryDateTo.toLocal()
+      ).then((resp) {
         _brokerSummaryNet = resp;
       }),
     ]).onError(
@@ -4510,10 +4561,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     LoadingScreen.instance().show(context: context);
 
     // get the broker summary
-    await _companyApi
-        .getCompanyTopBroker(_companyData.companyCode,
-            _topBrokerDateFrom.toLocal(), _topBrokerDateTo.toLocal())
-        .then((resp) {
+    await _companyApi.getCompanyTopBroker(
+      _companyData.companyCode,
+      _topBrokerDateFrom.toLocal(),
+      _topBrokerDateTo.toLocal()
+    ).then((resp) {
       setState(() {
         _topBroker = resp;
       });
@@ -4542,9 +4594,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     LoadingScreen.instance().show(context: context);
 
     // get the fundamental data
-    await _infoFundamentalAPI
-        .getInfoFundamental(_companyData.companyCode, _quarterSelection)
-        .then((resp) {
+    await _infoFundamentalAPI.getInfoFundamental(
+      _companyData.companyCode,
+      _quarterSelection
+    ).then((resp) {
       result = resp;
     }).onError((error, stackTrace) {
       Log.error(
@@ -4568,16 +4621,21 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   }
 
   Future<bool> _getInitData() async {
-    DateTime fromDate =
-        DateTime.now().subtract(const Duration(days: 365)).toLocal();
+    DateTime fromDate = DateTime.now().subtract(
+      const Duration(
+        days: 365
+      )
+    ).toLocal();
+
     DateTime toDate = DateTime.now().toLocal();
 
     try {
       // get the data that refer as dependency by other API
       // get company detail
-      await _companyApi
-          .getCompanyDetail(_companyData.companyId, _companyData.type)
-          .then((resp) {
+      await _companyApi.getCompanyDetail(
+        _companyData.companyId,
+        _companyData.type
+      ).then((resp) {
         // copy the response to company detail data
         _companyDetail = resp;
 
@@ -4609,9 +4667,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       });
 
       // get broker summary daily stat
-      await _brokerSummaryAPI
-          .getBrokerSummaryDailyStat(_companyData.companyCode)
-          .then((resp) {
+      await _brokerSummaryAPI.getBrokerSummaryDailyStat(
+        _companyData.companyCode
+      ).then((resp) {
         _brokerSummaryDailyStat = resp;
 
         // init the broker summary daily data
@@ -4649,9 +4707,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       // for rest of the data we can call async to faster the process of loading
       // the page.
       await Future.wait([
-        _brokerSummaryAPI
-            .getBrokerSummaryCodeDate(_companyData.companyCode)
-            .then((resp) {
+        _brokerSummaryAPI.getBrokerSummaryCodeDate(
+          _companyData.companyCode
+        ).then((resp) {
           _brokerSummaryDate = resp;
         }).onError(
           (error, stackTrace) {
@@ -4663,12 +4721,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got broker summary');
           },
         ),
-        _brokerSummaryAPI
-            .getBrokerSummary(
-                _companyData.companyCode,
-                _brokerSummaryDateFrom.toLocal(),
-                _brokerSummaryDateTo.toLocal())
-            .then((resp) {
+        _brokerSummaryAPI.getBrokerSummary(
+          _companyData.companyCode,
+          _brokerSummaryDateFrom.toLocal(),
+          _brokerSummaryDateTo.toLocal()
+        ).then((resp) {
           _brokerSummaryGross = resp;
         }).onError(
           (error, stackTrace) {
@@ -4680,12 +4737,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got broker summary gross data');
           },
         ),
-        _brokerSummaryAPI
-            .getBrokerSummaryNet(
-                _companyData.companyCode,
-                _brokerSummaryDateFrom.toLocal(),
-                _brokerSummaryDateTo.toLocal())
-            .then((resp) {
+        _brokerSummaryAPI.getBrokerSummaryNet(
+          _companyData.companyCode,
+          _brokerSummaryDateFrom.toLocal(),
+          _brokerSummaryDateTo.toLocal()
+        ).then((resp) {
           _brokerSummary = resp;
           _brokerSummaryNet = resp;
           _brokerSummaryBuySell = resp.brokerSummaryAll;
@@ -4703,10 +4759,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got broker summary buy and sell data');
           },
         ),
-        _brokerSummaryAPI
-            .getBrokerSummaryAccumulation('v1', _companyData.companyCode,
-                _brokerSummaryDateFrom.toLocal())
-            .then((resp) {
+        _brokerSummaryAPI.getBrokerSummaryAccumulation(
+          'v1',
+          _companyData.companyCode,
+          _brokerSummaryDateFrom.toLocal()
+        ).then((resp) {
           _brokerSummaryAccumulation.add(resp);
         }).onError(
           (error, stackTrace) {

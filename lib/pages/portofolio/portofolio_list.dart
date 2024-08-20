@@ -31,9 +31,9 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
     "sh": "Total Share",
     "co": "Total Cost",
     "vl": "Total Value",
-    "rp": "Total Realized P/L",
-    "up": "Total Unrealized P/L (\$)",
-    "u%": "Total Unrealized P/L (%)",
+    "rp": "Total Realised P/L",
+    "up": "Total Unrealised P/L (\$)",
+    "u%": "Total Unrealised P/L (%)",
     "1d": "Day Gain (\$)",
     "1%": "Day Gain (%)",
   };

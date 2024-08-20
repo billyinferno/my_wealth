@@ -36,9 +36,9 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     "cd": "Code/Name",
     "tl": "Total Value",
     "lf": "Share Left",
-    "rp": "Realized P/L",
-    "up": "Unrealizd P/L (\$)",
-    "u%": "Unrealizd P/L (%)",
+    "rp": "Realised P/L",
+    "up": "Unrealised P/L (\$)",
+    "u%": "Unrealised P/L (%)",
     "1%": "Daily Gain (%)",
     "1d": "Daily Gain (\$)",
   };
@@ -68,7 +68,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     if((_args.realised ?? 0) > 0) {
       _realisedColor = Colors.green;
     }
-    else if((_args.unrealised ?? 0) < 0) {
+    else if((_args.realised ?? 0) < 0) {
       _realisedColor = secondaryColor;
     }
 
@@ -134,7 +134,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
           IconButton(
             onPressed: (() {
               // show the modal dialog for what to filter
-              // code/name, total investment, share left, realized pl, unrealized pl, one day
+              // code/name, total investment, share left, realised pl, unrealised pl, one day
               ShowMyModalBottomSheet(
                 context: context,
                 filterList: _sortMap,
@@ -383,7 +383,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     _portofolioFiltered = _portofolioList.toList();
 
     // check what kind of sort type is being implemented
-    // total investment, share left, realized pl, unrealized pl, one day
+    // total investment, share left, realised pl, unrealised pl, one day
     switch(_sortType) {
       case "tl":
         _portofolioFiltered.sort((a, b) => a.watchlistSubTotalValue.compareTo(b.watchlistSubTotalValue));

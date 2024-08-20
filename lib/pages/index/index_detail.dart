@@ -554,7 +554,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   }
 
   List<Widget> _showSeasonality() {
-    return [SeasonalityTable(data: _seasonality)];
+    return [Expanded(child: SeasonalityTable(data: _seasonality))];
   }
 
   List<Widget> _showGraph() {

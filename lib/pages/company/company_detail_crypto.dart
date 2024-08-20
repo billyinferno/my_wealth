@@ -32,6 +32,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   bool _showCurrentPriceComparison = false;
   late List<GraphData> _graphData;
   late Map<DateTime, GraphData> _heatGraphData;
+
+  late List<WatchlistListModel> _watchlists;
+  late bool _isOwned;
   
   int _numPrice = 0;
   int _bodyPage = 0;
@@ -49,6 +52,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
     // get user information
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // get the user watchlist for crypto
+    _watchlists = WatchlistSharedPreferences.getWatchlist("crypto");
+    _isOwned = false;
 
     // initialize graph data
     _graphData = [];
@@ -117,6 +124,16 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
             }),
           ),
           actions: <Widget>[
+            Visibility(
+              visible: _isOwned,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: const Icon(
+                  Ionicons.checkmark,
+                  color: Colors.green,
+                ),
+              ),
+            ),
             Icon(
               (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
               color: accentColor,
@@ -898,7 +915,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
             }
           }
         }),
-      ]).onError((error, stackTrace) {
+      ]).then((_) async {
+        // check if this crypto owned by user or not?
+        _checkIfOwned();
+      },).onError((error, stackTrace) {
         throw Exception('Error while get data from server');
       });
     }
@@ -912,5 +932,15 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     }
 
     return true;
+  }
+
+  Future<void> _checkIfOwned() async {
+    // loop thru watchlist and check if this company is owned by the user or not?
+    for(WatchlistListModel watchlist in _watchlists) {
+      if (watchlist.watchlistCompanyId == _companyDetail.companyId) {
+        _isOwned = true;
+        return;
+      }
+    }
   }
 }

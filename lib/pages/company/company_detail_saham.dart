@@ -128,6 +128,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late Map<DateTime, double> _indexPriceMap;
   late List<GraphData> _indexData;
 
+  late List<WatchlistListModel> _watchlists;
+  late bool _isOwned;
+
   int _numPrice = 0;
   int _bodyPage = 0;
   int _quarterSelection = 5;
@@ -160,6 +163,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // get user information
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // get user watchlists data
+    _watchlists = WatchlistSharedPreferences.getWatchlist("saham");
+    _isOwned = false;
 
     // initialize graph data
     _graphData = [];
@@ -255,14 +262,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
+    double diffPrice = _companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!;
 
-    if ((_companyDetail.companyNetAssetValue! -
-            _companyDetail.companyPrevPrice!) >
-        0) {
+    if (diffPrice > 0) {
       currentIcon = Ionicons.caret_up;
-    } else if ((_companyDetail.companyNetAssetValue! -
-            _companyDetail.companyPrevPrice!) <
-        0) {
+    } else if (diffPrice < 0) {
       currentIcon = Ionicons.caret_down;
     }
 
@@ -286,17 +290,23 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             }),
           ),
           actions: <Widget>[
+            Visibility(
+              visible: _isOwned,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: const Icon(
+                  Ionicons.checkmark,
+                  color: Colors.green,
+                ),
+              ),
+            ),
             Icon(
-              (_companyData.companyFavourite
-                  ? Ionicons.star
-                  : Ionicons.star_outline),
+              (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
               color: accentColor,
             ),
             IconButton(
               icon: Icon(
-                (_priceSort == "A"
-                    ? LucideIcons.arrow_up_a_z
-                    : LucideIcons.arrow_down_z_a),
+                (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
                 color: textPrimary,
               ),
               onPressed: (() {
@@ -4924,6 +4934,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         _companyApi.getCompanySahamSplit(_companyData.companyCode).then((resp) {
           _split = resp;
         }),
+
+        // check if user owned this stock or not?
+        _checkIfOwned(),
       ]).onError((error, stackTrace) {
         Log.error(
           message: 'Error getting company data',
@@ -4944,6 +4957,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     }
 
     return true;
+  }
+
+  Future<void> _checkIfOwned() async {
+    // loop thru watchlist and check if this company is owned by the user or not?
+    for(WatchlistListModel watchlist in _watchlists) {
+      if (watchlist.watchlistCompanyId == _companyDetail.companyId) {
+        _isOwned = true;
+        return;
+      }
+    }
   }
 
   Future<void> _getCompanyDetail() async {

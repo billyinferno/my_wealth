@@ -41,6 +41,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final Map<int, List<InfoReksadanaModel>> _infoReksadanaData = {};
   late List<InfoReksadanaModel> _infoReksadana;
   late List<CompanyDetailList> _infoReksadanaSort;
+
+  late List<WatchlistListModel> _watchlists;
+  late bool _isOwned;
+
   late String _infoSort;
   late int _currentDayIndex;
 
@@ -104,6 +108,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
 
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // get watchlist for this user
+    _watchlists = WatchlistSharedPreferences.getWatchlist("reksadana");
+    // assume that user don't own this
+    _isOwned = false;
 
     // initialize graph data
     _graphData = [];
@@ -224,6 +233,16 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             }),
           ),
           actions: <Widget>[
+            Visibility(
+              visible: _isOwned,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: const Icon(
+                  Ionicons.checkmark,
+                  color: Colors.green,
+                ),
+              ),
+            ),
             Icon(
               (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
               color: accentColor,
@@ -1889,6 +1908,9 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             }
           }
         }),
+
+        // check if this company owned by user or not?
+        _checkIfOwned(),
       ]).onError((error, stackTrace) {
         throw Exception('Error when getting data from server');
       });
@@ -1898,6 +1920,16 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
 
     return true;
+  }
+
+  Future<void> _checkIfOwned() async {
+    // loop thru watchlist and check if this company is owned by the user or not?
+    for(WatchlistListModel watchlist in _watchlists) {
+      if (watchlist.watchlistCompanyId == _companyDetail.companyId) {
+        _isOwned = true;
+        return;
+      }
+    }
   }
 
   Future<void> _getCompanyDetail() async {

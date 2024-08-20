@@ -1,4 +1,4 @@
-package com.example.my_wealth
+package xyz.adimartha.mywealth
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -77,133 +77,130 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
   }
 
   Widget _body() {
-    return SafeArea(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Center(
-              child: Text(
-                "Search Stock",
-                style: TextStyle(
-                  color: secondaryColor,
-                ),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Search Stock",
+            style: TextStyle(
+              color: secondaryColor,
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: (() async {
-                // fetch the user favorites when we return back to the favorites screen
-                // and notify the provider to we can update the favorites screen based
-                // on the new favorites being add/remove from this page
-                await _getUserFavourites().whenComplete(() {
-                  if (mounted) {
-                    // return back to the previous page
-                    Navigator.pop(context);
-                  }
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            // fetch the user favorites when we return back to the favorites screen
+            // and notify the provider to we can update the favorites screen based
+            // on the new favorites being add/remove from this page
+            await _getUserFavourites().whenComplete(() {
+              if (mounted) {
+                // return back to the previous page
+                Navigator.pop(context);
+              }
+            });
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SearchBox(
+              filterMode: _filterMode,
+              filterList: _filterList,
+              filterSort: _filterSort, 
+              onFilterSelect: ((value) {
+                setState(() {
+                  _filterMode = value;
+                  _sortedFave();
                 });
               }),
+              onSortSelect: ((value) {
+                setState(() {
+                  _filterSort = value;
+                  _sortedFave();
+                });
+              })
             ),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SearchBox(
-                filterMode: _filterMode,
-                filterList: _filterList,
-                filterSort: _filterSort, 
-                onFilterSelect: ((value) {
-                  setState(() {
-                    _filterMode = value;
-                    _sortedFave();
-                  });
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: CupertinoSearchTextField(
+                controller: _textController,
+                onChanged: ((value) {
+                  if (value.length >= 3) {
+                    setState(() {
+                      _searchList(value);
+                    });
+                  }
+                  else {
+                    // if less than 3, then we will return the value of filter list
+                    // with all the fave list.
+                    _setFilterList(_faveList);
+                  }
                 }),
-                onSortSelect: ((value) {
-                  setState(() {
-                    _filterSort = value;
-                    _sortedFave();
-                  });
-                })
-              ),
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: CupertinoSearchTextField(
-                  controller: _textController,
-                  onChanged: ((value) {
-                    if (value.length >= 3) {
-                      setState(() {
-                        _searchList(value);
-                      });
-                    }
-                    else {
-                      // if less than 3, then we will return the value of filter list
-                      // with all the fave list.
-                      _setFilterList(_faveList);
-                    }
-                  }),
-                  suffixMode: OverlayVisibilityMode.editing,
-                  style: const TextStyle(
-                    color: textPrimary,
-                    fontFamily: '--apple-system'
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                suffixMode: OverlayVisibilityMode.editing,
+                style: const TextStyle(
+                  color: textPrimary,
+                  fontFamily: '--apple-system'
+                ),
+                decoration: BoxDecoration(
+                  color: primaryLight,
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: Text(
-                  "Showed ${_filterFaveList.length} company(s)",
-                  style: const TextStyle(
-                    color: primaryLight,
-                    fontSize: 12,
-                  ),
+            ),
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Text(
+                "Showed ${_filterFaveList.length} company(s)",
+                style: const TextStyle(
+                  color: primaryLight,
+                  fontSize: 12,
                 ),
               ),
-              const SizedBox(height: 10,),
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _sortedFaveList.length,
-                  itemBuilder: ((context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        CompanyDetailArgs args = CompanyDetailArgs(
-                          companyId: _sortedFaveList[index].favouritesCompanyId,
-                          companyName: _sortedFaveList[index].favouritesCompanyName,
-                          companyCode: _sortedFaveList[index].favouritesSymbol,
-                          companyFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                          favouritesId: (_sortedFaveList[index].favouritesId ?? -1),
-                          type: "saham",
-                        );
-      
-                        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                      }),
-                      child: FavouriteCompanyList(
+            ),
+            const SizedBox(height: 10,),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: _sortedFaveList.length,
+                itemBuilder: ((context, index) {
+                  return InkWell(
+                    onTap: (() {
+                      CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: _sortedFaveList[index].favouritesCompanyId,
-                        name: "(${_sortedFaveList[index].favouritesSymbol}) ${_sortedFaveList[index].favouritesCompanyName}",
-                        type: _sortedFaveList[index].favouritesCompanyType,
-                        date: formatDateWithNulll(date: _sortedFaveList[index].favouritesLastUpdate, format: _dt),
-                        value: _sortedFaveList[index].favouritesNetAssetValue,
-                        isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                        fca: (_sortedFaveList[index].favouritesFCA ?? false),
-                        subWidget: _subInfoWidget(_sortedFaveList[index]),
-                        onPress: (() async {
-                          await _setFavourite(index);
-                        }),
-                      ),
-                    );
-                  }),
-                ),
+                        companyName: _sortedFaveList[index].favouritesCompanyName,
+                        companyCode: _sortedFaveList[index].favouritesSymbol,
+                        companyFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        favouritesId: (_sortedFaveList[index].favouritesId ?? -1),
+                        type: "saham",
+                      );
+          
+                      Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                    }),
+                    child: FavouriteCompanyList(
+                      companyId: _sortedFaveList[index].favouritesCompanyId,
+                      name: "(${_sortedFaveList[index].favouritesSymbol}) ${_sortedFaveList[index].favouritesCompanyName}",
+                      type: _sortedFaveList[index].favouritesCompanyType,
+                      date: formatDateWithNulll(date: _sortedFaveList[index].favouritesLastUpdate, format: _dt),
+                      value: _sortedFaveList[index].favouritesNetAssetValue,
+                      isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                      fca: (_sortedFaveList[index].favouritesFCA ?? false),
+                      subWidget: _subInfoWidget(_sortedFaveList[index]),
+                      onPress: (() async {
+                        await _setFavourite(index);
+                      }),
+                    ),
+                  );
+                }),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

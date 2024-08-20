@@ -94,461 +94,114 @@ class WatchlistListPageState extends State<WatchlistListPage> {
             ),
           ),
         ),
-        body: Consumer<WatchlistProvider>(
-          builder: ((context, watchlistProvider, child) {
-            // get the actual data of this watchlist from provider.
-            // so when we refresh the provider, the watchlist will be updated also.
-            if (_type == "reksadana") {
-              for(WatchlistListModel watch in watchlistProvider.watchlistReksadana!) {
-                if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                  _watchlist = watch;
-                  args = CompanyDetailArgs(
-                    companyId: _watchlist.watchlistCompanyId,
-                    companyName: _watchlist.watchlistCompanyName,
-                    companyCode: _watchlist.watchlistCompanySymbol!,
-                    companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
-                    favouritesId: _watchlist.watchlistFavouriteId,
-                    type: _type
-                  );
-                  break;
+        body: MySafeArea(
+          child: Consumer<WatchlistProvider>(
+            builder: ((context, watchlistProvider, child) {
+              // get the actual data of this watchlist from provider.
+              // so when we refresh the provider, the watchlist will be updated also.
+              if (_type == "reksadana") {
+                for(WatchlistListModel watch in watchlistProvider.watchlistReksadana!) {
+                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                    _watchlist = watch;
+                    args = CompanyDetailArgs(
+                      companyId: _watchlist.watchlistCompanyId,
+                      companyName: _watchlist.watchlistCompanyName,
+                      companyCode: _watchlist.watchlistCompanySymbol!,
+                      companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                      favouritesId: _watchlist.watchlistFavouriteId,
+                      type: _type
+                    );
+                    break;
+                  }
                 }
               }
-            }
-            else if (_type == "saham") {
-              for(WatchlistListModel watch in watchlistProvider.watchlistSaham!) {
-                if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                  _watchlist = watch;
-                  args = CompanyDetailArgs(
-                    companyId: _watchlist.watchlistCompanyId,
-                    companyName: _watchlist.watchlistCompanyName,
-                    companyCode: _watchlist.watchlistCompanySymbol!,
-                    companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
-                    favouritesId: _watchlist.watchlistFavouriteId,
-                    type: _type
-                  );
-                  break;
+              else if (_type == "saham") {
+                for(WatchlistListModel watch in watchlistProvider.watchlistSaham!) {
+                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                    _watchlist = watch;
+                    args = CompanyDetailArgs(
+                      companyId: _watchlist.watchlistCompanyId,
+                      companyName: _watchlist.watchlistCompanyName,
+                      companyCode: _watchlist.watchlistCompanySymbol!,
+                      companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                      favouritesId: _watchlist.watchlistFavouriteId,
+                      type: _type
+                    );
+                    break;
+                  }
                 }
               }
-            }
-            else if (_type == "crypto") {
-              for(WatchlistListModel watch in watchlistProvider.watchlistCrypto!) {
-                if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                  _watchlist = watch;
-                  args = CompanyDetailArgs(
-                    companyId: _watchlist.watchlistCompanyId,
-                    companyName: _watchlist.watchlistCompanyName,
-                    companyCode: _watchlist.watchlistCompanySymbol!,
-                    companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
-                    favouritesId: _watchlist.watchlistFavouriteId,
-                    type: _type
-                  );
-                  break;
+              else if (_type == "crypto") {
+                for(WatchlistListModel watch in watchlistProvider.watchlistCrypto!) {
+                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                    _watchlist = watch;
+                    args = CompanyDetailArgs(
+                      companyId: _watchlist.watchlistCompanyId,
+                      companyName: _watchlist.watchlistCompanyName,
+                      companyCode: _watchlist.watchlistCompanySymbol!,
+                      companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                      favouritesId: _watchlist.watchlistFavouriteId,
+                      type: _type
+                    );
+                    break;
+                  }
                 }
               }
-            }
-            else if (_type == "gold") {
-              for(WatchlistListModel watch in watchlistProvider.watchlistGold!) {
-                if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                  _watchlist = watch;
-                  break;
+              else if (_type == "gold") {
+                for(WatchlistListModel watch in watchlistProvider.watchlistGold!) {
+                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
+                    _watchlist = watch;
+                    break;
+                  }
                 }
               }
-            }
-    
-            // compute all the necessary info for summary
-            _compute();
-    
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Visibility(
-                  visible: (_watchlist.watchlistCompanyFCA ?? false),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    color: secondaryDark,
-                    child: const Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Ionicons.warning,
-                          color: secondaryLight,
-                          size: 10,
-                        ),
-                        SizedBox(width: 5,),
-                        Text(
-                          "This company is flagged with Full Call Auction",
-                          style: TextStyle(
-                            fontSize: 10,
+              
+              // compute all the necessary info for summary
+              _compute();
+              
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Visibility(
+                    visible: (_watchlist.watchlistCompanyFCA ?? false),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      color: secondaryDark,
+                      child: const Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Ionicons.warning,
+                            color: secondaryLight,
+                            size: 10,
                           ),
-                        )
-                      ],
+                          SizedBox(width: 5,),
+                          Text(
+                            "This company is flagged with Full Call Auction",
+                            style: TextStyle(
+                              fontSize: 10,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  color: _riskColor,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(width: 10,),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: const BoxDecoration(
-                            color: primaryDark,
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              )
-                            )
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                _watchlist.watchlistCompanyName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          formatCurrency(_watchlist.watchlistCompanyNetAssetValue!),
-                                          style: const TextStyle(
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5,),
-                                        Icon(
-                                          (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
-                                          color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
-                                        ),
-                                        const SizedBox(width: 5,),
-                                        Container(
-                                          padding: const EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
-                                                width: 2.0,
-                                                style: BorderStyle.solid,
-                                              ),
-                                            )
-                                          ),
-                                          child: Text(
-                                            formatCurrency(_priceDiff),
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2,),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      const Icon(
-                                        Ionicons.time_outline,
-                                        color: primaryLight,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 10,),
-                                      Text(
-                                        formatDateWithNulll(date: _watchlist.watchlistCompanyLastUpdate),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 5,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  WatchlistDetailSummaryBox(
-                                    title: "AVG PRICE",
-                                    text: (_totalCurrentShares > 0 ? formatCurrency(_totalCost / _totalCurrentShares) : "-"),
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "COST",
-                                    text: formatCurrency(_totalCost)
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "VALUE",
-                                    text: formatCurrency(_totalValue)
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  WatchlistDetailSummaryBox(
-                                    title: "BUY LOTS",
-                                    text: "$_totalBuy lots"
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "SHARES",
-                                    text: formatDecimal(_totalSharesBuy, 2)
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "BUY AMOUNT",
-                                    text: formatCurrency(_totalBuyAmount)
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  WatchlistDetailSummaryBox(
-                                    title: "SELL LOTS",
-                                    text: "$_totalSell lots"
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "SHARES",
-                                    text: formatDecimal(_totalSharesSell, 2)
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "SELL AMOUNT",
-                                    text: formatCurrency(_totalSellAmount)
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  WatchlistDetailSummaryBox(
-                                    title: "CURRENT",
-                                    text: formatDecimal(_totalCurrentShares, 2)
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "UNREALISED",
-                                    text: formatCurrency(_totalUnrealisedGain)
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  WatchlistDetailSummaryBox(
-                                    title: "REALISED",
-                                    text: formatCurrency(_totalRealisedGain)
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      TransparentButton(
-                        text: "Buy",
-                        bgColor: primaryDark,
-                        icon: Ionicons.add,
-                        callback: (() {
-                          WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist);
-                          Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: args);
-                        })
-                      ),
-                      const SizedBox(width: 10,),
-                      TransparentButton(
-                        text: "Sell",
-                        bgColor: primaryDark,
-                        icon: Ionicons.remove,
-                        callback: (() {
-                          WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist, currentShare: _totalCurrentShares);
-                          Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
-                        })
-                      ),
-                      const SizedBox(width: 10,),
-                      TransparentButton(
-                        text: "Delete",
-                        bgColor: primaryDark,
-                        icon: Ionicons.trash,
-                        callback: (() async {
-                          await ShowMyDialog(
-                            title: "Delete Watchlist",
-                            text: "Are you sure to delete ${_watchlist.watchlistCompanyName}?",
-                            confirmLabel: "Delete",
-                            cancelLabel: "Cancel"
-                          ).show(context).then((resp) async {
-                            if(resp!) {
-                              // delete the watchlist, all the success and error
-                              // handling is moved to the function to ensure
-                              // the context is mounted when we perform the
-                              // delete on the watchlist.
-                              await _deleteWatchlist();
-                            }
-                          },);
-                        })
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                    color: primaryDark,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      )
-                    )
-                  ),
-                  child: const Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          "Date",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      ),
-                      SizedBox(width: 10,),
-                      Expanded(
-                        child: Text(
-                          "Shares",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                        )
-                      ),
-                      SizedBox(width: 10,),
-                      Expanded(
-                        child: Text(
-                          "Price",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                        )
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
-                      WatchlistDetailEditArgs args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
-                      Color rColor = riskColor(
-                        (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
-                        (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
-                        _userInfo!.risk
-                      );
-
-                      // check if the watchlist item date is more than company last update
-                      // if so, then just make it black instead of calculate the risk color
-                      // since we don't have the information for the date.
-                      if (!isSameOrBefore(
-                        date: _watchlist.watchlistDetail[index].watchlistDetailDate.toLocal(),
-                        checkDate: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
-                      )) {
-                        rColor = Colors.black;
-                      }
-    
-                      return Slidable(
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: <Widget>[
-                            SlidableAction(
-                              onPressed: ((context) {
-                                Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
-                              }),
-                              icon: Ionicons.pencil,
-                              backgroundColor: primaryColor,
-                              foregroundColor: accentColor,
-                            ),
-                            SlidableAction(
-                              onPressed: ((context) async {
-                                await ShowMyDialog(
-                                  title: "Delete Detail",
-                                  text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
-                                  confirmLabel: "Delete",
-                                  cancelLabel: "Cancel"
-                                ).show(context).then((resp) async {
-                                  if(resp!) {
-                                    await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
-                                      if(resp) {
-                                        Log.success(message: "🧹 Delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
-                                      }
-                                      else {
-                                        Log.error(message: "🧹 Unable to delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
-                                      }
-                                    }).onError((error, stackTrace) {
-                                      Log.error(
-                                        message: 'Error deleting watchlist detail',
-                                        error: error,
-                                        stackTrace: stackTrace,
-                                      );
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                                      }
-                                    });
-                                  }
-                                });
-                              }),
-                              icon: Ionicons.trash,
-                              backgroundColor: primaryColor,
-                              foregroundColor: secondaryColor,
-                            ),
-                          ],
-                        ),
-                        child: InkWell(
-                          onDoubleTap: (() {
-                            Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
-                          }),
+                  Container(
+                    color: _riskColor,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const SizedBox(width: 10,),
+                        Expanded(
                           child: Container(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                            decoration: BoxDecoration(
-                              color: _listColor(_watchlist.watchlistDetail[index].watchlistDetailShare),
-                              border: const Border(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: primaryDark,
+                              border: Border(
                                 bottom: BorderSide(
                                   color: primaryLight,
                                   width: 1.0,
@@ -556,60 +209,408 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 )
                               )
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                Container(
-                                  color: rColor,
-                                  width: 5,
-                                  height: 45,
+                                Text(
+                                  _watchlist.watchlistCompanyName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
-                                    style: const TextStyle(
-                                      fontSize: 12,
+                                const SizedBox(height: 2,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            formatCurrency(_watchlist.watchlistCompanyNetAssetValue!),
+                                            style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5,),
+                                          Icon(
+                                            (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                            color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
+                                          ),
+                                          const SizedBox(width: 5,),
+                                          Container(
+                                            padding: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
+                                                  width: 2.0,
+                                                  style: BorderStyle.solid,
+                                                ),
+                                              )
+                                            ),
+                                            child: Text(
+                                              formatCurrency(_priceDiff),
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  )
+                                    const SizedBox(height: 2,),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        const Icon(
+                                          Ionicons.time_outline,
+                                          color: primaryLight,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 10,),
+                                        Text(
+                                          formatDateWithNulll(date: _watchlist.watchlistCompanyLastUpdate),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(width: 10,),
-                                Expanded(
-                                  child: Text(
-                                    formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailShare),
-                                    style: const TextStyle(
-                                      fontSize: 12,
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    WatchlistDetailSummaryBox(
+                                      title: "AVG PRICE",
+                                      text: (_totalCurrentShares > 0 ? formatCurrency(_totalCost / _totalCurrentShares) : "-"),
                                     ),
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.right,
-                                  )
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "COST",
+                                      text: formatCurrency(_totalCost)
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "VALUE",
+                                      text: formatCurrency(_totalValue)
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 10,),
-                                Expanded(
-                                  child: Text(
-                                    formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
-                                    style: const TextStyle(
-                                      fontSize: 12,
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    WatchlistDetailSummaryBox(
+                                      title: "BUY LOTS",
+                                      text: "$_totalBuy lots"
                                     ),
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.right,
-                                  )
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "SHARES",
+                                      text: formatDecimal(_totalSharesBuy, 2)
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "BUY AMOUNT",
+                                      text: formatCurrency(_totalBuyAmount)
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    WatchlistDetailSummaryBox(
+                                      title: "SELL LOTS",
+                                      text: "$_totalSell lots"
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "SHARES",
+                                      text: formatDecimal(_totalSharesSell, 2)
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "SELL AMOUNT",
+                                      text: formatCurrency(_totalSellAmount)
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    WatchlistDetailSummaryBox(
+                                      title: "CURRENT",
+                                      text: formatDecimal(_totalCurrentShares, 2)
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "UNREALISED",
+                                      text: formatCurrency(_totalUnrealisedGain)
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    WatchlistDetailSummaryBox(
+                                      title: "REALISED",
+                                      text: formatCurrency(_totalRealisedGain)
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      );
-                    }),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30,),
-              ],
-            );
-          }),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        TransparentButton(
+                          text: "Buy",
+                          bgColor: primaryDark,
+                          icon: Ionicons.add,
+                          callback: (() {
+                            WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist);
+                            Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: args);
+                          })
+                        ),
+                        const SizedBox(width: 10,),
+                        TransparentButton(
+                          text: "Sell",
+                          bgColor: primaryDark,
+                          icon: Ionicons.remove,
+                          callback: (() {
+                            WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist, currentShare: _totalCurrentShares);
+                            Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
+                          })
+                        ),
+                        const SizedBox(width: 10,),
+                        TransparentButton(
+                          text: "Delete",
+                          bgColor: primaryDark,
+                          icon: Ionicons.trash,
+                          callback: (() async {
+                            await ShowMyDialog(
+                              title: "Delete Watchlist",
+                              text: "Are you sure to delete ${_watchlist.watchlistCompanyName}?",
+                              confirmLabel: "Delete",
+                              cancelLabel: "Cancel"
+                            ).show(context).then((resp) async {
+                              if(resp!) {
+                                // delete the watchlist, all the success and error
+                                // handling is moved to the function to ensure
+                                // the context is mounted when we perform the
+                                // delete on the watchlist.
+                                await _deleteWatchlist();
+                              }
+                            },);
+                          })
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: primaryDark,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        )
+                      )
+                    ),
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            "Date",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ),
+                        SizedBox(width: 10,),
+                        Expanded(
+                          child: Text(
+                            "Shares",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                          )
+                        ),
+                        SizedBox(width: 10,),
+                        Expanded(
+                          child: Text(
+                            "Price",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
+                        WatchlistDetailEditArgs args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
+                        Color rColor = riskColor(
+                          (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
+                          (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
+                          _userInfo!.risk
+                        );
+          
+                        // check if the watchlist item date is more than company last update
+                        // if so, then just make it black instead of calculate the risk color
+                        // since we don't have the information for the date.
+                        if (!isSameOrBefore(
+                          date: _watchlist.watchlistDetail[index].watchlistDetailDate.toLocal(),
+                          checkDate: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
+                        )) {
+                          rColor = Colors.black;
+                        }
+              
+                        return Slidable(
+                          endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: <Widget>[
+                              SlidableAction(
+                                onPressed: ((context) {
+                                  Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
+                                }),
+                                icon: Ionicons.pencil,
+                                backgroundColor: primaryColor,
+                                foregroundColor: accentColor,
+                              ),
+                              SlidableAction(
+                                onPressed: ((context) async {
+                                  await ShowMyDialog(
+                                    title: "Delete Detail",
+                                    text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
+                                    confirmLabel: "Delete",
+                                    cancelLabel: "Cancel"
+                                  ).show(context).then((resp) async {
+                                    if(resp!) {
+                                      await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
+                                        if(resp) {
+                                          Log.success(message: "🧹 Delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
+                                        }
+                                        else {
+                                          Log.error(message: "🧹 Unable to delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
+                                        }
+                                      }).onError((error, stackTrace) {
+                                        Log.error(
+                                          message: 'Error deleting watchlist detail',
+                                          error: error,
+                                          stackTrace: stackTrace,
+                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                        }
+                                      });
+                                    }
+                                  });
+                                }),
+                                icon: Ionicons.trash,
+                                backgroundColor: primaryColor,
+                                foregroundColor: secondaryColor,
+                              ),
+                            ],
+                          ),
+                          child: InkWell(
+                            onDoubleTap: (() {
+                              Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
+                            }),
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                              decoration: BoxDecoration(
+                                color: _listColor(_watchlist.watchlistDetail[index].watchlistDetailShare),
+                                border: const Border(
+                                  bottom: BorderSide(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  )
+                                )
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    color: rColor,
+                                    width: 5,
+                                    height: 45,
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: Text(
+                                      formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailShare),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.right,
+                                    )
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: Text(
+                                      formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.right,
+                                    )
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
         ),
       ),
     );

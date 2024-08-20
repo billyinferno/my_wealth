@@ -132,274 +132,276 @@ class IndexDetailPageState extends State<IndexDetailPage> {
             ),
           ),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              color: _riskColor,
-              child: Row(
+        body: MySafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                color: _riskColor,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      child: Container(
+                        color: primaryColor,
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              _indexName,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              formatCurrency(_index.indexNetAssetValue),
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                  color: _riskColor,
+                                ),
+                                const SizedBox(width: 10,),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: _riskColor,
+                                        width: 2.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    )
+                                  ),
+                                  child: Text(formatCurrency(_priceDiff)),
+                                ),
+                                Expanded(child: Container(),),
+                                const Icon(
+                                  Ionicons.time_outline,
+                                  color: primaryLight,
+                                ),
+                                const SizedBox(width: 10,),
+                                // ignore: unnecessary_null_comparison
+                                Text(Globals.dfddMMyyyy.format(_index.indexLastUpdate.toLocal())),
+                              ],
+                            ),
+                            const SizedBox(height: 8,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Daily",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexDailyReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Weekly",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexWeeklyReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Monthly",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 3,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "MTD",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexMtdReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Monhtly",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Quarterly",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexQuarterlyReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 3,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Semi Annual",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexSemiAnnualReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "YTD",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexYtdReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Yearly",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    "${formatDecimalWithNull(_index.indexYearlyReturn, 100)}%",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 3,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CompanyInfoBox(
+                                  header: "Min ($_numPrice)",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    formatCurrencyWithNull(_minPrice),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Max ($_numPrice)",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    formatCurrencyWithNull(_maxPrice),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                CompanyInfoBox(
+                                  header: "Avg ($_numPrice)",
+                                  headerAlign: MainAxisAlignment.end,
+                                  child: Text(
+                                    formatCurrencyWithNull(_avgPrice),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      color: primaryColor,
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            _indexName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            formatCurrency(_index.indexNetAssetValue),
-                            style: const TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Icon(
-                                (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
-                                color: _riskColor,
-                              ),
-                              const SizedBox(width: 10,),
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: _riskColor,
-                                      width: 2.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  )
-                                ),
-                                child: Text(formatCurrency(_priceDiff)),
-                              ),
-                              Expanded(child: Container(),),
-                              const Icon(
-                                Ionicons.time_outline,
-                                color: primaryLight,
-                              ),
-                              const SizedBox(width: 10,),
-                              // ignore: unnecessary_null_comparison
-                              Text(Globals.dfddMMyyyy.format(_index.indexLastUpdate.toLocal())),
-                            ],
-                          ),
-                          const SizedBox(height: 8,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Daily",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexDailyReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Weekly",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexWeeklyReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Monthly",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "MTD",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexMtdReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Monhtly",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Quarterly",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexQuarterlyReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Semi Annual",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexSemiAnnualReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "YTD",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexYtdReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Yearly",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  "${formatDecimalWithNull(_index.indexYearlyReturn, 100)}%",
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              CompanyInfoBox(
-                                header: "Min ($_numPrice)",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  formatCurrencyWithNull(_minPrice),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Max ($_numPrice)",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  formatCurrencyWithNull(_maxPrice),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CompanyInfoBox(
-                                header: "Avg ($_numPrice)",
-                                headerAlign: MainAxisAlignment.end,
-                                child: Text(
-                                  formatCurrencyWithNull(_avgPrice),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  TransparentButton(
+                    text: "Table",
+                    bgColor: primaryDark,
+                    icon: Ionicons.list_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 0;
+                      });
+                    }),
+                    active: (_bodyPage == 0),
+                    vertical: true,
                   ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Season",
+                    bgColor: primaryDark,
+                    icon: Ionicons.rainy,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 3;
+                      });
+                    }),
+                    active: (_bodyPage == 3),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Map",
+                    bgColor: primaryDark,
+                    icon: Ionicons.calendar_clear_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 1;
+                      });
+                    }),
+                    active: (_bodyPage == 1),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
+                    text: "Graph",
+                    bgColor: primaryDark,
+                    icon: Ionicons.stats_chart_outline,
+                    callback: (() {
+                      setState(() {
+                        _bodyPage = 2;
+                      });
+                    }),
+                    active: (_bodyPage == 2),
+                    vertical: true,
+                  ),
+                  const SizedBox(width: 10,),
                 ],
               ),
-            ),
-            const SizedBox(height: 10,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  text: "Table",
-                  bgColor: primaryDark,
-                  icon: Ionicons.list_outline,
-                  callback: (() {
-                    setState(() {
-                      _bodyPage = 0;
-                    });
-                  }),
-                  active: (_bodyPage == 0),
-                  vertical: true,
-                ),
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  text: "Season",
-                  bgColor: primaryDark,
-                  icon: Ionicons.rainy,
-                  callback: (() {
-                    setState(() {
-                      _bodyPage = 3;
-                    });
-                  }),
-                  active: (_bodyPage == 3),
-                  vertical: true,
-                ),
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  text: "Map",
-                  bgColor: primaryDark,
-                  icon: Ionicons.calendar_clear_outline,
-                  callback: (() {
-                    setState(() {
-                      _bodyPage = 1;
-                    });
-                  }),
-                  active: (_bodyPage == 1),
-                  vertical: true,
-                ),
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  text: "Graph",
-                  bgColor: primaryDark,
-                  icon: Ionicons.stats_chart_outline,
-                  callback: (() {
-                    setState(() {
-                      _bodyPage = 2;
-                    });
-                  }),
-                  active: (_bodyPage == 2),
-                  vertical: true,
-                ),
-                const SizedBox(width: 10,),
-              ],
-            ),
-            const SizedBox(height: 10,),
-            ..._detail(),
-          ],
+              const SizedBox(height: 10,),
+              ..._detail(),
+            ],
+          ),
         ),
       ),
     );
@@ -877,9 +879,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
         }),
       ),
     ));
-
-    // add another spacer on the end
-    table.add(const SizedBox(height: 30,));
     
     return table;
   }

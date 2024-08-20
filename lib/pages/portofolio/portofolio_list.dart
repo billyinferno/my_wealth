@@ -180,274 +180,275 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
           const SizedBox(width: 5,),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "Total Value",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        formatCurrency(_args.value, false, false, false),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Unrealised Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            _trendIcon,
-                            size: 13,
-                            color: _trendColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrency((_args.unrealised ?? 0), false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _trendColor
-                            ),
-                          ),
-                          const SizedBox(width: 2,),
-                          Text(
-                            "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                              color: _trendColor
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Realised Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Ionicons.wallet_outline,
-                            size: 13,
-                            color: _realisedColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrencyWithNull(_args.realised, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _realisedColor
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "Total Cost",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        formatCurrency(_args.cost, false, false, false),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Total Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Ionicons.stats_chart,
-                            size: 13,
-                            color: _totalGainColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrency(_totalGain, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _totalGainColor
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Day Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Ionicons.today,
-                            size: 13,
-                            color: _totalDayGainColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrencyWithNull(_totalDayGain, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _totalDayGainColor
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          BarChart(
-            data: _barChartData,
-            showLegend: false,
-          ),
-          const SizedBox(height: 5,),
-          InkWell(
-            onTap: (() {
-              setState(() {
-                _showZeroProduct = !_showZeroProduct;
-              });
-            }),
-            child: Container(
-              height: 18,
-              color: Colors.transparent,
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              width: double.infinity,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Transform.scale(
-                    scale: 0.6,
-                    child: CupertinoSwitch(
-                      value: _showZeroProduct,
-                      onChanged: ((value) {
-                        setState(() {
-                          _showZeroProduct = value;
-                        });
-                      })
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Total Value",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          formatCurrency(_args.value, false, false, false),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Unrealised Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              _trendIcon,
+                              size: 13,
+                              color: _trendColor,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrency((_args.unrealised ?? 0), false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _trendColor
+                              ),
+                            ),
+                            const SizedBox(width: 2,),
+                            Text(
+                              "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                                color: _trendColor
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Realised Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Ionicons.wallet_outline,
+                              size: 13,
+                              color: _realisedColor,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrencyWithNull(_args.realised, false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _realisedColor
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const Text(
-                    "Show 0 product on the list",
-                    style: TextStyle(
-                      fontSize: 10,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Total Cost",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          formatCurrency(_args.cost, false, false, false),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Total Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(
+                              Ionicons.stats_chart,
+                              size: 13,
+                              color: _totalGainColor,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrency(_totalGain, false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _totalGainColor
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Day Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(
+                              Ionicons.today,
+                              size: 13,
+                              color: _totalDayGainColor,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrencyWithNull(_totalDayGain, false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _totalDayGainColor
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 15,),
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: _portofolioFiltered.length,
-              itemBuilder: (context, index) {
-                int colorMap = _getColorMap(_portofolioFiltered[index].portofolioCompanyDescription, index);
-                
-                // check if _showZeroProduct is true, if true then verify if this
-                // item has product or not? if doesn't have then just return
-                // a sizedbox shrink instead.
-                if (!_showZeroProduct) {
-                  // check if the product is 0
-                  if (_portofolioFiltered[index].portofolioTotalProduct <= 0) {
-                    return const SizedBox.shrink();
-                  }
-                }
-
-                return ProductListItem(
-                  onTap: (() {
-                    // convert the total product
-                    int? numProd = _portofolioFiltered[index].portofolioTotalProduct;
-            
-                    // check if we have product here or not?
-                    if (numProd > 0) {
-                      // got product means we can display the details here 
-                      PortofolioListArgs args = PortofolioListArgs(
-                        title: _portofolioFiltered[index].portofolioCompanyDescription,
-                        value: _portofolioFiltered[index].portofolioTotalValue,
-                        cost: _portofolioFiltered[index].portofolioTotalCost,
-                        realised: _portofolioFiltered[index].portofolioTotalRealised,
-                        unrealised: _portofolioFiltered[index].portofolioTotalUnrealised,
-                        type: _args.type,
-                        subType: _portofolioFiltered[index].portofolioCompanyType,
-                        showSort: true,
-                      );
-            
-                      Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
-                    }
-                  }),
-                  bgColor: (_portofolioFiltered[index].portofolioTotalProduct > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
-                  title: _portofolioFiltered[index].portofolioCompanyDescription,
-                  subTitle: "${_portofolioFiltered[index].portofolioTotalProduct} product${_portofolioFiltered[index].portofolioTotalProduct > 1 ? "s" : ""}",
-                  value: _portofolioFiltered[index].portofolioTotalValue,
-                  cost: _portofolioFiltered[index].portofolioTotalCost,
-                  realised: _portofolioFiltered[index].portofolioTotalRealised,
-                  dayGain: _portofolioFiltered[index].portofolioTotalDayGain,
-                  total: _portofolioTotalValue,
-                );
-              },
+            BarChart(
+              data: _barChartData,
+              showLegend: false,
             ),
-          ),
-          const SizedBox(height: 30,),
-        ],
+            const SizedBox(height: 5,),
+            InkWell(
+              onTap: (() {
+                setState(() {
+                  _showZeroProduct = !_showZeroProduct;
+                });
+              }),
+              child: Container(
+                height: 18,
+                color: Colors.transparent,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Transform.scale(
+                      scale: 0.6,
+                      child: CupertinoSwitch(
+                        value: _showZeroProduct,
+                        onChanged: ((value) {
+                          setState(() {
+                            _showZeroProduct = value;
+                          });
+                        })
+                      ),
+                    ),
+                    const Text(
+                      "Show 0 product on the list",
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 15,),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: _portofolioFiltered.length,
+                itemBuilder: (context, index) {
+                  int colorMap = _getColorMap(_portofolioFiltered[index].portofolioCompanyDescription, index);
+                  
+                  // check if _showZeroProduct is true, if true then verify if this
+                  // item has product or not? if doesn't have then just return
+                  // a sizedbox shrink instead.
+                  if (!_showZeroProduct) {
+                    // check if the product is 0
+                    if (_portofolioFiltered[index].portofolioTotalProduct <= 0) {
+                      return const SizedBox.shrink();
+                    }
+                  }
+        
+                  return ProductListItem(
+                    onTap: (() {
+                      // convert the total product
+                      int? numProd = _portofolioFiltered[index].portofolioTotalProduct;
+              
+                      // check if we have product here or not?
+                      if (numProd > 0) {
+                        // got product means we can display the details here 
+                        PortofolioListArgs args = PortofolioListArgs(
+                          title: _portofolioFiltered[index].portofolioCompanyDescription,
+                          value: _portofolioFiltered[index].portofolioTotalValue,
+                          cost: _portofolioFiltered[index].portofolioTotalCost,
+                          realised: _portofolioFiltered[index].portofolioTotalRealised,
+                          unrealised: _portofolioFiltered[index].portofolioTotalUnrealised,
+                          type: _args.type,
+                          subType: _portofolioFiltered[index].portofolioCompanyType,
+                          showSort: true,
+                        );
+              
+                        Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
+                      }
+                    }),
+                    bgColor: (_portofolioFiltered[index].portofolioTotalProduct > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
+                    title: _portofolioFiltered[index].portofolioCompanyDescription,
+                    subTitle: "${_portofolioFiltered[index].portofolioTotalProduct} product${_portofolioFiltered[index].portofolioTotalProduct > 1 ? "s" : ""}",
+                    value: _portofolioFiltered[index].portofolioTotalValue,
+                    cost: _portofolioFiltered[index].portofolioTotalCost,
+                    realised: _portofolioFiltered[index].portofolioTotalRealised,
+                    dayGain: _portofolioFiltered[index].portofolioTotalDayGain,
+                    total: _portofolioTotalValue,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

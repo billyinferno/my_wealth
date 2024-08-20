@@ -44,495 +44,498 @@ class _UserPageState extends State<UserPage> {
           }),
         ),
       ),
-      body: Consumer<UserProvider>(builder: (context, userProvider, child) {
-        // get the user information from provider
-        _userInfo = userProvider.userInfo;
-
-        // now check current user configuration
-        _isVisible = _userInfo!.visibility;
-        _showLots = _userInfo!.showLots;
-        _showEmptyWatchlist = _userInfo!.showEmptyWatchlist;
-
-        // once finished return the page
-        return Container(
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const Text("hello,"),
-              Text(
-                _userInfo!.username,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12,),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: (() {
-                        Navigator.pushNamed(context, '/user/password');
-                      }),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          )
-                        ),
-                        child: const Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              Ionicons.lock_open,
-                              color: secondaryColor,
-                              size: 20,
-                            ),
-                            SizedBox(width: 10,),
-                            Expanded(
-                              child: Text(
-                                "Change Password",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+      body: MySafeArea(
+        child: Consumer<UserProvider>(
+          builder: (context, userProvider, child) {
+            // get the user information from provider
+            _userInfo = userProvider.userInfo;
+          
+            // now check current user configuration
+            _isVisible = _userInfo!.visibility;
+            _showLots = _userInfo!.showLots;
+            _showEmptyWatchlist = _userInfo!.showEmptyWatchlist;
+          
+            // once finished return the page
+            return Container(
+              padding: const EdgeInsets.all(25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Text("hello,"),
+                  Text(
+                    _userInfo!.username,
+                    style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12,),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (() {
+                            Navigator.pushNamed(context, '/user/password');
+                          }),
+                          child: Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
                                 ),
                               )
                             ),
-                          ],
-                        )
-                      ),
-                    ),
-                    InkWell(
-                      onTap: (() {
-                        Navigator.pushNamed(context, '/user/risk');
-                      }),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          )
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  Ionicons.lock_open,
+                                  color: secondaryColor,
+                                  size: 20,
+                                ),
+                                SizedBox(width: 10,),
+                                Expanded(
+                                  child: Text(
+                                    "Change Password",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                ),
+                              ],
+                            )
+                          ),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const Icon(
-                              Ionicons.warning_outline,
-                              color: secondaryColor,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10,),
-                            Expanded(
-                              child: Text(
-                                "Risk Factor (Current: ${_userInfo!.risk}%)",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                        InkWell(
+                          onTap: (() {
+                            Navigator.pushNamed(context, '/user/risk');
+                          }),
+                          child: Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
                                 ),
                               )
                             ),
-                          ],
-                        )
-                      ),
-                    ),
-                    Container(
-                      height: 60,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                        )
-                      ),
-                      width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Icon(
-                                      Ionicons.eye_outline,
-                                      color: secondaryColor,
-                                      size: 20,
+                                const Icon(
+                                  Ionicons.warning_outline,
+                                  color: secondaryColor,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10,),
+                                Expanded(
+                                  child: Text(
+                                    "Risk Factor (Current: ${_userInfo!.risk}%)",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    SizedBox(width: 10,),
+                                  )
+                                ),
+                              ],
+                            )
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            )
+                          ),
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Ionicons.eye_outline,
+                                          color: secondaryColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Visibility",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CupertinoSwitch(
+                                value: _isVisible,
+                                onChanged: ((value) async {
+                                  _isVisible = !_isVisible;
+                                  await _updateVisibilitySummary(_isVisible).then((resp) {
+                                    Log.success(message: "🔃 Update Visibility to $_isVisible");
+                                    setSummaryVisible(_isVisible);
+                                  }).onError((error, stackTrace) {
+                                    _showScaffoldMessage(text: error.toString());
+                                  });
+                                }),
+                              ),
+                            ],
+                          )
+                        ),
+                        Container(
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            )
+                          ),
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Ionicons.list_outline,
+                                          color: secondaryColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Show Lots",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CupertinoSwitch(
+                                value: _showLots,
+                                onChanged: ((value) async {
+                                  _showLots = !_showLots;
+                                  await _updateShowLots(_showLots).then((resp) {
+                                    Log.success(message: "🔃 Update Show Lots to $_showLots");
+                                    setShowLots(_showLots);
+                                  }).onError((error, stackTrace) {
+                                    _showScaffoldMessage(text: error.toString());
+                                  });
+                                }),
+                              ),
+                            ],
+                          )
+                        ),
+                        Container(
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            )
+                          ),
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Ionicons.list_outline,
+                                          color: secondaryColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Show Empty Watchlist",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              CupertinoSwitch(
+                                value: _showEmptyWatchlist,
+                                onChanged: ((value) async {
+                                  _showEmptyWatchlist = !_showEmptyWatchlist;
+                                  await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
+                                    Log.success(message: "🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
+                                    setShowEmptywatchlist(_showEmptyWatchlist);
+                                  }).onError((error, stackTrace) {
+                                    _showScaffoldMessage(text: error.toString());
+                                  });
+                                }),
+                              ),
+                            ],
+                          )
+                        ),
+                        Container(
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            )
+                          ),
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    const Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Ionicons.information,
+                                          color: secondaryColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Application Version",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                     Text(
-                                      "Visibility",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                      Globals.appVersion,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: primaryLight,
+                                        fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
+                          )
+                        ),
+                        Container(
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            )
                           ),
-                          const SizedBox(width: 10,),
-                          CupertinoSwitch(
-                            value: _isVisible,
-                            onChanged: ((value) async {
-                              _isVisible = !_isVisible;
-                              await _updateVisibilitySummary(_isVisible).then((resp) {
-                                Log.success(message: "🔃 Update Visibility to $_isVisible");
-                                setSummaryVisible(_isVisible);
-                              }).onError((error, stackTrace) {
-                                _showScaffoldMessage(text: error.toString());
-                              });
-                            }),
-                          ),
-                        ],
-                      )
-                    ),
-                    Container(
-                      height: 60,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                        )
-                      ),
-                      width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Row(
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Icon(
-                                      Ionicons.list_outline,
-                                      color: secondaryColor,
-                                      size: 20,
+                                    const Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Ionicons.information,
+                                          color: secondaryColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Flutter Version",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 10,),
                                     Text(
-                                      "Show Lots",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                      Globals.flutterVersion,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: primaryLight,
+                                        fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          CupertinoSwitch(
-                            value: _showLots,
-                            onChanged: ((value) async {
-                              _showLots = !_showLots;
-                              await _updateShowLots(_showLots).then((resp) {
-                                Log.success(message: "🔃 Update Show Lots to $_showLots");
-                                setShowLots(_showLots);
-                              }).onError((error, stackTrace) {
-                                _showScaffoldMessage(text: error.toString());
-                              });
-                            }),
-                          ),
-                        ],
-                      )
-                    ),
-                    Container(
-                      height: 60,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                        )
-                      ),
-                      width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Icon(
-                                      Ionicons.list_outline,
-                                      color: secondaryColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 10,),
-                                    Text(
-                                      "Show Empty Watchlist",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          CupertinoSwitch(
-                            value: _showEmptyWatchlist,
-                            onChanged: ((value) async {
-                              _showEmptyWatchlist = !_showEmptyWatchlist;
-                              await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
-                                Log.success(message: "🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
-                                setShowEmptywatchlist(_showEmptyWatchlist);
-                              }).onError((error, stackTrace) {
-                                _showScaffoldMessage(text: error.toString());
-                              });
-                            }),
-                          ),
-                        ],
-                      )
-                    ),
-                    Container(
-                      height: 60,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                        )
-                      ),
-                      width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                const Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Icon(
-                                      Ionicons.information,
-                                      color: secondaryColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 10,),
-                                    Text(
-                                      "Application Version",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  Globals.appVersion,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: primaryLight,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ),
-                    Container(
-                      height: 60,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                        )
-                      ),
-                      width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                const Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Icon(
-                                      Ionicons.information,
-                                      color: secondaryColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 10,),
-                                    Text(
-                                      "Flutter Version",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  Globals.flutterVersion,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: primaryLight,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ),
-                    // TODO: to enable once we already have telegram bot token for the price alert, or else
-                    // InkWell(
-                    //   onTap: (() {
-                    //     Navigator.pushNamed(context, '/user/bot');
-                    //   }),
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     height: 60,
-                    //     decoration: const BoxDecoration(
-                    //       border: Border(
-                    //         bottom: BorderSide(
-                    //           color: primaryLight,
-                    //           width: 1.0,
-                    //           style: BorderStyle.solid,
-                    //         ),
-                    //       )
-                    //     ),
-                    //     child: Row(
-                    //       crossAxisAlignment: CrossAxisAlignment.center,
-                    //       mainAxisAlignment: MainAxisAlignment.start,
-                    //       children: const <Widget>[
-                    //         Icon(
-                    //           Ionicons.notifications_outline,
-                    //           color: secondaryColor,
-                    //           size: 20,
-                    //         ),
-                    //         SizedBox(width: 10,),
-                    //         Expanded(
-                    //           child: Text(
-                    //             "Telegram Bot Token",
-                    //             style: TextStyle(
-                    //               fontWeight: FontWeight.bold,
-                    //             ),
-                    //           )
-                    //         ),
-                    //       ],
-                    //     )
-                    //   ),
-                    // ),
-                    InkWell(
-                      onTap: (() {
-                        Future<bool?> result = ShowMyDialog(
-                          title: "Logout",
-                          text: "Do you want to logout?",
-                        ).show(context);
-              
-                        result.then((value) async {
-                          if(value == true) {
-                            await LocalBox.clear().then((_) {
-                              Log.success(message: "🧹 Cleaning Local Storage");
-                              // clear the JWT token from NetUtils
-                              NetUtils.clearJWT();
-                              
-                              // navigate back to login
-                              if (context.mounted) {
-                                Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                              ),
+                            ],
+                          )
+                        ),
+                        // TODO: to enable once we already have telegram bot token for the price alert, or else
+                        // InkWell(
+                        //   onTap: (() {
+                        //     Navigator.pushNamed(context, '/user/bot');
+                        //   }),
+                        //   child: Container(
+                        //     width: double.infinity,
+                        //     height: 60,
+                        //     decoration: const BoxDecoration(
+                        //       border: Border(
+                        //         bottom: BorderSide(
+                        //           color: primaryLight,
+                        //           width: 1.0,
+                        //           style: BorderStyle.solid,
+                        //         ),
+                        //       )
+                        //     ),
+                        //     child: Row(
+                        //       crossAxisAlignment: CrossAxisAlignment.center,
+                        //       mainAxisAlignment: MainAxisAlignment.start,
+                        //       children: const <Widget>[
+                        //         Icon(
+                        //           Ionicons.notifications_outline,
+                        //           color: secondaryColor,
+                        //           size: 20,
+                        //         ),
+                        //         SizedBox(width: 10,),
+                        //         Expanded(
+                        //           child: Text(
+                        //             "Telegram Bot Token",
+                        //             style: TextStyle(
+                        //               fontWeight: FontWeight.bold,
+                        //             ),
+                        //           )
+                        //         ),
+                        //       ],
+                        //     )
+                        //   ),
+                        // ),
+                        InkWell(
+                          onTap: (() {
+                            Future<bool?> result = ShowMyDialog(
+                              title: "Logout",
+                              text: "Do you want to logout?",
+                            ).show(context);
+                  
+                            result.then((value) async {
+                              if(value == true) {
+                                await LocalBox.clear().then((_) {
+                                  Log.success(message: "🧹 Cleaning Local Storage");
+                                  // clear the JWT token from NetUtils
+                                  NetUtils.clearJWT();
+                                  
+                                  // navigate back to login
+                                  if (context.mounted) {
+                                    Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                                  }
+                                });
                               }
                             });
-                          }
-                        });
-                      }),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          )
-                        ),
-                        child: const Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              Ionicons.log_out_outline,
-                              color: secondaryColor,
-                              size: 20,
-                            ),
-                            SizedBox(width: 10,),
-                            Expanded(
-                              child: Text(
-                                "Logout",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                          }),
+                          child: Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: primaryLight,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
                                 ),
                               )
                             ),
-                          ],
-                        )
-                      ),
-                    ),  
-                  ],
-                ),
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  Ionicons.log_out_outline,
+                                  color: secondaryColor,
+                                  size: 20,
+                                ),
+                                SizedBox(width: 10,),
+                                Expanded(
+                                  child: Text(
+                                    "Logout",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                ),
+                              ],
+                            )
+                          ),
+                        ),  
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 30,),
-            ],
-          ),
-        );
-      },),
+            );
+          },
+        ),
+      ),
     );
   }
 

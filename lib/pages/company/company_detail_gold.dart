@@ -132,52 +132,51 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
       currentIcon = Ionicons.caret_down;
     }
     
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Gold Detail",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Gold Detail",
+            style: TextStyle(
+              color: secondaryColor,
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              Navigator.pop(context);
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            Navigator.pop(context);
+          }),
+        ),
+        actions: <Widget>[
+          const Icon(
+            Ionicons.star,
+            color: accentColor,
+          ),
+          IconButton(
+            icon: Icon(
+              (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+              color: textPrimary,
+            ),
+            onPressed: (() {
+              setState(() {
+                if (_priceSort == "A") {
+                  _priceSort = "D";
+                }
+                else {
+                  _priceSort = "A";
+                }
+    
+                // just reversed the list
+                _priceGoldSort = _priceGoldSort.reversed.toList();
+              });
             }),
           ),
-          actions: <Widget>[
-            const Icon(
-              Ionicons.star,
-              color: accentColor,
-            ),
-            IconButton(
-              icon: Icon(
-                (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-                color: textPrimary,
-              ),
-              onPressed: (() {
-                setState(() {
-                  if (_priceSort == "A") {
-                    _priceSort = "D";
-                  }
-                  else {
-                    _priceSort = "A";
-                  }
-
-                  // just reversed the list
-                  _priceGoldSort = _priceGoldSort.reversed.toList();
-                });
-              }),
-            ),
-            const SizedBox(width: 10,),
-          ],
-        ),
-        body: Column(
+          const SizedBox(width: 10,),
+        ],
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -361,7 +360,6 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             _ccyStatSelection(),
             const SizedBox(height: 5,),
             Expanded(child: _detail()),
-            const SizedBox(height: 30,),
           ],
         ),
       ),

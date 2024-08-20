@@ -61,33 +61,32 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Ionicons.arrow_back
-            ),
-            onPressed: (() async {
-              await _checkForm().then((value) {
-                if(context.mounted && value) {
-                  Navigator.pop(context);
-                }
-              });
-            }),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Ionicons.arrow_back
           ),
-          title: Center(
-            child: Text(
-              _watchlist.watchlistCompanyName,
-              style: const TextStyle(
-                fontSize: 18,
-                color: secondaryColor
-              ),
+          onPressed: (() async {
+            await _checkForm().then((value) {
+              if(context.mounted && value) {
+                Navigator.pop(context);
+              }
+            });
+          }),
+        ),
+        title: Center(
+          child: Text(
+            _watchlist.watchlistCompanyName,
+            style: const TextStyle(
+              fontSize: 18,
+              color: secondaryColor
             ),
           ),
         ),
-        body: Column(
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[

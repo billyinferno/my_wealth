@@ -195,192 +195,194 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
           )
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            color: _watchlistComputation.riskColor,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(width: 10,),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    color: primaryDark,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          _watchlistArgs.watchList.watchlistCompanyName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              color: _watchlistComputation.riskColor,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      color: primaryDark,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            _watchlistArgs.watchList.watchlistCompanyName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  formatCurrencyWithNull(
-                                    _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                                    false,
-                                    true,
-                                    false,
-                                    2
-                                  ),
-                                ),
-                                const SizedBox(width: 5,),
-                                Icon(
-                                  iconToUsed,
-                                  color: color,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 5,),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: color,
-                                        width: 2.0,
-                                        style: BorderStyle.solid,
-                                      )
-                                    )
-                                  ),
-                                  child: Text(
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
                                     formatCurrencyWithNull(
-                                      _watchlistComputation.priceDiff,
+                                      _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
                                       false,
                                       true,
                                       false,
                                       2
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-                            const Expanded(child: SizedBox()),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                const Icon(
-                                  Ionicons.time_outline,
-                                  color: primaryLight,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 5,),
-                                Text(
-                                  Globals.dfddMMyyyy.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            RowChild(
-                              headerText: "AVG PRICE",
-                              valueText:avgPrice
-                            ),
-                            const SizedBox(width: 10,),
-                            RowChild(
-                              headerText: "COST",
-                              valueText: formatCurrency(_watchlistComputation.totalCost)
-                            ),
-                            const SizedBox(width: 10,),
-                            RowChild(
-                              headerText: "VALUE",
-                              valueText: formatCurrency(_watchlistComputation.totalValue)
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            RowChild(
-                              headerText: "SHARES",
-                              valueText: formatCurrency(_watchlistComputation.totalCurrentShares),
-                            ),
-                            const SizedBox(width: 10,),
-                            RowChild(
-                              headerText: "UNREALISED",
-                              valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain),
-                              valueColor: _unrealisedColor,
-                            ),
-                            const SizedBox(width: 10,),
-                            RowChild(
-                              headerText: "REALISED",
-                              valueText: formatCurrency(_watchlistComputation.totalRealisedGain),
-                              valueColor: _realisedColor,
-                            ),
-                          ],
-                        ),
-                      ],
+                                  const SizedBox(width: 5,),
+                                  Icon(
+                                    iconToUsed,
+                                    color: color,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: color,
+                                          width: 2.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      formatCurrencyWithNull(
+                                        _watchlistComputation.priceDiff,
+                                        false,
+                                        true,
+                                        false,
+                                        2
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const Expanded(child: SizedBox()),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Icon(
+                                    Ionicons.time_outline,
+                                    color: primaryLight,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    Globals.dfddMMyyyy.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              RowChild(
+                                headerText: "AVG PRICE",
+                                valueText:avgPrice
+                              ),
+                              const SizedBox(width: 10,),
+                              RowChild(
+                                headerText: "COST",
+                                valueText: formatCurrency(_watchlistComputation.totalCost)
+                              ),
+                              const SizedBox(width: 10,),
+                              RowChild(
+                                headerText: "VALUE",
+                                valueText: formatCurrency(_watchlistComputation.totalValue)
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              RowChild(
+                                headerText: "SHARES",
+                                valueText: formatCurrency(_watchlistComputation.totalCurrentShares),
+                              ),
+                              const SizedBox(width: 10,),
+                              RowChild(
+                                headerText: "UNREALISED",
+                                valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain),
+                                valueColor: _unrealisedColor,
+                              ),
+                              const SizedBox(width: 10,),
+                              RowChild(
+                                headerText: "REALISED",
+                                valueText: formatCurrency(_watchlistComputation.totalRealisedGain),
+                                valueColor: _realisedColor,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 15,),
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 150,
-                        child: CupertinoSegmentedControl(
-                          children: const {
-                            "m": Text("Month"),
-                            "y": Text("Year"),
-                          },
-                          onValueChanged: ((value) {
-                            String selectedValue = value.toString();
-
-                            setState(() {
-                              _calendarSelection = selectedValue;
-                            });
-                          }),
-                          groupValue: _calendarSelection,
-                          selectedColor: secondaryColor,
-                          borderColor: secondaryDark,
-                          pressedColor: primaryDark,
-                        ),
-                      ),
-                      _dateSelector(),
-                    ],
-                  ),
-                  const SizedBox(height: 15,),
-                  _getSubPage(),
                 ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 15,),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 150,
+                          child: CupertinoSegmentedControl(
+                            children: const {
+                              "m": Text("Month"),
+                              "y": Text("Year"),
+                            },
+                            onValueChanged: ((value) {
+                              String selectedValue = value.toString();
+        
+                              setState(() {
+                                _calendarSelection = selectedValue;
+                              });
+                            }),
+                            groupValue: _calendarSelection,
+                            selectedColor: secondaryColor,
+                            borderColor: secondaryDark,
+                            pressedColor: primaryDark,
+                          ),
+                        ),
+                        _dateSelector(),
+                      ],
+                    ),
+                    const SizedBox(height: 15,),
+                    _getSubPage(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

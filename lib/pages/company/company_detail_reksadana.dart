@@ -214,62 +214,61 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       companyRisk = _companyDetail.companyYearlyRisk!.toInt();
     }
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Mutual Fund Detail",
-              style: TextStyle(
-                color: secondaryColor,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Mutual Fund Detail",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            Navigator.pop(context);
+          }),
+        ),
+        actions: <Widget>[
+          Visibility(
+            visible: _isOwned,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: const Icon(
+                Ionicons.checkmark,
+                color: Colors.green,
               ),
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              Navigator.pop(context);
+          Icon(
+            (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+            color: accentColor,
+          ),
+          IconButton(
+            icon: Icon(
+              (_infoSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+              color: textPrimary,
+            ),
+            onPressed: (() {
+              setState(() {
+                if (_infoSort == "A") {
+                  _infoSort = "D";
+                }
+                else {
+                  _infoSort = "A";
+                }
+    
+                // just reversed the list
+                _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
+              });
             }),
           ),
-          actions: <Widget>[
-            Visibility(
-              visible: _isOwned,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: const Icon(
-                  Ionicons.checkmark,
-                  color: Colors.green,
-                ),
-              ),
-            ),
-            Icon(
-              (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
-              color: accentColor,
-            ),
-            IconButton(
-              icon: Icon(
-                (_infoSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-                color: textPrimary,
-              ),
-              onPressed: (() {
-                setState(() {
-                  if (_infoSort == "A") {
-                    _infoSort = "D";
-                  }
-                  else {
-                    _infoSort = "A";
-                  }
-
-                  // just reversed the list
-                  _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
-                });
-              }),
-            ),
-            const SizedBox(width: 10,),
-          ],
-        ),
-        body: Column(
+          const SizedBox(width: 10,),
+        ],
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -484,7 +483,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             ),
             const SizedBox(height: 5,),
             Expanded(child: _detail(),),
-            const SizedBox(height: 30,),
           ],
         ),
       ),

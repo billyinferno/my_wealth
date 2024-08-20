@@ -55,18 +55,20 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _getMe,
-        builder: ((context, snapshot) {
-          if ((snapshot.hasData || snapshot.hasError) && !_isLogin) {
-            // check if user is login or not?
-            return _generateBody();
-          }
-          else {
-            // show loading
-            return _splashScreen();
-          }
-        }),
+      body: MySafeArea(
+        child: FutureBuilder(
+          future: _getMe,
+          builder: ((context, snapshot) {
+            if ((snapshot.hasData || snapshot.hasError) && !_isLogin) {
+              // check if user is login or not?
+              return _generateBody();
+            }
+            else {
+              // show loading
+              return _splashScreen();
+            }
+          }),
+        ),
       ),
     );
   }

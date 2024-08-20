@@ -37,86 +37,82 @@ class _IndexFindOtherPageState extends State<IndexFindOtherPage> {
   
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Find Index",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Find Index",
+            style: TextStyle(
+              color: secondaryColor,
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              // back icon press means that no code being selected
-              Navigator.pop(context, null);
-            }),
-          ),
         ),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: CupertinoSearchTextField(
-                  controller: _textController,
-                  onChanged: ((value) {
-                    if (value.length >= 2) {
-                      _searchList(value);
-                    }
-                    else {
-                      setState(() {
-                        _filterList = _indexList.toList();
-                      });
-                    }
-                  }),
-                  suffixMode: OverlayVisibilityMode.editing,
-                  style: const TextStyle(
-                    color: textPrimary,
-                    fontFamily: '--apple-system'
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            // back icon press means that no code being selected
+            Navigator.pop(context, null);
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              child: CupertinoSearchTextField(
+                controller: _textController,
+                onChanged: ((value) {
+                  if (value.length >= 2) {
+                    _searchList(value);
+                  }
+                  else {
+                    setState(() {
+                      _filterList = _indexList.toList();
+                    });
+                  }
+                }),
+                suffixMode: OverlayVisibilityMode.editing,
+                style: const TextStyle(
+                  color: textPrimary,
+                  fontFamily: '--apple-system'
+                ),
+                decoration: BoxDecoration(
+                  color: primaryLight,
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 10,),
-              Expanded(
-                child: ListView.builder(
-                  controller: _indexListScrollController,
-                  itemCount: _filterList.length,
-                  itemBuilder: ((context, index) {
-                    String indexName = _filterList[index].indexName;
-                    if (Globals.indexName.containsKey(_filterList[index].indexName)) {
-                      indexName = "(${_filterList[index].indexName}) ${Globals.indexName[_filterList[index].indexName]}";
-                    }
-          
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.pop(context, _filterList[index]);
-                      }),
-                      child: SimpleListItem(
-                        name: indexName,
-                        date: Globals.dfddMMyyyy.format(_filterList[index].indexLastUpdate.toLocal()),
-                        price: _filterList[index].indexNetAssetValue,
-                        percentChange: (_filterList[index].indexDailyReturn * 100),
-                        priceChange: (_filterList[index].indexNetAssetValue - _filterList[index].indexPrevPrice),
-                        riskFactor: _userInfo.risk,
-                      ),
-                    );
-                  }),
-                ),
+            ),
+            const SizedBox(height: 10,),
+            Expanded(
+              child: ListView.builder(
+                controller: _indexListScrollController,
+                itemCount: _filterList.length,
+                itemBuilder: ((context, index) {
+                  String indexName = _filterList[index].indexName;
+                  if (Globals.indexName.containsKey(_filterList[index].indexName)) {
+                    indexName = "(${_filterList[index].indexName}) ${Globals.indexName[_filterList[index].indexName]}";
+                  }
+        
+                  return InkWell(
+                    onTap: (() {
+                      Navigator.pop(context, _filterList[index]);
+                    }),
+                    child: SimpleListItem(
+                      name: indexName,
+                      date: Globals.dfddMMyyyy.format(_filterList[index].indexLastUpdate.toLocal()),
+                      price: _filterList[index].indexNetAssetValue,
+                      percentChange: (_filterList[index].indexDailyReturn * 100),
+                      priceChange: (_filterList[index].indexNetAssetValue - _filterList[index].indexPrevPrice),
+                      riskFactor: _userInfo.risk,
+                    ),
+                  );
+                }),
               ),
-              const SizedBox(height: 20,),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

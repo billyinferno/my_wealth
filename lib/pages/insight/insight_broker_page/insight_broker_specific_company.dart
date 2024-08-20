@@ -118,303 +118,305 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
           ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(10),
-            color: primaryDark,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10,),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const Text(
-                            "Stock",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5,),
-                          InkWell(
-                            onTap: (() async {
-                              // navigate to the find other company list and we will get the value from there
-                              await Navigator.pushNamed(context, '/company/detail/find', arguments: _companyFindOtherArgs).then((value) {
-                                if (value != null) {
-                                  // convert value to company list model
-                                  _companyData = value as CompanyListModel;
-
-                                  _getCompanyDataAndSearch();
-                                }
-                              });
-                            }),
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                ),
-                                color: primaryColor,
-                                borderRadius: BorderRadius.circular(5),
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(10),
+              color: primaryDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 10,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              "Stock",
+                              style: TextStyle(
+                                color: accentColor,
+                                fontWeight: FontWeight.bold,
                               ),
-                              child: Center(
-                                child: Text(
-                                  (_companySahamCode.isEmpty ? '-' : _companySahamCode),
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                            ),
+                            const SizedBox(height: 5,),
+                            InkWell(
+                              onTap: (() async {
+                                // navigate to the find other company list and we will get the value from there
+                                await Navigator.pushNamed(context, '/company/detail/find', arguments: _companyFindOtherArgs).then((value) {
+                                  if (value != null) {
+                                    // convert value to company list model
+                                    _companyData = value as CompanyListModel;
+        
+                                    _getCompanyDataAndSearch();
+                                  }
+                                });
+                              }),
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                  color: primaryColor,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    (_companySahamCode.isEmpty ? '-' : _companySahamCode),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Expanded(
+                        flex: 5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              "Date",
+                              style: TextStyle(
+                                color: accentColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5,),
+                            InkWell(
+                              onTap: (() async {
+                                await _showCalendar().onError((error, stackTrace) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                  }
+                                },);
+                              }),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: primaryLight,
+                                          width: 1.0,
+                                          style: BorderStyle.solid,
+                                        ),
+                                        color: primaryColor,
+                                        borderRadius: const BorderRadius.only(
+                                          bottomLeft: Radius.circular(5),
+                                          topLeft: Radius.circular(5)
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          Globals.dfddMMyyyy2.format(_dateFrom),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: primaryLight,
+                                          width: 1.0,
+                                          style: BorderStyle.solid,
+                                        ),
+                                        color: primaryColor,
+                                        borderRadius: const BorderRadius.only(
+                                          bottomRight: Radius.circular(5),
+                                          topRight: Radius.circular(5)
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          Globals.dfddMMyyyy2.format(_dateTo),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(""),
+                          const SizedBox(height: 5,),
+                          InkWell(
+                            onTap: (() async {
+                              // check that broker and code already filled
+                              if (_companySahamCode.isEmpty) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CupertinoAlertDialog(
+                                      title: const Text("Select Company Code"),
+                                      content: const Text("Please company code from the list, before run the query."),
+                                      actions: <CupertinoDialogAction>[
+                                        CupertinoDialogAction(
+                                          onPressed: (() {
+                                            Navigator.pop(context);
+                                          }),
+                                          child: const Text("OK"),
+                                        )
+                                      ],
+                                    );
+                                  }
+                                );
+                              }
+                              else {
+                                await _getBrokerTransaction().then((_) {  
+                                  setState(() {
+                                    // generate the summary and top page
+                                    _generateSummaryPage();
+                                    _generateTopPage();
+                                  });
+                                },);
+                              }
+                            }),
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: secondaryDark,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                                color: secondaryColor,
+                              ),
+                              child: const Icon(
+                                Ionicons.search,
+                                color: textPrimary,
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Visibility(
+                visible: (_companyDetail != null),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  (_companyDetail == null ? '' : _companyDetail!.companyName),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 5,),
+                                Text(
+                                  "Current Price: ${(_companyDetail == null ? '' : formatDecimalWithNull(_companyDetail!.companyNetAssetValue, 1, 0))}",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10,),
+                          IconButton(
+                            onPressed: (() {
+                              _getCompanyAndGo(code: _companySahamCode);
+                            }),
+                            icon: const Icon(
+                              Ionicons.business_outline,
+                              size: 18,
+                              color: accentColor,
                             ),
                           )
                         ],
                       ),
                     ),
-                    const SizedBox(width: 5,),
+                    TabBar(
+                      controller: _tabController,
+                      indicatorColor: accentColor,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelColor: textPrimary,
+                      unselectedLabelColor: textPrimary,
+                      dividerHeight: 0,
+                      tabs: const <Widget>[
+                        Tab(text: 'BROKER SUMMARY'),
+                        Tab(text: 'TOP BROKER',)
+                      ]
+                    ),
+                    const SizedBox(height: 10,),
                     Expanded(
-                      flex: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      child: TabBarView(
+                        controller: _tabController,
                         children: <Widget>[
-                          const Text(
-                            "Date",
-                            style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5,),
-                          InkWell(
-                            onTap: (() async {
-                              await _showCalendar().onError((error, stackTrace) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                                }
-                              },);
-                            }),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: primaryLight,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      ),
-                                      color: primaryColor,
-                                      borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(5),
-                                        topLeft: Radius.circular(5)
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        Globals.dfddMMyyyy2.format(_dateFrom),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: primaryLight,
-                                        width: 1.0,
-                                        style: BorderStyle.solid,
-                                      ),
-                                      color: primaryColor,
-                                      borderRadius: const BorderRadius.only(
-                                        bottomRight: Radius.circular(5),
-                                        topRight: Radius.circular(5)
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        Globals.dfddMMyyyy2.format(_dateTo),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
+                          _brokerSummaryPage(),
+                          _brokerTopPage(),
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 5,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(""),
-                        const SizedBox(height: 5,),
-                        InkWell(
-                          onTap: (() async {
-                            // check that broker and code already filled
-                            if (_companySahamCode.isEmpty) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return CupertinoAlertDialog(
-                                    title: const Text("Select Company Code"),
-                                    content: const Text("Please company code from the list, before run the query."),
-                                    actions: <CupertinoDialogAction>[
-                                      CupertinoDialogAction(
-                                        onPressed: (() {
-                                          Navigator.pop(context);
-                                        }),
-                                        child: const Text("OK"),
-                                      )
-                                    ],
-                                  );
-                                }
-                              );
-                            }
-                            else {
-                              await _getBrokerTransaction().then((_) {  
-                                setState(() {
-                                  // generate the summary and top page
-                                  _generateSummaryPage();
-                                  _generateTopPage();
-                                });
-                              },);
-                            }
-                          }),
-                          child: Container(
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: secondaryDark,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                              borderRadius: BorderRadius.circular(5),
-                              color: secondaryColor,
-                            ),
-                            child: const Icon(
-                              Ionicons.search,
-                              color: textPrimary,
-                              size: 15,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    )
                   ],
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Visibility(
-              visible: (_companyDetail != null),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    padding: const EdgeInsets.all(10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                (_companyDetail == null ? '' : _companyDetail!.companyName),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 5,),
-                              Text(
-                                "Current Price: ${(_companyDetail == null ? '' : formatDecimalWithNull(_companyDetail!.companyNetAssetValue, 1, 0))}",
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                        IconButton(
-                          onPressed: (() {
-                            _getCompanyAndGo(code: _companySahamCode);
-                          }),
-                          icon: const Icon(
-                            Ionicons.business_outline,
-                            size: 18,
-                            color: accentColor,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: accentColor,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: textPrimary,
-                    unselectedLabelColor: textPrimary,
-                    dividerHeight: 0,
-                    tabs: const <Widget>[
-                      Tab(text: 'BROKER SUMMARY'),
-                      Tab(text: 'TOP BROKER',)
-                    ]
-                  ),
-                  const SizedBox(height: 10,),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: <Widget>[
-                        _brokerSummaryPage(),
-                        _brokerTopPage(),
-                      ],
-                    ),
-                  )
-                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       )
     );
   }
@@ -738,7 +740,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 30),
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: primaryLight,
@@ -873,7 +875,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
     if (_brokerTopData!.brokerData.isNotEmpty) {
       return Container(
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 30),
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,

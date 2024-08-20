@@ -43,29 +43,28 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: ((() {
-              // return back to the previous page
-              Navigator.pop(context);
-            })),
-            icon: const Icon(
-              Ionicons.arrow_back,
-            )
-          ),
-          title: Center(
-            child: Text(
-              _getTitle(),
-              style: const TextStyle(
-                color: secondaryColor,
-              ),
-            )
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: ((() {
+            // return back to the previous page
+            Navigator.pop(context);
+          })),
+          icon: const Icon(
+            Ionicons.arrow_back,
+          )
         ),
-        body: Column(
+        title: Center(
+          child: Text(
+            _getTitle(),
+            style: const TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -81,7 +80,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 onSubmitted: ((searchText) async {
                   if(searchText.isNotEmpty) {
                     Log.info(message: "🔎 Searching for $searchText");
-    
+          
                     await _searchCompany(searchText).then((resp) {
                       _setSearchResult(resp);
                     }).onError((error, stackTrace) {

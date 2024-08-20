@@ -56,128 +56,125 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
   }
 
   Widget _body() {
-    return SafeArea(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Search Crypto",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            // fetch the user favorites when we return back to the favorites screen
+            // and notify the provider to we can update the favorites screen based
+            // on the new favorites being add/remove from this page
+            await getUserFavourites().onError((error, stackTrace) {
+              // in case error showed it on debug
+              Log.error(
+                message: 'Error getting user favourites',
+                error: error,
+                stackTrace: stackTrace,
+              );
+        
+              // print on the scaffold snack bar
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when retrieve user favourites'));
+              }
+            }).whenComplete(() {
+              if (mounted) {
+                // return back to the previous page
+                Navigator.pop(context);
+              }
+            });
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: CupertinoSearchTextField(
+                controller: _textController,
+                onChanged: ((value) {
+                  // for crypto we can search when it matched "2", as the code usually will be at least "3"
+                  if (value.length >= 2) {
+                    setState(() {
+                      searchList(value);
+                    });
+                  }
+                  else {
+                    // if less than 3, then we will return the value of filter list
+                    // with all the fave list.
+                    setFilterList(_faveList);
+                  }
+                }),
+                suffixMode: OverlayVisibilityMode.editing,
+                style: const TextStyle(
+                  color: textPrimary,
+                  fontFamily: '--apple-system'
+                ),
+                decoration: BoxDecoration(
+                  color: primaryLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Text(
-                "Search Crypto",
-                style: TextStyle(
-                  color: secondaryColor,
+                "Showed ${_filterList.length} company(s)",
+                style: const TextStyle(
+                  color: primaryLight,
+                  fontSize: 12,
                 ),
               ),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: (() async {
-                // fetch the user favorites when we return back to the favorites screen
-                // and notify the provider to we can update the favorites screen based
-                // on the new favorites being add/remove from this page
-                await getUserFavourites().onError((error, stackTrace) {
-                  // in case error showed it on debug
-                  Log.error(
-                    message: 'Error getting user favourites',
-                    error: error,
-                    stackTrace: stackTrace,
-                  );
-
-                  // print on the scaffold snack bar
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when retrieve user favourites'));
-                  }
-                }).whenComplete(() {
-                  if (mounted) {
-                    // return back to the previous page
-                    Navigator.pop(context);
-                  }
-                });
-              }),
-            ),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: CupertinoSearchTextField(
-                  controller: _textController,
-                  onChanged: ((value) {
-                    // for crypto we can search when it matched "2", as the code usually will be at least "3"
-                    if (value.length >= 2) {
-                      setState(() {
-                        searchList(value);
-                      });
-                    }
-                    else {
-                      // if less than 3, then we will return the value of filter list
-                      // with all the fave list.
-                      setFilterList(_faveList);
-                    }
-                  }),
-                  suffixMode: OverlayVisibilityMode.editing,
-                  style: const TextStyle(
-                    color: textPrimary,
-                    fontFamily: '--apple-system'
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: Text(
-                  "Showed ${_filterList.length} company(s)",
-                  style: const TextStyle(
-                    color: primaryLight,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10,),
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _filterList.length,
-                  itemBuilder: ((context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        CompanyDetailArgs args = CompanyDetailArgs(
-                          companyId: _filterList[index].favouritesCompanyId,
-                          companyName: _filterList[index].favouritesCompanyName,
-                          companyCode: _filterList[index].favouritesSymbol,
-                          companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                          favouritesId: (_filterList[index].favouritesId ?? -1),
-                          type: "crypto",
-                        );
-      
-                        Navigator.pushNamed(context, '/company/detail/crypto', arguments: args);
-                      }),
-                      child: FavouriteCompanyList(
+            const SizedBox(height: 10,),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: _filterList.length,
+                itemBuilder: ((context, index) {
+                  return InkWell(
+                    onTap: (() {
+                      CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: _filterList[index].favouritesCompanyId,
-                        name: "(${_filterList[index].favouritesSymbol}) ${_filterList[index].favouritesCompanyName}",
-                        type: _filterList[index].favouritesCompanyType,
-                        date: formatDateWithNulll(date: _filterList[index].favouritesLastUpdate, format: _dt),
-                        value: _filterList[index].favouritesNetAssetValue,
-                        isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                        fca: (_filterList[index].favouritesFCA ?? false),
-                        onPress: (() async {
-                          await setFavourite(index);
-                        }),
-                      ),
-                    );
-                  }),
-                ),
+                        companyName: _filterList[index].favouritesCompanyName,
+                        companyCode: _filterList[index].favouritesSymbol,
+                        companyFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        favouritesId: (_filterList[index].favouritesId ?? -1),
+                        type: "crypto",
+                      );
+          
+                      Navigator.pushNamed(context, '/company/detail/crypto', arguments: args);
+                    }),
+                    child: FavouriteCompanyList(
+                      companyId: _filterList[index].favouritesCompanyId,
+                      name: "(${_filterList[index].favouritesSymbol}) ${_filterList[index].favouritesCompanyName}",
+                      type: _filterList[index].favouritesCompanyType,
+                      date: formatDateWithNulll(date: _filterList[index].favouritesLastUpdate, format: _dt),
+                      value: _filterList[index].favouritesNetAssetValue,
+                      isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                      fca: (_filterList[index].favouritesFCA ?? false),
+                      onPress: (() async {
+                        await setFavourite(index);
+                      }),
+                    ),
+                  );
+                }),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -271,63 +271,62 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     }
 
     // generate the actual page
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Stock Detail",
-              style: TextStyle(
-                color: secondaryColor,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Stock Detail",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            Navigator.pop(context);
+          }),
+        ),
+        actions: <Widget>[
+          Visibility(
+            visible: _isOwned,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: const Icon(
+                Ionicons.checkmark,
+                color: Colors.green,
               ),
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              Navigator.pop(context);
+          Icon(
+            (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+            color: accentColor,
+          ),
+          IconButton(
+            icon: Icon(
+              (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+              color: textPrimary,
+            ),
+            onPressed: (() {
+              setState(() {
+                if (_priceSort == "A") {
+                  _priceSort = "D";
+                } else {
+                  _priceSort = "A";
+                }
+    
+                // just reversed the list
+                _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
+              });
             }),
           ),
-          actions: <Widget>[
-            Visibility(
-              visible: _isOwned,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: const Icon(
-                  Ionicons.checkmark,
-                  color: Colors.green,
-                ),
-              ),
-            ),
-            Icon(
-              (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
-              color: accentColor,
-            ),
-            IconButton(
-              icon: Icon(
-                (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-                color: textPrimary,
-              ),
-              onPressed: (() {
-                setState(() {
-                  if (_priceSort == "A") {
-                    _priceSort = "D";
-                  } else {
-                    _priceSort = "A";
-                  }
-
-                  // just reversed the list
-                  _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
-                });
-              }),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-          ],
-        ),
-        body: Column(
+          const SizedBox(
+            width: 10,
+          ),
+        ],
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -593,16 +592,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 ],
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10,),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Info",
                   bgColor: primaryDark,
@@ -616,9 +611,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   active: (_bodyPage == 0),
                   vertical: true,
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Broker",
                   bgColor: primaryDark,
@@ -632,9 +625,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   active: (_bodyPage == 1),
                   vertical: true,
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Table",
                   bgColor: primaryDark,
@@ -648,9 +639,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   active: (_bodyPage == 2),
                   vertical: true,
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Map",
                   bgColor: primaryDark,
@@ -664,9 +653,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   active: (_bodyPage == 3),
                   vertical: true,
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Stat",
                   bgColor: primaryDark,
@@ -680,18 +667,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   active: (_bodyPage == 4),
                   vertical: true,
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5,),
               ],
             ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5,),
             Expanded(child: _detail()),
-            const SizedBox(
-              height: 30,
-            ),
           ],
         ),
       ),

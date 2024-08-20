@@ -26,26 +26,25 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-              child: Text(
-            "Update Telegram Bot Token",
-            style: TextStyle(
-              color: secondaryColor,
-            ),
-          )),
-          leading: IconButton(
-            icon: const Icon(Ionicons.arrow_back),
-            onPressed: (() {
-              Navigator.pop(context);
-            }),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+            child: Text(
+          "Update Telegram Bot Token",
+          style: TextStyle(
+            color: secondaryColor,
           ),
+        )),
+        leading: IconButton(
+          icon: const Icon(Ionicons.arrow_back),
+          onPressed: (() {
+            Navigator.pop(context);
+          }),
         ),
-        body: Container(
-          padding: const EdgeInsets.all(25),
+      ),
+      body: MySafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -82,55 +81,56 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                 height: 10,
               ),
               MaterialButton(
-                  minWidth: double.infinity,
-                  color: secondaryColor,
-                  textColor: textPrimary,
-                  onPressed: (() async {
-                    // check if the current value and slide value for risk factor
-                    // is the same or not?
-                    if (_controller.text == _bot) {
-                      // skip, and just go back
-                      Navigator.pop(context);
+                minWidth: double.infinity,
+                color: secondaryColor,
+                textColor: textPrimary,
+                onPressed: (() async {
+                  // check if the current value and slide value for risk factor
+                  // is the same or not?
+                  if (_controller.text == _bot) {
+                    // skip, and just go back
+                    Navigator.pop(context);
+                  } else {
+                    if (_controller.text.isNotEmpty) {
+                      Log.success(message: "💾 Save the updated bot token");
+                      // show loading screen
+                      LoadingScreen.instance().show(context: context);
+          
+                      // update the bot token
+                      await _userApi.updateBotToken(_controller.text).then((resp) async {
+                        // we will get updated user info here, so stored the updated
+                        // user info with new risk factor to the local storea
+                        await UserSharedPreferences.setUserInfo(resp);
+                        
+                        if (context.mounted) {
+                          // update the provider to notify the user page
+                          Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+          
+                          // once finished, then pop out from this page
+                          Navigator.pop(context);
+                        }
+                      }).onError((error, stackTrace) {
+                        if (context.mounted) {
+                          // showed the snack bar
+                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(
+                            message: "Unable to update Bot Token",
+                          ));
+                        }
+                      }).whenComplete(() {
+                        // remove loading screen after finished
+                        LoadingScreen.instance().hide();
+                      },);
                     } else {
-                      if (_controller.text.isNotEmpty) {
-                        Log.success(message: "💾 Save the updated bot token");
-                        // show loading screen
-                        LoadingScreen.instance().show(context: context);
-
-                        // update the bot token
-                        await _userApi.updateBotToken(_controller.text).then((resp) async {
-                          // we will get updated user info here, so stored the updated
-                          // user info with new risk factor to the local storea
-                          await UserSharedPreferences.setUserInfo(resp);
-                          
-                          if (context.mounted) {
-                            // update the provider to notify the user page
-                            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-
-                            // once finished, then pop out from this page
-                            Navigator.pop(context);
-                          }
-                        }).onError((error, stackTrace) {
-                          if (context.mounted) {
-                            // showed the snack bar
-                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(
-                              message: "Unable to update Bot Token",
-                            ));
-                          }
-                        }).whenComplete(() {
-                          // remove loading screen after finished
-                          LoadingScreen.instance().hide();
-                        },);
-                      } else {
-                        // showed the snack bar
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(createSnackBar(
-                          message: "Bot Token empty",
-                        ));
-                      }
+                      // showed the snack bar
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(createSnackBar(
+                        message: "Bot Token empty",
+                      ));
                     }
-                  }),
-                  child: const Text("Save")),
+                  }
+                }),
+                child: const Text("Save")
+              ),
             ],
           ),
         ),

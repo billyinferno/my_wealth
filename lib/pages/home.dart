@@ -43,8 +43,10 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return MySafeArea(
       bottom: true,
+      bottomPadding: 15,
+      color: primaryDark,
       child: Scaffold(
         appBar: AppBar(
           leading: Row(
@@ -153,7 +155,7 @@ class HomePageState extends State<HomePage> {
   Widget _generateBottomBar() {
     return Container(
       color: primaryDark,
-      padding: const EdgeInsets.fromLTRB(15, 10, 15, 25),
+      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
       child: GNav(
         selectedIndex: _selectedIndex,
         backgroundColor: primaryDark,

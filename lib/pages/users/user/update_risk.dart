@@ -24,29 +24,28 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Update Risk",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            )
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Ionicons.arrow_back
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Update Risk",
+            style: TextStyle(
+              color: secondaryColor,
             ),
-            onPressed: (() {
-              Navigator.pop(context);
-            }),
-          ),
+          )
         ),
-        body: Container(
-          padding: const EdgeInsets.all(25),
+        leading: IconButton(
+          icon: const Icon(
+            Ionicons.arrow_back
+          ),
+          onPressed: (() {
+            Navigator.pop(context);
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -94,7 +93,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                       divisions: 95,
                       label: _riskValue.toInt().toString(),
                       activeColor: accentColor,
-                      inactiveColor: accentDark,
+                      inactiveColor: textPrimary,
                     ),
                   ),
                   SizedBox(
@@ -122,17 +121,17 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                     Log.success(message: "💾 Save the updated risk factor");
                     // show loading screen
                     LoadingScreen.instance().show(context: context);
-
+            
                     // call API to update user risk
                     await _userApi.updateRisk(_riskValue.toInt()).then((resp) async {
                       // we will get updated user info here, so stored the updated
                       // user info with new risk factor to the local storea
                       await UserSharedPreferences.setUserInfo(resp);
-    
+          
                       // update the provider to notify the user page
                       if (context.mounted) {
                         Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
-
+            
                         // once finished, then pop out from this page
                         Navigator.pop(context);
                       }    

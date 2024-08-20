@@ -168,209 +168,210 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
           const SizedBox(width: 5,),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "Total Value",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        formatCurrency(_args.value, false, false, false),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Unrealised Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            _trendIcon,
-                            size: 13,
-                            color: _trendColor,
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Total Value",
+                          style: TextStyle(
+                            fontSize: 12,
                           ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrency((_args.unrealised ?? 0), false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _trendColor
+                        ),
+                        Text(
+                          formatCurrency(_args.value, false, false, false),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Unrealised Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              _trendIcon,
+                              size: 13,
+                              color: _trendColor,
                             ),
-                          ),
-                          const SizedBox(width: 2,),
-                          Text(
-                            "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                              color: _trendColor
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrency((_args.unrealised ?? 0), false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _trendColor
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Realised Gain",
-                        style: TextStyle(
-                          fontSize: 12,
+                            const SizedBox(width: 2,),
+                            Text(
+                              "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                                color: _trendColor
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Ionicons.wallet_outline,
-                            size: 13,
-                            color: _realisedColor,
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Realised Gain",
+                          style: TextStyle(
+                            fontSize: 12,
                           ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrencyWithNull(_args.realised, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _realisedColor
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Ionicons.wallet_outline,
+                              size: 13,
+                              color: _realisedColor,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrencyWithNull(_args.realised, false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _realisedColor
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "Total Cost",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        formatCurrency(_args.cost, false, false, false),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Total Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Ionicons.stats_chart,
-                            size: 13,
-                            color: _totalGainColor,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Total Cost",
+                          style: TextStyle(
+                            fontSize: 12,
                           ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrency(_totalGain, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _totalGainColor
+                        ),
+                        Text(
+                          formatCurrency(_args.cost, false, false, false),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Total Gain",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 2,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(
+                              Ionicons.stats_chart,
+                              size: 13,
+                              color: _totalGainColor,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2,),
-                      const Text(
-                        "Day Gain",
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Ionicons.today,
-                            size: 13,
-                            color: _totalDayGainColor,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            formatCurrencyWithNull(_totalDayGain, false, false, false),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: _totalDayGainColor
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrency(_totalGain, false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _totalGainColor
+                              ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 2,),
+                        const Text(
+                          "Day Gain",
+                          style: TextStyle(
+                            fontSize: 12,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(
+                              Ionicons.today,
+                              size: 13,
+                              color: _totalDayGainColor,
+                            ),
+                            const SizedBox(width: 5,),
+                            Text(
+                              formatCurrencyWithNull(_totalDayGain, false, false, false),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: _totalDayGainColor
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: _portofolioFiltered.length,
-              itemBuilder: ((context, index) {
-                int colorMap = (index % Globals.colorList.length);
-              
-                return ProductListItem(
-                  bgColor: (_portofolioFiltered[index].watchlistSubTotalShare > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
-                  title: (_args.type == 'reksadana' ? _portofolioFiltered[index].companyName : "(${_portofolioFiltered[index].companyCode}) ${_portofolioFiltered[index].companyName}"),
-                  subTitle: "${formatDecimal(_portofolioFiltered[index].watchlistSubTotalShare, 2)} shares",
-                  value: _portofolioFiltered[index].watchlistSubTotalValue,
-                  cost: _portofolioFiltered[index].watchlistSubTotalCost,
-                  realised: _portofolioFiltered[index].watchlistSubTotalRealised,
-                  unrealised: _portofolioFiltered[index].watchlistSubTotalUnrealised,
-                  dayGain: _portofolioFiltered[index].watchlistSubTotalDayGain,
-                  total: _portofolioTotalValue,
-                  netAssetValue: _portofolioFiltered[index].companyNetAssetValue,
-                  oneDay: _portofolioFiltered[index].companyDailyReturn,
-                  onTap: (() async {
-                    _goFindSpecificAndGo(type: _args.type, id: _portofolioFiltered[index].watchlistId);
-                  }),
-                );
-              }),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: _portofolioFiltered.length,
+                itemBuilder: ((context, index) {
+                  int colorMap = (index % Globals.colorList.length);
+                
+                  return ProductListItem(
+                    bgColor: (_portofolioFiltered[index].watchlistSubTotalShare > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
+                    title: (_args.type == 'reksadana' ? _portofolioFiltered[index].companyName : "(${_portofolioFiltered[index].companyCode}) ${_portofolioFiltered[index].companyName}"),
+                    subTitle: "${formatDecimal(_portofolioFiltered[index].watchlistSubTotalShare, 2)} shares",
+                    value: _portofolioFiltered[index].watchlistSubTotalValue,
+                    cost: _portofolioFiltered[index].watchlistSubTotalCost,
+                    realised: _portofolioFiltered[index].watchlistSubTotalRealised,
+                    unrealised: _portofolioFiltered[index].watchlistSubTotalUnrealised,
+                    dayGain: _portofolioFiltered[index].watchlistSubTotalDayGain,
+                    total: _portofolioTotalValue,
+                    netAssetValue: _portofolioFiltered[index].companyNetAssetValue,
+                    oneDay: _portofolioFiltered[index].companyDailyReturn,
+                    onTap: (() async {
+                      _goFindSpecificAndGo(type: _args.type, id: _portofolioFiltered[index].watchlistId);
+                    }),
+                  );
+                }),
+              ),
             ),
-          ),
-          const SizedBox(height: 30,),
-        ],
+          ],
+        ),
       ),
     );
   }

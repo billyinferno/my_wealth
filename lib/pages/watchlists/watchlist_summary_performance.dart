@@ -171,81 +171,80 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   }
 
   Widget _generatePage() {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: ((() {
-              // return back to the previous page
-              Navigator.pop(context);
-            })),
-            icon: const Icon(
-              Ionicons.arrow_back,
-            )
-          ),
-          title: Center(
-            child: Text(
-              "Performance ${_args.type.toCapitalized()}",
-              style: const TextStyle(
-                color: secondaryColor,
-              ),
-            )
-          ),
-          actions: <Widget>[
-            IconButton(
-              onPressed: (() async {
-                // go to index list page
-                await Navigator.pushNamed(context, '/index/find').then((value) async {
-                  if (value != null) {
-                    // convert value to company list model
-                    _indexCompare = value as IndexModel;
-                    _indexCompareName = _indexCompare.indexName;
-
-                    await _getIndexData().onError((error, stackTrace) {
-                      // remove the index compare name and price since we will
-                      // not be able to perform comparison
-                      _indexCompareName = "";
-                      _indexComparePrice.clear();
-
-                      _indexData.clear();
-                      _indexData90D.clear();
-                      _indexDataDaily.clear();
-                      _indexDataMonthly.clear();
-                      _indexDataYearly.clear();
-                    });
-                  }
-                });
-              }),
-              icon: const Icon(
-                Ionicons.git_compare_outline,
-                color: textPrimary,
-              ),
-            ),
-            IconButton(
-              onPressed: (() {
-                setState(() {
-                  // check current _perfSort
-                  if (_perfSort == "A") {
-                    _perfSort = "D";
-                  }
-                  else {
-                    _perfSort = "A";
-                  }
-
-                  // just reverse the _perfDataSort
-                  _perfDataSort = _perfDataSort.reversed.toList();
-                });
-              }),
-              icon: Icon(
-                (_perfSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-                color: textPrimary,
-              ),
-            ),
-            const SizedBox(width: 10,),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: ((() {
+            // return back to the previous page
+            Navigator.pop(context);
+          })),
+          icon: const Icon(
+            Ionicons.arrow_back,
+          )
         ),
-        body: Column(
+        title: Center(
+          child: Text(
+            "Performance ${_args.type.toCapitalized()}",
+            style: const TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (() async {
+              // go to index list page
+              await Navigator.pushNamed(context, '/index/find').then((value) async {
+                if (value != null) {
+                  // convert value to company list model
+                  _indexCompare = value as IndexModel;
+                  _indexCompareName = _indexCompare.indexName;
+    
+                  await _getIndexData().onError((error, stackTrace) {
+                    // remove the index compare name and price since we will
+                    // not be able to perform comparison
+                    _indexCompareName = "";
+                    _indexComparePrice.clear();
+    
+                    _indexData.clear();
+                    _indexData90D.clear();
+                    _indexDataDaily.clear();
+                    _indexDataMonthly.clear();
+                    _indexDataYearly.clear();
+                  });
+                }
+              });
+            }),
+            icon: const Icon(
+              Ionicons.git_compare_outline,
+              color: textPrimary,
+            ),
+          ),
+          IconButton(
+            onPressed: (() {
+              setState(() {
+                // check current _perfSort
+                if (_perfSort == "A") {
+                  _perfSort = "D";
+                }
+                else {
+                  _perfSort = "A";
+                }
+    
+                // just reverse the _perfDataSort
+                _perfDataSort = _perfDataSort.reversed.toList();
+              });
+            }),
+            icon: Icon(
+              (_perfSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
+              color: textPrimary,
+            ),
+          ),
+          const SizedBox(width: 10,),
+        ],
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -331,7 +330,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         
                   setState(() {
                     _graphSelection = selectedValue;
-
+            
                     _changeGraphSelection();
                   });
                 }),
@@ -365,16 +364,16 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                                     // clear the _indexData
                                     _indexCompareName = "";
                                     _indexComparePrice.clear();
-
+            
                                     _indexData.clear();
                                     _indexData90D.clear();
                                     _indexDataDaily.clear();
                                     _indexDataMonthly.clear();
                                     _indexDataYearly.clear();
-
+            
                                     // remove the dialog
                                     Navigator.pop(context);
-
+            
                                     // set state to rebuild the widget
                                     setState(() {
                                     });
@@ -601,7 +600,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 },
               ),
             ),
-            const SizedBox(height: 30,),
           ],
         ),
       ),

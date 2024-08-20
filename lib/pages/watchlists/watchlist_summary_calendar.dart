@@ -142,112 +142,114 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           )
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            color: riskColor(
-              _totalValue,
-              _totalCost,
-              _userInfo!.risk
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(width: 10,),
-                Expanded(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: primaryDark,
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
-                            const SizedBox(width: 10,),
-                            _rowItem(text: "COST", value: _totalCost),
-                            const SizedBox(width: 10,),
-                            _rowItem(text: "VALUE", value: _totalValue),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
-                            const SizedBox(width: 10,),
-                            _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
-                            const SizedBox(width: 10,),
-                            _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 15,),
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _pageScrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              color: riskColor(
+                _totalValue,
+                _totalCost,
+                _userInfo!.risk
+              ),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 150,
-                        child: CupertinoSegmentedControl(
-                          children: const {
-                            "m": Text("Month"),
-                            "y": Text("Year"),
-                          },
-                          onValueChanged: ((value) {
-                            String selectedValue = value.toString();
-                            
-                            setState(() {
-                              _calendarSelection = selectedValue;
-                            });
-                          }),
-                          groupValue: _calendarSelection,
-                          selectedColor: secondaryColor,
-                          borderColor: secondaryDark,
-                          pressedColor: primaryDark,
-                        ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: primaryDark,
+                        border: Border(
+                          bottom: BorderSide(
+                            color: primaryLight,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          )
+                        )
                       ),
-                      _dateSelector(),
-                    ],
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "COST", value: _totalCost),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "VALUE", value: _totalValue),
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
+                              const SizedBox(width: 10,),
+                              _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 15,),
-                  _getSubPage(),
                 ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 15,),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _pageScrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 150,
+                          child: CupertinoSegmentedControl(
+                            children: const {
+                              "m": Text("Month"),
+                              "y": Text("Year"),
+                            },
+                            onValueChanged: ((value) {
+                              String selectedValue = value.toString();
+                              
+                              setState(() {
+                                _calendarSelection = selectedValue;
+                              });
+                            }),
+                            groupValue: _calendarSelection,
+                            selectedColor: secondaryColor,
+                            borderColor: secondaryDark,
+                            pressedColor: primaryDark,
+                          ),
+                        ),
+                        _dateSelector(),
+                      ],
+                    ),
+                    const SizedBox(height: 15,),
+                    _getSubPage(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

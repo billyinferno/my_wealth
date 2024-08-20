@@ -105,43 +105,42 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
       currentIcon = Ionicons.caret_down;
     }
     // generate the actual page
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Crypto Detail",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Crypto Detail",
+            style: TextStyle(
+              color: secondaryColor,
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              Navigator.pop(context);
-            }),
-          ),
-          actions: <Widget>[
-            Visibility(
-              visible: _isOwned,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: const Icon(
-                  Ionicons.checkmark,
-                  color: Colors.green,
-                ),
-              ),
-            ),
-            Icon(
-              (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
-              color: accentColor,
-            ),
-            const SizedBox(width: 20,),
-          ],
         ),
-        body: Column(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            Navigator.pop(context);
+          }),
+        ),
+        actions: <Widget>[
+          Visibility(
+            visible: _isOwned,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: const Icon(
+                Ionicons.checkmark,
+                color: Colors.green,
+              ),
+            ),
+          ),
+          Icon(
+            (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+            color: accentColor,
+          ),
+          const SizedBox(width: 20,),
+        ],
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -356,7 +355,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
             ),
             const SizedBox(height: 10,),
             Expanded(child: _detail()),
-            const SizedBox(height: 30,),
           ],
         ),
       ),

@@ -89,315 +89,312 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   }
 
   Widget _body() {
-    return SafeArea(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Center(
-              child: Text(
-                "Search Mutual Fund",
-                style: TextStyle(
-                  color: secondaryColor,
-                ),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Search Mutual Fund",
+            style: TextStyle(
+              color: secondaryColor,
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: (() async {
-                // fetch the user favorites when we return back to the favorites screen
-                // and notify the provider to we can update the favorites screen based
-                // on the new favorites being add/remove from this page
-                await _getUserFavourites().then((_) {
-                }).onError((error, stackTrace) {
-                  // in case error showed it on debug
-                  Log.error(
-                    message: 'Error getting user favourites',
-                    error: error,
-                    stackTrace: stackTrace,
-                  );
-                }).whenComplete(() {
-                  if (mounted) {
-                    // return back to the previous page
-                    Navigator.pop(context);
-                  }
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            // fetch the user favorites when we return back to the favorites screen
+            // and notify the provider to we can update the favorites screen based
+            // on the new favorites being add/remove from this page
+            await _getUserFavourites().then((_) {
+            }).onError((error, stackTrace) {
+              // in case error showed it on debug
+              Log.error(
+                message: 'Error getting user favourites',
+                error: error,
+                stackTrace: stackTrace,
+              );
+            }).whenComplete(() {
+              if (mounted) {
+                // return back to the previous page
+                Navigator.pop(context);
+              }
+            });
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SearchBox(
+              filterMode: _filterMode,
+              filterList: _filterList,
+              filterSort: _filterSort, 
+              onFilterSelect: ((value) {
+                setState(() {
+                  _filterMode = value;
+                  _sortedFave();
                 });
               }),
+              onSortSelect: ((value) {
+                setState(() {
+                  _filterSort = value;
+                  _sortedFave();
+                });
+              })
             ),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SearchBox(
-                filterMode: _filterMode,
-                filterList: _filterList,
-                filterSort: _filterSort, 
-                onFilterSelect: ((value) {
-                  setState(() {
-                    _filterMode = value;
-                    _sortedFave();
-                  });
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: CupertinoSearchTextField(
+                controller: _textController,
+                onChanged: ((value) {
+                  filterData();
                 }),
-                onSortSelect: ((value) {
-                  setState(() {
-                    _filterSort = value;
-                    _sortedFave();
-                  });
-                })
-              ),
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: CupertinoSearchTextField(
-                  controller: _textController,
-                  onChanged: ((value) {
-                    filterData();
-                  }),
-                  style: const TextStyle(
-                    color: textPrimary,
-                    fontFamily: '--apple-system'
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                style: const TextStyle(
+                  color: textPrimary,
+                  fontFamily: '--apple-system'
+                ),
+                decoration: BoxDecoration(
+                  color: primaryLight,
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                height: 175,
-                width: double.infinity,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                const Text(
-                                  "Type",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: textPrimary,
+            ),
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              height: 175,
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Type",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: textPrimary,
+                                ),
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1,
+                                    child: CupertinoSwitch(
+                                      value: _isCampuran,
+                                      onChanged: ((val) {
+                                        _isCampuran = val;
+                                        filterData();
+                                      }),
+                                      activeColor: accentDark,
+                                    ),
                                   ),
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Transform.scale(
-                                      scale: 1,
-                                      child: CupertinoSwitch(
-                                        value: _isCampuran,
-                                        onChanged: ((val) {
-                                          _isCampuran = val;
-                                          filterData();
-                                        }),
-                                        activeColor: accentDark,
-                                      ),
+                                  const SizedBox(width: 5,),
+                                  const Text("Campuran"),
+                                ],
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1,
+                                    child: CupertinoSwitch(
+                                      value: _isSaham,
+                                      onChanged: ((val) {
+                                        _isSaham = val;
+                                        filterData();
+                                      }),
+                                      activeColor: accentDark,
                                     ),
-                                    const SizedBox(width: 5,),
-                                    const Text("Campuran"),
-                                  ],
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Transform.scale(
-                                      scale: 1,
-                                      child: CupertinoSwitch(
-                                        value: _isSaham,
-                                        onChanged: ((val) {
-                                          _isSaham = val;
-                                          filterData();
-                                        }),
-                                        activeColor: accentDark,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5,),
-                                    const Text("Saham"),
-                                  ],
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Transform.scale(
-                                      scale: 1,
-                                      child: CupertinoSwitch(
-                                        value: _isPasarUang,
-                                        onChanged: ((val) {
-                                          _isPasarUang = val;
-                                          filterData();
-                                        }),
-                                        activeColor: accentDark,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5,),
-                                    const Text("Pasar Uang"),
-                                  ],
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Transform.scale(
-                                      scale: 1,
-                                      child: CupertinoSwitch(
-                                        value: _isPendapatanTetap,
-                                        onChanged: ((val) {
-                                          _isPendapatanTetap = val;
-                                          filterData();
-                                        }),
-                                        activeColor: accentDark,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5,),
-                                    const Text("Pend. Tetap"),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ),
-                    const SizedBox(width: 20,),
-                    Expanded(
-                      child: SizedBox(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                const Text(
-                                  "Rating",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: textPrimary,
                                   ),
-                                ),
-                                StepperSelector(
-                                  controller: _stepperControllerRating,
-                                  icon: Ionicons.star,
-                                  iconColor: accentColor,
-                                  defaultValue: _currentRatingNum,
-                                  onChanged: ((val) {
-                                    _currentRatingNum = val;
-                                    filterData();
-                                  }),
-                                ),
-                                const SizedBox(height: 10,),
-                                const Text(
-                                  "Risk",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: textPrimary,
-                                  ),
-                                ),
-                                StepperSelector(
-                                  controller: _stepperControllerRisk,
-                                  icon: Ionicons.alert,
-                                  iconColor: secondaryColor,
-                                  defaultValue: _currentRiskNum,
-                                  onChanged: ((val) {
-                                    _currentRiskNum = val;
-                                    filterData();
-                                  }),
-                                ),
-                                const SizedBox(height: 10,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Transform.scale(
-                                      scale: 1,
-                                      child: CupertinoSwitch(
-                                        value: _isShowAll,
-                                        onChanged: ((val) {
-                                          _isShowAll = val;
-                                          filterData();
-                                        }),
-                                        activeColor: accentDark,
-                                      ),
+                                  const SizedBox(width: 5,),
+                                  const Text("Saham"),
+                                ],
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1,
+                                    child: CupertinoSwitch(
+                                      value: _isPasarUang,
+                                      onChanged: ((val) {
+                                        _isPasarUang = val;
+                                        filterData();
+                                      }),
+                                      activeColor: accentDark,
                                     ),
-                                    const SizedBox(width: 5,),
-                                    const Text("Show All"),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  const Text("Pasar Uang"),
+                                ],
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1,
+                                    child: CupertinoSwitch(
+                                      value: _isPendapatanTetap,
+                                      onChanged: ((val) {
+                                        _isPendapatanTetap = val;
+                                        filterData();
+                                      }),
+                                      activeColor: accentDark,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  const Text("Pend. Tetap"),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
+                  const SizedBox(width: 20,),
+                  Expanded(
+                    child: SizedBox(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Rating",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: textPrimary,
+                                ),
+                              ),
+                              StepperSelector(
+                                controller: _stepperControllerRating,
+                                icon: Ionicons.star,
+                                iconColor: accentColor,
+                                defaultValue: _currentRatingNum,
+                                onChanged: ((val) {
+                                  _currentRatingNum = val;
+                                  filterData();
+                                }),
+                              ),
+                              const SizedBox(height: 10,),
+                              const Text(
+                                "Risk",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: textPrimary,
+                                ),
+                              ),
+                              StepperSelector(
+                                controller: _stepperControllerRisk,
+                                icon: Ionicons.alert,
+                                iconColor: secondaryColor,
+                                defaultValue: _currentRiskNum,
+                                onChanged: ((val) {
+                                  _currentRiskNum = val;
+                                  filterData();
+                                }),
+                              ),
+                              const SizedBox(height: 10,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1,
+                                    child: CupertinoSwitch(
+                                      value: _isShowAll,
+                                      onChanged: ((val) {
+                                        _isShowAll = val;
+                                        filterData();
+                                      }),
+                                      activeColor: accentDark,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  const Text("Show All"),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 5,),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10,),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: Text(
-                  "Showed ${_filterFaveList.length} company(s)",
-                  style: const TextStyle(
-                    color: primaryLight,
-                    fontSize: 12,
                   ),
+                  const SizedBox(width: 5,),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10,),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Text(
+                "Showed ${_filterFaveList.length} company(s)",
+                style: const TextStyle(
+                  color: primaryLight,
+                  fontSize: 12,
                 ),
               ),
-              const SizedBox(height: 10,),
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _sortedFaveList.length,
-                  itemBuilder: ((context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        CompanyDetailArgs args = CompanyDetailArgs(
-                          companyId: _sortedFaveList[index].favouritesCompanyId,
-                          companyName: _sortedFaveList[index].favouritesCompanyName,
-                          companyCode: _sortedFaveList[index].favouritesSymbol,
-                          companyFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                          favouritesId: (_sortedFaveList[index].favouritesId ?? -1),
-                          type: "reksadana",
-                        );
-      
-                        Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
-                      }),
-                      child: FavouriteCompanyList(
+            ),
+            const SizedBox(height: 10,),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: _sortedFaveList.length,
+                itemBuilder: ((context, index) {
+                  return InkWell(
+                    onTap: (() {
+                      CompanyDetailArgs args = CompanyDetailArgs(
                         companyId: _sortedFaveList[index].favouritesCompanyId,
-                        name: _sortedFaveList[index].favouritesCompanyName,
-                        type: Globals.reksadanaCompanyTypeEnum[_sortedFaveList[index].favouritesCompanyType]!,
-                        date: formatDateWithNulll(date: _sortedFaveList[index].favouritesLastUpdate, format: _dt),
-                        value: _sortedFaveList[index].favouritesNetAssetValue,
-                        isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
-                        fca: (_sortedFaveList[index].favouritesFCA ?? false),
-                        subWidget: _subInfoWidget(_sortedFaveList[index]),
-                        onPress: (() async {
-                          await _setFavourite(index);
-                        }),
-                      ),
-                    );
-                  }),
-                ),
+                        companyName: _sortedFaveList[index].favouritesCompanyName,
+                        companyCode: _sortedFaveList[index].favouritesSymbol,
+                        companyFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                        favouritesId: (_sortedFaveList[index].favouritesId ?? -1),
+                        type: "reksadana",
+                      );
+          
+                      Navigator.pushNamed(context, '/company/detail/reksadana', arguments: args);
+                    }),
+                    child: FavouriteCompanyList(
+                      companyId: _sortedFaveList[index].favouritesCompanyId,
+                      name: _sortedFaveList[index].favouritesCompanyName,
+                      type: Globals.reksadanaCompanyTypeEnum[_sortedFaveList[index].favouritesCompanyType]!,
+                      date: formatDateWithNulll(date: _sortedFaveList[index].favouritesLastUpdate, format: _dt),
+                      value: _sortedFaveList[index].favouritesNetAssetValue,
+                      isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
+                      fca: (_sortedFaveList[index].favouritesFCA ?? false),
+                      subWidget: _subInfoWidget(_sortedFaveList[index]),
+                      onPress: (() async {
+                        await _setFavourite(index);
+                      }),
+                    ),
+                  );
+                }),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

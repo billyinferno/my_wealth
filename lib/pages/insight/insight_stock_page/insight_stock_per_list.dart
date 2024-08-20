@@ -96,92 +96,93 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
           ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SearchBox(
-            filterMode: _filterMode,
-            filterList: _filterList,
-            filterSort: _filterSort, 
-            onFilterSelect: ((value) {
-              setState(() {
-                _filterMode = value;
-                _sortedCompanyList();
-              });
-            }),
-            onSortSelect: ((value) {
-              setState(() {
-                _filterSort = value;
-                _sortedCompanyList();
-              });
-            })
-          ),
-          _listItem(
-            indicatorColor: Colors.white,
-            bgColor: primaryDark,
-            code: '',
-            title: "Average ${_data.averagePerYear}",
-            per: formatDecimalWithNull(_data.averagePerDaily, 1, 2),
-            periodic: formatDecimalWithNull(_data.averagePerPeriodatic, 1, 2),
-            annual: formatDecimalWithNull(_data.averagePerAnnualized, 1, 2),
-          ),
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _codeList.length,
-              itemBuilder: ((context, index) {
-                Color indicatorColor = Colors.white;
-                if (_codeList[index].perDaily! < 0 || _codeList[index].perAnnualized! < 0 || _codeList[index].perPeriodatic! < 0) {
-                  indicatorColor = const Color.fromARGB(255, 51, 3, 0);
-                }
-                else {
-                  // compare with average
-                  double avgPer = _data.averagePerDaily;
-                  double avgPerAnnul = _data.averagePerAnnualized;
-                  double avgPerPeriod = _data.averagePerPeriodatic;
-                  double addAvgPer = 0;
-                  double addAvgPerAnnul = 0;
-                  double addAvgPerPeriod = 0;
-
-                  if (avgPer < 0) {
-                    avgPer = (avgPer) * (-1);
-                    addAvgPer = avgPer;
-                  }
-                  if (avgPerAnnul < 0) {
-                    avgPerAnnul = (avgPerAnnul) * (-1);
-                    addAvgPerAnnul = avgPerAnnul;
-                  }
-                  if (avgPerPeriod < 0) {
-                    avgPerPeriod = (avgPerPeriod) * (-1);
-                    addAvgPerPeriod = avgPerPeriod;
-                  }
-
-                  indicatorColor = riskColor(avgPer + avgPerAnnul + avgPerPeriod, (_codeList[index].perDaily! + addAvgPer) + (_codeList[index].perAnnualized! + addAvgPerAnnul) + (_codeList[index].perPeriodatic! + addAvgPerPeriod), _userInfo!.risk);
-                }
-          
-                return InkWell(
-                  onTap: (() async {
-                    _getCompanyAndGo(code: _codeList[index].code);
-                  }),
-                  child: _listItem(
-                    indicatorColor: indicatorColor,
-                    code: "(${_codeList[index].code})",
-                    codeTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: accentColor),
-                    title: _codeList[index].name,
-                    titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: textPrimary),
-                    per: formatDecimalWithNull(_codeList[index].perDaily, 1, 2),
-                    period: _codeList[index].period,
-                    year: _codeList[index].year,
-                    periodic: formatDecimalWithNull(_codeList[index].perPeriodatic, 1, 2),
-                    annual: formatDecimalWithNull(_codeList[index].perAnnualized, 1, 2)
-                  ),
-                );
+      body: MySafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SearchBox(
+              filterMode: _filterMode,
+              filterList: _filterList,
+              filterSort: _filterSort, 
+              onFilterSelect: ((value) {
+                setState(() {
+                  _filterMode = value;
+                  _sortedCompanyList();
+                });
+              }),
+              onSortSelect: ((value) {
+                setState(() {
+                  _filterSort = value;
+                  _sortedCompanyList();
+                });
               })
             ),
-          ),
-          const SizedBox(height: 30,),
-        ],
+            _listItem(
+              indicatorColor: Colors.white,
+              bgColor: primaryDark,
+              code: '',
+              title: "Average ${_data.averagePerYear}",
+              per: formatDecimalWithNull(_data.averagePerDaily, 1, 2),
+              periodic: formatDecimalWithNull(_data.averagePerPeriodatic, 1, 2),
+              annual: formatDecimalWithNull(_data.averagePerAnnualized, 1, 2),
+            ),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: _codeList.length,
+                itemBuilder: ((context, index) {
+                  Color indicatorColor = Colors.white;
+                  if (_codeList[index].perDaily! < 0 || _codeList[index].perAnnualized! < 0 || _codeList[index].perPeriodatic! < 0) {
+                    indicatorColor = const Color.fromARGB(255, 51, 3, 0);
+                  }
+                  else {
+                    // compare with average
+                    double avgPer = _data.averagePerDaily;
+                    double avgPerAnnul = _data.averagePerAnnualized;
+                    double avgPerPeriod = _data.averagePerPeriodatic;
+                    double addAvgPer = 0;
+                    double addAvgPerAnnul = 0;
+                    double addAvgPerPeriod = 0;
+        
+                    if (avgPer < 0) {
+                      avgPer = (avgPer) * (-1);
+                      addAvgPer = avgPer;
+                    }
+                    if (avgPerAnnul < 0) {
+                      avgPerAnnul = (avgPerAnnul) * (-1);
+                      addAvgPerAnnul = avgPerAnnul;
+                    }
+                    if (avgPerPeriod < 0) {
+                      avgPerPeriod = (avgPerPeriod) * (-1);
+                      addAvgPerPeriod = avgPerPeriod;
+                    }
+        
+                    indicatorColor = riskColor(avgPer + avgPerAnnul + avgPerPeriod, (_codeList[index].perDaily! + addAvgPer) + (_codeList[index].perAnnualized! + addAvgPerAnnul) + (_codeList[index].perPeriodatic! + addAvgPerPeriod), _userInfo!.risk);
+                  }
+            
+                  return InkWell(
+                    onTap: (() async {
+                      _getCompanyAndGo(code: _codeList[index].code);
+                    }),
+                    child: _listItem(
+                      indicatorColor: indicatorColor,
+                      code: "(${_codeList[index].code})",
+                      codeTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: accentColor),
+                      title: _codeList[index].name,
+                      titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: textPrimary),
+                      per: formatDecimalWithNull(_codeList[index].perDaily, 1, 2),
+                      period: _codeList[index].period,
+                      year: _codeList[index].year,
+                      periodic: formatDecimalWithNull(_codeList[index].perPeriodatic, 1, 2),
+                      annual: formatDecimalWithNull(_codeList[index].perAnnualized, 1, 2)
+                    ),
+                  );
+                })
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

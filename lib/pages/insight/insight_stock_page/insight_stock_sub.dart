@@ -59,16 +59,13 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
         if (snapshot.hasError) {
           return const CommonErrorPage(
             errorText: 'Error loading Sub Sector Information',
-            isNeedScaffold: false,
           );
         }
         else if (snapshot.hasData) {
           return _generatePage();
         }
         else {
-          return const CommonLoadingPage(
-            isNeedScaffold: false,
-          );
+          return const CommonLoadingPage();
         }
       },
     );
@@ -170,7 +167,6 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
               ),
             ),
           ),
-          const SizedBox(height: 30,), // safe are for bottom of the screen
         ],
       ),
     );

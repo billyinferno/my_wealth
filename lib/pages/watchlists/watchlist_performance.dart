@@ -127,39 +127,38 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   }
 
   Widget _generatePage() {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: ((() {
-              // return back to the previous page
-              Navigator.pop(context);
-            })),
-            icon: const Icon(
-              Ionicons.arrow_back,
-            )
-          ),
-          actions: <Widget>[
-            IconButton(
-              onPressed: (() {
-                Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
-              }),
-              icon: const Icon(
-                Ionicons.business_outline
-              ),
-            )
-          ],
-          title: const Center(
-            child: Text(
-              "Performance",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            )
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: ((() {
+            // return back to the previous page
+            Navigator.pop(context);
+          })),
+          icon: const Icon(
+            Ionicons.arrow_back,
+          )
         ),
-        body: Column(
+        actions: <Widget>[
+          IconButton(
+            onPressed: (() {
+              Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
+            }),
+            icon: const Icon(
+              Ionicons.business_outline
+            ),
+          )
+        ],
+        title: const Center(
+          child: Text(
+            "Performance",
+            style: TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -302,7 +301,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
         
                   setState(() {
                     _graphSelection = selectedValue;
-
+            
                     switch(_graphSelection) {
                       case "9":
                         _watchlistPerformance = _watchlistPerformance90Day.toList();
@@ -321,7 +320,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         _dateFormat = "dd/MM";
                         break;
                     }
-
+            
                     // calculate the gain difference
                     _calculateGainDifference();
                   });
@@ -490,7 +489,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 graphSelection: _graphSelection,
               ),
             ),
-            const SizedBox(height: 25,), // safe area
           ],
         ),
       ),

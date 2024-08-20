@@ -71,34 +71,33 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   }
 
   Widget _generatePage() {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Broker Detail",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Broker Detail",
+            style: TextStyle(
+              color: secondaryColor,
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              try {
-                Navigator.pop(context);
-              }
-              catch(error) {
-                Log.error(
-                  message: "Error when pop to previous screen",
-                  error: error,
-                );
-              }
-            }),
-          ),
         ),
-        body: Column(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            try {
+              Navigator.pop(context);
+            }
+            catch(error) {
+              Log.error(
+                message: "Error when pop to previous screen",
+                error: error,
+              );
+            }
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -262,255 +261,252 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
             ),
             const SizedBox(height: 5,),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
-                child: LazyLoadScrollView(
-                  onEndOfPage: (() async {
-                    if (_hasMore) {
-                      LoadingScreen.instance().show(context: context);
-                      await _getTransactionList().onError((error, stackTrace) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when load more data'));
-                        }
-                      });
-                      LoadingScreen.instance().hide();
+              child: LazyLoadScrollView(
+                onEndOfPage: (() async {
+                  if (_hasMore) {
+                    LoadingScreen.instance().show(context: context);
+                    await _getTransactionList().onError((error, stackTrace) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when load more data'));
+                      }
+                    });
+                    LoadingScreen.instance().hide();
+                  }
+                }),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  itemCount: _transactionList.brokerSummaryCodeList.length,
+                  itemBuilder: (context, index) {
+                    // generate the diff color
+                    int? diffPrice;
+                    int? currLeftPrice;
+                          
+                    if (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 0) {
+                      currLeftPrice = (_transactionList.brokerSummaryCodeList[index].brokerSummaryValue ~/ (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot * 100));
+                      diffPrice = currLeftPrice - _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice;
                     }
-                  }),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    controller: _scrollController,
-                    itemCount: _transactionList.brokerSummaryCodeList.length,
-                    itemBuilder: (context, index) {
-                      // generate the diff color
-                      int? diffPrice;
-                      int? currLeftPrice;
-
-                      if (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 0) {
-                        currLeftPrice = (_transactionList.brokerSummaryCodeList[index].brokerSummaryValue ~/ (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot * 100));
-                        diffPrice = currLeftPrice - _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice;
+                    Color diffColor = textPrimary;
+                    if (diffPrice != null) {
+                      if (diffPrice < 0) {
+                        diffColor = secondaryColor;
                       }
-                      Color diffColor = textPrimary;
-                      if (diffPrice != null) {
-                        if (diffPrice < 0) {
-                          diffColor = secondaryColor;
-                        }
-                        if (diffPrice > 0) {
-                          diffColor = Colors.green;
-                        }
+                      if (diffPrice > 0) {
+                        diffColor = Colors.green;
                       }
-                
-                      // generate the company detail arguments to call the company detail page
-                      CompanyDetailArgs args = CompanyDetailArgs(
-                        companyId: _transactionList.brokerSummaryCodeList[index].brokerSummaryCompanyId,
-                        companyName: _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
-                        companyCode: _transactionList.brokerSummaryCodeList[index].brokerSummaryCode,
-                        companyFavourite: (_transactionList.brokerSummaryCodeList[index].brokerSummaryFavouriteId > 0 ? true : false),
-                        favouritesId: _transactionList.brokerSummaryCodeList[index].brokerSummaryFavouriteId,
-                        type: 'saham'
-                      );
-                
-                      return Slidable(
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          extentRatio: 0.2,
-                          children: <Widget>[
-                            SlidableAction(
-                              onPressed: ((BuildContext context) {
-                                Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                              }),
-                              icon: Ionicons.open_outline,
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.green,
-                            ),
-                          ],
-                        ),
-                        child: Container(
-                          // padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                          decoration: const BoxDecoration(
-                            border: Border(bottom: BorderSide(color: primaryLight, style: BorderStyle.solid, width: 1.0))
+                    }
+              
+                    // generate the company detail arguments to call the company detail page
+                    CompanyDetailArgs args = CompanyDetailArgs(
+                      companyId: _transactionList.brokerSummaryCodeList[index].brokerSummaryCompanyId,
+                      companyName: _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
+                      companyCode: _transactionList.brokerSummaryCodeList[index].brokerSummaryCode,
+                      companyFavourite: (_transactionList.brokerSummaryCodeList[index].brokerSummaryFavouriteId > 0 ? true : false),
+                      favouritesId: _transactionList.brokerSummaryCodeList[index].brokerSummaryFavouriteId,
+                      type: 'saham'
+                    );
+              
+                    return Slidable(
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        extentRatio: 0.2,
+                        children: <Widget>[
+                          SlidableAction(
+                            onPressed: ((BuildContext context) {
+                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                            }),
+                            icon: Ionicons.open_outline,
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.green,
                           ),
-                          child: Theme(
-                            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                            child: ListTileTheme(
-                              contentPadding: EdgeInsets.zero,
-                              child: ExpansionTile(
-                                key: Key(_transactionList.brokerSummaryCodeList[index].brokerSummaryCode),
-                                tilePadding: EdgeInsets.zero,
-                                childrenPadding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                                trailing: (
-                                  _isExpanded[index] ? const Icon(Ionicons.chevron_up, color: accentColor,) : const Icon(Ionicons.chevron_down, color: Colors.white)
-                                ),
-                                title: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    const SizedBox(width: 10,),
-                                    Visibility(
-                                      visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
-                                      child: const Icon(
-                                        Ionicons.warning,
-                                        color: secondaryColor,
-                                        size: 15,
-                                      )
+                        ],
+                      ),
+                      child: Container(
+                        // padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        decoration: const BoxDecoration(
+                          border: Border(bottom: BorderSide(color: primaryLight, style: BorderStyle.solid, width: 1.0))
+                        ),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                          child: ListTileTheme(
+                            contentPadding: EdgeInsets.zero,
+                            child: ExpansionTile(
+                              key: Key(_transactionList.brokerSummaryCodeList[index].brokerSummaryCode),
+                              tilePadding: EdgeInsets.zero,
+                              childrenPadding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                              trailing: (
+                                _isExpanded[index] ? const Icon(Ionicons.chevron_up, color: accentColor,) : const Icon(Ionicons.chevron_down, color: Colors.white)
+                              ),
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const SizedBox(width: 10,),
+                                  Visibility(
+                                    visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
+                                    child: const Icon(
+                                      Ionicons.warning,
+                                      color: secondaryColor,
+                                      size: 15,
+                                    )
+                                  ),
+                                  Visibility(
+                                    visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
+                                    child: const SizedBox(width: 5,)
+                                  ),
+                                  Text(
+                                    '(${_transactionList.brokerSummaryCodeList[index].brokerSummaryCode}) ',
+                                    style: const TextStyle(
+                                      color: accentColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
                                     ),
-                                    Visibility(
-                                      visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
-                                      child: const SizedBox(width: 5,)
-                                    ),
-                                    Text(
-                                      '(${_transactionList.brokerSummaryCodeList[index].brokerSummaryCode}) ',
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
                                       style: const TextStyle(
-                                        color: accentColor,
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12,
                                       ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    Expanded(
-                                      child: Text(
-                                        _transactionList.brokerSummaryCodeList[index].brokerSummaryName,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                subtitle: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    const SizedBox(width: 10,),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Text(
-                                            "Lot",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
-                                            (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 1000000 ? formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, true) : formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, false)),
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Text(
-                                            "Value",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Text(
-                                            formatCurrencyWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryValue, false, true),
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Text(
-                                            "Price",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Text(
-                                            formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice, false, false),
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 5,),
-                                          Text(
-                                            '(${formatIntWithNull(currLeftPrice, false, false)})',
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: diffColor,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    SizedBox(
-                                      width: 50,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Text(
-                                            "Count",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
-                                            _transactionList.brokerSummaryCodeList[index].brokerSummaryCount,
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                onExpansionChanged: ((value) async {
-                                  // check if expanded
-                                  if (value) {
-                                    // try to get the data if not available
-                                    await _getTransactionDetail(index);
-                                  }
-                                                    
-                                  // set the state, so we will rebuild the whatever happen
-                                  setState(() {
-                                    // set that this is expanded
-                                    _isExpanded[index] = value;
-                                  });
-                                }),
-                                children: _generateExpanstionTileChildren(index),
+                                  ),
+                                ],
                               ),
+                              subtitle: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        const Text(
+                                          "Lot",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          (_transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 1000000 ? formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, true) : formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLot, false, false)),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        const Text(
+                                          "Value",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          formatCurrencyWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryValue, false, true),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        const Text(
+                                          "Price",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          formatIntWithNull(_transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice, false, false),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        Text(
+                                          '(${formatIntWithNull(currLeftPrice, false, false)})',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: diffColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10,),
+                                  SizedBox(
+                                    width: 50,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        const Text(
+                                          "Count",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          _transactionList.brokerSummaryCodeList[index].brokerSummaryCount,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onExpansionChanged: ((value) async {
+                                // check if expanded
+                                if (value) {
+                                  // try to get the data if not available
+                                  await _getTransactionDetail(index);
+                                }
+                                                  
+                                // set the state, so we will rebuild the whatever happen
+                                setState(() {
+                                  // set that this is expanded
+                                  _isExpanded[index] = value;
+                                });
+                              }),
+                              children: _generateExpanstionTileChildren(index),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

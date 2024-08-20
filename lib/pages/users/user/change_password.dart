@@ -25,28 +25,27 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              "Change Password",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            )
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Ionicons.arrow_back
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            "Change Password",
+            style: TextStyle(
+              color: secondaryColor,
             ),
-            onPressed: (() {
-              Navigator.pop(context);
-            }),
-          ),
+          )
         ),
-        body: Column(
+        leading: IconButton(
+          icon: const Icon(
+            Ionicons.arrow_back
+          ),
+          onPressed: (() {
+            Navigator.pop(context);
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -93,7 +92,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                               )
                             );
                           }
-    
+          
                           // clear the text fields
                           _currentPasswordController.clear();
                           _newPasswordController.clear();

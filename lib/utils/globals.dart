@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
@@ -49,6 +50,20 @@ class Globals {
 
   static DateFormat dfyyyyMMdd = DateFormat('yyyy-MM-dd');
   static DateFormat dfyyyyMM = DateFormat('yyyy/MM');
+
+  static bool isWasm() {
+    if (kIsWasm) {
+      return true;
+    }
+    return false;
+  }
+
+  static bool isWeb() {
+    if (kIsWeb) {
+      return true;
+    }
+    return false;
+  }
 
   static List<Color> colorList = [
     // -- 1st shade --

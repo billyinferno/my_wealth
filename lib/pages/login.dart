@@ -31,12 +31,22 @@ class LoginPageState extends State<LoginPage> {
 
   late Future<bool> _getMe;
   late bool _isLogin;
+  late String _type;
   
   bool _isInvalidToken = false;
 
   @override
   void initState() {
     super.initState();
+
+    // get the type of the application run, whether this is run as web or WASM
+    _type = "";
+    if (Globals.isWasm()) {
+      _type = "WASM";
+    }
+    else if(Globals.isWeb()) {
+      _type = "JS";
+    }
 
     // check if user already login
     _isLogin = false;
@@ -61,7 +71,7 @@ class LoginPageState extends State<LoginPage> {
           builder: ((context, snapshot) {
             if ((snapshot.hasData || snapshot.hasError) && !_isLogin) {
               // check if user is login or not?
-              return _generateBody();
+              return _loginScreen();
             }
             else {
               // show loading
@@ -71,10 +81,6 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  Widget _generateBody() {
-    return _loginScreen();
   }
 
   Widget _splashScreen() {
@@ -114,7 +120,7 @@ class LoginPageState extends State<LoginPage> {
               ],
             ),
             Text(
-              Globals.appVersion,
+              'version - ${Globals.appVersion}${_type.isNotEmpty ? ' run as $_type' : ''}',
               style: const TextStyle(
                 color: textPrimary,
                 fontSize: 10,
@@ -304,7 +310,7 @@ class LoginPageState extends State<LoginPage> {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                   child: Text(
-                    "version - ${Globals.appVersion}",
+                    "version - ${Globals.appVersion}${_type.isNotEmpty ? ' run as $_type' : ''}",
                     style: const TextStyle(
                       color: primaryLight,
                       fontSize: 10,

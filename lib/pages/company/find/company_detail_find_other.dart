@@ -55,123 +55,120 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
   }
 
   Widget _generatePage() {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Center(
-            child: Text(
-              "Find ${_companyFindArgs.type.toTitleCase()}",
-              style: const TextStyle(
-                color: secondaryColor,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text(
+            "Find ${_companyFindArgs.type.toTitleCase()}",
+            style: const TextStyle(
+              color: secondaryColor,
             ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: (() async {
-              // back icon press means that no code being selected
-              Navigator.pop(context, null);
-            }),
           ),
         ),
-        body: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                CupertinoSearchTextField(
-                  controller: _textController,
-                  onChanged: ((value) {
-                    if (value.length >= 3) {
-                      _searchList(value);
-                    }
-                    else {
-                      setState(() {
-                        _filterList = _companyList.toList();
-                      });
-                    }
-                  }),
-                  suffixMode: OverlayVisibilityMode.editing,
-                  style: const TextStyle(
-                    color: textPrimary,
-                    fontFamily: '--apple-system'
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: (() async {
+            // back icon press means that no code being selected
+            Navigator.pop(context, null);
+          }),
+        ),
+      ),
+      body: MySafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              CupertinoSearchTextField(
+                controller: _textController,
+                onChanged: ((value) {
+                  if (value.length >= 3) {
+                    _searchList(value);
+                  }
+                  else {
+                    setState(() {
+                      _filterList = _companyList.toList();
+                    });
+                  }
+                }),
+                suffixMode: OverlayVisibilityMode.editing,
+                style: const TextStyle(
+                  color: textPrimary,
+                  fontFamily: '--apple-system'
                 ),
-                const SizedBox(height: 10,),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _companyListController,
-                    itemCount: _filterList.length,
-                    itemBuilder: ((context, index) {
-                      return InkWell(
-                        onTap: (() {
-                          Navigator.pop(context, _filterList[index]);
-                        }),
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid
-                              )
+                decoration: BoxDecoration(
+                  color: primaryLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              Expanded(
+                child: ListView.builder(
+                  controller: _companyListController,
+                  itemCount: _filterList.length,
+                  itemBuilder: ((context, index) {
+                    return InkWell(
+                      onTap: (() {
+                        Navigator.pop(context, _filterList[index]);
+                      }),
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid
                             )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Visibility(
-                                visible: _filterList[index].companySymbol.isNotEmpty,
-                                child: SizedBox(
-                                  width: 60,
-                                  child: Text(
-                                    _filterList[index].companySymbol,
+                          )
+                        ),
+                        width: double.infinity,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Visibility(
+                              visible: _filterList[index].companySymbol.isNotEmpty,
+                              child: SizedBox(
+                                width: 60,
+                                child: Text(
+                                  _filterList[index].companySymbol,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: accentColor,
+                                  ),
+                                ),
+                              )
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    _filterList[index].companyName,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 5,),
+                                  Text(
+                                    _filterList[index].companyType,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: accentColor,
+                                      fontSize: 10,
                                     ),
                                   ),
-                                )
+                                ],
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      _filterList[index].companyName,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 5,),
-                                    Text(
-                                      _filterList[index].companyType,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      );
-                    }),
-                  ),
-                )
-              ],
-            ),
+                      ),
+                    );
+                  }),
+                ),
+              )
+            ],
           ),
         ),
       ),

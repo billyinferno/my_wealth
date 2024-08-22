@@ -24,27 +24,25 @@ class WatchlistSubSummary extends StatelessWidget {
         motion: const ScrollMotion(),
         extentRatio: 0.42,
         children: <Widget>[
-          SlidableAction(
-            onPressed: ((BuildContext context) {
+          SlideButton(
+            icon: Ionicons.pulse_outline,
+            iconColor: ((totalData ?? 0) > 0 ? Colors.purple : primaryLight),
+            onTap: () {
               if ((totalData ?? 0) > 0) {
                 WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: type, computeResult: compResult!);
                 Navigator.pushNamed(context, '/watchlist/summary/performance', arguments: args);
               }
-            }),
-            icon: Ionicons.pulse_outline,
-            backgroundColor: primaryColor,
-            foregroundColor: ((totalData ?? 0) > 0 ? Colors.purple : primaryLight),
+            },
           ),
-          SlidableAction(
-            onPressed: ((BuildContext context) {
+          SlideButton(
+            icon: Ionicons.calendar_outline,
+            iconColor: ((totalData ?? 0) > 0 ? Colors.pink[300]! : primaryLight),
+            onTap: () {
               if ((totalData ?? 0) > 0) {
                 WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: type, computeResult: compResult!);
                 Navigator.pushNamed(context, '/watchlist/summary/calendar', arguments: args);
               }
-            }),
-            icon: Ionicons.calendar_outline,
-            backgroundColor: primaryColor,
-            foregroundColor: ((totalData ?? 0) > 0 ? Colors.pink[300] : primaryLight),
+            },
           ),
         ],
       ),

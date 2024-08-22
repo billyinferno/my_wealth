@@ -498,16 +498,17 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           endActionPane: ActionPane(
                             motion: const ScrollMotion(),
                             children: <Widget>[
-                              SlidableAction(
-                                onPressed: ((context) {
-                                  Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
-                                }),
+                              SlideButton(
                                 icon: Ionicons.pencil,
-                                backgroundColor: primaryColor,
-                                foregroundColor: accentColor,
+                                iconColor: accentColor,
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
+                                },
                               ),
-                              SlidableAction(
-                                onPressed: ((context) async {
+                              SlideButton(
+                                icon: Ionicons.trash,
+                                iconColor: secondaryColor,
+                                onTap: () async {
                                   await ShowMyDialog(
                                     title: "Delete Detail",
                                     text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
@@ -534,10 +535,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                       });
                                     }
                                   });
-                                }),
-                                icon: Ionicons.trash,
-                                backgroundColor: primaryColor,
-                                foregroundColor: secondaryColor,
+                                },
                               ),
                             ],
                           ),

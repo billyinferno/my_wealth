@@ -16,8 +16,10 @@ class StockCollectExpanded extends StatelessWidget {
         motion: const ScrollMotion(),
         extentRatio: 0.15,
         children: <Widget>[
-          SlidableAction(
-            onPressed: ((BuildContext context) async {
+          SlideButton(
+            icon: Ionicons.business_outline,
+            iconColor: extendedLight,
+            onTap: () async {
               // show loading screen
               LoadingScreen.instance().show(context: context);
 
@@ -45,10 +47,7 @@ class StockCollectExpanded extends StatelessWidget {
                 // remove the loading screen
                 LoadingScreen.instance().hide();
               },);
-            }),
-            icon: Ionicons.business_outline,
-            backgroundColor: primaryColor,
-            foregroundColor: extendedLight,
+            },
           ),
         ],
       ),

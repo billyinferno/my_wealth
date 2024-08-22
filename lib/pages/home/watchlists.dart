@@ -149,6 +149,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             WatchlistSummary(
+              context: context,
               dayGain: _watchlistAll!.totalDayGain,
               value: _watchlistAll!.totalValue,
               cost: _watchlistAll!.totalCost,
@@ -573,56 +574,53 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     motion: const ScrollMotion(),
                     extentRatio: 1,
                     children: <Widget>[
-                      SlidableAction(
-                        onPressed: ((BuildContext context) {
-                          Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: watchlistArgs);
-                        }),
+                      SlideButton(
                         icon: Ionicons.add,
-                        backgroundColor: primaryColor,
-                        foregroundColor: extendedLight,
+                        iconColor: extendedLight,
+                        onTap: () {
+                          Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: watchlistArgs);
+                        },
                       ),
-                      SlidableAction(
-                        onPressed: ((BuildContext context) {
+                      SlideButton(
+                        icon: Ionicons.ellipsis_horizontal,
+                        iconColor: (data[idx].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
+                        onTap: () {
                           if(data[idx].watchlistDetail.isNotEmpty) {
                             // only do when the list is not empty, otherwise there are nothing that need to be edited
                             Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
                           }
-                        }),
-                        icon: Ionicons.ellipsis_horizontal,
-                        backgroundColor: primaryColor,
-                        foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
+                        },
                       ),
-                      SlidableAction(
-                        onPressed: ((BuildContext context) {
+                      SlideButton(
+                        icon: Ionicons.pulse_outline,
+                        iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
+                        onTap: () {
                           if(data[idx].watchlistDetail.isNotEmpty) {
                             // only do when the list is not empty, otherwise there are nothing that need to be showed as performance
                             Navigator.pushNamed(context, '/watchlist/performance', arguments: watchlistArgs);
                           }
-                        }),
-                        icon: Ionicons.pulse_outline,
-                        backgroundColor: primaryColor,
-                        foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
+                        },
                       ),
-                      SlidableAction(
-                        onPressed: ((BuildContext context) {
+                      SlideButton(
+                        icon: Ionicons.calendar_outline,
+                        iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.pink[300]! : primaryLight),
+                        onTap: () {
                           if(data[idx].watchlistDetail.isNotEmpty) {
                             Navigator.pushNamed(context, '/watchlist/calendar', arguments: watchlistArgs);
                           }
-                        }),
-                        icon: Ionicons.calendar_outline,
-                        backgroundColor: primaryColor,
-                        foregroundColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.pink[300] : primaryLight),
+                        },
                       ),
-                      SlidableAction(
-                        onPressed: ((BuildContext context) {
-                          Navigator.pushNamed(context, '/company/detail/$type', arguments: args);
-                        }),
+                      SlideButton(
                         icon: Ionicons.open_outline,
-                        backgroundColor: primaryColor,
-                        foregroundColor: Colors.green,
+                        iconColor: Colors.green,
+                        onTap: () {
+                          Navigator.pushNamed(context, '/company/detail/$type', arguments: args);
+                        },
                       ),
-                      SlidableAction(
-                        onPressed: ((BuildContext context) async {
+                      SlideButton(
+                        icon: Ionicons.trash_bin_outline,
+                        iconColor: secondaryColor,
+                        onTap: () async {
                           await ShowMyDialog(
                             title: "Delete Watchlist",
                             text: "Are you sure want to delete ${data[idx].watchlistCompanyName}?",
@@ -640,10 +638,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                               });
                             }
                           });
-                        }),
-                        icon: Ionicons.trash_bin_outline,
-                        backgroundColor: primaryColor,
-                        foregroundColor: secondaryColor,
+                        },
                       ),
                     ],
                   ),

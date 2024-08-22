@@ -5,6 +5,7 @@ export './scroll_segmented_control.dart';
 export './search_box.dart';
 export './selectable_button.dart';
 export './selectable_list.dart';
+export './slide_button.dart';
 export './stepper_selector.dart';
 export './stepper_selector_controller.dart';
 export './transparent_button.dart';

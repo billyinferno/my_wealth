@@ -312,13 +312,19 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                         motion: const ScrollMotion(),
                         extentRatio: 0.2,
                         children: <Widget>[
-                          SlidableAction(
-                            onPressed: ((BuildContext context) {
-                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
-                            }),
+                          SlideButton(
                             icon: Ionicons.open_outline,
-                            backgroundColor: primaryColor,
-                            foregroundColor: Colors.green,
+                            iconColor: Colors.green,
+                            border: const Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              )
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                            },
                           ),
                         ],
                       ),

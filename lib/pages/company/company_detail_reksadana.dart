@@ -1111,7 +1111,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 const SizedBox(width: 10,),
                 CupertinoSwitch(
                   value: _showCurrentPriceComparison,
-                  activeColor: accentColor,
+                  activeTrackColor: accentColor,
                   onChanged: ((val) {
                     setState(() {
                       _showCurrentPriceComparison = val;
@@ -1487,7 +1487,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   ),
                   const SizedBox(width: 10,),
                   CupertinoSwitch(
-                    activeColor: secondaryColor,
+                    activeTrackColor: secondaryColor,
                     value: _recurring,
                     onChanged: ((value) async {
                       setState(() {

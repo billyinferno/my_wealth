@@ -200,7 +200,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                         _isCampuran = val;
                                         filterData();
                                       }),
-                                      activeColor: accentDark,
+                                      activeTrackColor: accentDark,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
@@ -219,7 +219,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                         _isSaham = val;
                                         filterData();
                                       }),
-                                      activeColor: accentDark,
+                                      activeTrackColor: accentDark,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
@@ -238,7 +238,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                         _isPasarUang = val;
                                         filterData();
                                       }),
-                                      activeColor: accentDark,
+                                      activeTrackColor: accentDark,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
@@ -257,7 +257,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                         _isPendapatanTetap = val;
                                         filterData();
                                       }),
-                                      activeColor: accentDark,
+                                      activeTrackColor: accentDark,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
@@ -329,7 +329,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                         _isShowAll = val;
                                         filterData();
                                       }),
-                                      activeColor: accentDark,
+                                      activeTrackColor: accentDark,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),

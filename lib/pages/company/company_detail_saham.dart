@@ -2554,7 +2554,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           child: FittedBox(
                             child: CupertinoSwitch(
                               value: _showNet,
-                              activeColor: accentColor,
+                              activeTrackColor: accentColor,
                               onChanged: ((value) {
                                 _showNet = value;
 
@@ -3568,7 +3568,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       ),
                       CupertinoSwitch(
                           value: _showCurrentPriceComparison,
-                          activeColor: accentColor,
+                          activeTrackColor: accentColor,
                           onChanged: ((val) {
                             setState(() {
                               _showCurrentPriceComparison = val;

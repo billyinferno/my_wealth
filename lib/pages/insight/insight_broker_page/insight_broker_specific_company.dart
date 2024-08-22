@@ -703,7 +703,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: FittedBox(
                   child: CupertinoSwitch(
                     value: _showNet,
-                    activeColor: accentColor,
+                    activeTrackColor: accentColor,
                     onChanged: ((value) {
                       _showNet = value;
 

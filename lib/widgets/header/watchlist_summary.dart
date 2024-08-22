@@ -4,6 +4,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class WatchlistSummary extends StatelessWidget {
+  final BuildContext context;
   final double dayGain;
   final double value;
   final double cost;
@@ -11,7 +12,17 @@ class WatchlistSummary extends StatelessWidget {
   final bool visibility;
   final VoidCallback onVisibilityPress;
   final ComputeWatchlistAllResult? compResult;
-  const WatchlistSummary({ super.key, required this.dayGain, required this.value, required this.cost, required this.riskFactor, required this.visibility, required this.onVisibilityPress, this.compResult});
+  const WatchlistSummary({
+    super.key,
+    required this.context,
+    required this.dayGain,
+    required this.value,
+    required this.cost,
+    required this.riskFactor,
+    required this.visibility,
+    required this.onVisibilityPress,
+    this.compResult}
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -37,26 +48,26 @@ class WatchlistSummary extends StatelessWidget {
     return SingleChildScrollView(
       child: Slidable(
         endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        extentRatio: 0.43,
-        children: <Widget>[
-            SlidableAction(
-              onPressed: ((BuildContext context) {
+          motion: const ScrollMotion(),
+          extentRatio: 0.43,
+          children: <Widget>[
+            SlideButton(
+              icon: Ionicons.pulse_outline,
+              iconColor: Colors.purple,
+              bgColor: primaryDark,
+              onTap: () {
                 WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: 'all', computeResult: compResult!);
                 Navigator.pushNamed(context, '/watchlist/summary/performance', arguments: args);
-              }),
-              icon: Ionicons.pulse_outline,
-              backgroundColor: primaryDark,
-              foregroundColor: Colors.purple,
+              },
             ),
-            SlidableAction(
-              onPressed: ((BuildContext context) {
+            SlideButton(
+              icon: Ionicons.calendar_outline,
+              iconColor: Colors.pink[300]!,
+              bgColor: primaryDark,
+              onTap: () {
                 WatchlistSummaryPerformanceArgs args = WatchlistSummaryPerformanceArgs(type: 'all', computeResult: compResult!);
                 Navigator.pushNamed(context, '/watchlist/summary/calendar', arguments: args);
-              }),
-              icon: Ionicons.calendar_outline,
-              backgroundColor: primaryDark,
-              foregroundColor: Colors.pink[300],
+              },
             ),
           ],
         ),

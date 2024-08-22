@@ -622,13 +622,12 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
               motion: const ScrollMotion(),
               extentRatio: 0.15,
               children: <Widget>[
-                SlidableAction(
-                  onPressed: ((BuildContext context) {
-                    _getCompanyDetailAndGo(code: _brokerCollect!.data[index].code);
-                  }),
+                SlideButton(
                   icon: Ionicons.business_outline,
-                  backgroundColor: primaryColor,
-                  foregroundColor: extendedLight,
+                  iconColor: extendedLight,
+                  onTap: () {
+                    _getCompanyDetailAndGo(code: _brokerCollect!.data[index].code);
+                  },
                 ),
               ],
             ),

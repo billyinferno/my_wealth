@@ -207,8 +207,17 @@ class FavouritesPageState extends State<FavouritesPage>
                 motion: const ScrollMotion(),
                 extentRatio: 0.2,
                 children: <Widget>[
-                  SlidableAction(
-                    onPressed: ((BuildContext context) {
+                  SlideButton(
+                    icon: Ionicons.trash_outline,
+                    iconColor: secondaryColor,
+                    border: const Border(
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      )
+                    ),
+                    onTap: () {
                       Future<bool?> result = ShowMyDialog(
                         title: "Delete Favourites",
                         text:
@@ -222,9 +231,7 @@ class FavouritesPageState extends State<FavouritesPage>
                           await _deleteFavourites(index, type);
                         }
                       });
-                    }),
-                    icon: Ionicons.trash_outline,
-                    backgroundColor: secondaryDark,
+                    },
                   ),
                 ],
               ),

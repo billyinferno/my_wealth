@@ -102,7 +102,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                       child: FittedBox(
                         child: CupertinoSwitch(
                           value: (_accumVersion == 1),
-                          activeColor: accentColor,
+                          activeTrackColor: accentColor,
                           onChanged: ((_enableV2 == false ? null : (value) {
                             if (_accumVersion == 0) {
                               _accumVersion = 1;

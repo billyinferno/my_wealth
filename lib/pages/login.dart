@@ -114,7 +114,7 @@ class LoginPageState extends State<LoginPage> {
               ],
             ),
             Text(
-              'version - ${Globals.appVersion}${_type.isNotEmpty ? ' run as $_type' : ''}',
+              'version - ${Globals.appVersion}$_type',
               style: const TextStyle(
                 color: textPrimary,
                 fontSize: 10,

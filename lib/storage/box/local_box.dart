@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class LocalBox {

@@ -366,7 +366,7 @@ class _UserPageState extends State<UserPage> {
                                       ],
                                     ),
                                     Text(
-                                      Globals.appVersion,
+                                      '${Globals.appVersion}${Globals.runAs()}',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: primaryLight,

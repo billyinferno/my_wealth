@@ -40,13 +40,7 @@ class LoginPageState extends State<LoginPage> {
     super.initState();
 
     // get the type of the application run, whether this is run as web or WASM
-    _type = "";
-    if (Globals.isWasm()) {
-      _type = "WASM";
-    }
-    else if(Globals.isWeb()) {
-      _type = "JS";
-    }
+    _type = Globals.runAs();
 
     // check if user already login
     _isLogin = false;

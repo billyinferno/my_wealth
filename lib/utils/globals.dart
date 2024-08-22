@@ -51,18 +51,14 @@ class Globals {
   static DateFormat dfyyyyMMdd = DateFormat('yyyy-MM-dd');
   static DateFormat dfyyyyMM = DateFormat('yyyy/MM');
 
-  static bool isWasm() {
+  static String runAs() {
     if (kIsWasm) {
-      return true;
+      return " run as WASM";
     }
-    return false;
-  }
-
-  static bool isWeb() {
     if (kIsWeb) {
-      return true;
+      return " run as JS";
     }
-    return false;
+    return "";
   }
 
   static List<Color> colorList = [

@@ -43,112 +43,109 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MySafeArea(
-      bottom: true,
-      bottomPadding: 15,
-      color: primaryDark,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: Row(
-            children: [
-              IconButton(
-                icon: Icon(
-                  (_selectedIndex == 5 ? Ionicons.star : Ionicons.star_outline),
-                  color: (_selectedIndex == 5 ? Colors.yellow : textPrimary),
-                ),
-                onPressed: (() {
-                  // open the search/favorites page
-                  _onItemTapped(5);
-                }),
-              ),
-            ],
-          ),
-          title: Center(
-            child: Text(
-              _titleList[_selectedIndex],
-              style: const TextStyle(
-                color: secondaryColor,
-              ),
-            )
-          ),
-          actions: <Widget>[
+    return Scaffold(
+      appBar: AppBar(
+        leading: Row(
+          children: [
             IconButton(
+              icon: Icon(
+                (_selectedIndex == 5 ? Ionicons.star : Ionicons.star_outline),
+                color: (_selectedIndex == 5 ? Colors.yellow : textPrimary),
+              ),
               onPressed: (() {
-                showCupertinoModalPopup<void>(
-                  context: context,
-                  builder: ((BuildContext context) {
-                    return Container(
-                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
-                      child: CupertinoActionSheet(
-                        title: const Text(
-                          "Search Symbol",
-                          style: TextStyle(
-                            fontFamily: '--apple-system',
+                // open the search/favorites page
+                _onItemTapped(5);
+              }),
+            ),
+          ],
+        ),
+        title: Center(
+          child: Text(
+            _titleList[_selectedIndex],
+            style: const TextStyle(
+              color: secondaryColor,
+            ),
+          )
+        ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (() {
+              showCupertinoModalPopup<void>(
+                context: context,
+                builder: ((BuildContext context) {
+                  return Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                    child: CupertinoActionSheet(
+                      title: const Text(
+                        "Search Symbol",
+                        style: TextStyle(
+                          fontFamily: '--apple-system',
+                        ),
+                      ),
+                      actions: <CupertinoActionSheetAction>[
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            // navigate to reksadana
+                            Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
+                          }),
+                          child: const Text(
+                            "Mutual Fund",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
+                            ),
                           ),
                         ),
-                        actions: <CupertinoActionSheetAction>[
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // navigate to reksadana
-                              Navigator.popAndPushNamed(context, '/favourites/list/reksadana');
-                            }),
-                            child: const Text(
-                              "Mutual Fund",
-                              style: TextStyle(
-                                fontFamily: '--apple-system',
-                                color: textPrimary,
-                              ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            // navigate to reksadana
+                            Navigator.popAndPushNamed(context, '/favourites/list/saham');
+                          }),
+                          child: const Text(
+                            "Stock",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
                             ),
                           ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // navigate to reksadana
-                              Navigator.popAndPushNamed(context, '/favourites/list/saham');
-                            }),
-                            child: const Text(
-                              "Stock",
-                              style: TextStyle(
-                                fontFamily: '--apple-system',
-                                color: textPrimary,
-                              ),
+                        ),
+                        CupertinoActionSheetAction(
+                          onPressed: (() {
+                            // navigate to reksadana
+                            Navigator.popAndPushNamed(context, '/favourites/list/crypto');
+                          }),
+                          child: const Text(
+                            "Crypto",
+                            style: TextStyle(
+                              fontFamily: '--apple-system',
+                              color: textPrimary,
                             ),
                           ),
-                          CupertinoActionSheetAction(
-                            onPressed: (() {
-                              // navigate to reksadana
-                              Navigator.popAndPushNamed(context, '/favourites/list/crypto');
-                            }),
-                            child: const Text(
-                              "Crypto",
-                              style: TextStyle(
-                                fontFamily: '--apple-system',
-                                color: textPrimary,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }),
-                );
-              }),
-              icon: const Icon(Ionicons.search_outline)
-            ),
-            IconButton(
-              onPressed: (() {
-                Navigator.pushNamed(context, '/user');
-              }),
-              icon: const Icon(Ionicons.person_outline)
-            )
-          ],
-          automaticallyImplyLeading: false,
-        ),
-        body: IndexedStack(
+                        )
+                      ],
+                    ),
+                  );
+                }),
+              );
+            }),
+            icon: const Icon(Ionicons.search_outline)
+          ),
+          IconButton(
+            onPressed: (() {
+              Navigator.pushNamed(context, '/user');
+            }),
+            icon: const Icon(Ionicons.person_outline)
+          )
+        ],
+        automaticallyImplyLeading: false,
+      ),
+      body: MySafeArea(
+        child: IndexedStack(
           index: _selectedIndex,
           children: _widgetList,
         ),
-        bottomNavigationBar: _generateBottomBar(),
       ),
+      bottomNavigationBar: _generateBottomBar(),
     );
   }
 

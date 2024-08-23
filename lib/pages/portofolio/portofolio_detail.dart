@@ -377,35 +377,33 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   }
 
   void _filterList() {
-    _portofolioFiltered.clear();
-
     // since we will used portofolio list as based, just copy from here
     // this can be used as default value also for code/name
-    _portofolioFiltered = _portofolioList.toList();
+    List<PortofolioDetailModel> portofolioFiltered = _portofolioList.toList();
 
     // check what kind of sort type is being implemented
     // total investment, share left, realised pl, unrealised pl, one day
     switch(_sortType) {
       case "tl":
-        _portofolioFiltered.sort((a, b) => a.watchlistSubTotalValue.compareTo(b.watchlistSubTotalValue));
+        portofolioFiltered.sort((a, b) => a.watchlistSubTotalValue.compareTo(b.watchlistSubTotalValue));
         break;
       case "lf":
-        _portofolioFiltered.sort((a, b) => a.watchlistSubTotalShare.compareTo(b.watchlistSubTotalShare));
+        portofolioFiltered.sort((a, b) => a.watchlistSubTotalShare.compareTo(b.watchlistSubTotalShare));
         break;
       case "rp":
-        _portofolioFiltered.sort((a, b) => a.watchlistSubTotalRealised.compareTo(b.watchlistSubTotalRealised));
+        portofolioFiltered.sort((a, b) => a.watchlistSubTotalRealised.compareTo(b.watchlistSubTotalRealised));
         break;
       case "up":
-        _portofolioFiltered.sort((a, b) => a.watchlistSubTotalUnrealised.compareTo(b.watchlistSubTotalUnrealised));
+        portofolioFiltered.sort((a, b) => a.watchlistSubTotalUnrealised.compareTo(b.watchlistSubTotalUnrealised));
         break;
       case "u%":
-        _portofolioFiltered.sort((a, b) => (a.watchlistSubTotalUnrealised/a.watchlistSubTotalCost).compareTo(b.watchlistSubTotalUnrealised/b.watchlistSubTotalCost));
+        portofolioFiltered.sort((a, b) => (a.watchlistSubTotalUnrealised/a.watchlistSubTotalCost).compareTo(b.watchlistSubTotalUnrealised/b.watchlistSubTotalCost));
         break;
       case "1%":
-        _portofolioFiltered.sort((a, b) => a.companyDailyReturn!.compareTo(b.companyDailyReturn!));
+        portofolioFiltered.sort((a, b) => a.companyDailyReturn!.compareTo(b.companyDailyReturn!));
         break;
       case "1d":
-        _portofolioFiltered.sort((a, b) => a.watchlistSubTotalDayGain.compareTo(b.watchlistSubTotalDayGain));
+        portofolioFiltered.sort((a, b) => a.watchlistSubTotalDayGain.compareTo(b.watchlistSubTotalDayGain));
         break;
       default:
         // already copied above
@@ -414,8 +412,28 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
 
     // check if this is ascending of descending
     if (!_sortAscending) {
-      _portofolioFiltered = _portofolioFiltered.reversed.toList();
+      portofolioFiltered = portofolioFiltered.reversed.toList();
     }
+
+    // now check if there are any portofolio that already empty
+    // if so move the porto to the bottom
+    List<PortofolioDetailModel> portofolioNonZero = [];
+    List<PortofolioDetailModel> portofolioZero = [];
+    for(int i=0; i<portofolioFiltered.length; i++) {
+      if (portofolioFiltered[i].watchlistSubTotalShare > 0) {
+        portofolioNonZero.add(portofolioFiltered[i]);
+      }
+      else {
+        portofolioZero.add(portofolioFiltered[i]);
+      }
+    }
+
+    // now combine both the non zero and zero and put into porto filtered
+    _portofolioFiltered.clear();
+    _portofolioFiltered = [
+      ...portofolioNonZero,
+      ...portofolioZero,
+    ];
   }
 
   Future<bool> _fetchData() async {

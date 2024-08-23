@@ -120,8 +120,11 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     _yearCalendarPL = [];
 
     // get the data from API
-    _getData =
-        _getInitData(currentDate: _currentDate, newDate: null, firstRun: true);
+    _getData = _getInitData(
+      currentDate: _currentDate,
+      newDate: null,
+      showLoader: true
+    );
   }
 
   @override
@@ -793,8 +796,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         // ignore as this will be used as base to calculate the rest.
         if (plBefore == null) {
           // calculate the plBefore
-          plBefore =
-              (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
+          plBefore = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
         } else {
           // we already have pl before, so we can perform the calculation
           // for the current pl and pl ratio.
@@ -804,8 +806,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
           // no need to perform sophisticated calculation for this as
           // we can just perform normal pl calculation
-          plCurrent =
-              (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
+          plCurrent = (resp[i].buyTotal * resp[i].currentPrice) - resp[i].buyAmount;
           
           _plTotalYear += (plCurrent - plBefore);
 
@@ -868,17 +869,17 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   Future<bool> _getInitData({
     required DateTime currentDate,
     DateTime? newDate,
-    bool? firstRun,
+    bool? showLoader,
   }) async {
     // if this is not a first run then show the loader dialog
-    if ((firstRun ?? false) == false) {
+    if ((showLoader ?? false) == false) {
       LoadingScreen.instance().show(context: context);
     }
 
     await Future.wait([
       _getMonthYearData(currentDate: currentDate, newDate: newDate),
       _getYearData(currentDate: currentDate, newDate: newDate),
-      _getFirstAndLastDate((firstRun ?? false)),
+      _getFirstAndLastDate((showLoader ?? false)),
     ]).onError((error, stackTrace) {
       Log.error(
         message: 'Error getting data from server',
@@ -889,7 +890,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     }).whenComplete(() {
         // if this is not the  first run, it means that the loader dialog is being
         // called on top, close the loader dialog.
-        if ((firstRun ?? false) == false) {
+        if ((showLoader ?? false) == false) {
           LoadingScreen.instance().hide();
         }
       },

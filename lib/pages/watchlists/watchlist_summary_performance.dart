@@ -442,99 +442,73 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
               ),
             ),
             _showChart(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                      color: primaryDark,
-                      border: Border(
-                          bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ))),
-                  width: 100,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "DATE",
+            Container(
+              decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                  bottom: BorderSide(
+                    color: primaryLight,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    width: 100,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "DATE",
+                          textAlign: TextAlign.center,
+                          style: _smallFont,
+                        ),
+                        const SizedBox(width: 5,),
+                        Icon(
+                          (_perfSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
+                          size: 10,
+                          color: textPrimary,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      child: Text(
+                        "P/L",
                         textAlign: TextAlign.center,
                         style: _smallFont,
                       ),
-                      const SizedBox(width: 5,),
-                      Icon(
-                        (_perfSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
-                        size: 10,
-                        color: textPrimary,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      child: Text(
+                        "+/-",
+                        textAlign: TextAlign.center,
+                        style: _smallFont,
                       ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
                     ),
+                  ),
+                  Container(
+                    width: 75,
+                    padding: const EdgeInsets.all(5),
                     child: Text(
-                      "P/L",
+                      "%",
                       textAlign: TextAlign.center,
                       style: _smallFont,
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: Text(
-                      "+/-",
-                      textAlign: TextAlign.center,
-                      style: _smallFont,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 50,
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                      color: primaryDark,
-                      border: Border(
-                          bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      )
-                    )
-                  ),
-                  child: Text(
-                    "%",
-                    textAlign: TextAlign.center,
-                    style: _smallFont,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
             Expanded(
               child: ListView.builder(

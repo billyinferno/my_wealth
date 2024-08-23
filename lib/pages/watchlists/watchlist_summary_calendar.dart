@@ -60,6 +60,9 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     // initialize variable
     _currentDate = DateTime.now();
     _calendarSelection = 'm'; // calendar selected as month
+
+    // initialize first and end date
+    _firstDate = _endDate = DateTime.now();
     
     // initialize pl month and year
     _plTotal = 0;
@@ -607,22 +610,22 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     // for other during saturday, which causing odd issue when calculating the
     // calendar PL.
     if (type == 'all') {
-      DateTime firstDate = DateTime(_currentDate.year, _currentDate.month, 1).subtract(const Duration(days: 1));
-      DateTime endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
+      DateTime firstDate = DateTime(_currentDate.year, _currentDate.month, 1).subtract(const Duration(days: 1)).toLocal();
+      DateTime endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1).toLocal();
       
       // check end date, whether end date is more than end date that we got
       // from API or not? This is to avoid we put the data until end of month,
       // where we don't reach that date yet.
-      if (endDate.isAfter(_endDate)) {
+      if (endDate.isAfter(_endDate.toLocal())) {
         // set end date as today date + 1
-        endDate = _endDate;
+        endDate = _endDate.toLocal();
       }
 
       Map<String, Map<DateTime, SummaryPerformanceModel>> combPerf = {};
       Map<DateTime, SummaryPerformanceModel> tmpPerf = {};
       
       // first generate all the date from first to end date
-      while(firstDate.isBefore(endDate)) {
+      while(isSameOrBefore(date: firstDate, checkDate: endDate)) {
         tmpPerf[firstDate] = SummaryPerformanceModel(
           plDate: firstDate,
           plValue: double.negativeInfinity,
@@ -631,27 +634,43 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
         firstDate = firstDate.add(const Duration(days: 1));
       }
 
-      // add tp combPerf list per their key
-      combPerf['reksadana'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
-      combPerf['saham'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
-      combPerf['crypto'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
-      combPerf['gold'] = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
-
-      // now we can add all the data
+      // loop thru all the performance data we have and generate the combination
       perfData.forEach((key, perfList) {
-        Map<DateTime, SummaryPerformanceModel> tmpPerf = combPerf[key]!;
+        Map<DateTime, SummaryPerformanceModel> newCombPerf = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
 
         // check if we got perf list, in case no data, it means we need to
         // default it to all 0
         if (perfList.isNotEmpty) {
           // loop thru perf list
           for (int i=0; i<perfList.length; i++) {
-            tmpPerf[perfList[i].plDate] = perfList[i];
+            newCombPerf[perfList[i].plDate] = perfList[i];
           }
+
+          // once filled the newCombPerf, loop thru newCombPerf to fill all
+          // the voids when the date is not yet filled
+          
+          // default the previousPerf as 0
+          SummaryPerformanceModel prevPerf = perfList[0];
+          
+          newCombPerf.forEach((date, perf) {
+            // check if current perf plValue and totalAmount is negative
+            // infinity
+            if (
+              perf.plValue == double.negativeInfinity &&
+              perf.totalAmount == double.negativeInfinity
+            ) {
+              // means that we don't have data for this date, copy the data
+              // from the previous perf
+              newCombPerf[date] = prevPerf;
+            }
+
+            // set  the prev data as current perf
+            prevPerf = newCombPerf[date]!;
+          },);
         }
         else {
-          tmpPerf.forEach((key, value) {
-            tmpPerf.update(key, (_) {
+          newCombPerf.forEach((key, value) {
+            newCombPerf.update(key, (_) {
               return SummaryPerformanceModel(
                 plDate: key,
                 plValue: 0,
@@ -662,35 +681,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
         }
 
         // set the comb perf
-        combPerf[key] = tmpPerf;
-      });
-
-      // fill the gap of the data in the comb perf
-      combPerf.forEach((key, value) {
-        // get the current perf data
-        Map<DateTime, SummaryPerformanceModel> tmpData = combPerf[key]!;
-        SummaryPerformanceModel? before;
-
-        // loop thru tmp data
-        tmpData.forEach((date, data) {
-          if (data.plValue != double.negativeInfinity && data.totalAmount != double.negativeInfinity) {
-            // set this as before
-            before = data;
-          }
-          else {
-            // ensure before is not null
-            if (before != null) {
-              tmpData[date] = before!;
-            }
-            else {
-              tmpData[date] = SummaryPerformanceModel(
-                plDate: date,
-                plValue: 0,
-                totalAmount: 0
-              );
-            }
-          }
-        });
+        combPerf[key] = newCombPerf;
       });
 
       // now combine all the data in the comb perf to the watchlistMapPerformance

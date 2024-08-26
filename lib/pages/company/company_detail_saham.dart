@@ -1199,8 +1199,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   await showCupertinoModalPopup<void>(
                     context: context,
                     builder: ((BuildContext context) {
-                      return Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                      return MySafeArea(
                         child: CupertinoActionSheet(
                           title: const Text(
                             "Select Period",

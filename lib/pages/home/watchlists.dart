@@ -176,8 +176,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     showCupertinoModalPopup<void>(
                       context: context,
                       builder: ((BuildContext context) {
-                        return Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                        return MySafeArea(
                           child: CupertinoActionSheet(
                             title: const Text(
                               "Add Watchlist",

@@ -19,12 +19,15 @@ class InsightProvider extends ChangeNotifier {
   List<StockSplitListModel>? stockSplitList;
   List<InsightStockCollectModel>? stockCollectList;
 
-  setSectorSummaryList(List<SectorSummaryModel> list) {
+  setSectorSummaryList({required List<SectorSummaryModel> list}) {
     sectorSummaryList = list;
     notifyListeners();
   }
 
-  setTopWorseCompanyList(String type, TopWorseCompanyListModel data) {
+  setTopWorseCompanyList({
+    required String type,
+    required TopWorseCompanyListModel data
+  }) {
     if (type == 'top') {
       topCompanyList = data;
     }
@@ -34,12 +37,15 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBrokerTopTransactionList(BrokerTopTransactionModel data) {
+  setBrokerTopTransactionList({required BrokerTopTransactionModel data}) {
     brokerTopTransactionList = data;
     notifyListeners();
   }
 
-  setTopReksadanaList(String type, TopWorseCompanyListModel data) {
+  setTopReksadanaList({
+    required String type,
+    required TopWorseCompanyListModel data
+  }) {
     // check if null? if so initialze it
     topReksadanaList ??= {};
 
@@ -48,7 +54,10 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setWorseReksadanaList(String type, TopWorseCompanyListModel data) {
+  setWorseReksadanaList({
+    required String type,
+    required TopWorseCompanyListModel data
+  }) {
     // check if null? if so initialze it
     worseReksadanaList ??= {};
 
@@ -57,12 +66,16 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBandarInterestingList(InsightBandarInterestModel data) {
+  setBandarInterestingList({required InsightBandarInterestModel data}) {
     bandarInterestList = data;
     notifyListeners();
   }
 
-  setTopAccumulation(DateTime accumeDate, int accumRate, List<InsightAccumulationModel> accumList) {
+  setTopAccumulation({
+    required DateTime accumeDate,
+    required int accumRate,
+    required List<InsightAccumulationModel> accumList
+  }) {
     topAccumToDate = accumeDate;
     topAccumRate = accumRate;
     topAccumList = accumList;
@@ -70,32 +83,32 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBrokerMarketToday(MarketTodayModel data) {
+  setBrokerMarketToday({required MarketTodayModel data}) {
     brokerMarketToday = data;
     notifyListeners();
   }
 
-  setMarketCap(List<MarketCapModel> data) {
+  setMarketCap({required List<MarketCapModel> data}) {
     marketCap = data;
     notifyListeners();
   }
 
-  setStockNewListed(List<StockNewListedModel> data) {
+  setStockNewListed({required List<StockNewListedModel> data}) {
     stockNewListed = data;
     notifyListeners();
   }
 
-  setStockDividendList(List<StockDividendListModel> data) {
+  setStockDividendList({required List<StockDividendListModel> data}) {
     stockDividendList = data;
     notifyListeners();
   }
 
-  setStockSplitList(List<StockSplitListModel> data) {
+  setStockSplitList({required List<StockSplitListModel> data}) {
     stockSplitList = data;
     notifyListeners();
   }
 
-  setStockCollectList(List<InsightStockCollectModel> data) {
+  setStockCollectList({required List<InsightStockCollectModel> data}) {
     stockCollectList = data;
     notifyListeners();
   }

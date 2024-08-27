@@ -940,7 +940,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     await Future.wait([
       _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
         Log.success(message: "🔃 Refresh Broker Summary Top");
-        await BrokerSharedPreferences.setBroketTopList(resp);
+        await BrokerSharedPreferences.setBroketTopList(topList: resp);
         if (mounted) {
           Provider.of<BrokerProvider>(
             context,
@@ -951,34 +951,34 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       
       _insightAPI.getBrokerTopTransaction().then((resp) async {
         Log.success(message: "🔃 Refresh Broker Top Transaction List");
-        await InsightSharedPreferences.setBrokerTopTxn(resp);
+        await InsightSharedPreferences.setBrokerTopTxn(brokerTopList: resp);
         if (mounted) {
           Provider.of<InsightProvider>(
             context,
             listen: false
-          ).setBrokerTopTransactionList(resp);
+          ).setBrokerTopTransactionList(data: resp);
         }
       }),
 
       _insightAPI.getMarketToday().then((resp) async {
         Log.success(message: "🔃 Refresh Broker Market Today");
-        await InsightSharedPreferences.setBrokerMarketToday(resp);
+        await InsightSharedPreferences.setBrokerMarketToday(marketToday: resp);
         if (mounted) {
           Provider.of<InsightProvider>(
             context,
             listen: false
-          ).setBrokerMarketToday(resp);
+          ).setBrokerMarketToday(data: resp);
         }
       }),
 
        _insightAPI.getMarketCap().then((resp) async {
         Log.success(message: "🔃 Refresh Broker Market Cap");
-        await InsightSharedPreferences.setMarketCap(resp);
+        await InsightSharedPreferences.setMarketCap(marketCapList: resp);
         if (mounted) {
           Provider.of<InsightProvider>(
             context,
             listen: false
-          ).setMarketCap(resp);
+          ).setMarketCap(data: resp);
         }
       }),
     ]).onError((error, stackTrace) {

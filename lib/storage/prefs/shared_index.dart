@@ -4,7 +4,9 @@ import 'package:my_wealth/_index.g.dart';
 class IndexSharedPreferences {
   static const _indexKey = "index_list";
 
-  static Future<void> setIndexList(List<IndexModel> indexList) async {
+  static Future<void> setIndexList({
+    required List<IndexModel> indexList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();

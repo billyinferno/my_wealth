@@ -332,10 +332,10 @@ class LoginPageState extends State<LoginPage> {
           // stored this information on the shared preference,
           // in case there are update from user that directly performed
           // on server.
-          await UserSharedPreferences.setUserInfo(resp).then((_) {
+          await UserSharedPreferences.setUserInfo(userInfo: resp).then((_) {
             if (mounted) {
               // put the user information on the provider
-              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
               Log.success(message: "3️⃣ Update user information");
 
               // set the current visibility configuration on the provider
@@ -415,7 +415,7 @@ class LoginPageState extends State<LoginPage> {
           });
 
           // as we already got the model here, we can store the JWT to the secured box here
-          await UserSharedPreferences.setUserJWT(resp.jwt).then((_) {
+          await UserSharedPreferences.setUserJWT(bearerToken: resp.jwt).then((_) {
             Log.success(message: "1️⃣ Set user JWT token");
           });
 
@@ -423,10 +423,10 @@ class LoginPageState extends State<LoginPage> {
           NetUtils.refreshJWT();
 
           // then we can store the user information to the local storage
-          await UserSharedPreferences.setUserInfo(resp.user).then((_) {
+          await UserSharedPreferences.setUserInfo(userInfo: resp.user).then((_) {
             if (mounted) {
               // put the user information on the provider
-              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp.user);
+              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp.user);
               Log.success(message: "2️⃣ Set user information");
             }
           });
@@ -487,7 +487,11 @@ class LoginPageState extends State<LoginPage> {
     
     await Future.wait([
       _faveAPI.getFavourites(type: "reksadana").then((resp) async {
-        await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
+        await FavouritesSharedPreferences.setFavouritesList(
+          type: "reksadana",
+          favouriteList: resp
+        );
+
         if (!mounted) return;
         Provider.of<FavouritesProvider>(
           context,
@@ -496,10 +500,15 @@ class LoginPageState extends State<LoginPage> {
           type: "reksadana",
           favouriteListData: resp,
         );
+        
         Log.success(message: "4️⃣ Get user favourites reksadana");
       }),
       _faveAPI.getFavourites(type: "saham").then((resp) async {
-        await FavouritesSharedPreferences.setFavouritesList("saham", resp);
+        await FavouritesSharedPreferences.setFavouritesList(
+          type: "saham",
+          favouriteList: resp
+        );
+
         if (!mounted) return;
         Provider.of<FavouritesProvider>(
           context,
@@ -508,10 +517,15 @@ class LoginPageState extends State<LoginPage> {
           type: "saham",
           favouriteListData: resp,
         );
+        
         Log.success(message: "5️⃣ Get user favourites saham");
       }),
       _faveAPI.getFavourites(type: "crypto").then((resp) async {
-        await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
+        await FavouritesSharedPreferences.setFavouritesList(
+          type: "crypto",
+          favouriteList: resp
+        );
+
         if (!mounted) return;
         Provider.of<FavouritesProvider>(
           context,
@@ -520,230 +534,392 @@ class LoginPageState extends State<LoginPage> {
           type: "crypto",
           favouriteListData: resp,
         );
+        
         Log.success(message: "6️⃣ Get user favourites crypto");
       }),
       _watchlistApi.getWatchlist(type: "reksadana").then((resp) async {
-        await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "reksadana",
+          watchlistData: resp
+        );
+        
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "reksadana",
+          watchlistData: resp
+        );
+        
         Log.success(message: "7️⃣ Get user watchlist reksadana");
       }),
       _watchlistApi.getWatchlist(type: "saham").then((resp) async {
-        await WatchlistSharedPreferences.setWatchlist("saham", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "saham",
+          watchlistData: resp
+        );
+        
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "saham",
+          watchlistData: resp
+        );
+        
         Log.success(message: "8️⃣ Get user watchlist saham");
       }),
       _watchlistApi.getWatchlist(type: "crypto").then((resp) async {
-        await WatchlistSharedPreferences.setWatchlist("crypto", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "crypto",
+          watchlistData: resp
+        );
+        
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "crypto",
+          watchlistData: resp
+        );
+        
         Log.success(message: "9️⃣ Get user watchlist crypto");
       }),
       _watchlistApi.getWatchlist(type: "gold").then((resp) async {
-        await WatchlistSharedPreferences.setWatchlist("gold", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "gold",
+          watchlistData: resp
+        );
+        
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "gold",
+          watchlistData: resp
+        );
+        
         Log.success(message: "1️⃣0️⃣ Get user watchlist gold");
       }),
       _indexApi.getIndex().then((resp) async {
-        await IndexSharedPreferences.setIndexList(resp);
+        await IndexSharedPreferences.setIndexList(indexList: resp);
+        
         if (!mounted) return;
         Provider.of<IndexProvider>(
           context,
           listen: false
         ).setIndexList(indexListData: resp);
+        
         Log.success(message: "🔟1️⃣ Get index");
       }),
       _brokerApi.getBroker().then((resp) async {
-        await BrokerSharedPreferences.setBrokerList(resp);
+        await BrokerSharedPreferences.setBrokerList(brokerList: resp);
+
         if (!mounted) return;
         Provider.of<BrokerProvider>(
           context,
           listen: false
         ).setBrokerList(brokerListData: resp);
+        
         Log.success(message: '🔟2️⃣ Get Broker');
       }),
       _brokerSummaryApi.getBrokerSummaryTop().then((resp) async {
-        await BrokerSharedPreferences.setBroketTopList(resp);
+        await BrokerSharedPreferences.setBroketTopList(topList: resp);
+        
         if (!mounted) return;
         Provider.of<BrokerProvider>(
           context,
           listen: false
         ).setBrokerTopList(brokerTopListData: resp);
+        
         Log.success(message: '🔟3️⃣ Get Broker Top List');
       }),
       _insightAPI.getBrokerTopTransaction().then((resp) async {
-        await InsightSharedPreferences.setBrokerTopTxn(resp);
+        await InsightSharedPreferences.setBrokerTopTxn(brokerTopList: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setBrokerTopTransactionList(data: resp);
+        
         Log.success(message: '🔟4️⃣ Get Broker Top Transaction List');
       }),
       _insightAPI.getMarketToday().then((resp) async {
-        await InsightSharedPreferences.setBrokerMarketToday(resp);
+        await InsightSharedPreferences.setBrokerMarketToday(marketToday: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setBrokerMarketToday(data: resp);
+        
         Log.success(message: '🔟5️⃣ Get Broker Market Today');
       }),
       _insightAPI.getMarketCap().then((resp) async {
-        await InsightSharedPreferences.setMarketCap(resp);
+        await InsightSharedPreferences.setMarketCap(marketCapList: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setMarketCap(data: resp);
+        
         Log.success(message: '🔟6️⃣ Get Broker Market Cap');
       }),
       _insightAPI.getSectorSummary().then((resp) async {
-        await InsightSharedPreferences.setSectorSummaryList(resp);
+        await InsightSharedPreferences.setSectorSummaryList(sectorSummaryList: resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setSectorSummaryList(list: resp);
         Log.success(message: '🔟7️⃣ Get Sector Summary List');
       }),
       _insightAPI.getTopWorseCompany(type: 'top').then((resp) async {
-        await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
+        await InsightSharedPreferences.setTopWorseCompanyList(
+          type: 'top',
+          topWorseList: resp
+        );
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setTopWorseCompanyList(
+          type: 'top', data: resp
+        );
         Log.success(message: '🔟8️⃣ Get Top Company Summary List');
       }),
       _insightAPI.getTopWorseCompany(type: 'worse').then((resp) async {
-        await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
+        await InsightSharedPreferences.setTopWorseCompanyList(
+          type: 'worse',
+          topWorseList: resp
+        );
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setTopWorseCompanyList(
+          type: 'worse',
+          data: resp
+        );
         Log.success(message: '🔟9️⃣ Get Worse Company Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'saham',
         topWorse: 'top'
       ).then((resp) async {
-        await InsightSharedPreferences.setTopReksadanaList('saham', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'saham',
+          topReksadanaList: resp
+        );
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setTopReksadanaList('saham', resp);
+        ).setTopReksadanaList(type: 'saham', data: resp);
         Log.success(message: '🔟🔟1️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'campuran',
         topWorse: 'top'
       ).then((resp) async {
-        await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'campuran',
+          topReksadanaList: resp
+        );
+
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setTopReksadanaList('campuran', resp);
+        ).setTopReksadanaList(
+          type: 'campuran',
+          data: resp
+        );
+        
         Log.success(message: '🔟🔟2️⃣ Get Top Reksadana Campuran Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'pasaruang',
         topWorse: 'top'
       ).then((resp) async {
-        await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'pasaruang',
+          topReksadanaList: resp
+        );
+
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setTopReksadanaList('pasaruang', resp);
+        ).setTopReksadanaList(
+          type: 'pasaruang',
+          data: resp
+        );
+        
         Log.success(message: '🔟🔟3️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'pendapatantetap',
         topWorse: 'top',
       ).then((resp) async {
-        await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'pendapatantetap',
+          topReksadanaList: resp
+        );
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setTopReksadanaList('pendapatantetap', resp);
+        ).setTopReksadanaList(
+          type: 'pendapatantetap',
+          data: resp
+        );
+        
         Log.success(message: '🔟🔟4️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'saham',
         topWorse: 'loser',
       ).then((resp) async {
-        await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'saham',
+          worseReksadanaList: resp
+        );
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setWorseReksadanaList('saham', resp);
+        ).setWorseReksadanaList(
+          type: 'saham',
+          data: resp
+        );
+
         Log.success(message: '🔟🔟5️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'campuran',
         topWorse: 'loser',
       ).then((resp) async {
-        await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'campuran',
+          worseReksadanaList: resp
+        );
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setWorseReksadanaList('campuran', resp);
+        ).setWorseReksadanaList(
+          type: 'campuran',
+          data: resp
+        );
+        
         Log.success(message: '🔟🔟6️⃣ Get Top Reksadana Campuran Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'pasaruang',
         topWorse: 'loser',
       ).then((resp) async {
-        await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'pasaruang',
+          worseReksadanaList: resp
+        );
         if (!mounted) return;
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setWorseReksadanaList('pasaruang', resp);
+        ).setWorseReksadanaList(
+          type: 'pasaruang',
+          data: resp
+        );
+        
         Log.success(message: '🔟🔟7️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
         type: 'pendapatantetap',
         topWorse: 'loser',
       ).then((resp) async {
-        await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'pendapatantetap',
+          worseReksadanaList: resp
+        );
+
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setWorseReksadanaList(
+          type: 'pendapatantetap',
+          data: resp
+        );
+        
         Log.success(message: '🔟🔟8️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
       _insightAPI.getBandarInteresting().then((resp) async {
-        await InsightSharedPreferences.setBandarInterestingList(resp);
+        await InsightSharedPreferences.setBandarInterestingList(bandarInterest: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setBandarInterestingList(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setBandarInterestingList(data: resp);
+        
         Log.success(message: '🔟🔟9️⃣ Get Bandar Interesting List');
       }),
       _companyAPI.getSectorNameList().then((resp) async {
-        await CompanySharedPreferences.setSectorNameList(resp);
+        await CompanySharedPreferences.setSectorNameList(sectorNameList: resp);
+        
         if (!mounted) return;
         Provider.of<CompanyProvider>(
           context,
           listen: false
         ).setSectorList(sectorListData: resp);
+        
         Log.success(message: '🔟🔟🔟 Get Saham Sector Name List');
       }),
       _watchlistApi.getWatchlistHistory().then((resp) async {
-        await WatchlistSharedPreferences.setWatchlistHistory(resp);
+        await WatchlistSharedPreferences.setWatchlistHistory(watchlistData: resp);
+        
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
+        Provider.of<WatchlistProvider>(
+          context,
+          listen: false
+        ).setWatchlistHistory(watchlistData: resp);
+        
         Log.success(message: "🔟🔟🔟1️⃣ Get user watchlist history");
       }),
       _insightAPI.getStockNewListed().then((resp) async {
-        await InsightSharedPreferences.setStockNewListed(resp);
+        await InsightSharedPreferences.setStockNewListed(stockNewList: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setStockNewListed(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setStockNewListed(data: resp);
+
         Log.success(message: '🔟🔟🔟2️⃣ Get Stock New Listed');
       }),
       _insightAPI.getStockDividendList().then((resp) async {
-        await InsightSharedPreferences.setStockDividendList(resp);
+        await InsightSharedPreferences.setStockDividendList(stockDividendList: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setStockDividendList(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setStockDividendList(data: resp);
+
         Log.success(message: '🔟🔟🔟3️⃣ Get Stock Dividend List');
       }),
       _insightAPI.getStockSplitList().then((resp) async {
-        await InsightSharedPreferences.setStockSplitList(resp);
+        await InsightSharedPreferences.setStockSplitList(stockDividendList: resp);
+        
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setStockSplitList(data: resp);
+        
         Log.success(message: '🔟🔟🔟4️⃣ Get Stock Split List');
       }),
       _brokerSummaryApi.getBrokerSummaryDate().then((resp) async {
         if (!mounted) return;
-        await BrokerSharedPreferences.setBrokerMinMaxDate(resp.brokerMinDate, resp.brokerMaxDate);
+        await BrokerSharedPreferences.setBrokerMinMaxDate(
+          minDate: resp.brokerMinDate,
+          maxDate: resp.brokerMaxDate
+        );
         Log.success(message: '🔟🔟🔟6️⃣ Get Broker Min and Max Date');
       }),
       

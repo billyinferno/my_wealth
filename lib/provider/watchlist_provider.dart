@@ -8,7 +8,10 @@ class WatchlistProvider extends ChangeNotifier {
   List<WatchlistListModel>? watchlistGold;
   List<WatchlistHistoryModel>? watchlistHistory;
 
-  setWatchlist(String type, List<WatchlistListModel> watchlistData) {
+  setWatchlist({
+    required String type,
+    required List<WatchlistListModel> watchlistData
+  }) {
     if(type == "reksadana") {
       watchlistReksadana = watchlistData;
     }
@@ -24,7 +27,7 @@ class WatchlistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setWatchlistHistory(List<WatchlistHistoryModel> watchlistData) {
+  setWatchlistHistory({required List<WatchlistHistoryModel> watchlistData}) {
     watchlistHistory = watchlistData;
     notifyListeners();
   }

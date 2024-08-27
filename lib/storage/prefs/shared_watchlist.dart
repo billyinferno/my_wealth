@@ -5,7 +5,10 @@ class WatchlistSharedPreferences {
   static const _watchlistKey = "watchlists_list";
   static const _watchlistHistoryKey = "watchlist_history";
 
-  static Future<void> setWatchlist(String type, List<WatchlistListModel> watchlistData) async {
+  static Future<void> setWatchlist({
+    required String type,
+    required List<WatchlistListModel> watchlistData
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -19,7 +22,7 @@ class WatchlistSharedPreferences {
     LocalBox.putStringList(key: "${_watchlistKey}_$type", value: watchlistList);
   }
 
-  static List<WatchlistListModel> getWatchlist(String type) {
+  static List<WatchlistListModel> getWatchlist({required String type}) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -48,7 +51,10 @@ class WatchlistSharedPreferences {
     }
   }
 
-  static WatchlistListModel? getWatchlistId(String type, int id) {
+  static WatchlistListModel? getWatchlistId({
+    required String type,
+    required int id
+  }) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -80,7 +86,9 @@ class WatchlistSharedPreferences {
     }
   }
 
-  static Future<void> setWatchlistHistory(List<WatchlistHistoryModel> watchlistData) async {
+  static Future<void> setWatchlistHistory({
+    required List<WatchlistHistoryModel> watchlistData
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();

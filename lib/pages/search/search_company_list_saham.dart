@@ -481,7 +481,11 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
     // get the favourites so we can showed it on the favourites page
     await _faveAPI.getFavourites(type: "saham").then((resp) async {
       // update the shared preferences, and the provider
-      await FavouritesSharedPreferences.setFavouritesList("saham", resp);
+      await FavouritesSharedPreferences.setFavouritesList(
+        type: "saham",
+        favouriteList: resp,
+      );
+
       // notify the provider
       if (!mounted) return;
       Provider.of<FavouritesProvider>(

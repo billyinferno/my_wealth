@@ -181,7 +181,7 @@ class _BrokerPageState extends State<BrokerPage> {
     // get the broker list
     await _brokerAPI.getBroker().then((resp) async {
       // set the shared preferences and provider for index
-      await BrokerSharedPreferences.setBrokerList(resp);
+      await BrokerSharedPreferences.setBrokerList(brokerList: resp);
       if (!mounted) return;
       Provider.of<BrokerProvider>(
         context,

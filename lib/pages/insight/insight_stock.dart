@@ -33,8 +33,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
   @override
   void initState() {
     _sectorSummaryList = InsightSharedPreferences.getSectorSummaryList();
-    _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList('top');
-    _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList('worse');
+    _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList(type: 'top');
+    _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList(type: 'worse');
     _sectorNameList = CompanySharedPreferences.getSectorNameList();
     _stockNewListedList = InsightSharedPreferences.getStockNewListed();
     _stockDividendList = InsightSharedPreferences.getStockDividendList();
@@ -805,39 +805,51 @@ class _InsightStockPageState extends State<InsightStockPage> {
     await Future.wait([
       _insightAPI.getSectorSummary().then((resp) async {
         Log.success(message: "🔃 Refresh Sector Summary");
-        await InsightSharedPreferences.setSectorSummaryList(resp);
+        await InsightSharedPreferences.setSectorSummaryList(sectorSummaryList: resp);
         if (!context.mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
+        Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(list: resp);
       }),
       _insightAPI.getTopWorseCompany(type: 'top').then((resp) async {
         Log.success(message: "🔃 Refresh Top Company Summary");
-        await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
+        await InsightSharedPreferences.setTopWorseCompanyList(
+          type: 'top',
+          topWorseList: resp
+        );
         if (!context.mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
+        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList(
+          type: 'top',
+          data: resp
+        );
       }),
       _insightAPI.getTopWorseCompany(type: 'worse').then((resp) async {
         Log.success(message: "🔃 Refresh Worse Company Summary");
-        await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
+        await InsightSharedPreferences.setTopWorseCompanyList(
+          type: 'worse',
+          topWorseList: resp
+        );
         if (!context.mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
+        Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList(
+          type: 'worse',
+          data: resp
+        );
       }),
       _insightAPI.getStockNewListed().then((resp) async {
         Log.success(message: "🔃 Refresh Stock Newly Listed");
-        await InsightSharedPreferences.setStockNewListed(resp);
+        await InsightSharedPreferences.setStockNewListed(stockNewList: resp);
         if (!context.mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setStockNewListed(resp);
+        Provider.of<InsightProvider>(context, listen: false).setStockNewListed(data: resp);
       }),
       _insightAPI.getStockDividendList().then((resp) async {
         Log.success(message: "🔃 Refresh Stock Dividend List");
-        await InsightSharedPreferences.setStockDividendList(resp);
+        await InsightSharedPreferences.setStockDividendList(stockDividendList: resp);
         if (!context.mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setStockDividendList(resp);
+        Provider.of<InsightProvider>(context, listen: false).setStockDividendList(data: resp);
       }),
       _insightAPI.getStockSplitList().then((resp) async {
         Log.success(message: "🔃 Refresh Stock Split");
-        await InsightSharedPreferences.setStockSplitList(resp);
+        await InsightSharedPreferences.setStockSplitList(stockDividendList: resp);
         if (!context.mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setStockSplitList(resp);
+        Provider.of<InsightProvider>(context, listen: false).setStockSplitList(data: resp);
       }),
     ]).onError((error, stackTrace) {
       Log.error(

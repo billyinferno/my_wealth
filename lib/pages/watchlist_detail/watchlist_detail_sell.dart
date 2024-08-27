@@ -156,7 +156,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
           price: price,
         ).then((watchlistDetail) async {
           // change the watchlist deta  il for this one
-          List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
+          List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(type: _type);
           List<WatchlistListModel> newWatchList = [];
           for (WatchlistListModel data in currentWatchList) {
             // check if this watchlist is the one that we add
@@ -181,9 +181,15 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
           }
 
           // once got the new one then we can update the shared preferences and provider
-          await WatchlistSharedPreferences.setWatchlist(_type, newWatchList);
+          await WatchlistSharedPreferences.setWatchlist(
+            type: _type,
+            watchlistData: newWatchList
+          );
           if (!mounted) return;
-          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchList);
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+            type: _type,
+            watchlistData: newWatchList
+          );
         }).whenComplete(() {
           // remove loading screen
           LoadingScreen.instance().hide();

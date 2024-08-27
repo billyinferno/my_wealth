@@ -844,7 +844,11 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     // get user reksadana favourites
     await _faveAPI.getFavourites(type: "reksadana").then((resp) async {
       // update the shared preferences, and the provider
-      await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
+      await FavouritesSharedPreferences.setFavouritesList(
+        type: "reksadana",
+        favouriteList: resp
+      );
+
       // notify the provider
       if (!mounted) return;
       Provider.of<FavouritesProvider>(

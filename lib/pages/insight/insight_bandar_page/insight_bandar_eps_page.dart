@@ -208,7 +208,11 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                 _epsList = resp;
                 
                 // put on the shared preferences
-                await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
+                await InsightSharedPreferences.setEps(
+                  minRate: _minEpsRate,
+                  diffRate: _minEpsDiffRate,
+                  epsList: _epsList
+                );
 
                 setState(() {
                   // just set state so we will rebuild the list view
@@ -417,9 +421,9 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
 
         // put on the shared preferences
         await InsightSharedPreferences.setEps(
-          _minEpsRate,
-          _minEpsDiffRate,
-          _epsList
+          minRate: _minEpsRate,
+          diffRate: _minEpsDiffRate,
+          epsList: _epsList
         );
       }).onError((error, stackTrace) {
         Log.error(

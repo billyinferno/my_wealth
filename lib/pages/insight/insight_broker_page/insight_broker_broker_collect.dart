@@ -44,8 +44,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     }
 
     // get the from and to date
-    _fromDate = InsightSharedPreferences.getBrokerCollectDate('from');
-    _toDate = InsightSharedPreferences.getBrokerCollectDate('to');
+    _fromDate = InsightSharedPreferences.getBrokerCollectDate(type: 'from');
+    _toDate = InsightSharedPreferences.getBrokerCollectDate(type: 'to');
 
     // check if we got null?
     // if got null, it means that we will defaulted the toDate to the maxBrokerDate
@@ -979,11 +979,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       
       // stre the broker collection query result to the shared preferences
       await InsightSharedPreferences.setBrokerCollect(
-        _brokerCollect!,
-        _brokerCode,
-        _fromDate!,
-        _toDate!,
-        _accumRate
+        brokerCollectList: _brokerCollect!,
+        brokerId: _brokerCode,
+        fromDate: _fromDate!,
+        toDate: _toDate!,
+        rate: _accumRate
       );
     }).onError((error, stackTrace) {
       Log.error(

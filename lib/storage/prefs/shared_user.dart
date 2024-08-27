@@ -4,7 +4,7 @@ import 'package:my_wealth/_index.g.dart';
 class UserSharedPreferences {
   static const _userMeKey = "user_me";
 
-  static Future<void> setUserJWT(String bearerToken) async {
+  static Future<void> setUserJWT({required String bearerToken}) async {
     // ensure that encrypted box is not null, by right as we always initialize this
     // on the startup of app, this wouldn't be null when it reach this point.
     if (LocalBox.encryptedBox == null) {
@@ -28,7 +28,7 @@ class UserSharedPreferences {
     }
   }
 
-  static Future<void> setUserInfo(UserLoginInfoModel userInfo) async {
+  static Future<void> setUserInfo({required UserLoginInfoModel userInfo}) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -81,7 +81,7 @@ class UserSharedPreferences {
         );
 
         // assigned new user as the user info
-        setUserInfo(newUser);
+        setUserInfo(userInfo: newUser);
       }
     }
   }

@@ -7,7 +7,9 @@ class BrokerSharedPreferences {
   static const _brokerMinDateKey = "broker_min_date";
   static const _brokerMaxDateKey = "broker_max_date";
 
-  static Future<void> setBrokerList(List<BrokerModel> brokerList) async {
+  static Future<void> setBrokerList({
+    required List<BrokerModel> brokerList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -51,7 +53,9 @@ class BrokerSharedPreferences {
     }
   }
 
-  static Future<void> setBroketTopList(BrokerSummaryTopModel topList) async {
+  static Future<void> setBroketTopList({
+    required BrokerSummaryTopModel topList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -87,7 +91,10 @@ class BrokerSharedPreferences {
     }
   }
 
-  static Future<void> setBrokerMinMaxDate(DateTime minDate, DateTime maxDate) async {
+  static Future<void> setBrokerMinMaxDate({
+    required DateTime minDate,
+    required DateTime maxDate
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();

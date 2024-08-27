@@ -46,16 +46,16 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     ];
 
     // now get all the information from the shared preferences and put it on the topReksadanaList
-    _topReksadanaList['saham'] = InsightSharedPreferences.getTopReksadanaList('saham');
-    _topReksadanaList['campuran'] = InsightSharedPreferences.getTopReksadanaList('campuran');
-    _topReksadanaList['pasaruang'] = InsightSharedPreferences.getTopReksadanaList('pasaruang');
-    _topReksadanaList['pendapatantetap'] = InsightSharedPreferences.getTopReksadanaList('pendapatantetap');
+    _topReksadanaList['saham'] = InsightSharedPreferences.getTopReksadanaList(type: 'saham');
+    _topReksadanaList['campuran'] = InsightSharedPreferences.getTopReksadanaList(type: 'campuran');
+    _topReksadanaList['pasaruang'] = InsightSharedPreferences.getTopReksadanaList(type: 'pasaruang');
+    _topReksadanaList['pendapatantetap'] = InsightSharedPreferences.getTopReksadanaList(type: 'pendapatantetap');
 
     // then get the worse lit and put it on the worseReksadanaList
-    _worseReksadanaList['saham'] = InsightSharedPreferences.getWorseReksadanaList('saham');
-    _worseReksadanaList['campuran'] = InsightSharedPreferences.getWorseReksadanaList('campuran');
-    _worseReksadanaList['pasaruang'] = InsightSharedPreferences.getWorseReksadanaList('pasaruang');
-    _worseReksadanaList['pendapatantetap'] = InsightSharedPreferences.getWorseReksadanaList('pendapatantetap');
+    _worseReksadanaList['saham'] = InsightSharedPreferences.getWorseReksadanaList(type: 'saham');
+    _worseReksadanaList['campuran'] = InsightSharedPreferences.getWorseReksadanaList(type: 'campuran');
+    _worseReksadanaList['pasaruang'] = InsightSharedPreferences.getWorseReksadanaList(type: 'pasaruang');
+    _worseReksadanaList['pendapatantetap'] = InsightSharedPreferences.getWorseReksadanaList(type: 'pendapatantetap');
 
     super.initState();
   }
@@ -456,7 +456,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'top',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksdana Saham Top");
-        await InsightSharedPreferences.setTopReksadanaList('saham', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'saham',
+          topReksadanaList: resp
+        );
         topSaham = resp;
       }),
 
@@ -465,7 +468,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'top',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Campuran Top");
-        await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'campuran',
+          topReksadanaList: resp
+        );
         topCampuran = resp;
       }),
 
@@ -474,7 +480,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'top',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pasar Uang Top");
-        await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'pasaruang',
+          topReksadanaList: resp
+        );
         topPasarUang = resp;
       }),
 
@@ -483,7 +492,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'top',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pendapatan Tetap Top");
-        await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
+        await InsightSharedPreferences.setTopReksadanaList(
+          type: 'pendapatantetap',
+          topReksadanaList: resp
+        );
         topPendapatanTetap = resp;
       }),
 
@@ -492,7 +504,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'loser',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksdana Saham Loser");
-        await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'saham',
+          worseReksadanaList: resp
+        );
         worseSaham = resp;
       }),
 
@@ -501,7 +516,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'loser',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Campuran");
-        await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'campuran',
+          worseReksadanaList: resp
+        );
         worseCampuran = resp;
       }),
 
@@ -510,7 +528,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'loser',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pasar Uang");
-        await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'pasaruang',
+          worseReksadanaList: resp
+        );
         worsePasarUang = resp;
       }),
 
@@ -519,7 +540,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topWorse: 'loser',
       ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pendapatan Tetap");
-        await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
+        await InsightSharedPreferences.setWorseReksadanaList(
+          type: 'pendapatantetap',
+          worseReksadanaList: resp
+        );
         worsePendapatanTetap = resp;
       }),
     ]).then((_) {
@@ -528,14 +552,30 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
         topSaham != null && topCampuran != null && topPasarUang != null && topPendapatanTetap != null &&
         worseSaham != null && worseCampuran != null && worsePasarUang != null && worsePendapatanTetap != null
       )) {
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', topSaham!);
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', topCampuran!);
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', topPasarUang!);
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', topPendapatanTetap!);
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', worseSaham!);
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', worseCampuran!);
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', worsePasarUang!);
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', worsePendapatanTetap!);
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList(
+          type: 'saham', data: topSaham!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList(
+          type: 'campuran', data: topCampuran!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList(
+          type: 'pasaruang', data: topPasarUang!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList(
+          type: 'pendapatantetap', data: topPendapatanTetap!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList(
+          type: 'saham', data: worseSaham!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList(
+          type: 'campuran', data: worseCampuran!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList(
+          type: 'pasaruang', data: worsePasarUang!
+        );
+        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList(
+          type: 'pendapatantetap', data: worsePendapatanTetap!
+        );
       }
     }).onError((error, stackTrace) {
       Log.error(

@@ -54,7 +54,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // get the user watchlist for crypto
-    _watchlists = WatchlistSharedPreferences.getWatchlist("crypto");
+    _watchlists = WatchlistSharedPreferences.getWatchlist(type: "crypto");
     _isOwned = false;
 
     // initialize graph data

@@ -7,8 +7,8 @@ class UserProvider extends ChangeNotifier {
   bool? _isShowLots;
   bool? _isShowEmptyWatchlists;
 
-  setUserLoginInfo(UserLoginInfoModel userInfoParam) {
-    userInfo = userInfoParam;
+  setUserLoginInfo({required UserLoginInfoModel user}) {
+    userInfo = user;
     notifyListeners();
   }
 

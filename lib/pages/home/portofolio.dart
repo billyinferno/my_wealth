@@ -28,10 +28,10 @@ class _PortofolioPageState extends State<PortofolioPage> {
   void initState() {
     _barChartData = [];
     _userInfo = UserSharedPreferences.getUserInfo();
-    _watchlistReksadana = WatchlistSharedPreferences.getWatchlist("reksadana");
-    _watchlistSaham = WatchlistSharedPreferences.getWatchlist("saham");
-    _watchlistCrypto = WatchlistSharedPreferences.getWatchlist("crypto");
-    _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
+    _watchlistReksadana = WatchlistSharedPreferences.getWatchlist(type: "reksadana");
+    _watchlistSaham = WatchlistSharedPreferences.getWatchlist(type: "saham");
+    _watchlistCrypto = WatchlistSharedPreferences.getWatchlist(type: "crypto");
+    _watchlistGold = WatchlistSharedPreferences.getWatchlist(type: "gold");
 
     // initialize also in the initial state
     _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);

@@ -215,7 +215,12 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                 _sortedList = List<InsightSidewayModel>.from(_sidewayList);
 
                 // stored the sideway result to shared preferences
-                await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
+                await InsightSharedPreferences.setSideway(
+                  oneDay: _maxOneDay,
+                  avgOneDay: _avgOneDay,
+                  avgOneWeek: _avgOneWeek,
+                  sidewayList: _sidewayList
+                );
 
                 setState(() {
                   // just set stat to refresh the widget
@@ -488,7 +493,12 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
         _sidewayList = resp;
 
         // stored the sideway result to shared preferences
-        await InsightSharedPreferences.setSideway(_maxOneDay, _avgOneDay, _avgOneWeek, _sidewayList);
+        await InsightSharedPreferences.setSideway(
+          oneDay: _maxOneDay,
+          avgOneDay: _avgOneDay,
+          avgOneWeek: _avgOneWeek,
+          sidewayList: _sidewayList
+        );
 
         // set the sorted from side way
         _sortedList = List<InsightSidewayModel>.from(_sidewayList);

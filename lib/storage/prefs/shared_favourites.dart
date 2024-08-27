@@ -4,7 +4,10 @@ import 'package:my_wealth/_index.g.dart';
 class FavouritesSharedPreferences {
   static const _favouriteKey = "favourites_list";
 
-  static Future<void> setFavouritesList(String type, List<FavouritesModel> favouriteList) async {
+  static Future<void> setFavouritesList({
+    required String type,
+    required List<FavouritesModel> favouriteList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -21,7 +24,7 @@ class FavouritesSharedPreferences {
     );
   }
 
-  static List<FavouritesModel> getFavouritesList(String type) {
+  static List<FavouritesModel> getFavouritesList({required String type}) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();

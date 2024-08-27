@@ -31,12 +31,15 @@ class FavouritesPageState extends State<FavouritesPage>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _userInfo = UserSharedPreferences.getUserInfo();
-    _favouriteListReksadana =
-        FavouritesSharedPreferences.getFavouritesList("reksadana");
-    _favouriteListSaham =
-        FavouritesSharedPreferences.getFavouritesList("saham");
-    _favouriteListCrypto =
-        FavouritesSharedPreferences.getFavouritesList("crypto");
+    _favouriteListReksadana = FavouritesSharedPreferences.getFavouritesList(
+      type: "reksadana"
+    );
+    _favouriteListSaham = FavouritesSharedPreferences.getFavouritesList(
+      type: "saham"
+    );
+    _favouriteListCrypto = FavouritesSharedPreferences.getFavouritesList(
+      type: "crypto"
+    );
   }
 
   @override
@@ -140,7 +143,9 @@ class FavouritesPageState extends State<FavouritesPage>
                 );
               }
               await FavouritesSharedPreferences.setFavouritesList(
-                  "reksadana", resp);
+                type: "reksadana",
+                favouriteList: resp,
+              );
             }
           }),
           _getFavourites("saham").then((resp) async {
@@ -155,7 +160,9 @@ class FavouritesPageState extends State<FavouritesPage>
                 );
               }
               await FavouritesSharedPreferences.setFavouritesList(
-                  "saham", resp);
+                type: "saham",
+                favouriteList: resp,
+              );
             }
           }),
           _getFavourites("crypto").then((resp) async {
@@ -170,13 +177,16 @@ class FavouritesPageState extends State<FavouritesPage>
                 );
               }
               await FavouritesSharedPreferences.setFavouritesList(
-                  "crypto", resp);
+                type: "crypto",
+                favouriteList: resp
+              );
             }
           }),
         ]).onError((error, stackTrace) {
           if (mounted) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(createSnackBar(message: error.toString()));
+            ScaffoldMessenger.of(context).showSnackBar(
+              createSnackBar(message: error.toString())
+            );
           }
 
           // remove the loading screen if error

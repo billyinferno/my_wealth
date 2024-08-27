@@ -137,7 +137,7 @@ class IndexPageState extends State<IndexPage> {
     // get the index data
     await _indexApi.getIndex().then((resp) async {
       // set the shared preferences and provider for index
-      await IndexSharedPreferences.setIndexList(resp);
+      await IndexSharedPreferences.setIndexList(indexList: resp);
       _refreshIndexList();
     }).onError((error, stackTrace) {
       throw Exception(error.toString());

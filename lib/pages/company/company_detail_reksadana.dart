@@ -110,7 +110,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // get watchlist for this user
-    _watchlists = WatchlistSharedPreferences.getWatchlist("reksadana");
+    _watchlists = WatchlistSharedPreferences.getWatchlist(type: "reksadana");
     // assume that user don't own this
     _isOwned = false;
 

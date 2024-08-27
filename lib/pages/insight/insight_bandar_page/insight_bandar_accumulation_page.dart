@@ -219,10 +219,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
               ).then((resp) async {
                 // stored all the data to shared preferences
                 await InsightSharedPreferences.setTopAccumulation(
-                  _fromDate,
-                  _toDate,
-                  _oneDayRate,
-                  resp
+                  fromDate: _fromDate,
+                  toDate: _toDate,
+                  rate: _oneDayRate,
+                  accum: resp
                 );
 
                 setState(() {
@@ -496,7 +496,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
             _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
           }
 
-          await BrokerSharedPreferences.setBrokerMinMaxDate(_brokerSummaryDate.brokerMinDate, _brokerSummaryDate.brokerMaxDate);
+          await BrokerSharedPreferences.setBrokerMinMaxDate(
+            minDate: _brokerSummaryDate.brokerMinDate,
+            maxDate: _brokerSummaryDate.brokerMaxDate
+          );
         }).onError((error, stackTrace) {
           Log.error(
             message: 'Error getting broker summary date',
@@ -516,7 +519,12 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
           _listAccumulation = resp;
 
           // stored all the data to shared preferences
-          await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, _listAccumulation);
+          await InsightSharedPreferences.setTopAccumulation(
+            fromDate: _fromDate,
+            toDate: _toDate,
+            rate: _oneDayRate,
+            accum: _listAccumulation
+          );
         }).onError((error, stackTrace) {
           Log.error(
             message: 'Error getting broker top accumulation',

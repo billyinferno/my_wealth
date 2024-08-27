@@ -35,7 +35,9 @@ class InsightSharedPreferences {
   static const _brokerCollectToDateKey = "insight_broker_collect_to_date";
   static const _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
 
-  static Future<void> setSectorSummaryList(List<SectorSummaryModel> sectorSummaryList) async {
+  static Future<void> setSectorSummaryList({
+    required List<SectorSummaryModel> sectorSummaryList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -81,7 +83,10 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setTopWorseCompanyList(String type, TopWorseCompanyListModel topWorseList) async {
+  static Future<void> setTopWorseCompanyList({
+    required String type,
+    required TopWorseCompanyListModel topWorseList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -95,7 +100,9 @@ class InsightSharedPreferences {
     );
   }
 
-  static TopWorseCompanyListModel getTopWorseCompanyList(String type) {
+  static TopWorseCompanyListModel getTopWorseCompanyList({
+    required String type
+  }) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -131,7 +138,9 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setBrokerTopTxn(BrokerTopTransactionModel brokerTopList) async {
+  static Future<void> setBrokerTopTxn({
+    required BrokerTopTransactionModel brokerTopList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -174,7 +183,10 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setTopReksadanaList(String type, TopWorseCompanyListModel topReksadanaList) async {
+  static Future<void> setTopReksadanaList({
+    required String type,
+    required TopWorseCompanyListModel topReksadanaList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -188,7 +200,7 @@ class InsightSharedPreferences {
     );
   }
 
-  static TopWorseCompanyListModel getTopReksadanaList(String type) {
+  static TopWorseCompanyListModel getTopReksadanaList({required String type}) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -224,7 +236,10 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setWorseReksadanaList(String type, TopWorseCompanyListModel worseReksadanaList) async {
+  static Future<void> setWorseReksadanaList({
+    required String type,
+    required TopWorseCompanyListModel worseReksadanaList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -238,7 +253,9 @@ class InsightSharedPreferences {
     );
   }
 
-  static TopWorseCompanyListModel getWorseReksadanaList(String type) {
+  static TopWorseCompanyListModel getWorseReksadanaList({
+    required String type
+  }) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -252,7 +269,9 @@ class InsightSharedPreferences {
     // check if the list is empty or not?
     if (worseReksadanaString.isNotEmpty) {
       // string is not empty parse it
-      TopWorseCompanyListModel worseReksadana = TopWorseCompanyListModel.fromJson(jsonDecode(worseReksadanaString));
+      TopWorseCompanyListModel worseReksadana = TopWorseCompanyListModel.fromJson(
+        jsonDecode(worseReksadanaString)
+      );
       // return the top worse
       return worseReksadana;
     }
@@ -274,7 +293,9 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setBandarInterestingList(InsightBandarInterestModel bandarInterest) async {
+  static Future<void> setBandarInterestingList({
+    required InsightBandarInterestModel bandarInterest
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -315,7 +336,12 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setTopAccumulation(DateTime fromDate, DateTime toDate, int rate, List<InsightAccumulationModel> accum) async {
+  static Future<void> setTopAccumulation({
+    required DateTime fromDate,
+    required DateTime toDate,
+    required int rate,
+    required List<InsightAccumulationModel> accum
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -439,7 +465,11 @@ class InsightSharedPreferences {
     LocalBox.delete(key: _topAccumResultKey, exact: true);
   }
 
-  static Future<void> setEps(int minRate, int diffRate, List<InsightEpsModel> epsList) async {
+  static Future<void> setEps({
+    required int minRate,
+    required int diffRate,
+    required List<InsightEpsModel> epsList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -525,7 +555,12 @@ class InsightSharedPreferences {
     LocalBox.delete(key: _epsResultKey, exact: true);
   }
 
-  static Future<void> setSideway(int oneDay, int avgOneDay, int avgOneWeek, List<InsightSidewayModel> sidewayList) async {
+  static Future<void> setSideway({
+    required int oneDay,
+    required int avgOneDay,
+    required int avgOneWeek,
+    required List<InsightSidewayModel> sidewayList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -633,7 +668,9 @@ class InsightSharedPreferences {
     LocalBox.delete(key: _sidewayResultKey, exact: true);
   }
 
-  static Future<void> setBrokerMarketToday(MarketTodayModel marketToday) async {
+  static Future<void> setBrokerMarketToday({
+    required MarketTodayModel marketToday
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -681,7 +718,9 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setMarketCap(List<MarketCapModel> marketCapList) async {
+  static Future<void> setMarketCap({
+    required List<MarketCapModel> marketCapList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -726,7 +765,9 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setIndexBeater(List<IndexBeaterModel> indexBeaterList) async {
+  static Future<void> setIndexBeater({
+    required List<IndexBeaterModel> indexBeaterList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -780,7 +821,9 @@ class InsightSharedPreferences {
     LocalBox.delete(key: _indexBeaterKey, exact: true);
   }
 
-  static Future<void> setStockNewListed(List<StockNewListedModel> stockNewList) async {
+  static Future<void> setStockNewListed({
+    required List<StockNewListedModel> stockNewList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -823,7 +866,9 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setStockDividendList(List<StockDividendListModel> stockDividendList) async {
+  static Future<void> setStockDividendList({
+    required List<StockDividendListModel> stockDividendList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -869,7 +914,9 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setStockSplitList(List<StockSplitListModel> stockDividendList) async {
+  static Future<void> setStockSplitList({
+    required List<StockSplitListModel> stockDividendList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -912,7 +959,12 @@ class InsightSharedPreferences {
     }
   }
 
-  static Future<void> setStockCollect(List<InsightStockCollectModel> stockCollectList, DateTime fromDate, DateTime toDate, int rate) async {
+  static Future<void> setStockCollect({
+    required List<InsightStockCollectModel> stockCollectList,
+    required DateTime fromDate,
+    required DateTime toDate,
+    required int rate
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -971,7 +1023,7 @@ class InsightSharedPreferences {
     }
   }
 
-  static DateTime? getStockCollectDate(String type) {
+  static DateTime? getStockCollectDate({required String type}) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -1028,7 +1080,13 @@ class InsightSharedPreferences {
     LocalBox.delete(key: _stockCollectAccumRateKey, exact: true);
   }
 
-  static Future<void> setBrokerCollect(InsightBrokerCollectModel brokerCollectList, String brokerId, DateTime fromDate, DateTime toDate, int rate) async {
+  static Future<void> setBrokerCollect({
+    required InsightBrokerCollectModel brokerCollectList,
+    required String brokerId,
+    required DateTime fromDate,
+    required DateTime toDate,
+    required int rate
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();
@@ -1101,7 +1159,7 @@ class InsightSharedPreferences {
     return '';
   }
 
-  static DateTime? getBrokerCollectDate(String type) {
+  static DateTime? getBrokerCollectDate({required String type}) {
     // check if the key box is null or not?
     if(LocalBox.keyBox == null) {
       LocalBox.init();

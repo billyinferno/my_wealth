@@ -102,11 +102,11 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                       ).then((resp) async {
                         // we will get updated user info here, so stored the updated
                         // user info with new risk factor to the local storea
-                        await UserSharedPreferences.setUserInfo(resp);
+                        await UserSharedPreferences.setUserInfo(userInfo: resp);
                         
                         if (context.mounted) {
                           // update the provider to notify the user page
-                          Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+                          Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
           
                           // once finished, then pop out from this page
                           Navigator.pop(context);

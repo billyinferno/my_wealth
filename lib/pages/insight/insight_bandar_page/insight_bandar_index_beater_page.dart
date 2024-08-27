@@ -259,7 +259,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
         _indexBeaterList = resp;
 
         // set the shared preferences for the index beater
-        InsightSharedPreferences.setIndexBeater(resp);
+        InsightSharedPreferences.setIndexBeater(indexBeaterList: resp);
       }).onError((error, stackTrace) {
         throw Exception('Error when get index beater');
       });

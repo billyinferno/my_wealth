@@ -4,7 +4,9 @@ import 'package:my_wealth/_index.g.dart';
 class CompanySharedPreferences {
   static const _sectorNameListKey = "sector_name_list";
 
-  static Future<void> setSectorNameList(List<SectorNameModel> sectorNameList) async {
+  static Future<void> setSectorNameList({
+    required List<SectorNameModel> sectorNameList
+  }) async {
     // stored the user info to box
     if(LocalBox.keyBox == null) {
       LocalBox.init();

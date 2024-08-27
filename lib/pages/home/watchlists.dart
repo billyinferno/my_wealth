@@ -48,10 +48,10 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   void initState() {
     super.initState();
     _userInfo = UserSharedPreferences.getUserInfo();
-    _watchlistReksadana = WatchlistSharedPreferences.getWatchlist("reksadana");
-    _watchlistSaham = WatchlistSharedPreferences.getWatchlist("saham");
-    _watchlistCrypto = WatchlistSharedPreferences.getWatchlist("crypto");
-    _watchlistGold = WatchlistSharedPreferences.getWatchlist("gold");
+    _watchlistReksadana = WatchlistSharedPreferences.getWatchlist(type: "reksadana");
+    _watchlistSaham = WatchlistSharedPreferences.getWatchlist(type: "saham");
+    _watchlistCrypto = WatchlistSharedPreferences.getWatchlist(type: "crypto");
+    _watchlistGold = WatchlistSharedPreferences.getWatchlist(type: "gold");
     _watchlistHistory = WatchlistSharedPreferences.getWatchlistHistory();
 
     // sort the watchlist
@@ -676,41 +676,65 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     await Future.wait([
       _watchlistAPI.getWatchlist(type: "reksadana").then((resp) async {
         // update the provider and shared preferences
-        await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "reksadana",
+          watchlistData: resp
+        );
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "reksadana",
+          watchlistData: resp
+        );
         Log.success(message: "🔃 Refresh watchlist reksadana");
       }),
 
       _watchlistAPI.getWatchlist(type: "saham").then((resp) async {
         // update the provider and shared preferences
-        await WatchlistSharedPreferences.setWatchlist("saham", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "saham",
+          watchlistData: resp
+        );
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "saham",
+          watchlistData: resp
+        );
         Log.success(message: "🔃 Refresh watchlist saham");
       }),
 
        _watchlistAPI.getWatchlist(type: "crypto").then((resp) async {
         // update the provider and shared preferences
-        await WatchlistSharedPreferences.setWatchlist("crypto", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "crypto",
+          watchlistData: resp
+        );
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "crypto",
+          watchlistData: resp
+        );
         Log.success(message: "🔃 Refresh watchlist crypto");
       }),
 
       _watchlistAPI.getWatchlist(type: "gold").then((resp) async {
         // update the provider and shared preferences
-        await WatchlistSharedPreferences.setWatchlist("gold", resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "gold",
+          watchlistData: resp
+        );
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "gold",
+          watchlistData: resp
+        );
         Log.success(message: "🔃 Refresh watchlist gold");
       }),
 
       _watchlistAPI.getWatchlistHistory().then((resp) async {
         // update the provider and shared preferences
-        await WatchlistSharedPreferences.setWatchlistHistory(resp);
+        await WatchlistSharedPreferences.setWatchlistHistory(watchlistData: resp);
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(watchlistData: resp);
         Log.success(message: "🔃 Refresh watchlist history");
       }),
     ]).onError((error, stackTrace) {
@@ -801,9 +825,15 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         }
 
         // update shared preferences and the provider
-        await WatchlistSharedPreferences.setWatchlist(type, newWatchlist);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: type,
+          watchlistData: newWatchlist
+        );
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(type, newWatchlist);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: type,
+          watchlistData: newWatchlist
+        );
       }
     }).onError((error, stackTrace) {
       // when error return the error to the caller

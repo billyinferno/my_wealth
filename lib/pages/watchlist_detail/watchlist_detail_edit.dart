@@ -207,7 +207,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
 
           // loop thru current watchlist
           List<WatchlistListModel> newWatchlist = [];
-          List<WatchlistListModel> currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
+          List<WatchlistListModel> currWatchlist = WatchlistSharedPreferences.getWatchlist(type: _type);
           for (WatchlistListModel watch in currWatchlist) {
             // check if this is the same ID or not, if same then we need to recreate the new watchlist
             if(watch.watchlistId == _watchlist.watchlistId) {
@@ -231,9 +231,15 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
           }
 
           // got the new list, not time to update the shared preferences and the provider
-          await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
+          await WatchlistSharedPreferences.setWatchlist(
+            type: _type,
+            watchlistData: newWatchlist
+          );
           if (mounted) {
-            Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+            Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+              type: _type,
+              watchlistData: newWatchlist
+            );
           }
         }
 

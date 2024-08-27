@@ -285,7 +285,11 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     // get the favourites list
     await _faveAPI.getFavourites(type: "crypto").then((resp) async {
       // update the shared preferences, and the provider
-      await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
+      await FavouritesSharedPreferences.setFavouritesList(
+        type: "crypto",
+        favouriteList: resp
+      );
+
       // notify the provider
       if (!mounted) return;
       Provider.of<FavouritesProvider>(

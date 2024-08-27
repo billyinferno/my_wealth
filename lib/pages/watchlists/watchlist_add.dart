@@ -234,9 +234,17 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
       // now refresh the watchlist
       await _watchlistAPI.getWatchlist(type: _args.type).then((resp) async {
         // update the provider and shared preferences
-        await WatchlistSharedPreferences.setWatchlist(_args.type, resp);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: _args.type,
+          watchlistData: resp
+        );
+        
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_args.type, resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: _args.type,
+          watchlistData: resp
+        );
+        
         Log.success(message: "🔃 Refresh watchlist ${_args.type} after add");
       }).onError((error, stackTrace) {
         throw Exception("Error when refresh watchlist ${_args.type} after add");

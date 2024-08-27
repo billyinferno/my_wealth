@@ -559,11 +559,11 @@ class _UserPageState extends State<UserPage> {
       ret = true;
 
       // update the user info and the user provider so it will affect all the listener
-      await UserSharedPreferences.setUserInfo(resp);
+      await UserSharedPreferences.setUserInfo(userInfo: resp);
 
       // update the provider to notify the user page
       if (mounted) {
-        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
         Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: visibility);
       }
     }).onError((error, stackTrace) {
@@ -595,11 +595,11 @@ class _UserPageState extends State<UserPage> {
       ret = true;
 
       // update the user info and the user provider so it will affect all the listener
-      await UserSharedPreferences.setUserInfo(resp);
+      await UserSharedPreferences.setUserInfo(userInfo: resp);
 
       // update the provider to notify the user page
       if (mounted) {        
-        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
         Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: showLots);
       }
     }).onError((error, stackTrace) {
@@ -633,11 +633,11 @@ class _UserPageState extends State<UserPage> {
       ret = true;
 
       // update the user info and the user provider so it will affect all the listener
-      await UserSharedPreferences.setUserInfo(resp);
+      await UserSharedPreferences.setUserInfo(userInfo: resp);
 
       // update the provider to notify the user page
       if (mounted) {
-        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(resp);
+        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
         Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: showEmptyWatchlist);
       }
     }).onError((error, stackTrace) {

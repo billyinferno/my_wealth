@@ -35,8 +35,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
     }
 
     // get the from and to date
-    _fromDate = InsightSharedPreferences.getStockCollectDate('from');
-    _toDate = InsightSharedPreferences.getStockCollectDate('to');
+    _fromDate = InsightSharedPreferences.getStockCollectDate(type: 'from');
+    _toDate = InsightSharedPreferences.getStockCollectDate(type: 'to');
 
     // check if we got null?
     // if got null, it means that we will defaulted the toDate to the maxBrokerDate
@@ -220,7 +220,12 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                   _stockCollectList!.addAll(resp);
                   
                   // stored the response to the insight preferences
-                  InsightSharedPreferences.setStockCollect(_stockCollectList!, _fromDate!, _toDate!, _accumRate);
+                  InsightSharedPreferences.setStockCollect(
+                    stockCollectList: _stockCollectList!,
+                    fromDate: _fromDate!,
+                    toDate: _toDate!,
+                    rate: _accumRate
+                  );
                 });
               }).onError((error, stackTrace) {
                 Log.error(
@@ -367,7 +372,12 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
           _stockCollectList!.addAll(resp);
           
           // stored the response to the insight preferences
-          InsightSharedPreferences.setStockCollect(_stockCollectList!, _fromDate!, _toDate!, _accumRate);
+          InsightSharedPreferences.setStockCollect(
+            stockCollectList: _stockCollectList!,
+            fromDate: _fromDate!,
+            toDate: _toDate!,
+            rate: _accumRate
+          );
         });
       }
 

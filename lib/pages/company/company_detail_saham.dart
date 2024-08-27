@@ -165,7 +165,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _userInfo = UserSharedPreferences.getUserInfo();
 
     // get user watchlists data
-    _watchlists = WatchlistSharedPreferences.getWatchlist("saham");
+    _watchlists = WatchlistSharedPreferences.getWatchlist(type: "saham");
     _isOwned = false;
 
     // initialize graph data

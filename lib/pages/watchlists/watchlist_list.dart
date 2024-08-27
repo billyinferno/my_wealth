@@ -653,7 +653,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
           watchlistCompanyFCA: _watchlist.watchlistCompanyFCA,
         );
 
-        List<WatchlistListModel> currWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
+        List<WatchlistListModel> currWatchlist = WatchlistSharedPreferences.getWatchlist(type: _type);
         
         // loop thru the current watchlist
         for (WatchlistListModel watch in currWatchlist) {
@@ -668,9 +668,16 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
         // once we finished generate the updated watchlist, update the shared preferences
         // and the provider
-        await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: _type,
+          watchlistData: newWatchlist
+        );
+
         if (mounted) {
-          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+            type: _type,
+            watchlistData: newWatchlist
+          );
         }
       }
 
@@ -698,7 +705,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         
         // delete the current watchlist
         List<WatchlistListModel> newWatchlist = [];
-        List<WatchlistListModel> currentWatchlist = WatchlistSharedPreferences.getWatchlist(_type);
+        List<WatchlistListModel> currentWatchlist = WatchlistSharedPreferences.getWatchlist(type: _type);
         for (WatchlistListModel watch in currentWatchlist) {
           if(watch.watchlistId != _watchlist.watchlistId) {
             newWatchlist.add(watch);
@@ -706,12 +713,18 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         }
 
         // update shared preferences and provdier
-        await WatchlistSharedPreferences.setWatchlist(_type, newWatchlist);
+        await WatchlistSharedPreferences.setWatchlist(
+          type: _type,
+          watchlistData: newWatchlist
+        );
 
         // ensure it's already mounted
         if (mounted) {
           // update provider so the other page will refresh
-          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(_type, newWatchlist);
+          Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+            type: _type,
+            watchlistData: newWatchlist
+          );
           
           // navigate to the previous page
           Navigator.pop(context); 

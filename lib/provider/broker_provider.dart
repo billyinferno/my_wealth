@@ -5,12 +5,12 @@ class BrokerProvider extends ChangeNotifier {
   List<BrokerModel>? brokerList;
   BrokerSummaryTopModel? brokerTopList;
 
-  setBrokerList(List<BrokerModel> brokerListData) {
+  setBrokerList({required List<BrokerModel> brokerListData}) {
     brokerList = brokerListData;
     notifyListeners();
   }
 
-  setBrokerTopList(BrokerSummaryTopModel brokerTopListData) {
+  setBrokerTopList({required BrokerSummaryTopModel brokerTopListData}) {
     brokerTopList = brokerTopListData;
     notifyListeners();
   }

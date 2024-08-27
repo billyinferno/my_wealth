@@ -131,8 +131,13 @@ class FavouritesPageState extends State<FavouritesPage>
           _getFavourites("reksadana").then((resp) async {
             if (resp.isNotEmpty) {
               if (mounted) {
-                Provider.of<FavouritesProvider>(context, listen: false)
-                    .setFavouriteList("reksadana", resp);
+                Provider.of<FavouritesProvider>(
+                  context,
+                  listen: false
+                ).setFavouriteList(
+                  type: "reksadana",
+                  favouriteListData: resp
+                );
               }
               await FavouritesSharedPreferences.setFavouritesList(
                   "reksadana", resp);
@@ -141,8 +146,13 @@ class FavouritesPageState extends State<FavouritesPage>
           _getFavourites("saham").then((resp) async {
             if (resp.isNotEmpty) {
               if (mounted) {
-                Provider.of<FavouritesProvider>(context, listen: false)
-                    .setFavouriteList("saham", resp);
+                Provider.of<FavouritesProvider>(
+                  context,
+                  listen: false
+                ).setFavouriteList(
+                  type: "saham",
+                  favouriteListData: resp,
+                );
               }
               await FavouritesSharedPreferences.setFavouritesList(
                   "saham", resp);
@@ -151,8 +161,13 @@ class FavouritesPageState extends State<FavouritesPage>
           _getFavourites("crypto").then((resp) async {
             if (resp.isNotEmpty) {
               if (mounted) {
-                Provider.of<FavouritesProvider>(context, listen: false)
-                    .setFavouriteList("crypto", resp);
+                Provider.of<FavouritesProvider>(
+                  context,
+                  listen: false
+                ).setFavouriteList(
+                  type: "crypto",
+                  favouriteListData: resp,
+                );
               }
               await FavouritesSharedPreferences.setFavouritesList(
                   "crypto", resp);

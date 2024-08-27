@@ -847,7 +847,13 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
       await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
       // notify the provider
       if (!mounted) return;
-      Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
+      Provider.of<FavouritesProvider>(
+        context,
+        listen: false
+      ).setFavouriteList(
+        type: "reksadana",
+        favouriteListData: resp,
+      );
     });
 
     // remove loading screen

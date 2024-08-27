@@ -484,7 +484,13 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
       await FavouritesSharedPreferences.setFavouritesList("saham", resp);
       // notify the provider
       if (!mounted) return;
-      Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
+      Provider.of<FavouritesProvider>(
+        context,
+        listen: false
+      ).setFavouriteList(
+        type: "saham",
+        favouriteListData: resp,
+      );
     }).onError((error, stackTrace) {
       Log.error(
         message: 'Error when get user favourites',

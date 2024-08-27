@@ -288,7 +288,13 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
       await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
       // notify the provider
       if (!mounted) return;
-      Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
+      Provider.of<FavouritesProvider>(
+        context,
+        listen: false
+      ).setFavouriteList(
+        type: "crypto",
+        favouriteListData: resp,
+      );
     });
 
     // remove the loading screen

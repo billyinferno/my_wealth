@@ -489,19 +489,37 @@ class LoginPageState extends State<LoginPage> {
       _faveAPI.getFavourites(type: "reksadana").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
         if (!mounted) return;
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
+        Provider.of<FavouritesProvider>(
+          context,
+          listen: false
+        ).setFavouriteList(
+          type: "reksadana",
+          favouriteListData: resp,
+        );
         Log.success(message: "4️⃣ Get user favourites reksadana");
       }),
       _faveAPI.getFavourites(type: "saham").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("saham", resp);
         if (!mounted) return;
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
+        Provider.of<FavouritesProvider>(
+          context,
+          listen: false
+        ).setFavouriteList(
+          type: "saham",
+          favouriteListData: resp,
+        );
         Log.success(message: "5️⃣ Get user favourites saham");
       }),
       _faveAPI.getFavourites(type: "crypto").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
         if (!mounted) return;
-        Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
+        Provider.of<FavouritesProvider>(
+          context,
+          listen: false
+        ).setFavouriteList(
+          type: "crypto",
+          favouriteListData: resp,
+        );
         Log.success(message: "6️⃣ Get user favourites crypto");
       }),
       _watchlistApi.getWatchlist(type: "reksadana").then((resp) async {
@@ -531,19 +549,28 @@ class LoginPageState extends State<LoginPage> {
       _indexApi.getIndex().then((resp) async {
         await IndexSharedPreferences.setIndexList(resp);
         if (!mounted) return;
-        Provider.of<IndexProvider>(context, listen: false).setIndexList(resp);
+        Provider.of<IndexProvider>(
+          context,
+          listen: false
+        ).setIndexList(indexListData: resp);
         Log.success(message: "🔟1️⃣ Get index");
       }),
       _brokerApi.getBroker().then((resp) async {
         await BrokerSharedPreferences.setBrokerList(resp);
         if (!mounted) return;
-        Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
+        Provider.of<BrokerProvider>(
+          context,
+          listen: false
+        ).setBrokerList(brokerListData: resp);
         Log.success(message: '🔟2️⃣ Get Broker');
       }),
       _brokerSummaryApi.getBrokerSummaryTop().then((resp) async {
         await BrokerSharedPreferences.setBroketTopList(resp);
         if (!mounted) return;
-        Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
+        Provider.of<BrokerProvider>(
+          context,
+          listen: false
+        ).setBrokerTopList(brokerTopListData: resp);
         Log.success(message: '🔟3️⃣ Get Broker Top List');
       }),
       _insightAPI.getBrokerTopTransaction().then((resp) async {
@@ -684,7 +711,10 @@ class LoginPageState extends State<LoginPage> {
       _companyAPI.getSectorNameList().then((resp) async {
         await CompanySharedPreferences.setSectorNameList(resp);
         if (!mounted) return;
-        Provider.of<CompanyProvider>(context, listen: false).setSectorList(resp);
+        Provider.of<CompanyProvider>(
+          context,
+          listen: false
+        ).setSectorList(sectorListData: resp);
         Log.success(message: '🔟🔟🔟 Get Saham Sector Name List');
       }),
       _watchlistApi.getWatchlistHistory().then((resp) async {

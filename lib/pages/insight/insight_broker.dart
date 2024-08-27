@@ -942,7 +942,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         Log.success(message: "🔃 Refresh Broker Summary Top");
         await BrokerSharedPreferences.setBroketTopList(resp);
         if (mounted) {
-          Provider.of<BrokerProvider>(context, listen: false).setBrokerTopList(resp);
+          Provider.of<BrokerProvider>(
+            context,
+            listen: false
+          ).setBrokerTopList(brokerTopListData: resp);
         }
       }),
       
@@ -950,7 +953,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         Log.success(message: "🔃 Refresh Broker Top Transaction List");
         await InsightSharedPreferences.setBrokerTopTxn(resp);
         if (mounted) {
-          Provider.of<InsightProvider>(context, listen: false).setBrokerTopTransactionList(resp);
+          Provider.of<InsightProvider>(
+            context,
+            listen: false
+          ).setBrokerTopTransactionList(resp);
         }
       }),
 
@@ -958,7 +964,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         Log.success(message: "🔃 Refresh Broker Market Today");
         await InsightSharedPreferences.setBrokerMarketToday(resp);
         if (mounted) {
-          Provider.of<InsightProvider>(context, listen: false).setBrokerMarketToday(resp);
+          Provider.of<InsightProvider>(
+            context,
+            listen: false
+          ).setBrokerMarketToday(resp);
         }
       }),
 
@@ -966,7 +975,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         Log.success(message: "🔃 Refresh Broker Market Cap");
         await InsightSharedPreferences.setMarketCap(resp);
         if (mounted) {
-          Provider.of<InsightProvider>(context, listen: false).setMarketCap(resp);
+          Provider.of<InsightProvider>(
+            context,
+            listen: false
+          ).setMarketCap(resp);
         }
       }),
     ]).onError((error, stackTrace) {

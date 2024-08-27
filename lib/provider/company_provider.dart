@@ -5,12 +5,16 @@ class CompanyProvider extends ChangeNotifier {
   List<SectorNameModel>? sectorNameList;
   List<CompanySahamListModel>? companySahamList;
 
-  setSectorList(List<SectorNameModel> sectorListData) {
+  setSectorList({
+    required List<SectorNameModel> sectorListData
+  }) {
     sectorNameList = sectorListData;
     notifyListeners();
   }
 
-  setCompanySahamList(List<CompanySahamListModel> companySahamListData) {
+  setCompanySahamList({
+    required List<CompanySahamListModel> companySahamListData
+  }) {
     companySahamList = companySahamListData;
     notifyListeners();
   }

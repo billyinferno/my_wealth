@@ -6,7 +6,10 @@ class FavouritesProvider extends ChangeNotifier {
   List<FavouritesModel>? favouriteListSaham;
   List<FavouritesModel>? favouriteListCrypto;
 
-  setFavouriteList(String type, List<FavouritesModel> favouriteListData) {
+  setFavouriteList({
+    required String type,
+    required List<FavouritesModel> favouriteListData
+  }) {
     if (type == "reksadana") {
       favouriteListReksadana = favouriteListData;
     }

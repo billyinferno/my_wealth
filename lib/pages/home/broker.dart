@@ -183,7 +183,10 @@ class _BrokerPageState extends State<BrokerPage> {
       // set the shared preferences and provider for index
       await BrokerSharedPreferences.setBrokerList(resp);
       if (!mounted) return;
-      Provider.of<BrokerProvider>(context, listen: false).setBrokerList(resp);
+      Provider.of<BrokerProvider>(
+        context,
+        listen: false
+      ).setBrokerList(brokerListData: resp);
     }).onError((error, stackTrace) {
       // hide loading screen when got error
       LoadingScreen.instance().hide();

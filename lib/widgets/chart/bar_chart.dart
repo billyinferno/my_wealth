@@ -6,7 +6,12 @@ class BarChartData {
   final double total;
   final Color color;
 
-  BarChartData({required this.title, required this.value, required this.total, required this.color});
+  BarChartData({
+    required this.title,
+    required this.value,
+    required this.total,
+    required this.color
+  });
 }
 
 class BarChart extends StatelessWidget {
@@ -16,7 +21,15 @@ class BarChart extends StatelessWidget {
   final double? barHeight;
   final double? legendPadding;
   final bool? showLegend;
-  const BarChart({super.key, required this.data, this.padding, this.decoration, this.barHeight, this.legendPadding, this.showLegend});
+  const BarChart({
+    super.key,
+    required this.data,
+    this.padding,
+    this.decoration,
+    this.barHeight,
+    this.legendPadding,
+    this.showLegend
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +71,10 @@ class BarChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List<Widget>.generate(data.length, (index) {
-                  return _barLegend(data[index].title, data[index].color);
+                  return _barLegend(
+                    text: data[index].title,
+                    color: data[index].color
+                  );
                 }),
               ),
             ),
@@ -68,7 +84,7 @@ class BarChart extends StatelessWidget {
     );
   }
 
-  Widget _barLegend(String text, Color color) {
+  Widget _barLegend({required String text, required Color color}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,

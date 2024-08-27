@@ -18,7 +18,10 @@ class BrokerSharedPreferences {
     for (BrokerModel broker in brokerList) {
       indexListResp.add(jsonEncode(broker.toJson()));
     }
-    LocalBox.putStringList(_brokerKey, indexListResp);
+    LocalBox.putStringList(
+      key: _brokerKey,
+      value: indexListResp,
+    );
   }
 
   static List<BrokerModel> getBrokerList() {
@@ -28,7 +31,7 @@ class BrokerSharedPreferences {
     }
 
     // get the data from local box
-    List<String> brokerList = (LocalBox.getStringList(_brokerKey) ?? []);
+    List<String> brokerList = (LocalBox.getStringList(key: _brokerKey) ?? []);
 
     // check if the list is empty or not?
     if (brokerList.isNotEmpty) {
@@ -55,7 +58,10 @@ class BrokerSharedPreferences {
     }
 
     // convert the json to string so we can stored it on the local storage
-    LocalBox.putString(_brokerTopKey, jsonEncode(topList.toJson()));
+    LocalBox.putString(
+      key: _brokerTopKey,
+      value: jsonEncode(topList.toJson())
+    );
   }
 
   static BrokerSummaryTopModel? getBrokerTopList() {
@@ -65,7 +71,7 @@ class BrokerSharedPreferences {
     }
 
     // get the data from local box
-    String topList = (LocalBox.getString(_brokerTopKey) ?? '');
+    String topList = (LocalBox.getString(key: _brokerTopKey) ?? '');
 
     // check if the list is empty or not?
     if (topList.isNotEmpty) {
@@ -88,8 +94,8 @@ class BrokerSharedPreferences {
     }
 
     // put the date on the shared preferences
-    LocalBox.putString(_brokerMinDateKey, minDate.toString());
-    LocalBox.putString(_brokerMaxDateKey, maxDate.toString());
+    LocalBox.putString(key: _brokerMinDateKey, value: minDate.toString());
+    LocalBox.putString(key: _brokerMaxDateKey, value: maxDate.toString());
   }
 
   static DateTime? getBrokerMinDate() {
@@ -99,7 +105,7 @@ class BrokerSharedPreferences {
     }
 
     // get the data from local box
-    String strMinDate = (LocalBox.getString(_brokerMinDateKey) ?? '');
+    String strMinDate = (LocalBox.getString(key: _brokerMinDateKey) ?? '');
     if (strMinDate.isNotEmpty) {
       return DateTime.parse(strMinDate);
     }
@@ -114,7 +120,7 @@ class BrokerSharedPreferences {
     }
 
     // get the data from local box
-    String strMaxDate = (LocalBox.getString(_brokerMaxDateKey) ?? '');
+    String strMaxDate = (LocalBox.getString(key: _brokerMaxDateKey) ?? '');
     if (strMaxDate.isNotEmpty) {
       return DateTime.parse(strMaxDate);
     }

@@ -15,7 +15,10 @@ class FavouritesSharedPreferences {
     for (FavouritesModel fave in favouriteList) {
       favouriteListRet.add(jsonEncode(fave.toJson()));
     }
-    LocalBox.putStringList("${_favouriteKey}_$type", favouriteListRet);
+    LocalBox.putStringList(
+      key: "${_favouriteKey}_$type",
+      value: favouriteListRet
+    );
   }
 
   static List<FavouritesModel> getFavouritesList(String type) {
@@ -25,7 +28,9 @@ class FavouritesSharedPreferences {
     }
 
     // get the data from local box
-    List<String> favouriteListString = (LocalBox.getStringList("${_favouriteKey}_$type") ?? []);
+    List<String> favouriteListString = (
+      LocalBox.getStringList(key: "${_favouriteKey}_$type") ?? []
+    );
 
     // check if the list is empty or not?
     if (favouriteListString.isNotEmpty) {

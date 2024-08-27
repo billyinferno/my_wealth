@@ -16,7 +16,7 @@ class WatchlistSharedPreferences {
     for (WatchlistListModel watchlist in watchlistData) {
       watchlistList.add(jsonEncode(watchlist.toJson()));
     }
-    LocalBox.putStringList("${_watchlistKey}_$type", watchlistList);
+    LocalBox.putStringList(key: "${_watchlistKey}_$type", value: watchlistList);
   }
 
   static List<WatchlistListModel> getWatchlist(String type) {
@@ -26,7 +26,9 @@ class WatchlistSharedPreferences {
     }
 
     // get the data from local box
-    List<String> watchlistList = (LocalBox.getStringList("${_watchlistKey}_$type") ?? []);
+    List<String> watchlistList = (
+      LocalBox.getStringList(key: "${_watchlistKey}_$type") ?? []
+    );
 
     // check if the list is empty or not?
     if (watchlistList.isNotEmpty) {
@@ -53,7 +55,9 @@ class WatchlistSharedPreferences {
     }
 
     // get the data from local box
-    List<String> watchlistList = (LocalBox.getStringList("${_watchlistKey}_$type") ?? []);
+    List<String> watchlistList = (
+      LocalBox.getStringList(key: "${_watchlistKey}_$type") ?? []
+    );
 
     // check if the list is empty or not?
     if (watchlistList.isNotEmpty) {
@@ -87,7 +91,7 @@ class WatchlistSharedPreferences {
     for (WatchlistHistoryModel watchlist in watchlistData) {
       watchlistList.add(jsonEncode(watchlist.toJson()));
     }
-    LocalBox.putStringList(_watchlistHistoryKey, watchlistList);
+    LocalBox.putStringList(key: _watchlistHistoryKey, value: watchlistList);
   }
 
   static List<WatchlistHistoryModel> getWatchlistHistory() {
@@ -97,7 +101,9 @@ class WatchlistSharedPreferences {
     }
 
     // get the data from local box
-    List<String> watchlistList = (LocalBox.getStringList(_watchlistHistoryKey) ?? []);
+    List<String> watchlistList = (
+      LocalBox.getStringList(key: _watchlistHistoryKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (watchlistList.isNotEmpty) {

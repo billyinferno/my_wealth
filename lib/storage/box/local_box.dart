@@ -38,7 +38,10 @@ class LocalBox {
     }
   }
 
-  static Future<void> putString(String key, String value) async {
+  static Future<void> putString({
+    required String key,
+    required String value
+  }) async {
     // check if keyBox still null?
     if (keyBox == null) {
       await init();
@@ -48,7 +51,10 @@ class LocalBox {
     keyBox!.put(key, value);
   }
 
-  static Future<void> putStringList(String key, List<String> value) async {
+  static Future<void> putStringList({
+    required String key,
+    required List<String> value
+  }) async {
     // check if keyBox still null?
     if (keyBox == null) {
       await init();
@@ -58,7 +64,7 @@ class LocalBox {
     keyBox!.put(key, value);
   }
 
-  static String? getString(String key) {
+  static String? getString({required String key}) {
     // if null then return null
     if (keyBox == null) {
       return null;
@@ -74,7 +80,7 @@ class LocalBox {
     }
   }
 
-  static List<String>? getStringList(String key) {
+  static List<String>? getStringList({required String key}) {
     // if null then return null
     if (keyBox == null) {
       return null;
@@ -90,7 +96,10 @@ class LocalBox {
     }
   }
 
-  static Future<void> putSecuredString(String key, String value) async {
+  static Future<void> putSecuredString({
+    required String key,
+    required String value
+  }) async {
     // check if keyBox still null?
     if (encryptedBox == null) {
       await init();
@@ -100,7 +109,9 @@ class LocalBox {
     encryptedBox!.put(key, value);
   }
 
-  static String? getSecuredString(String key) {
+  static String? getSecuredString({
+    required String key
+  }) {
     // if null then return null
     if (encryptedBox == null) {
       return null;
@@ -143,12 +154,13 @@ class LocalBox {
     }
   }
 
-  static Future<void> delete(String key, [bool? exact]) async {
-    bool isExact = (exact ?? false);
-
+  static Future<void> delete({
+    required String key,
+    bool exact = false,
+  }) async {
     // check if key box is not null
     if (keyBox != null) {
-      if (isExact) {
+      if (exact) {
         // check if we can find the key on the key box or not?
         if (keyBox!.containsKey(key)) {
           // delete the ke

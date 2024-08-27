@@ -46,7 +46,10 @@ class InsightSharedPreferences {
     for (SectorSummaryModel sector in sectorSummaryList) {
       sectorSummaryListResp.add(jsonEncode(sector.toJson()));
     }
-    LocalBox.putStringList(_sectorSummaryKey, sectorSummaryListResp);
+    LocalBox.putStringList(
+      key: _sectorSummaryKey,
+      value: sectorSummaryListResp
+    );
   }
 
   static List<SectorSummaryModel> getSectorSummaryList() {
@@ -56,7 +59,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> sectorSummaryList = (LocalBox.getStringList(_sectorSummaryKey) ?? []);
+    List<String> sectorSummaryList = (
+      LocalBox.getStringList(key: _sectorSummaryKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (sectorSummaryList.isNotEmpty) {
@@ -84,7 +89,10 @@ class InsightSharedPreferences {
 
     // convert the json to string so we can stored it on the local storage
     String topWorseString = jsonEncode(topWorseList.toJson());
-    LocalBox.putString(_topWorseCompanyListKey + type, topWorseString);
+    LocalBox.putString(
+      key: "$_topWorseCompanyListKey$type",
+      value: topWorseString,
+    );
   }
 
   static TopWorseCompanyListModel getTopWorseCompanyList(String type) {
@@ -94,7 +102,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String topWorseString = (LocalBox.getString(_topWorseCompanyListKey + type) ?? '');
+    String topWorseString = (
+      LocalBox.getString(key: _topWorseCompanyListKey + type) ?? ''
+    );
 
     // check if the list is empty or not?
     if (topWorseString.isNotEmpty) {
@@ -129,7 +139,10 @@ class InsightSharedPreferences {
 
     // convert the json to string so we can stored it on the local storage
     String brokerTopListString = jsonEncode(brokerTopList.toJson());
-    LocalBox.putString(_brokerTopTransactionKey, brokerTopListString);
+    LocalBox.putString(
+      key: _brokerTopTransactionKey,
+      value: brokerTopListString,
+    );
   }
 
   static BrokerTopTransactionModel getBrokerTopTxn() {
@@ -139,7 +152,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String brokerTopListString = (LocalBox.getString(_brokerTopTransactionKey) ?? '');
+    String brokerTopListString = (
+      LocalBox.getString(key: _brokerTopTransactionKey) ?? ''
+    );
 
     // check if the list is empty or not?
     if (brokerTopListString.isNotEmpty) {
@@ -167,7 +182,10 @@ class InsightSharedPreferences {
 
     // convert the json to string so we can stored it on the local storage
     String topReksadanaString = jsonEncode(topReksadanaList.toJson());
-    LocalBox.putString(_topReksadanaListKey + type, topReksadanaString);
+    LocalBox.putString(
+      key: _topReksadanaListKey + type,
+      value: topReksadanaString
+    );
   }
 
   static TopWorseCompanyListModel getTopReksadanaList(String type) {
@@ -177,7 +195,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String topReksadanaString = (LocalBox.getString(_topReksadanaListKey + type) ?? '');
+    String topReksadanaString = (
+      LocalBox.getString(key: _topReksadanaListKey + type) ?? ''
+    );
 
     // check if the list is empty or not?
     if (topReksadanaString.isNotEmpty) {
@@ -212,7 +232,10 @@ class InsightSharedPreferences {
 
     // convert the json to string so we can stored it on the local storage
     String worseReksadanaString = jsonEncode(worseReksadanaList.toJson());
-    LocalBox.putString(_worseReksadanaListKey + type, worseReksadanaString);
+    LocalBox.putString(
+      key: "$_worseReksadanaListKey$type",
+      value: worseReksadanaString
+    );
   }
 
   static TopWorseCompanyListModel getWorseReksadanaList(String type) {
@@ -222,7 +245,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String worseReksadanaString = (LocalBox.getString(_worseReksadanaListKey + type) ?? '');
+    String worseReksadanaString = (
+      LocalBox.getString(key: "$_worseReksadanaListKey$type") ?? ''
+    );
 
     // check if the list is empty or not?
     if (worseReksadanaString.isNotEmpty) {
@@ -257,7 +282,10 @@ class InsightSharedPreferences {
 
     // convert the json to string so we can stored it on the local storage
     String bandarInterestString = jsonEncode(bandarInterest.toJson());
-    LocalBox.putString(_bandarInterestingKey, bandarInterestString);
+    LocalBox.putString(
+      key: _bandarInterestingKey,
+      value: bandarInterestString
+    );
   }
 
   static InsightBandarInterestModel getBandarInterestingList() {
@@ -267,7 +295,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String bandarInterestString = (LocalBox.getString(_bandarInterestingKey) ?? '');
+    String bandarInterestString = (
+      LocalBox.getString(key: _bandarInterestingKey) ?? ''
+    );
 
     // check if the list is empty or not?
     if (bandarInterestString.isNotEmpty) {
@@ -292,18 +322,30 @@ class InsightSharedPreferences {
     }
 
     // store the from and to date
-    LocalBox.putString(_topAccumFromDateKey, fromDate.toString());
-    LocalBox.putString(_topAccumToDateKey, toDate.toString());
+    LocalBox.putString(
+      key: _topAccumFromDateKey,
+      value: fromDate.toString()
+    );
+    LocalBox.putString(
+      key: _topAccumToDateKey,
+      value: toDate.toString()
+    );
 
     // store the rate
-    LocalBox.putString(_topAccumRateKey, rate.toString());
+    LocalBox.putString(
+      key: _topAccumRateKey,
+      value: rate.toString()
+    );
 
     // store the accum list
     List<String> strAccum = [];
     for (InsightAccumulationModel data in accum) {
       strAccum.add(jsonEncode(data.toJson()));
     }
-    LocalBox.putStringList(_topAccumResultKey, strAccum);
+    LocalBox.putStringList(
+      key: _topAccumResultKey,
+      value: strAccum
+    );
   }
 
   static DateTime getTopAccumulationFromDate() {
@@ -313,7 +355,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String fromDateString = (LocalBox.getString(_topAccumFromDateKey) ?? '');
+    String fromDateString = (
+      LocalBox.getString(key: _topAccumFromDateKey) ?? ''
+    );
     if (fromDateString.isNotEmpty) {
       return DateTime.parse(fromDateString);
     }
@@ -328,7 +372,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String toDateString = (LocalBox.getString(_topAccumToDateKey) ?? '');
+    String toDateString = (
+      LocalBox.getString(key: _topAccumToDateKey) ?? ''
+    );
     if (toDateString.isNotEmpty) {
       return DateTime.parse(toDateString);
     }
@@ -343,7 +389,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_topAccumRateKey) ?? '');
+    String rateString = (
+      LocalBox.getString(key: _topAccumRateKey) ?? ''
+    );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -359,7 +407,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> accumString = (LocalBox.getStringList(_topAccumResultKey) ?? []);
+    List<String> accumString = (
+      LocalBox.getStringList(key: _topAccumResultKey) ?? []
+    );
     if (accumString.isNotEmpty) {
       // loop thru the stringList
       List<InsightAccumulationModel> accumResult = [];
@@ -383,10 +433,10 @@ class InsightSharedPreferences {
     }
 
     // clear all the key for the topAccumulation
-    LocalBox.delete(_topAccumFromDateKey, true);
-    LocalBox.delete(_topAccumToDateKey, true);
-    LocalBox.delete(_topAccumRateKey, true);
-    LocalBox.delete(_topAccumResultKey, true);
+    LocalBox.delete(key: _topAccumFromDateKey, exact: true);
+    LocalBox.delete(key: _topAccumToDateKey, exact: true);
+    LocalBox.delete(key: _topAccumRateKey, exact: true);
+    LocalBox.delete(key: _topAccumResultKey, exact: true);
   }
 
   static Future<void> setEps(int minRate, int diffRate, List<InsightEpsModel> epsList) async {
@@ -396,15 +446,15 @@ class InsightSharedPreferences {
     }
 
     // store the from and to date
-    LocalBox.putString(_epsMinRateKey, minRate.toString());
-    LocalBox.putString(_epsMinDiffRateKey, diffRate.toString());
+    LocalBox.putString(key: _epsMinRateKey, value: minRate.toString());
+    LocalBox.putString(key: _epsMinDiffRateKey, value: diffRate.toString());
 
     // store the accum list
     List<String> strEps = [];
     for (InsightEpsModel data in epsList) {
       strEps.add(jsonEncode(data.toJson()));
     }
-    LocalBox.putStringList(_epsResultKey, strEps);
+    LocalBox.putStringList(key: _epsResultKey, value: strEps);
   }
 
   static int getEpsMinRate() {
@@ -414,7 +464,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_epsMinRateKey) ?? '');
+    String rateString = (LocalBox.getString(key: _epsMinRateKey) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -430,7 +480,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_epsMinDiffRateKey) ?? '');
+    String rateString = (LocalBox.getString(key: _epsMinDiffRateKey) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -446,7 +496,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> epsString = (LocalBox.getStringList(_epsResultKey) ?? []);
+    List<String> epsString = (LocalBox.getStringList(key: _epsResultKey) ?? []);
     if (epsString.isNotEmpty) {
       // loop thru the stringList
       List<InsightEpsModel> epsResult = [];
@@ -470,9 +520,9 @@ class InsightSharedPreferences {
     }
 
     // clear all the key for the eps data
-    LocalBox.delete(_epsMinRateKey, true);
-    LocalBox.delete(_epsMinDiffRateKey, true);
-    LocalBox.delete(_epsResultKey, true);
+    LocalBox.delete(key: _epsMinRateKey, exact: true);
+    LocalBox.delete(key: _epsMinDiffRateKey, exact: true);
+    LocalBox.delete(key: _epsResultKey, exact: true);
   }
 
   static Future<void> setSideway(int oneDay, int avgOneDay, int avgOneWeek, List<InsightSidewayModel> sidewayList) async {
@@ -482,16 +532,16 @@ class InsightSharedPreferences {
     }
 
     // store the from and to date
-    LocalBox.putString(_sidewayOneDayRateKey, oneDay.toString());
-    LocalBox.putString(_sidewayAvgOneDayKey, avgOneDay.toString());
-    LocalBox.putString(_sidewayAvgOneWeekKey, avgOneWeek.toString());
+    LocalBox.putString(key: _sidewayOneDayRateKey, value: oneDay.toString());
+    LocalBox.putString(key: _sidewayAvgOneDayKey, value: avgOneDay.toString());
+    LocalBox.putString(key: _sidewayAvgOneWeekKey, value: avgOneWeek.toString());
 
     // store the accum list
     List<String> strSideway = [];
     for (InsightSidewayModel data in sidewayList) {
       strSideway.add(jsonEncode(data.toJson()));
     }
-    LocalBox.putStringList(_sidewayResultKey, strSideway);
+    LocalBox.putStringList(key: _sidewayResultKey, value: strSideway);
   }
 
   static int getSidewayOneDayRate() {
@@ -501,7 +551,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_sidewayOneDayRateKey) ?? '');
+    String rateString = (LocalBox.getString(key: _sidewayOneDayRateKey) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -517,7 +567,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_sidewayAvgOneDayKey) ?? '');
+    String rateString = (LocalBox.getString(key: _sidewayAvgOneDayKey) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -533,7 +583,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_sidewayAvgOneWeekKey) ?? '');
+    String rateString = (LocalBox.getString(key: _sidewayAvgOneWeekKey) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -549,12 +599,16 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> sidewaysString = (LocalBox.getStringList(_sidewayResultKey) ?? []);
+    List<String> sidewaysString = (
+      LocalBox.getStringList(key: _sidewayResultKey) ?? []
+    );
     if (sidewaysString.isNotEmpty) {
       // loop thru the stringList
       List<InsightSidewayModel> sidewayResult = [];
       for (String sidewayData in sidewaysString) {
-        InsightSidewayModel sideway = InsightSidewayModel.fromJson(jsonDecode(sidewayData));
+        InsightSidewayModel sideway = InsightSidewayModel.fromJson(
+          jsonDecode(sidewayData)
+        );
         sidewayResult.add(sideway);
       }
 
@@ -573,10 +627,10 @@ class InsightSharedPreferences {
     }
 
     // clear all the key for the sideway data
-    LocalBox.delete(_sidewayOneDayRateKey, true);
-    LocalBox.delete(_sidewayAvgOneDayKey, true);
-    LocalBox.delete(_sidewayAvgOneWeekKey, true);
-    LocalBox.delete(_sidewayResultKey, true);
+    LocalBox.delete(key: _sidewayOneDayRateKey, exact: true);
+    LocalBox.delete(key: _sidewayAvgOneDayKey, exact: true);
+    LocalBox.delete(key: _sidewayAvgOneWeekKey, exact: true);
+    LocalBox.delete(key: _sidewayResultKey, exact: true);
   }
 
   static Future<void> setBrokerMarketToday(MarketTodayModel marketToday) async {
@@ -587,7 +641,7 @@ class InsightSharedPreferences {
 
     // convert the json to string so we can stored it on the local storage
     String marketTodayString = jsonEncode(marketToday.toJson());
-    LocalBox.putString(_brokerMarketToday, marketTodayString);
+    LocalBox.putString(key: _brokerMarketToday, value: marketTodayString);
   }
 
   static MarketTodayModel getBrokerMarketToday() {
@@ -597,12 +651,16 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String marketTodayString = (LocalBox.getString(_brokerMarketToday) ?? '');
+    String marketTodayString = (
+      LocalBox.getString(key: _brokerMarketToday) ?? ''
+    );
 
     // check if the list is empty or not?
     if (marketTodayString.isNotEmpty) {
       // string is not empty parse it
-      MarketTodayModel marketToday = MarketTodayModel.fromJson(jsonDecode(marketTodayString));
+      MarketTodayModel marketToday = MarketTodayModel.fromJson(
+        jsonDecode(marketTodayString)
+      );
       // return the top worse
       return marketToday;
     }
@@ -634,7 +692,7 @@ class InsightSharedPreferences {
     for (MarketCapModel sector in marketCapList) {
       marketCapListResp.add(jsonEncode(sector.toJson()));
     }
-    LocalBox.putStringList(_marketCapKey, marketCapListResp);
+    LocalBox.putStringList(key: _marketCapKey, value: marketCapListResp);
   }
 
   static List<MarketCapModel> getMarketCap() {
@@ -644,14 +702,18 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> marketCapList = (LocalBox.getStringList(_marketCapKey) ?? []);
+    List<String> marketCapList = (
+      LocalBox.getStringList(key: _marketCapKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (marketCapList.isNotEmpty) {
       // list is not empty, parse the string to FavouriteModel
       List<MarketCapModel> ret = [];
       for (String marketCapString in marketCapList) {
-        MarketCapModel marketCap = MarketCapModel.fromJson(jsonDecode(marketCapString));
+        MarketCapModel marketCap = MarketCapModel.fromJson(
+          jsonDecode(marketCapString)
+        );
         ret.add(marketCap);
       }
 
@@ -675,7 +737,7 @@ class InsightSharedPreferences {
     for (IndexBeaterModel indexBeater in indexBeaterList) {
       indexBeaterListResp.add(jsonEncode(indexBeater.toJson()));
     }
-    LocalBox.putStringList(_indexBeaterKey, indexBeaterListResp);
+    LocalBox.putStringList(key: _indexBeaterKey, value: indexBeaterListResp);
   }
 
   static List<IndexBeaterModel> getIndexBeater() {
@@ -685,7 +747,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> indexBeaterList = (LocalBox.getStringList(_indexBeaterKey) ?? []);
+    List<String> indexBeaterList = (
+      LocalBox.getStringList(key: _indexBeaterKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (indexBeaterList.isNotEmpty) {
@@ -713,7 +777,7 @@ class InsightSharedPreferences {
     }
 
     // clear all the key for the index beaterdata
-    LocalBox.delete(_indexBeaterKey, true);
+    LocalBox.delete(key: _indexBeaterKey, exact: true);
   }
 
   static Future<void> setStockNewListed(List<StockNewListedModel> stockNewList) async {
@@ -727,7 +791,7 @@ class InsightSharedPreferences {
     for (StockNewListedModel stock in stockNewList) {
       stockNewListResp.add(jsonEncode(stock.toJson()));
     }
-    LocalBox.putStringList(_stockNewListedKey, stockNewListResp);
+    LocalBox.putStringList(key: _stockNewListedKey, value: stockNewListResp);
   }
 
   static List<StockNewListedModel> getStockNewListed() {
@@ -737,7 +801,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> stockNewList = (LocalBox.getStringList(_stockNewListedKey) ?? []);
+    List<String> stockNewList = (
+      LocalBox.getStringList(key: _stockNewListedKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (stockNewList.isNotEmpty) {
@@ -768,7 +834,10 @@ class InsightSharedPreferences {
     for (StockDividendListModel stock in stockDividendList) {
       stockDividendListResp.add(jsonEncode(stock.toJson()));
     }
-    LocalBox.putStringList(_stockDividendListKey, stockDividendListResp);
+    LocalBox.putStringList(
+      key: _stockDividendListKey,
+      value: stockDividendListResp
+    );
   }
 
   static List<StockDividendListModel> getStockDividendList() {
@@ -778,7 +847,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> stockDividendList = (LocalBox.getStringList(_stockDividendListKey) ?? []);
+    List<String> stockDividendList = (
+      LocalBox.getStringList(key: _stockDividendListKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (stockDividendList.isNotEmpty) {
@@ -809,7 +880,7 @@ class InsightSharedPreferences {
     for (StockSplitListModel stock in stockDividendList) {
       stockSplitListResp.add(jsonEncode(stock.toJson()));
     }
-    LocalBox.putStringList(_stockSplitListKey, stockSplitListResp);
+    LocalBox.putStringList(key: _stockSplitListKey, value: stockSplitListResp);
   }
 
   static List<StockSplitListModel> getStockSplitList() {
@@ -819,7 +890,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> stockSplitList = (LocalBox.getStringList(_stockSplitListKey) ?? []);
+    List<String> stockSplitList = (
+      LocalBox.getStringList(key: _stockSplitListKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (stockSplitList.isNotEmpty) {
@@ -846,18 +919,27 @@ class InsightSharedPreferences {
     }
 
     // store the from and to date
-    LocalBox.putString(_stockCollectFromDateKey, fromDate.toString());
-    LocalBox.putString(_stockCollectToDateKey, toDate.toString());
+    LocalBox.putString(
+      key: _stockCollectFromDateKey,
+      value: fromDate.toString()
+    );
+    LocalBox.putString(
+      key: _stockCollectToDateKey,
+      value: toDate.toString()
+    );
 
     // store the rate
-    LocalBox.putString(_stockCollectAccumRateKey, rate.toString());
+    LocalBox.putString(key: _stockCollectAccumRateKey, value: rate.toString());
 
     // convert the json to string so we can stored it on the local storage
     List<String> stockCollectResp = [];
     for (InsightStockCollectModel stock in stockCollectList) {
       stockCollectResp.add(jsonEncode(stock.toJson()));
     }
-    LocalBox.putStringList(_stockCollectKey, stockCollectResp);
+    LocalBox.putStringList(
+      key: _stockCollectKey,
+      value: stockCollectResp,
+    );
   }
 
   static List<InsightStockCollectModel> getStockCollect() {
@@ -867,7 +949,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    List<String> stockCollectList = (LocalBox.getStringList(_stockCollectKey) ?? []);
+    List<String> stockCollectList = (
+      LocalBox.getStringList(key: _stockCollectKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (stockCollectList.isNotEmpty) {
@@ -897,11 +981,11 @@ class InsightSharedPreferences {
     String dateString = '';
     switch(type.toLowerCase()) {
       case 'to':
-        dateString = (LocalBox.getString(_stockCollectToDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _stockCollectToDateKey) ?? '');
         break;
       case 'from':
       default:
-        dateString = (LocalBox.getString(_stockCollectFromDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _stockCollectFromDateKey) ?? '');
         break;
     }
     
@@ -919,7 +1003,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_stockCollectAccumRateKey) ?? '');
+    String rateString = (
+      LocalBox.getString(key: _stockCollectAccumRateKey) ?? ''
+    );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -936,10 +1022,10 @@ class InsightSharedPreferences {
     }
 
     // clear all the data for stock collect
-    LocalBox.delete(_stockCollectKey, true);
-    LocalBox.delete(_stockCollectFromDateKey, true);
-    LocalBox.delete(_stockCollectToDateKey, true);
-    LocalBox.delete(_stockCollectAccumRateKey, true);
+    LocalBox.delete(key: _stockCollectKey, exact: true);
+    LocalBox.delete(key: _stockCollectFromDateKey, exact: true);
+    LocalBox.delete(key: _stockCollectToDateKey, exact: true);
+    LocalBox.delete(key: _stockCollectAccumRateKey, exact: true);
   }
 
   static Future<void> setBrokerCollect(InsightBrokerCollectModel brokerCollectList, String brokerId, DateTime fromDate, DateTime toDate, int rate) async {
@@ -949,17 +1035,32 @@ class InsightSharedPreferences {
     }
 
     // store the broker id
-    LocalBox.putString(_brokerCollectIDKey, brokerId);
+    LocalBox.putString(
+      key: _brokerCollectIDKey,
+      value: brokerId
+    );
 
     // store the from and to date
-    LocalBox.putString(_brokerCollectFromDateKey, fromDate.toString());
-    LocalBox.putString(_brokerCollectToDateKey, toDate.toString());
+    LocalBox.putString(
+      key: _brokerCollectFromDateKey,
+      value: fromDate.toString()
+    );
+    LocalBox.putString(
+      key: _brokerCollectToDateKey,
+      value: toDate.toString()
+    );
 
     // store the rate
-    LocalBox.putString(_brokerCollectAccumRateKey, rate.toString());
+    LocalBox.putString(
+      key: _brokerCollectAccumRateKey,
+      value: rate.toString()
+    );
 
     // convert the json to string so we can stored it on the local storage
-    LocalBox.putString(_brokerCollectKey, jsonEncode(brokerCollectList.toJson()));
+    LocalBox.putString(
+      key: _brokerCollectKey,
+      value: jsonEncode(brokerCollectList.toJson())
+    );
   }
 
   static InsightBrokerCollectModel? getBrokerCollect() {
@@ -969,7 +1070,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String brokerCollectString = (LocalBox.getString(_brokerCollectKey) ?? '');
+    String brokerCollectString = (
+      LocalBox.getString(key: _brokerCollectKey) ?? ''
+    );
 
     // check if the list is empty or not?
     if (brokerCollectString.isNotEmpty) {
@@ -990,7 +1093,7 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String brokerId = (LocalBox.getString(_brokerCollectIDKey) ?? '');
+    String brokerId = (LocalBox.getString(key: _brokerCollectIDKey) ?? '');
     if (brokerId.isNotEmpty) {
       return brokerId;
     }
@@ -1008,11 +1111,11 @@ class InsightSharedPreferences {
     String dateString = '';
     switch(type.toLowerCase()) {
       case 'to':
-        dateString = (LocalBox.getString(_brokerCollectToDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _brokerCollectToDateKey) ?? '');
         break;
       case 'from':
       default:
-        dateString = (LocalBox.getString(_brokerCollectFromDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _brokerCollectFromDateKey) ?? '');
         break;
     }
     
@@ -1030,7 +1133,9 @@ class InsightSharedPreferences {
     }
 
     // get the data from local box
-    String rateString = (LocalBox.getString(_brokerCollectAccumRateKey) ?? '');
+    String rateString = (
+      LocalBox.getString(key: _brokerCollectAccumRateKey) ?? ''
+    );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -1047,10 +1152,10 @@ class InsightSharedPreferences {
     }
 
     // clear all the data for stock collect
-    LocalBox.delete(_brokerCollectKey, true);
-    LocalBox.delete(_brokerCollectIDKey, true);
-    LocalBox.delete(_brokerCollectFromDateKey, true);
-    LocalBox.delete(_brokerCollectToDateKey, true);
-    LocalBox.delete(_brokerCollectAccumRateKey, true);
+    LocalBox.delete(key: _brokerCollectKey, exact: true);
+    LocalBox.delete(key: _brokerCollectIDKey, exact: true);
+    LocalBox.delete(key: _brokerCollectFromDateKey, exact: true);
+    LocalBox.delete(key: _brokerCollectToDateKey, exact: true);
+    LocalBox.delete(key: _brokerCollectAccumRateKey, exact: true);
   }
 }

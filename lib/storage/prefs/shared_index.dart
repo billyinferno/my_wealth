@@ -15,7 +15,10 @@ class IndexSharedPreferences {
     for (IndexModel index in indexList) {
       indexListResp.add(jsonEncode(index.toJson()));
     }
-    LocalBox.putStringList(_indexKey, indexListResp);
+    LocalBox.putStringList(
+      key: _indexKey,
+      value: indexListResp
+    );
   }
 
   static List<IndexModel> getIndexList() {
@@ -25,7 +28,7 @@ class IndexSharedPreferences {
     }
 
     // get the data from local box
-    List<String> indexList = (LocalBox.getStringList(_indexKey) ?? []);
+    List<String> indexList = (LocalBox.getStringList(key: _indexKey) ?? []);
 
     // check if the list is empty or not?
     if (indexList.isNotEmpty) {

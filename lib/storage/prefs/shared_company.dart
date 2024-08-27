@@ -15,7 +15,10 @@ class CompanySharedPreferences {
     for (SectorNameModel sectorName in sectorNameList) {
       sectorNameListResp.add(jsonEncode(sectorName.toJson()));
     }
-    LocalBox.putStringList(_sectorNameListKey, sectorNameListResp);
+    LocalBox.putStringList(
+      key: _sectorNameListKey,
+      value: sectorNameListResp
+    );
   }
 
   static List<SectorNameModel> getSectorNameList() {
@@ -25,7 +28,9 @@ class CompanySharedPreferences {
     }
 
     // get the data from local box
-    List<String> sectorNameListString = (LocalBox.getStringList(_sectorNameListKey) ?? []);
+    List<String> sectorNameListString = (
+      LocalBox.getStringList(key: _sectorNameListKey) ?? []
+    );
 
     // check if the list is empty or not?
     if (sectorNameListString.isNotEmpty) {

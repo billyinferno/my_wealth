@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class InfoFundamentalAPI {
-  Future<List<InfoFundamentalsModel>> getInfoFundamental(String code, [int? quarter]) async {
-    int quarterUse = (quarter ?? 5);
-
+  Future<List<InfoFundamentalsModel>> getInfoFundamental({
+    required String code,
+    int quarter = 5,
+  }) async {
     // get company fundamental data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiInfoFundamentals}/code/$code/quarter/$quarterUse'
+      url: '${Globals.apiInfoFundamentals}/code/$code/quarter/$quarter'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }

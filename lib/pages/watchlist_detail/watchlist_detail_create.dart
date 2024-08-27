@@ -137,7 +137,12 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
       LoadingScreen.instance().show(context: context);
 
       // call API to add watchlist detail
-      await _watchlistAPI.addDetail(_watchlist.watchlistId, _selectedDate, shares, price).then((watchlistDetail) async {
+      await _watchlistAPI.addDetail(
+        id: _watchlist.watchlistId,
+        date: _selectedDate,
+        shares: shares,
+        price: price,
+      ).then((watchlistDetail) async {
         // change the watchlist detail for this one
         List<WatchlistListModel> currentWatchList = WatchlistSharedPreferences.getWatchlist(_type);
         List<WatchlistListModel> newWatchList = [];

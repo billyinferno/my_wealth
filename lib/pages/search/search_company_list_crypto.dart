@@ -211,7 +211,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     int faveId = _filterList[index].favouritesId ?? -1;
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
-      await _faveAPI.delete(faveId).then((_) {
+      await _faveAPI.delete(favouriteId: faveId).then((_) {
         Log.success(message: "🧹 Delete Favourite ID $faveId for Crypto company ${_filterList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
@@ -239,7 +239,10 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
       });
     }
     else {
-      await _faveAPI.add(_filterList[index].favouritesCompanyId, "crypto").then((resp) {
+      await _faveAPI.add(
+        companyId: _filterList[index].favouritesCompanyId,
+        type: "crypto",
+      ).then((resp) {
         Log.success(message: "➕ Add Crypto company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         updateFaveList(index, resp);
@@ -269,7 +272,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
   }
 
   Future<void> getFavouriteCompanyList() async {
-    await _faveAPI.listFavouritesCompanies("crypto").then((resp) {
+    await _faveAPI.listFavouritesCompanies(type: "crypto").then((resp) {
       setFavouriteList(resp);
       setFilterList(resp);
     });
@@ -280,7 +283,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     LoadingScreen.instance().show(context: context);
 
     // get the favourites list
-    await _faveAPI.getFavourites("crypto").then((resp) async {
+    await _faveAPI.getFavourites(type: "crypto").then((resp) async {
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
       // notify the provider

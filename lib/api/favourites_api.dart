@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class FavouritesAPI {
-  Future<List<FavouritesModel>> getFavourites(String type) async {
+  Future<List<FavouritesModel>> getFavourites({required String type}) async {
     // get the favourites data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiFavourites}/$type'
@@ -21,7 +21,9 @@ class FavouritesAPI {
     return listFavourites;
   }
 
-  Future<List<FavouritesListModel>> listFavouritesCompanies(String type) async {
+  Future<List<FavouritesListModel>> listFavouritesCompanies({
+    required String type
+  }) async {
     // get the favourites data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiFavourites}/list/$type'
@@ -41,7 +43,10 @@ class FavouritesAPI {
     return listFavourites;
   }
 
-  Future<FavouritesListModel> add(int companyId, String type) async {
+  Future<FavouritesListModel> add({
+    required int companyId,
+    required String type,
+  }) async {
     // post the favourites data using netutils
     final String body = await NetUtils.post(
       url: '${Globals.apiFavourites}/$type',
@@ -57,7 +62,7 @@ class FavouritesAPI {
     return userFave;
   }
 
-  Future<void> delete(int favouriteId) async {
+  Future<void> delete({required int favouriteId}) async {
     // delete the favourites data using netutils
     await NetUtils.delete(
       url: '${Globals.apiFavourites}/$favouriteId',

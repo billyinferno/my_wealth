@@ -123,7 +123,9 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                     LoadingScreen.instance().show(context: context);
             
                     // call API to update user risk
-                    await _userApi.updateRisk(_riskValue.toInt()).then((resp) async {
+                    await _userApi.updateRisk(
+                      risk: _riskValue.toInt()
+                    ).then((resp) async {
                       // we will get updated user info here, so stored the updated
                       // user info with new risk factor to the local storea
                       await UserSharedPreferences.setUserInfo(resp);

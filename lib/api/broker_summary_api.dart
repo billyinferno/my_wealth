@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class BrokerSummaryAPI {
-  Future<BrokerSummaryModel> getBrokerSummary(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<BrokerSummaryModel> getBrokerSummary({
+    required String stockCode,
+    DateTime? dateFrom,
+    DateTime? dateTo
+  }) async {
     // get the date we want to check
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
@@ -22,7 +26,11 @@ class BrokerSummaryAPI {
     return brokerSummary;
   }
 
-  Future<BrokerSummaryModel> getBrokerSummaryNet(String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<BrokerSummaryModel> getBrokerSummaryNet({
+    required String stockCode,
+    DateTime? dateFrom,
+    DateTime? dateTo
+  }) async {
     // get the date we want to check
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
@@ -43,7 +51,13 @@ class BrokerSummaryAPI {
     return brokerSummary;
   }
 
-  Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList(String brokerCode, int start, int limit, [DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<BrokerSummaryBrokerTxnListModel> getBrokerTransactionList({
+    required String brokerCode,
+    required int start,
+    required int limit,
+    DateTime? dateFrom,
+    DateTime? dateTo
+  }) async {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
@@ -63,7 +77,12 @@ class BrokerSummaryAPI {
     return brokerTxnList;
   }
 
-  Future<BrokerSummaryTxnDetailModel> getBrokerTransactionDetail(String brokerCode, String stockCode, [DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<BrokerSummaryTxnDetailModel> getBrokerTransactionDetail({
+    required String brokerCode,
+    required String stockCode,
+    DateTime? dateFrom,
+    DateTime? dateTo
+  }) async {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
@@ -83,7 +102,9 @@ class BrokerSummaryAPI {
     return brokerTxnDetail;
   }
 
-  Future<BrokerSummaryTopModel> getBrokerSummaryTop([DateTime? searchDate]) async {
+  Future<BrokerSummaryTopModel> getBrokerSummaryTop({
+    DateTime? searchDate
+  }) async {
     // check if we got date or not?
     String url = '';
     if (searchDate == null) {
@@ -107,7 +128,9 @@ class BrokerSummaryAPI {
     return brokerTopResult;
   }
 
-  Future<BrokerSummaryDateModel> getBrokerSummaryCodeDate(String stockCode) async {
+  Future<BrokerSummaryDateModel> getBrokerSummaryCodeDate({
+    required String stockCode
+  }) async {
     // get the API response
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/date/code/$stockCode'
@@ -121,7 +144,9 @@ class BrokerSummaryAPI {
     return brokerSummarryCode;
   }
 
-  Future<BrokerSummaryDateModel> getBrokerSummaryBrokerDate(String brokerID) async {
+  Future<BrokerSummaryDateModel> getBrokerSummaryBrokerDate({
+    required String brokerID
+  }) async {
     // get the API response
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/date/broker/$brokerID'
@@ -149,10 +174,14 @@ class BrokerSummaryAPI {
     return brokerSummaryDate;
   }
 
-  Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation(String version, String stockCode, DateTime currentDate) async {
+  Future<BrokerSummaryAccumulationModel> getBrokerSummaryAccumulation({
+    required String version,
+    required String stockCode,
+    required DateTime date
+  }) async {
     // get the API response
     final String body = await NetUtils.get(
-      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${Globals.dfyyyyMMdd.format(currentDate)}'
+      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${Globals.dfyyyyMMdd.format(date)}'
     ).onError((error, stackTrace) {
       throw Exception(error);
     });
@@ -163,7 +192,9 @@ class BrokerSummaryAPI {
     return brokerSummary;
   }
 
-  Future<BrokerSummaryDailyStatModel> getBrokerSummaryDailyStat(String code) async {
+  Future<BrokerSummaryDailyStatModel> getBrokerSummaryDailyStat({
+    required String code
+  }) async {
     // get the API response
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/stat/daily/code/$code'
@@ -177,7 +208,9 @@ class BrokerSummaryAPI {
     return brokerSummary;
   }
 
-  Future<BrokerSummaryDailyStatModel> getBrokerSummaryMonthlyStat(String code) async {
+  Future<BrokerSummaryDailyStatModel> getBrokerSummaryMonthlyStat({
+    required String code
+  }) async {
     // get the API response
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/stat/monthly/code/$code'

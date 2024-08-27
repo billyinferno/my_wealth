@@ -178,7 +178,9 @@ class _CompanyDetailFindOtherPageState extends State<CompanyDetailFindOtherPage>
   Future<bool> _getCompanyList() async {
     // try to get the company data from server
     try {
-      await _companyAPI.findCompany(_companyFindArgs.type).then((resp) {
+      await _companyAPI.findCompany(
+        type: _companyFindArgs.type
+      ).then((resp) {
         _companyList = resp;
         
         // check whether we have filter or not, if got then we will filter

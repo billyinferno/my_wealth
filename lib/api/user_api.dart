@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class UserAPI {
-  Future<UserLoginModel> login(String username, String password) async {
+  Future<UserLoginModel> login({
+    required String username,
+    required String password
+  }) async {
     // post login information using netutils
     final String body = await NetUtils.post(
       url: Globals.apiAuthLocal,
@@ -32,7 +35,7 @@ class UserAPI {
     return userInfo;
   }
 
-  Future<UserLoginInfoModel> updateRisk(int risk) async {
+  Future<UserLoginInfoModel> updateRisk({required int risk}) async {
     // patch user risk information using netutils
     final String body = await NetUtils.patch(
       url: Globals.apiRisk,
@@ -47,7 +50,9 @@ class UserAPI {
     return userInfo;
   }
 
-  Future<UserLoginInfoModel> updateVisibilitySummary(bool visibility) async {
+  Future<UserLoginInfoModel> updateVisibilitySummary({
+    required bool visibility
+  }) async {
     // patch user visibility using netutils
     final String body = await NetUtils.patch(
       url: '${Globals.apiVisibility}/summary',
@@ -62,7 +67,9 @@ class UserAPI {
     return userInfo;
   }
 
-  Future<UserLoginInfoModel> updateShowLots(bool showLots) async {
+  Future<UserLoginInfoModel> updateShowLots({
+    required bool showLots
+  }) async {
     // patch user show lots using netutils
     final String body = await NetUtils.patch(
       url: '${Globals.apiVisibility}/lots',
@@ -77,7 +84,9 @@ class UserAPI {
     return userInfo;
   }
 
-  Future<UserLoginInfoModel> updateShowEmptyWatchlist(bool showEmptyWatchlist) async {
+  Future<UserLoginInfoModel> updateShowEmptyWatchlist({
+    required bool showEmptyWatchlist
+  }) async {
     // patch user show lots using netutils
     final String body = await NetUtils.patch(
       url: '${Globals.apiVisibility}/emptywatchlist',
@@ -92,7 +101,10 @@ class UserAPI {
     return userInfo;
   }
 
-  Future<UserLoginInfoModel> updatePassword(String password, String newPassword) async {
+  Future<UserLoginInfoModel> updatePassword({
+    required String password,
+    required String newPassword
+  }) async {
     // patch user password lots using netutils
     final String body = await NetUtils.patch(
       url: Globals.apiPassword,
@@ -110,7 +122,7 @@ class UserAPI {
     return userInfo;
   }
 
-  Future<UserLoginInfoModel> updateBotToken(String bot) async {
+  Future<UserLoginInfoModel> updateBotToken({required String bot}) async {
     // patch user bot token lots using netutils
     final String body = await NetUtils.post(
       url: Globals.apiBot,

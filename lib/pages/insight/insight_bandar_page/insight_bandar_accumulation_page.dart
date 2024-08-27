@@ -212,9 +212,18 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
               LoadingScreen.instance().show(context: context);
 
               // get the accumulation result from the insight API
-              await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
+              await _insightAPI.getTopAccumulation(
+                oneDayRate: _oneDayRate,
+                fromDate: _fromDate,
+                toDate: _toDate,
+              ).then((resp) async {
                 // stored all the data to shared preferences
-                await InsightSharedPreferences.setTopAccumulation(_fromDate, _toDate, _oneDayRate, resp);
+                await InsightSharedPreferences.setTopAccumulation(
+                  _fromDate,
+                  _toDate,
+                  _oneDayRate,
+                  resp
+                );
 
                 setState(() {
                   _listAccumulation = resp;
@@ -226,7 +235,11 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                   stackTrace: stackTrace,
                 );
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get accumulation data"));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    createSnackBar(
+                      message: "Error when trying to get accumulation data"
+                    )
+                  );
                 }
               }).whenComplete(() {
                 // remove the loading screen
@@ -495,7 +508,11 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
         },);
 
         // get the accumulation list
-        await _insightAPI.getTopAccumulation(_oneDayRate, _fromDate, _toDate).then((resp) async {
+        await _insightAPI.getTopAccumulation(
+          oneDayRate: _oneDayRate,
+          fromDate: _fromDate,
+          toDate: _toDate,
+        ).then((resp) async {
           _listAccumulation = resp;
 
           // stored all the data to shared preferences
@@ -527,7 +544,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
     LoadingScreen.instance().show(context: context);
 
     // get the company detail information
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

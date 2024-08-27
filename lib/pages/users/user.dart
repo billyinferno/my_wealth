@@ -552,7 +552,9 @@ class _UserPageState extends State<UserPage> {
     LoadingScreen.instance().show(context: context);
 
     // update user summary visibility configuration
-    await _userApi.updateVisibilitySummary(visibility).then((resp) async {
+    await _userApi.updateVisibilitySummary(
+      visibility: visibility
+    ).then((resp) async {
       // set the return value as true
       ret = true;
 
@@ -588,7 +590,7 @@ class _UserPageState extends State<UserPage> {
     LoadingScreen.instance().show(context: context);
 
     // update user show lots configuration
-    await _userApi.updateShowLots(showLots).then((resp) async {
+    await _userApi.updateShowLots(showLots: showLots).then((resp) async {
       // set the return value as true
       ret = true;
 
@@ -624,7 +626,9 @@ class _UserPageState extends State<UserPage> {
     LoadingScreen.instance().show(context: context);
 
     // update user show empty watchlish configuration
-    await _userApi.updateShowEmptyWatchlist(showEmptyWatchlist).then((resp) async {
+    await _userApi.updateShowEmptyWatchlist(
+      showEmptyWatchlist: showEmptyWatchlist
+    ).then((resp) async {
       // set the return value as true
       ret = true;
 

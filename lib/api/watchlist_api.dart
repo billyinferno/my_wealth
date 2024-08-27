@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class WatchlistAPI {
-  Future<List<WatchlistListModel>> getWatchlist(String type) async {
+  Future<List<WatchlistListModel>> getWatchlist({required String type}) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/$type'
@@ -21,7 +21,10 @@ class WatchlistAPI {
     return listWatchlist;
   }
 
-  Future<WatchlistListModel> findSpecific(String type, int id) async {
+  Future<WatchlistListModel> findSpecific({
+    required String type,
+    required int id
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/find/$type/id/$id'
@@ -36,7 +39,10 @@ class WatchlistAPI {
     return watchlist;
   }
 
-  Future<WatchlistListModel> add(String type, int companyId) async {
+  Future<WatchlistListModel> add({
+    required String type,
+    required int companyId
+  }) async {
     // post the watchlist data using netutils
     final String body = await NetUtils.post(
       url: Globals.apiWatchlists,
@@ -52,7 +58,7 @@ class WatchlistAPI {
     return watchlist;
   }
 
-  Future<bool> delete(int watchlistId) async {
+  Future<bool> delete({required int watchlistId}) async {
     // delete the watchlist data using netutils
     await NetUtils.delete(
       url: '${Globals.apiWatchlists}/$watchlistId',
@@ -65,7 +71,12 @@ class WatchlistAPI {
     return true;
   }
 
-  Future<List<WatchlistDetailListModel>> addDetail(int id, DateTime date, double shares, double price) async {
+  Future<List<WatchlistDetailListModel>> addDetail({
+    required int id,
+    required DateTime date,
+    required double shares,
+    required double price
+  }) async {
     // post the watchlist details data using netutils
     final String body = await NetUtils.post(
       url: Globals.apiWatchlistDetails,
@@ -90,7 +101,7 @@ class WatchlistAPI {
     return watchlistDetail;
   }
 
-  Future<bool> deleteDetail(int id) async {
+  Future<bool> deleteDetail({required int id}) async {
     // delete the watchlist details data using netutils
     await NetUtils.delete(
       url: '${Globals.apiWatchlistDetails}/$id',
@@ -103,7 +114,12 @@ class WatchlistAPI {
     return true;
   }
 
-  Future<bool> updateDetail(int id, DateTime date, double shares, double price) async {
+  Future<bool> updateDetail({
+    required int id,
+    required DateTime date,
+    required double shares,
+    required double price
+  }) async {
     // patch the watchlist details data using netutils
     await NetUtils.put(
       url: '${Globals.apiWatchlistDetails}/$id',
@@ -121,7 +137,9 @@ class WatchlistAPI {
     return true;
   }
 
-  Future<List<WatchlistDetailListModel>> findDetail(int companyId) async {
+  Future<List<WatchlistDetailListModel>> findDetail({
+    required int companyId
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/detail/$companyId'
@@ -140,7 +158,10 @@ class WatchlistAPI {
     return watchlistDetail;
   }
 
-  Future<List<WatchlistPerformanceModel>> getWatchlistPerformance(String type, int id) async {
+  Future<List<WatchlistPerformanceModel>> getWatchlistPerformance({
+    required String type,
+    required int id
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/$type/$id'
@@ -159,7 +180,12 @@ class WatchlistAPI {
     return listWatchlistPerformance;
   }
 
-  Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceMonthYear(String type, int id, int month, int year) async {
+  Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceMonthYear({
+    required String type,
+    required int id,
+    required int month,
+    required int year
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/$type/$id/month/$month/year/$year'
@@ -178,7 +204,11 @@ class WatchlistAPI {
     return listWatchlistPerformance;
   }
 
-  Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceYear(String type, int id, int year) async {
+  Future<List<WatchlistPerformanceModel>> getWatchlistPerformanceYear({
+    required String type,
+    required int id,
+    required int year
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/$type/$id/year/$year'
@@ -197,7 +227,9 @@ class WatchlistAPI {
     return listWatchlistPerformance;
   }
 
-  Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummary(String type) async {
+  Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummary({
+    required String type
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/summary/$type'
@@ -216,7 +248,11 @@ class WatchlistAPI {
     return listWatchlistPerformance;
   }
 
-  Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummaryMonthYear(String type, int month, int year) async {
+  Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummaryMonthYear({
+    required String type,
+    required int month,
+    required int year
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/summary/$type/month/$month/year/$year'
@@ -235,7 +271,10 @@ class WatchlistAPI {
     return listWatchlistPerformance;
   }
 
-  Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummaryYear(String type, int year) async {
+  Future<List<SummaryPerformanceModel>> getWatchlistPerformanceSummaryYear({
+    required String type,
+    required int year
+  }) async {
     // get the watchlist data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/summary/$type/year/$year'
@@ -273,14 +312,20 @@ class WatchlistAPI {
     return listWatchlistHistory;
   }
 
-  Future<WatchlistPriceFirstAndLastDateModel> findFirstLastDate(String type, int? id) async {
+  Future<WatchlistPriceFirstAndLastDateModel> findFirstLastDate({
+    required String type,
+    required int? id
+  }) async {
     // create the base url
-      String url = '${Globals.apiWatchlists}/firstlast/$type';
-      
-      // in case this is not all, then add the id on the back
-      if (type.toLowerCase() != 'all') {
-        url += '/$id';
+    String url = '${Globals.apiWatchlists}/firstlast/$type';
+    
+    // in case this is not all, then add the id on the back
+    if (type.toLowerCase() != 'all') {
+      if (id == null) {
+        throw Exception('ID cannot be null when type is not all');
       }
+      url += '/$id';
+    }
 
     // get the watchlist data using netutils
     final String body = await NetUtils.get(

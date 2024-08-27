@@ -268,7 +268,7 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
 
   Future<bool> _getInitData() async {
     // get the data from api
-    await _companyAPI.getOtherCompany(_currentCode).then((resp) {
+    await _companyAPI.getOtherCompany(companyCode: _currentCode).then((resp) {
       _companyList = resp.all;
       _similarList = resp.similar;
     }).onError((error, stackTrace) {

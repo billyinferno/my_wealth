@@ -809,13 +809,13 @@ class _InsightStockPageState extends State<InsightStockPage> {
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
       }),
-      _insightAPI.getTopWorseCompany('top').then((resp) async {
+      _insightAPI.getTopWorseCompany(type: 'top').then((resp) async {
         Log.success(message: "🔃 Refresh Top Company Summary");
         await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
       }),
-      _insightAPI.getTopWorseCompany('worse').then((resp) async {
+      _insightAPI.getTopWorseCompany(type: 'worse').then((resp) async {
         Log.success(message: "🔃 Refresh Worse Company Summary");
         await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
         if (!context.mounted) return;
@@ -872,7 +872,10 @@ class _InsightStockPageState extends State<InsightStockPage> {
     LoadingScreen.instance().show(context: context);
 
     // get the stock information based on code
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

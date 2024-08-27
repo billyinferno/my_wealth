@@ -201,7 +201,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
               LoadingScreen.instance().show(context: context);
 
               // get the new data based on the rate change on the slider
-              await _insightAPI.getTopEPS(_minEpsRate, _minEpsDiffRate).then((resp) async {
+              await _insightAPI.getTopEPS(
+                minDiff: _minEpsRate,
+                minDiffRate: _minEpsDiffRate,
+              ).then((resp) async {
                 _epsList = resp;
                 
                 // put on the shared preferences
@@ -406,11 +409,18 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
     // check if the _epsList is empry
     if (_epsList.isEmpty) {
       // get the insight data
-      await _insightAPI.getTopEPS(_minEpsRate, _minEpsDiffRate).then((resp) async {
+      await _insightAPI.getTopEPS(
+        minDiff: _minEpsRate,
+        minDiffRate: _minEpsDiffRate,
+      ).then((resp) async {
         _epsList = resp;
 
         // put on the shared preferences
-        await InsightSharedPreferences.setEps(_minEpsRate, _minEpsDiffRate, _epsList);
+        await InsightSharedPreferences.setEps(
+          _minEpsRate,
+          _minEpsDiffRate,
+          _epsList
+        );
       }).onError((error, stackTrace) {
         Log.error(
           message: 'Error getting top EPS data',
@@ -429,7 +439,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
     LoadingScreen.instance().show(context: context);
 
     // get company detail and go
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

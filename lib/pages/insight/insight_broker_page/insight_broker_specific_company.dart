@@ -1020,16 +1020,29 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
     await Future.wait([
       // get the data of the broker transaction for this company code
-      _brokerSummaryAPI.getBrokerSummary(_companySahamCode, _dateFrom, _dateTo).then((resp) {
+      _brokerSummaryAPI.getBrokerSummary(
+        stockCode: _companySahamCode,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo
+      ).then((resp) {
         _brokerSummaryData = resp;
         _brokerSummaryDataGross = resp;
       }),
 
-      _brokerSummaryAPI.getBrokerSummaryNet(_companySahamCode, _dateFrom, _dateTo).then((resp) {
+      _brokerSummaryAPI.getBrokerSummaryNet(
+        stockCode: _companySahamCode,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo
+      ).then((resp) {
         _brokerSummaryDataNet = resp;
       }),
 
-      _companyAPI.getCompanyTopBroker(_companySahamCode, _dateFrom, _dateTo, 9999).then((resp) {
+      _companyAPI.getCompanyTopBroker(
+        code: _companySahamCode,
+        fromDate: _dateFrom,
+        toDate: _dateTo,
+        limit: 9999,
+      ).then((resp) {
         _brokerTopData = resp;
       }),
     ]).then((_) {
@@ -1062,7 +1075,10 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       LoadingScreen.instance().show(context: context);
 
       // get the company detail
-      await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
+      await _companyAPI.getCompanyByCode(
+        companyCode: _companyData!.companySymbol,
+        type: 'saham'
+      ).then((resp) {
         _companyDetail = resp;
       }).onError((error, stackTrace) {
         Log.error(
@@ -1105,7 +1121,10 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     LoadingScreen.instance().show(context: context);
 
     // get the company detail and navigate to the company page
-    await _companyAPI.getCompanyByCode(_companySahamCode, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: _companySahamCode,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

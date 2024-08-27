@@ -625,7 +625,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     LoadingScreen.instance().show(context: context);
 
     // call API to delete the watchlist detail
-    await _watchlistApi.deleteDetail(watchlistDetailID).then((resp) async {
+    await _watchlistApi.deleteDetail(id: watchlistDetailID).then((resp) async {
       if(resp) {
         // first create the new watchlist for this
         List<WatchlistListModel> newWatchlist = [];
@@ -690,7 +690,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     LoadingScreen.instance().show(context: context);
 
     // call API server to delete the watchlist
-    await _watchlistApi.delete(_watchlist.watchlistId).then((resp) async {
+    await _watchlistApi.delete(
+      watchlistId: _watchlist.watchlistId
+    ).then((resp) async {
       if(resp) {
         Log.success(message: "🗑️ Delete watchlist ${_watchlist.watchlistCompanyName}");
         

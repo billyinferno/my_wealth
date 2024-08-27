@@ -274,7 +274,7 @@ class FavouritesPageState extends State<FavouritesPage>
     // show loading screen
     LoadingScreen.instance().show(context: context);
 
-    await _faveAPI.delete(faveId).then((_) {
+    await _faveAPI.delete(favouriteId: faveId).then((_) {
       if (type == "reksadana") {
         Log.success(message: "🧹 Delete Favourite ID $faveId for company ${_favouriteListReksadana[index].favouritesCompanyName}");
       } else if (type == "saham") {
@@ -312,7 +312,7 @@ class FavouritesPageState extends State<FavouritesPage>
   Future<List<FavouritesModel>> _getFavourites(String type) async {
     List<FavouritesModel> ret = [];
 
-    await _faveAPI.getFavourites(type).then((resp) async {
+    await _faveAPI.getFavourites(type: type).then((resp) async {
       ret = resp;
     }).onError((error, stackTrace) {
       throw Exception("Error when refresh favourites");

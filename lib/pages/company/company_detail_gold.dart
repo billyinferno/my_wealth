@@ -686,7 +686,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   Future<bool> _getInitData() async {
     try {
-      await _companyApi.getCompanyDetail(-1, "gold").then((resp) {
+      await _companyApi.getCompanyDetail(
+        companyId: -1,
+        type: "gold"
+      ).then((resp) {
         _companyDetail = resp;
 
         // calculate the from and to date that we need to get the gold price
@@ -702,7 +705,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
       },);
 
       await Future.wait([
-        _priceAPI.getGoldPrice(_fromDate, _toDate).then((resp) {
+        _priceAPI.getGoldPrice(
+          from: _fromDate,
+          to: _toDate
+        ).then((resp) {
           // clear the price gold map
           _priceGoldData.clear();
           _priceGoldData[30] = [];
@@ -761,7 +767,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           throw Exception("Error when get price gold data");
         },),
 
-        _watchlistAPI.findDetail(-1).then((resp) {
+        _watchlistAPI.findDetail(companyId: -1).then((resp) {
           // if we got response then map it to the map, so later we can sent it
           // to the graph for rendering the time when we buy the share
           DateTime tempDate;

@@ -176,7 +176,12 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
       LoadingScreen.instance().show(context: context);
 
       // call the update detail API
-      await _watchlistApi.updateDetail(_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId, _selectedDate, shares, price).then((resp) async {
+      await _watchlistApi.updateDetail(
+        id: _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId,
+        date: _selectedDate,
+        shares: shares,
+        price: price,
+      ).then((resp) async {
         // check if the response is success
         if(resp) {
           // update the current detail with new one

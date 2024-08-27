@@ -872,7 +872,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   }
 
   Future<void> _getTransactionList() async {
-    await _brokerSummaryAPI.getBrokerTransactionList(_args.brokerFirmID, _start, _limit, _fromDateCurrent, _toDateCurrent).then((resp) {
+    await _brokerSummaryAPI.getBrokerTransactionList(
+      brokerCode: _args.brokerFirmID,
+      start: _start,
+      limit: _limit,
+      dateFrom: _fromDateCurrent,
+      dateTo: _toDateCurrent
+    ).then((resp) {
       _updateTransactionList(resp);
     }).onError((error, stackTrace) {
       Log.error(
@@ -889,10 +895,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     if (!_transactionDetail.containsKey(index)) {
       LoadingScreen.instance().show(context: context);
       await _brokerSummaryAPI.getBrokerTransactionDetail(
-        _transactionList.brokerSummaryId,
-        _transactionList.brokerSummaryCodeList[index].brokerSummaryCode,
-        _transactionList.brokerSummaryFromDate.toLocal(),
-        _transactionList.brokerSummaryToDate.toLocal()
+        brokerCode: _transactionList.brokerSummaryId,
+        stockCode: _transactionList.brokerSummaryCodeList[index].brokerSummaryCode,
+        dateFrom: _transactionList.brokerSummaryFromDate.toLocal(),
+        dateTo: _transactionList.brokerSummaryToDate.toLocal()
       ).then((resp) {
         // got the response from the API, we will put this on the map of transaction detail
         _transactionDetail[index] = resp;
@@ -904,7 +910,9 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
   Future<bool> _getInitData() async {
     try {
       // first let's get the min and max date
-      await _brokerSummaryAPI.getBrokerSummaryBrokerDate(_args.brokerFirmID).then((resp) {
+      await _brokerSummaryAPI.getBrokerSummaryBrokerDate(
+        brokerID: _args.brokerFirmID
+      ).then((resp) {
         _fromDateMax = resp.brokerMinDate;
         _toDateMax = resp.brokerMaxDate;
         _fromDateCurrent = _toDateMax;
@@ -912,7 +920,13 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       });
 
       // we will use the max date when we query the data
-      await _brokerSummaryAPI.getBrokerTransactionList(_args.brokerFirmID, _start, _limit, _fromDateCurrent, _toDateCurrent).then((resp) {
+      await _brokerSummaryAPI.getBrokerTransactionList(
+        brokerCode: _args.brokerFirmID,
+        start: _start,
+        limit: _limit,
+        dateFrom: _fromDateCurrent,
+        dateTo: _toDateCurrent
+      ).then((resp) {
         // set the current transaction list
         _transactionList = resp;
 

@@ -346,7 +346,11 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
 
   Future<bool> _getInitData() async {
     // get the company sector and sub sector information
-    await _companyAPI.getCompanySectorAndSubSector(_args.type, _args.sectorName, _args.subName).then((resp) {
+    await _companyAPI.getCompanySectorAndSubSector(
+      type: _args.type,
+      sectorName: _args.sectorName,
+      subSectorName: _args.subName,
+    ).then((resp) {
       _companyList = resp;
       _companyFilter = List<CompanyDetailModel>.generate(_companyList.length, (index) => _companyList[index]);
       _filterMode = "AB";
@@ -368,7 +372,10 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     LoadingScreen.instance().show(context: context);
 
     // get the company detail and navigate to company page
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

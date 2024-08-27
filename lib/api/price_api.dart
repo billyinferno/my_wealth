@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class PriceAPI {
-  Future<PriceSahamMovingAverageModel> getPriceMovingAverage(String stockCode) async {
+  Future<PriceSahamMovingAverageModel> getPriceMovingAverage({
+    required String stockCode
+  }) async {
     // get saham price data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiPriceSaham}/ma/code/$stockCode'
@@ -17,7 +19,9 @@ class PriceAPI {
     return priceMa;
   }
 
-  Future<PriceSahamMovementModel> getPriceMovement(String stockCode) async {
+  Future<PriceSahamMovementModel> getPriceMovement({
+    required String stockCode
+  }) async {
     // get saham price data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiPriceSaham}/movement/code/$stockCode'
@@ -32,7 +36,10 @@ class PriceAPI {
     return priceMovement;
   }
 
-  Future<List<PriceGoldModel>> getGoldPrice(DateTime from, DateTime to) async {
+  Future<List<PriceGoldModel>> getGoldPrice({
+    required DateTime from,
+    required DateTime to
+  }) async {
     // get reksadana information using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiPriceGold}/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'

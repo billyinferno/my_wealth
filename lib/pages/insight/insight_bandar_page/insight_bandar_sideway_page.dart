@@ -201,7 +201,11 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
               LoadingScreen.instance().show(context: context);
 
               // get stock that currently sideway from API
-              await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
+              await _insightAPI.getSideway(
+                maxOneDay: _maxOneDay,
+                oneDayRange: _avgOneDay,
+                oneWeekRange: _avgOneWeek,
+              ).then((resp) async {
                 // clear the sideway list and set response as sidewaylist
                 _sidewayList.clear();
                 _sidewayList = resp;
@@ -476,7 +480,11 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     // check if we already got result or not?
     if (_sidewayList.isEmpty) {
       // get the sideway data
-      await _insightAPI.getSideway(_maxOneDay, _avgOneDay, _avgOneWeek).then((resp) async {
+      await _insightAPI.getSideway(
+        maxOneDay: _maxOneDay,
+        oneDayRange: _avgOneDay,
+        oneWeekRange: _avgOneWeek,
+      ).then((resp) async {
         _sidewayList = resp;
 
         // stored the sideway result to shared preferences
@@ -507,7 +515,10 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     LoadingScreen.instance().show(context: context);
 
     // get the company data and navigate to the company page
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

@@ -24,7 +24,10 @@ class StockCollectExpanded extends StatelessWidget {
               LoadingScreen.instance().show(context: context);
 
               // get the stock company information using code
-              await companyAPI.getCompanyByCode(data.code, 'saham').then((resp) {
+              await companyAPI.getCompanyByCode(
+                companyCode: data.code,
+                type: 'saham',
+              ).then((resp) {
                 CompanyDetailArgs args = CompanyDetailArgs(
                   companyId: resp.companyId,
                   companyName: resp.companyName,

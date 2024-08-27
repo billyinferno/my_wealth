@@ -21,7 +21,10 @@ class InsightAPI {
     return sectorSummary;
   }
 
-  Future<TopWorseCompanyListModel> getSectorSummaryList(String sectorName, String sortType) async {
+  Future<TopWorseCompanyListModel> getSectorSummaryList({
+    required String sectorName,
+    required String sortType
+  }) async {
     // convert sector name into Base64
     String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
@@ -39,7 +42,9 @@ class InsightAPI {
     return companyList;
   }
 
-  Future<List<SectorSummaryModel>> getIndustrySummary(String sectorName) async {
+  Future<List<SectorSummaryModel>> getIndustrySummary({
+    required String sectorName
+  }) async {
     // convert sector name into Base64
     String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
@@ -61,7 +66,9 @@ class InsightAPI {
     return sectorSummary;
   }
 
-  Future<List<SectorSummaryModel>> getSubSectorSummary(String sectorName) async {
+  Future<List<SectorSummaryModel>> getSubSectorSummary({
+    required String sectorName
+  }) async {
     // convert sector name to Base64
     String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
@@ -83,7 +90,9 @@ class InsightAPI {
     return sectorSummary;
   }
 
-  Future<TopWorseCompanyListModel> getTopWorseCompany(String type) async {
+  Future<TopWorseCompanyListModel> getTopWorseCompany({
+    required String type
+  }) async {
     // get insight data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/stock/$type'
@@ -113,7 +122,10 @@ class InsightAPI {
     return brokerList;
   }
 
-  Future<TopWorseCompanyListModel> getTopWorseReksadana(String type, String topWorse) async {
+  Future<TopWorseCompanyListModel> getTopWorseReksadana({
+    required String type,
+    required String topWorse
+  }) async {
     // get insight data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/reksadana/$topWorse/type/$type'
@@ -143,7 +155,11 @@ class InsightAPI {
     return interestList;
   }
 
-  Future<List<InsightAccumulationModel>> getTopAccumulation(int oneDayRate, DateTime fromDate, DateTime toDate) async {
+  Future<List<InsightAccumulationModel>> getTopAccumulation({
+    required int oneDayRate,
+    required DateTime fromDate,
+    required DateTime toDate
+  }) async {
     // convert date
     final String dateFromString = Globals.dfyyyyMMdd.format(fromDate.toLocal());
     final String dateToString = Globals.dfyyyyMMdd.format(toDate.toLocal());
@@ -166,7 +182,10 @@ class InsightAPI {
     return accumulation;
   }
 
-  Future<List<InsightEpsModel>> getTopEPS(int minDiff, int minDiffRate) async {
+  Future<List<InsightEpsModel>> getTopEPS({
+    required int minDiff,
+    required int minDiffRate
+  }) async {
     // get insight data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/eps/top/min/$minDiff/diff/$minDiffRate'
@@ -185,7 +204,11 @@ class InsightAPI {
     return epsList;
   }
 
-  Future<List<InsightSidewayModel>> getSideway(int maxOneDay, int oneDayRange, int oneWeekRange) async {
+  Future<List<InsightSidewayModel>> getSideway({
+    required int maxOneDay,
+    required int oneDayRange,
+    required int oneWeekRange
+  }) async {
     // get insight data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/sideway/oneday/$maxOneDay/onedayrange/$oneDayRange/oneweekrange/$oneWeekRange'
@@ -316,17 +339,20 @@ class InsightAPI {
     return stockSplitList;
   }
 
-  Future<List<InsightStockCollectModel>> getStockCollect([int? accumLimit, DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<List<InsightStockCollectModel>> getStockCollect({
+    int accumLimit = 75,
+    DateTime? dateFrom,
+    DateTime? dateTo
+  }) async {
     // prepare all necessary data/information
     final DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     final DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
     final String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
     final String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
-    final int currAccumLimit = (accumLimit ?? 75);
     
     // get insight data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiInsight}/stockcollect/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'
+      url: '${Globals.apiInsight}/stockcollect/accum/$accumLimit/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }
@@ -342,17 +368,21 @@ class InsightAPI {
     return stockCollectList;
   }
 
-  Future<InsightBrokerCollectModel> getBrokerCollect(String broker, [int? accumLimit, DateTime? dateFrom, DateTime? dateTo]) async {
+  Future<InsightBrokerCollectModel> getBrokerCollect({
+    required String broker,
+    int accumLimit = 75,
+    DateTime? dateFrom,
+    DateTime? dateTo
+  }) async {
     // prepare all necessary data/information
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
     String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
     String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
-    int currAccumLimit = (accumLimit ?? 75);
 
     // get insight data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiInsight}/brokercollect/broker/$broker/accum/$currAccumLimit/from/$dateFromString/to/$dateToString'
+      url: '${Globals.apiInsight}/brokercollect/broker/$broker/accum/$accumLimit/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }

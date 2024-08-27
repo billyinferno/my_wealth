@@ -495,22 +495,32 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
 
   Future<bool> _getIndustrySummary() async {
     await Future.wait([
-      _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'top').then((resp) {
+      _insightAPI.getSectorSummaryList(
+        sectorName: _args.sectorData.sectorName,
+        sortType: 'top',
+      ).then((resp) {
         // set the sub sector list with the response
         _sectorListTop = resp;
       }),
 
-      _insightAPI.getSectorSummaryList(_args.sectorData.sectorName, 'worse').then((resp) {
+      _insightAPI.getSectorSummaryList(
+        sectorName: _args.sectorData.sectorName,
+        sortType: 'worse',
+      ).then((resp) {
         // set the sub sector list with the response
         _sectorListWorse = resp;
       }),
 
-      _insightAPI.getSubSectorSummary(_args.sectorData.sectorName).then((resp) {
+      _insightAPI.getSubSectorSummary(
+        sectorName: _args.sectorData.sectorName
+      ).then((resp) {
         // set the sub sector list with the response
         _subSectorList = resp;
       }),
 
-      _insightAPI.getIndustrySummary(_args.sectorData.sectorName).then((resp) {
+      _insightAPI.getIndustrySummary(
+        sectorName: _args.sectorData.sectorName
+      ).then((resp) {
         // set the industry list with the response
         _industryList = resp;
       }),
@@ -531,7 +541,10 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
     LoadingScreen.instance().show(context: context);
 
     // get company information and navigate to company page
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

@@ -580,7 +580,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         LoadingScreen.instance().show(context: context);
 
         // get the stock information by code
-        await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+        await _companyAPI.getCompanyByCode(
+          companyCode: code,
+          type: 'saham',
+        ).then((resp) {
           CompanyDetailArgs args = CompanyDetailArgs(
             companyId: resp.companyId,
             companyName: resp.companyName,
@@ -732,7 +735,10 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         LoadingScreen.instance().show(context: context);
 
         // get the stock information using code
-        await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+        await _companyAPI.getCompanyByCode(
+          companyCode: code,
+          type: 'saham',
+        ).then((resp) {
           CompanyDetailArgs args = CompanyDetailArgs(
             companyId: resp.companyId,
             companyName: resp.companyName,

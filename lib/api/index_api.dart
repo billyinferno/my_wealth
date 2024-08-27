@@ -21,7 +21,7 @@ class IndexAPI {
     return listIndex;
   }
 
-  Future<List<IndexPriceModel>> getIndexPrice(int indexId) async {
+  Future<List<IndexPriceModel>> getIndexPrice({required int indexId}) async {
     // get the index data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/$indexId'
@@ -40,7 +40,11 @@ class IndexAPI {
     return listIndexPrice;
   }
 
-  Future<List<IndexPriceModel>> getIndexPriceDate(int indexID, DateTime from, DateTime to) async {
+  Future<List<IndexPriceModel>> getIndexPriceDate({
+    required int indexID,
+    required DateTime from,
+    required DateTime to
+  }) async {
     // get the index data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/id/$indexID/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'
@@ -59,7 +63,7 @@ class IndexAPI {
     return listIndexPrice;
   }
 
-  Future<List<SeasonalityModel>> getSeasonality(int id) async {
+  Future<List<SeasonalityModel>> getSeasonality({required int id}) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/seasonality/$id'

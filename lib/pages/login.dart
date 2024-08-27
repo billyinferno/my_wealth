@@ -401,7 +401,10 @@ class LoginPageState extends State<LoginPage> {
 
     // check user credentials
     try {
-      await _userAPI.login(username, password).then((resp) async {
+      await _userAPI.login(
+        username: username,
+        password: password
+      ).then((resp) async {
         // login success, check and ensure that user is confirmed and not blocked
         if(resp.user.confirmed == true && resp.user.blocked == false) {
           ret = true;
@@ -483,43 +486,43 @@ class LoginPageState extends State<LoginPage> {
     }
     
     await Future.wait([
-      _faveAPI.getFavourites("reksadana").then((resp) async {
+      _faveAPI.getFavourites(type: "reksadana").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
         if (!mounted) return;
         Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("reksadana", resp);
         Log.success(message: "4️⃣ Get user favourites reksadana");
       }),
-      _faveAPI.getFavourites("saham").then((resp) async {
+      _faveAPI.getFavourites(type: "saham").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("saham", resp);
         if (!mounted) return;
         Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("saham", resp);
         Log.success(message: "5️⃣ Get user favourites saham");
       }),
-      _faveAPI.getFavourites("crypto").then((resp) async {
+      _faveAPI.getFavourites(type: "crypto").then((resp) async {
         await FavouritesSharedPreferences.setFavouritesList("crypto", resp);
         if (!mounted) return;
         Provider.of<FavouritesProvider>(context, listen: false).setFavouriteList("crypto", resp);
         Log.success(message: "6️⃣ Get user favourites crypto");
       }),
-      _watchlistApi.getWatchlist("reksadana").then((resp) async {
+      _watchlistApi.getWatchlist(type: "reksadana").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("reksadana", resp);
         Log.success(message: "7️⃣ Get user watchlist reksadana");
       }),
-      _watchlistApi.getWatchlist("saham").then((resp) async {
+      _watchlistApi.getWatchlist(type: "saham").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("saham", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("saham", resp);
         Log.success(message: "8️⃣ Get user watchlist saham");
       }),
-      _watchlistApi.getWatchlist("crypto").then((resp) async {
+      _watchlistApi.getWatchlist(type: "crypto").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("crypto", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("crypto", resp);
         Log.success(message: "9️⃣ Get user watchlist crypto");
       }),
-      _watchlistApi.getWatchlist("gold").then((resp) async {
+      _watchlistApi.getWatchlist(type: "gold").then((resp) async {
         await WatchlistSharedPreferences.setWatchlist("gold", resp);
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist("gold", resp);
@@ -567,61 +570,106 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(context, listen: false).setSectorSummaryList(resp);
         Log.success(message: '🔟7️⃣ Get Sector Summary List');
       }),
-      _insightAPI.getTopWorseCompany('top').then((resp) async {
+      _insightAPI.getTopWorseCompany(type: 'top').then((resp) async {
         await InsightSharedPreferences.setTopWorseCompanyList('top', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('top', resp);
         Log.success(message: '🔟8️⃣ Get Top Company Summary List');
       }),
-      _insightAPI.getTopWorseCompany('worse').then((resp) async {
+      _insightAPI.getTopWorseCompany(type: 'worse').then((resp) async {
         await InsightSharedPreferences.setTopWorseCompanyList('worse', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setTopWorseCompanyList('worse', resp);
         Log.success(message: '🔟9️⃣ Get Worse Company Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'saham',
+        topWorse: 'top'
+      ).then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('saham', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('saham', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setTopReksadanaList('saham', resp);
         Log.success(message: '🔟🔟1️⃣ Get Top Reksadana Saham Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'campuran',
+        topWorse: 'top'
+      ).then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('campuran', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setTopReksadanaList('campuran', resp);
         Log.success(message: '🔟🔟2️⃣ Get Top Reksadana Campuran Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pasaruang',
+        topWorse: 'top'
+      ).then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pasaruang', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setTopReksadanaList('pasaruang', resp);
         Log.success(message: '🔟🔟3️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pendapatantetap',
+        topWorse: 'top',
+      ).then((resp) async {
         await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setTopReksadanaList('pendapatantetap', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setTopReksadanaList('pendapatantetap', resp);
         Log.success(message: '🔟🔟4️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'saham',
+        topWorse: 'loser',
+      ).then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('saham', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setWorseReksadanaList('saham', resp);
         Log.success(message: '🔟🔟5️⃣ Get Top Reksadana Saham Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'campuran',
+        topWorse: 'loser',
+      ).then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('campuran', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setWorseReksadanaList('campuran', resp);
         Log.success(message: '🔟🔟6️⃣ Get Top Reksadana Campuran Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pasaruang',
+        topWorse: 'loser',
+      ).then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
         if (!mounted) return;
-        Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pasaruang', resp);
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setWorseReksadanaList('pasaruang', resp);
         Log.success(message: '🔟🔟7️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
-      _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pendapatantetap',
+        topWorse: 'loser',
+      ).then((resp) async {
         await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
         if (!mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setWorseReksadanaList('pendapatantetap', resp);

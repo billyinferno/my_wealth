@@ -413,7 +413,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
         Log.success(message: "🏁 Get index price detail");
       }),
 
-      _indexApi.getSeasonality(_index.indexId).then((resp) {
+      _indexApi.getSeasonality(id: _index.indexId).then((resp) {
         Log.success(message: "🏁 Get index seasonility");
 
         _seasonality = resp;
@@ -435,7 +435,11 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     DateTime oneYearAgo = DateTime.now().subtract(const Duration(days: 365));
 
     // get the data from API
-    await _indexApi.getIndexPriceDate(_index.indexId, oneYearAgo.toLocal(), DateTime.now().toLocal()).then((resp) {
+    await _indexApi.getIndexPriceDate(
+      indexID: _index.indexId,
+      from: oneYearAgo.toLocal(),
+      to: DateTime.now().toLocal()
+    ).then((resp) {
       // clear the _indexPriceData first
       _indexPriceData.clear();
 

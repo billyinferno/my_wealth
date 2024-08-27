@@ -874,7 +874,12 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       LoadingScreen.instance().show(context: context);
 
       // get the transaction
-      await _brokerSummaryAPI.getBrokerTransactionDetail(_brokerCode, _companySahamCode, _dateFrom, _dateTo).then((resp) {
+      await _brokerSummaryAPI.getBrokerTransactionDetail(
+        brokerCode: _brokerCode,
+        stockCode: _companySahamCode,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo
+      ).then((resp) {
         _brokerSummaryData = resp;
       }).onError((error, stackTrace) {
         if (mounted) {
@@ -895,7 +900,10 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       LoadingScreen.instance().show(context: context);
 
       // get the company detail
-      await _companyAPI.getCompanyByCode(_companyData!.companySymbol, 'saham').then((resp) {
+      await _companyAPI.getCompanyByCode(
+        companyCode: _companyData!.companySymbol,
+        type: 'saham',
+      ).then((resp) {
         _companyDetail = resp;
       }).onError((error, stackTrace) {
         Log.error(

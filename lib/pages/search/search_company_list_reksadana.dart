@@ -742,7 +742,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     int faveId = _sortedFaveList[index].favouritesId ?? -1;
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
-      await _faveAPI.delete(faveId).then((_) {
+      await _faveAPI.delete(favouriteId: faveId).then((_) {
         Log.success(message: "🧹 Delete Favourite ID $faveId for reksadana company ${_sortedFaveList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
@@ -781,7 +781,10 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
       });
     }
     else {
-      await _faveAPI.add(_sortedFaveList[index].favouritesCompanyId, "reksadana").then((resp) {
+      await _faveAPI.add(
+        companyId: _sortedFaveList[index].favouritesCompanyId,
+        type: "reksadana",
+      ).then((resp) {
         Log.success(message: "➕ Add reksadana company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
         
         FavouritesListModel ret = FavouritesListModel(
@@ -839,7 +842,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     LoadingScreen.instance().show(context: context);
 
     // get user reksadana favourites
-    await _faveAPI.getFavourites("reksadana").then((resp) async {
+    await _faveAPI.getFavourites(type: "reksadana").then((resp) async {
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("reksadana", resp);
       // notify the provider
@@ -852,7 +855,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   }
 
   Future<bool> _getInitData() async {
-    await _faveAPI.listFavouritesCompanies("reksadana").then((resp) {
+    await _faveAPI.listFavouritesCompanies(type: "reksadana").then((resp) {
       _setFavouriteList(resp);
       _setFilterList(resp);
     }).onError((error, stackTrace) {

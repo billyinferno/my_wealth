@@ -174,7 +174,10 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
     LoadingScreen.instance().show(context: context);
 
     // find the company by name
-    await _companyAPI.getCompanyByName(companyName, _args.type).then((resp) {
+    await _companyAPI.getCompanyByName(
+      companyName: companyName,
+      type: _args.type
+    ).then((resp) {
       ret = resp;
     }).onError((error, stackTrace) {
       throw Exception("Error when search company");
@@ -199,7 +202,10 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
     // perform task
     Future.microtask(() async {
       // add the company to watchlist
-      await _watchlistAPI.add(_args.type, _companySearchResult![index].companyId).then((_) async {
+      await _watchlistAPI.add(
+        type: _args.type,
+        companyId: _companySearchResult![index].companyId
+      ).then((_) async {
         CompanySearchModel ret = CompanySearchModel(
           companyId: _companySearchResult![index].companyId,
           companyName: _companySearchResult![index].companyName,
@@ -226,7 +232,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
       });
 
       // now refresh the watchlist
-      await _watchlistAPI.getWatchlist(_args.type).then((resp) async {
+      await _watchlistAPI.getWatchlist(type: _args.type).then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist(_args.type, resp);
         if (!mounted) return;

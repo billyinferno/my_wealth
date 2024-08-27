@@ -386,7 +386,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
     int faveId = _sortedFaveList[index].favouritesId ?? -1;
     if (faveUserId > 0 && faveId > 0) {
       // already favourite, delete the favourite
-      await _faveAPI.delete(faveId).then((_) {
+      await _faveAPI.delete(favouriteId: faveId).then((_) {
         Log.success(message: "🧹 Delete Favourite ID $faveId for stock company ${_sortedFaveList[index].favouritesCompanyName}");
         
         // remove the favouriteId and favouriteUserId to determine that this is not yet
@@ -423,7 +423,10 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
       });
     }
     else {
-      await _faveAPI.add(_sortedFaveList[index].favouritesCompanyId, "saham").then((resp) {
+      await _faveAPI.add(
+        companyId: _sortedFaveList[index].favouritesCompanyId,
+        type: "saham",
+      ).then((resp) {
         Log.success(message: "➕ Add stock company ID: ${_sortedFaveList[index].favouritesCompanyId} for company ${_sortedFaveList[index].favouritesCompanyName}");
         // update the list with the updated response and re-render the page
         FavouritesListModel ret = FavouritesListModel(
@@ -476,7 +479,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
     LoadingScreen.instance().show(context: context);
 
     // get the favourites so we can showed it on the favourites page
-    await _faveAPI.getFavourites("saham").then((resp) async {
+    await _faveAPI.getFavourites(type: "saham").then((resp) async {
       // update the shared preferences, and the provider
       await FavouritesSharedPreferences.setFavouritesList("saham", resp);
       // notify the provider
@@ -496,7 +499,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
   }
 
   Future<bool> _getInitData() async {
-    await _faveAPI.listFavouritesCompanies("saham").then((resp) {
+    await _faveAPI.listFavouritesCompanies(type: "saham").then((resp) {
       _setFavouriteList(resp);
       _setFilterList(resp);
     }).onError((error, stackTrace) {

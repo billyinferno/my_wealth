@@ -498,7 +498,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   Future<bool> _getInitData() async {
     try {
       // perform the get company detail information here
-      await _watchlistAPI.getWatchlistPerformance(_watchlistArgs.type, _watchlistArgs.watchList.watchlistId).then((resp) {
+      await _watchlistAPI.getWatchlistPerformance(
+        type: _watchlistArgs.type,
+        id: _watchlistArgs.watchList.watchlistId
+      ).then((resp) {
         // generate all the watchlist performance, 90 day, daily, monthly, yearly
         _watchlistPerformance90Day.clear();
         _watchlistPerformanceDaily.clear();

@@ -879,7 +879,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   Future<bool> _getInitData() async {
     try {
       await Future.wait([
-        _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+        _companyApi.getCompanyDetail(
+          companyId: _companyData.companyId,
+          type: _companyData.type,
+        ).then((resp) {
           // copy the response to company detail data
           _companyDetail = resp;
           
@@ -887,7 +890,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
           _generateGraphData(resp);        
         }),
         
-        _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+        _watchlistAPI.findDetail(
+          companyId: _companyData.companyId
+        ).then((resp) {
           // if we got response then map it to the map, so later we can sent it
           // to the graph for rendering the time when we buy the share
           DateTime tempDate;

@@ -4538,18 +4538,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     await Future.wait([
       // get the broker summary gross
       _brokerSummaryAPI.getBrokerSummary(
-        _companyData.companyCode,
-        _brokerSummaryDateFrom.toLocal(),
-        _brokerSummaryDateTo.toLocal()
+        stockCode: _companyData.companyCode,
+        dateFrom: _brokerSummaryDateFrom.toLocal(),
+        dateTo: _brokerSummaryDateTo.toLocal()
       ).then((resp) {
         _brokerSummaryGross = resp;
       }),
 
       // get the broker summary net
       _brokerSummaryAPI.getBrokerSummaryNet(
-        _companyData.companyCode,
-        _brokerSummaryDateFrom.toLocal(),
-        _brokerSummaryDateTo.toLocal()
+        stockCode: _companyData.companyCode,
+        dateFrom: _brokerSummaryDateFrom.toLocal(),
+        dateTo: _brokerSummaryDateTo.toLocal()
       ).then((resp) {
         _brokerSummaryNet = resp;
       }),
@@ -4584,9 +4584,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // get the broker summary
     await _companyApi.getCompanyTopBroker(
-      _companyData.companyCode,
-      _topBrokerDateFrom.toLocal(),
-      _topBrokerDateTo.toLocal()
+      code: _companyData.companyCode,
+      fromDate: _topBrokerDateFrom.toLocal(),
+      toDate: _topBrokerDateTo.toLocal()
     ).then((resp) {
       setState(() {
         _topBroker = resp;
@@ -4594,8 +4594,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     }).onError((error, stackTrace) {
       if (mounted) {
         // show snack bar
-        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(
-            message: 'Error when try to get top broker data from server'));
+        ScaffoldMessenger.of(context).showSnackBar(
+          createSnackBar(
+            message: 'Error when try to get top broker data from server'
+          )
+        );
       }
       // show error
       Log.error(
@@ -4617,8 +4620,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // get the fundamental data
     await _infoFundamentalAPI.getInfoFundamental(
-      _companyData.companyCode,
-      _quarterSelection
+      code: _companyData.companyCode,
+      quarter: _quarterSelection
     ).then((resp) {
       result = resp;
     }).onError((error, stackTrace) {
@@ -4655,8 +4658,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       // get the data that refer as dependency by other API
       // get company detail
       await _companyApi.getCompanyDetail(
-        _companyData.companyId,
-        _companyData.type
+        companyId: _companyData.companyId,
+        type: _companyData.type
       ).then((resp) {
         // copy the response to company detail data
         _companyDetail = resp;
@@ -4690,7 +4693,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
       // get broker summary daily stat
       await _brokerSummaryAPI.getBrokerSummaryDailyStat(
-        _companyData.companyCode
+        code: _companyData.companyCode
       ).then((resp) {
         _brokerSummaryDailyStat = resp;
 
@@ -4730,7 +4733,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       // the page.
       await Future.wait([
         _brokerSummaryAPI.getBrokerSummaryCodeDate(
-          _companyData.companyCode
+          stockCode: _companyData.companyCode
         ).then((resp) {
           _brokerSummaryDate = resp;
         }).onError(
@@ -4744,9 +4747,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           },
         ),
         _brokerSummaryAPI.getBrokerSummary(
-          _companyData.companyCode,
-          _brokerSummaryDateFrom.toLocal(),
-          _brokerSummaryDateTo.toLocal()
+          stockCode: _companyData.companyCode,
+          dateFrom: _brokerSummaryDateFrom.toLocal(),
+          dateTo: _brokerSummaryDateTo.toLocal()
         ).then((resp) {
           _brokerSummaryGross = resp;
         }).onError(
@@ -4760,9 +4763,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           },
         ),
         _brokerSummaryAPI.getBrokerSummaryNet(
-          _companyData.companyCode,
-          _brokerSummaryDateFrom.toLocal(),
-          _brokerSummaryDateTo.toLocal()
+          stockCode: _companyData.companyCode,
+          dateFrom: _brokerSummaryDateFrom.toLocal(),
+          dateTo: _brokerSummaryDateTo.toLocal()
         ).then((resp) {
           _brokerSummary = resp;
           _brokerSummaryNet = resp;
@@ -4782,9 +4785,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           },
         ),
         _brokerSummaryAPI.getBrokerSummaryAccumulation(
-          'v1',
-          _companyData.companyCode,
-          _brokerSummaryDateFrom.toLocal()
+          version: 'v1',
+          stockCode: _companyData.companyCode,
+          date: _brokerSummaryDateFrom.toLocal()
         ).then((resp) {
           _brokerSummaryAccumulation.add(resp);
         }).onError(
@@ -4797,10 +4800,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got broker summary accumulation (v1)');
           },
         ),
-        _brokerSummaryAPI
-            .getBrokerSummaryAccumulation('v2', _companyData.companyCode,
-                _brokerSummaryDateFrom.toLocal())
-            .then((resp) {
+        _brokerSummaryAPI.getBrokerSummaryAccumulation(
+          version: 'v2',
+          stockCode: _companyData.companyCode,
+          date: _brokerSummaryDateFrom.toLocal()
+        ).then((resp) {
           _brokerSummaryAccumulation.add(resp);
         }).onError(
           (error, stackTrace) {
@@ -4812,10 +4816,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got broker summary accumulation (v2)');
           },
         ),
-        _companyApi
-            .getCompanyTopBroker(
-                _companyData.companyCode, _topBrokerDateFrom, _topBrokerDateTo)
-            .then((resp) {
+        _companyApi.getCompanyTopBroker(
+          code: _companyData.companyCode,
+          fromDate: _topBrokerDateFrom,
+          toDate: _topBrokerDateTo
+        ).then((resp) {
           _topBroker = resp;
           _topBrokerDateFrom = (resp.brokerMinDate ?? DateTime.now());
           _topBrokerDateTo = (resp.brokerMaxDate ?? DateTime.now());
@@ -4829,7 +4834,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got company top broker');
           },
         ),
-        _priceAPI.getPriceMovingAverage(_companyData.companyCode).then((resp) {
+        _priceAPI.getPriceMovingAverage(
+          stockCode: _companyData.companyCode
+        ).then((resp) {
           _priceMA = resp;
         }).onError(
           (error, stackTrace) {
@@ -4841,7 +4848,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got moving average price');
           },
         ),
-        _priceAPI.getPriceMovement(_companyData.companyCode).then((resp) {
+        _priceAPI.getPriceMovement(
+          stockCode: _companyData.companyCode
+        ).then((resp) {
           _priceMovement = resp;
 
           _priceMovementData = [];
@@ -4867,9 +4876,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got price movement data');
           },
         ),
-        _infoFundamentalAPI
-            .getInfoFundamental(_companyData.companyCode, _quarterSelection)
-            .then((resp) {
+        _infoFundamentalAPI.getInfoFundamental(
+          code: _companyData.companyCode,
+          quarter: _quarterSelection,
+        ).then((resp) {
           _infoFundamental = resp;
         }).onError(
           (error, stackTrace) {
@@ -4881,9 +4891,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             throw Exception('Error when got info fundamental');
           },
         ),
-        _infoSahamsAPI
-            .getInfoSahamPriceDate(_companyData.companyCode, fromDate, toDate)
-            .then((resp) {
+        _infoSahamsAPI.getInfoSahamPriceDate(
+          code: _companyData.companyCode,
+          from: fromDate,
+          to: toDate,
+        ).then((resp) {
           // clear and initialize the info saham price data
           _infoSahamPriceData.clear();
           _infoSahamPriceData[30] = [];
@@ -4946,7 +4958,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           _generateGraphData(
               _infoSahamPriceData[_currentInfoSahamPrice]!, _companyDetail);
         }),
-        _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+        _watchlistAPI.findDetail(
+          companyId: _companyData.companyId
+        ).then((resp) {
           // if we got response then map it to the map, so later we can sent it
           // to the graph for rendering the time when we buy the share
           DateTime tempDate;
@@ -4977,12 +4991,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             }
           }
         }),
-        _companyApi.getSeasonality(_companyData.companyCode).then((resp) {
+        _companyApi.getSeasonality(
+          code: _companyData.companyCode
+        ).then((resp) {
           _seasonality = resp;
         }),
-        _brokerSummaryAPI
-            .getBrokerSummaryMonthlyStat(_companyData.companyCode)
-            .then((resp) {
+        _brokerSummaryAPI.getBrokerSummaryMonthlyStat(
+          code: _companyData.companyCode
+        ).then((resp) {
           _brokerSummaryMonthlyStat = resp;
 
           // init the broker summary daily data
@@ -5006,11 +5022,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           _brokerSummaryMonthlyData.add(sellData);
         }),
         _companyApi
-            .getCompanySahamDividend(_companyData.companyCode)
+            .getCompanySahamDividend(code: _companyData.companyCode)
             .then((resp) {
           _dividend = resp;
         }),
-        _companyApi.getCompanySahamSplit(_companyData.companyCode).then((resp) {
+        _companyApi.getCompanySahamSplit(
+          code: _companyData.companyCode
+        ).then((resp) {
           _split = resp;
         }),
 
@@ -5054,10 +5072,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // get the company detail information that we will use for comparison
     await Future.wait([
-      _companyApi.getCompanyByCode(_otherCompanyCode!, 'saham').then((resp) {
+      _companyApi.getCompanyByCode(
+        companyCode: _otherCompanyCode!,
+        type: 'saham',
+      ).then((resp) {
         _otherCompanyDetail = resp;
       }),
-      _infoFundamentalAPI.getInfoFundamental(_otherCompanyCode!).then((resp) {
+      _infoFundamentalAPI.getInfoFundamental(
+        code: _otherCompanyCode!
+      ).then((resp) {
         if (resp.isNotEmpty) {
           _otherInfoFundamental = resp[0];
         }
@@ -5106,30 +5129,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       // show loading screen
       LoadingScreen.instance().show(context: context);
 
-      await _indexAPI
-          .getIndexPriceDate(
-              _indexCompare.indexId,
-              _infoSahamPriceData[365]!.last.date,
-              _infoSahamPriceData[365]!.first.date)
-          .then(
-        (resp) async {
-          _indexComparePrice = resp;
+      await _indexAPI.getIndexPriceDate(
+        indexID: _indexCompare.indexId,
+        from: _infoSahamPriceData[365]!.last.date,
+        to: _infoSahamPriceData[365]!.first.date
+      ).then((resp) async {
+        _indexComparePrice = resp;
 
-          // generate the index performance data
-          Future.microtask(
-            () async {
-              // first generate the index map
-              await _generateIndexMap();
+        // generate the index performance data
+        Future.microtask(
+          () async {
+            // first generate the index map
+            await _generateIndexMap();
 
-              // then we generate the graph
-              await _generateIndexGraph();
-            },
-          );
+            // then we generate the graph
+            await _generateIndexGraph();
+          },
+        );
 
-          // once finished just set state so we can rebuild the page
-          setState(() {});
-        },
-      ).onError(
+        // once finished just set state so we can rebuild the page
+        setState(() {});
+      }).onError(
         (error, stackTrace) {
           Log.error(
             message: 'Error getting index price',

@@ -437,7 +437,10 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   }
 
   Future<bool> _fetchData() async {
-    await _portofolioAPI.getPortofolioDetail(_args.type, _args.subType!).then((resp) {
+    await _portofolioAPI.getPortofolioDetail(
+      type: _args.type,
+      companyType: _args.subType!,
+    ).then((resp) {
       _portofolioList = resp;
       
       // generate the _barChartData based on response
@@ -477,7 +480,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     LoadingScreen.instance().show(context: context);
 
     // get the watchlist detail data from API
-    await _watchlistAPI.findSpecific(type, id).then((resp) {
+    await _watchlistAPI.findSpecific(type: type, id: id).then((resp) {
       WatchlistListArgs watchlistArgs = WatchlistListArgs(
         type: _args.type,
         watchList: resp

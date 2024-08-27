@@ -674,7 +674,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
 
     // get the watchlist data
     await Future.wait([
-      _watchlistAPI.getWatchlist("reksadana").then((resp) async {
+      _watchlistAPI.getWatchlist(type: "reksadana").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("reksadana", resp);
         if (!mounted) return;
@@ -682,7 +682,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         Log.success(message: "🔃 Refresh watchlist reksadana");
       }),
 
-      _watchlistAPI.getWatchlist("saham").then((resp) async {
+      _watchlistAPI.getWatchlist(type: "saham").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("saham", resp);
         if (!mounted) return;
@@ -690,7 +690,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         Log.success(message: "🔃 Refresh watchlist saham");
       }),
 
-       _watchlistAPI.getWatchlist("crypto").then((resp) async {
+       _watchlistAPI.getWatchlist(type: "crypto").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("crypto", resp);
         if (!mounted) return;
@@ -698,7 +698,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         Log.success(message: "🔃 Refresh watchlist crypto");
       }),
 
-      _watchlistAPI.getWatchlist("gold").then((resp) async {
+      _watchlistAPI.getWatchlist(type: "gold").then((resp) async {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlist("gold", resp);
         if (!mounted) return;
@@ -765,7 +765,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     LoadingScreen.instance().show(context: context);
 
     // delete the watchlist
-    await _watchlistAPI.delete(watchlistId).then((resp) async {
+    await _watchlistAPI.delete(watchlistId: watchlistId).then((resp) async {
       if(resp) {
         // filter out the watchlist that we already delete
         List<WatchlistListModel> newWatchlist = [];

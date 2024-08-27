@@ -517,7 +517,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
   Future<bool> _getPortofolioSummary() async {
     try {
-      await _portofolioAPI.getPortofolioSummary(_args.type).then((resp) {
+      await _portofolioAPI.getPortofolioSummary(type: _args.type).then((resp) {
         _portofolioList = resp;
 
         // filter the data

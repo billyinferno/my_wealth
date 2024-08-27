@@ -583,22 +583,42 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     // if not then we can get the data
     if (type.toLowerCase() == 'all') {
       await Future.wait([
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('reksadana', useDate.month, useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
+          type: 'reksadana',
+          month: useDate.month,
+          year: useDate.year,
+        ).then((resp) {
           perfData['reksadana'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('saham', useDate.month, useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
+          type: 'saham',
+          month: useDate.month,
+          year: useDate.year,
+        ).then((resp) {
           perfData['saham'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('gold', useDate.month, useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
+          type: 'gold',
+          month: useDate.month,
+          year: useDate.year,
+        ).then((resp) {
           perfData['gold'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear('crypto', useDate.month, useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
+          type: 'crypto',
+          month: useDate.month,
+          year: useDate.year,
+        ).then((resp) {
           perfData['crypto'] = resp;
         }),
       ]);
     }
     else {
-      await _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(type.toLowerCase(), useDate.month, useDate.year).then((resp) {
+      await _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
+        type: type.toLowerCase(),
+        month: useDate.month,
+        year: useDate.year,
+      ).then((resp) {
         perfData[type.toLowerCase()] = resp;
       });
     }
@@ -884,22 +904,37 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     // if not then we can get the data
     if (type.toLowerCase() == 'all') {
       await Future.wait([
-        _watchlistAPI.getWatchlistPerformanceSummaryYear('reksadana', useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryYear(
+          type: 'reksadana',
+          year: useDate.year,
+        ).then((resp) {
           perfData['reksadana'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummaryYear('saham', useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryYear(
+          type: 'saham',
+          year: useDate.year,
+        ).then((resp) {
           perfData['saham'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummaryYear('gold', useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryYear(
+          type: 'gold',
+          year: useDate.year,
+        ).then((resp) {
           perfData['gold'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummaryYear('crypto', useDate.year).then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummaryYear(
+          type: 'crypto',
+          year: useDate.year,
+        ).then((resp) {
           perfData['crypto'] = resp;
         }),
       ]);
     }
     else {
-      await _watchlistAPI.getWatchlistPerformanceSummaryYear(type.toLowerCase(), useDate.year).then((resp) {
+      await _watchlistAPI.getWatchlistPerformanceSummaryYear(
+        type: type.toLowerCase(),
+        year: useDate.year,
+      ).then((resp) {
         perfData[type.toLowerCase()] = resp;
       });
     }
@@ -1025,8 +1060,8 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     if (firstRun) {
       // get first and last date
       await _watchlistAPI.findFirstLastDate(
-        _args.type, 
-        (_args.type != 'all' ? -1 : null)
+        type: _args.type, 
+        id: (_args.type != 'all' ? -1 : null)
       ).then((resp) {
         // set the first and end date
         _firstDate = resp.firstdate;

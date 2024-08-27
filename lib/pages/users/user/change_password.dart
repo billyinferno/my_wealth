@@ -182,14 +182,17 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
 
   Future<bool> _changePassword() async {
     bool ret = false;
-    String currentPassword = _currentPasswordController.text;
-    String newPassword = _newPasswordController.text;
+    String currentPassword = _currentPasswordController.text.trim();
+    String newPassword = _newPasswordController.text.trim();
 
     // show the loading screen
     LoadingScreen.instance().show(context: context);
 
     // try to update the password
-    await _userAPI.updatePassword(currentPassword, newPassword).then((_) {
+    await _userAPI.updatePassword(
+      password: currentPassword,
+      newPassword: newPassword,
+    ).then((_) {
       // password is updated, set the return value as true
       ret = true; 
     }).onError((error, stackTrace) {

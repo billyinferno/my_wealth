@@ -97,7 +97,9 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
                       LoadingScreen.instance().show(context: context);
           
                       // update the bot token
-                      await _userApi.updateBotToken(_controller.text).then((resp) async {
+                      await _userApi.updateBotToken(
+                        bot: _controller.text
+                      ).then((resp) async {
                         // we will get updated user info here, so stored the updated
                         // user info with new risk factor to the local storea
                         await UserSharedPreferences.setUserInfo(resp);

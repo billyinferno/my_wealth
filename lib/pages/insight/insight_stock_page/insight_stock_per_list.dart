@@ -189,7 +189,9 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
 
   Future<bool> _getSectorPER() async {
     // get company sector PER
-    await _companyAPI.getCompanySectorPER(_args.sectorName).then((resp) {
+    await _companyAPI.getCompanySectorPER(
+      sectorName: _args.sectorName
+    ).then((resp) {
       _data = resp;
       _codeList = List<CodeList>.from(_data.codeList);
     }).onError((error, stackTrace) {
@@ -407,7 +409,10 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
     LoadingScreen.instance().show(context: context);
 
     // get the company detail and navigate to company page
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

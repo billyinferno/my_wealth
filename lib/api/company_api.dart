@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class CompanyAPI {
-  Future<List<CompanyListModel>> findCompany(String type) async {
+  Future<List<CompanyListModel>> findCompany({
+    required String type
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/type/${type.toLowerCase()}'
@@ -24,7 +26,10 @@ class CompanyAPI {
     return ret;
   }
 
-  Future<CompanyDetailModel> getCompanyDetail(int companyId, String type) async {
+  Future<CompanyDetailModel> getCompanyDetail({
+    required int companyId,
+    required String type,
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/${type.toLowerCase()}/detail/$companyId'
@@ -39,7 +44,10 @@ class CompanyAPI {
     return company;
   }
 
-  Future<List<CompanySearchModel>> getCompanyByName(String companyName, String type) async {
+  Future<List<CompanySearchModel>> getCompanyByName({
+    required String companyName,
+    required String type
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/$type/name/${companyName.toLowerCase()}'
@@ -58,7 +66,10 @@ class CompanyAPI {
     return ret;
   }
 
-  Future<CompanyDetailModel> getCompanyByID(int companyId, String type) async {
+  Future<CompanyDetailModel> getCompanyByID({
+    required int companyId,
+    required String type
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/$type/id/$companyId'
@@ -74,7 +85,10 @@ class CompanyAPI {
     return company;
   }
 
-  Future<CompanyDetailModel> getCompanyByCode(String companyCode, String type) async {
+  Future<CompanyDetailModel> getCompanyByCode({
+    required String companyCode,
+    required String type
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/$type/code/${companyCode.toUpperCase()}'
@@ -90,7 +104,11 @@ class CompanyAPI {
     return company;
   }
 
-  Future<List<CompanyDetailModel>> getCompanySectorAndSubSector(String type, String sectorName, String subSectorName) async {
+  Future<List<CompanyDetailModel>> getCompanySectorAndSubSector({
+    required String type,
+    required String sectorName,
+    required String subSectorName
+  }) async {
     // convert the sector and subsector into Base64
     // as we will use Base24 to send the data to avoid any invalid character
     String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
@@ -133,7 +151,9 @@ class CompanyAPI {
     return sectorNameList;
   }
 
-  Future<SectorPerDetailModel> getCompanySectorPER(String sectorName) async {
+  Future<SectorPerDetailModel> getCompanySectorPER({
+    required String sectorName
+  }) async {
     // convert the sector name into Base64
     String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
 
@@ -151,15 +171,19 @@ class CompanyAPI {
     return per;
   }
 
-  Future<CompanyTopBrokerModel> getCompanyTopBroker(String code, DateTime fromDate, DateTime toDate, [int? limit]) async {
+  Future<CompanyTopBrokerModel> getCompanyTopBroker({
+    required String code,
+    required DateTime fromDate,
+    required DateTime toDate,
+    int limit = 10,
+  }) async {
     // get the initial query information for the API
     String dateFromString = Globals.dfyyyyMMdd.format(fromDate);
     String dateToString = Globals.dfyyyyMMdd.format(toDate);
-    int currLimit = (limit ?? 10);
 
     // get the company data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiCompanies}/broker/$code/from/$dateFromString/to/$dateToString/limit/$currLimit'
+      url: '${Globals.apiCompanies}/broker/$code/from/$dateFromString/to/$dateToString/limit/$limit'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }
@@ -171,7 +195,9 @@ class CompanyAPI {
     return topBroker;
   }
 
-  Future<CompanySahamFindOtherModel> getOtherCompany(String companyCode) async {
+  Future<CompanySahamFindOtherModel> getOtherCompany({
+    required String companyCode
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/findother/${companyCode.toUpperCase()}'
@@ -205,7 +231,9 @@ class CompanyAPI {
     return ret;
   }
 
-  Future<List<SeasonalityModel>> getSeasonality(String code) async {
+  Future<List<SeasonalityModel>> getSeasonality({
+    required String code
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/seasonality/$code'
@@ -224,7 +252,9 @@ class CompanyAPI {
     return ret;
   }
 
-  Future<CompanySahamDividendModel> getCompanySahamDividend(String code) async {
+  Future<CompanySahamDividendModel> getCompanySahamDividend({
+    required String code
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/dividend/$code'
@@ -240,7 +270,9 @@ class CompanyAPI {
     return company;
   }
 
-  Future<CompanySahamSplitModel> getCompanySahamSplit(String code) async {
+  Future<CompanySahamSplitModel> getCompanySahamSplit({
+    required String code
+  }) async {
     // get the company data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/split/$code'

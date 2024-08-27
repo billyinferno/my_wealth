@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class InfoSahamsAPI {
-  Future<List<InfoSahamPriceModel>> getInfoSahamPrice(String code, [int? offset, int? limit]) async {
-    int offsetUse = (offset ?? 0);
-    int limitUse = (limit ?? 90);
-
+  Future<List<InfoSahamPriceModel>> getInfoSahamPrice({
+    required String code,
+    int offset = 0,
+    int limit = 90,
+  }) async {
     // get saham information using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiInfoSaham}/code/$code/offset/$offsetUse/limit/$limitUse'
+      url: '${Globals.apiInfoSaham}/code/$code/offset/$offset/limit/$limit'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }
@@ -24,11 +25,11 @@ class InfoSahamsAPI {
     return listInfoSahamPrice;
   }
 
-  Future<List<InfoSahamPriceModel>> getInfoSahamPriceDate(
-    String code,
-    DateTime from,
-    DateTime to
-  ) async {
+  Future<List<InfoSahamPriceModel>> getInfoSahamPriceDate({
+    required String code,
+    required DateTime from,
+    required DateTime to
+  }) async {
     // get saham information using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoSaham}/code/$code/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'

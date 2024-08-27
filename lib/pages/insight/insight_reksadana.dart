@@ -318,7 +318,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
             LoadingScreen.instance().show(context: context);
 
             // get the company detail information based on the company id
-            await _companyAPI.getCompanyByID(info[index].companySahamId, 'reksadana').then((resp) {
+            await _companyAPI.getCompanyByID(
+              companyId: info[index].companySahamId,
+              type: 'reksadana',
+            ).then((resp) {
               CompanyDetailArgs args = CompanyDetailArgs(
                 companyId: info[index].companySahamId,
                 companyName: resp.companyName,
@@ -448,49 +451,73 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
 
     // get the insight reksadana information
     await Future.wait([
-      _insightAPI.getTopWorseReksadana('saham', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'saham',
+        topWorse: 'top',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksdana Saham Top");
         await InsightSharedPreferences.setTopReksadanaList('saham', resp);
         topSaham = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('campuran', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'campuran',
+        topWorse: 'top',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Campuran Top");
         await InsightSharedPreferences.setTopReksadanaList('campuran', resp);
         topCampuran = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('pasaruang', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pasaruang',
+        topWorse: 'top',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pasar Uang Top");
         await InsightSharedPreferences.setTopReksadanaList('pasaruang', resp);
         topPasarUang = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('pendapatantetap', 'top').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pendapatantetap',
+        topWorse: 'top',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pendapatan Tetap Top");
         await InsightSharedPreferences.setTopReksadanaList('pendapatantetap', resp);
         topPendapatanTetap = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('saham', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'saham',
+        topWorse: 'loser',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksdana Saham Loser");
         await InsightSharedPreferences.setWorseReksadanaList('saham', resp);
         worseSaham = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('campuran', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'campuran',
+        topWorse: 'loser',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Campuran");
         await InsightSharedPreferences.setWorseReksadanaList('campuran', resp);
         worseCampuran = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('pasaruang', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pasaruang',
+        topWorse: 'loser',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pasar Uang");
         await InsightSharedPreferences.setWorseReksadanaList('pasaruang', resp);
         worsePasarUang = resp;
       }),
 
-      _insightAPI.getTopWorseReksadana('pendapatantetap', 'loser').then((resp) async {
+      _insightAPI.getTopWorseReksadana(
+        type: 'pendapatantetap',
+        topWorse: 'loser',
+      ).then((resp) async {
         Log.success(message: "🔃 Refresh Reksadana Pendapatan Tetap");
         await InsightSharedPreferences.setWorseReksadanaList('pendapatantetap', resp);
         worsePendapatanTetap = resp;

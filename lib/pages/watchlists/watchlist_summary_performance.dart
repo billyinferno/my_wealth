@@ -652,16 +652,24 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     if (_args.type == 'all') {
       Map<String, List<SummaryPerformanceModel>> perfData = {};
       await Future.wait([
-        _watchlistAPI.getWatchlistPerformanceSummary('reksadana').then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'reksadana'
+        ).then((resp) {
           perfData['reksadana'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummary('saham').then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'saham'
+        ).then((resp) {
           perfData['saham'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummary('gold').then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'gold'
+        ).then((resp) {
           perfData['gold'] = resp;
         }),
-        _watchlistAPI.getWatchlistPerformanceSummary('crypto').then((resp) {
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'crypto'
+        ).then((resp) {
           perfData['crypto'] = resp;
         }),
       ]).then((_) {
@@ -747,7 +755,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     }
     else {
       // perform get watchlist performance summary for specific type here
-      await _watchlistAPI.getWatchlistPerformanceSummary(_args.type).then((resp) {
+      await _watchlistAPI.getWatchlistPerformanceSummary(
+        type: _args.type
+      ).then((resp) {
         // copy the response to watchlist performance
         _summaryPerfData = resp; 
       }).onError((error, stackTrace) {
@@ -1074,9 +1084,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       LoadingScreen.instance().show(context: context);
 
       await _indexAPI.getIndexPriceDate(
-        _indexCompare.indexId,
-        _perfDataDaily.first.date,
-        _perfDataDaily.last.date
+        indexID: _indexCompare.indexId,
+        from: _perfDataDaily.first.date,
+        to: _perfDataDaily.last.date
       ).then((resp) async {
         _indexComparePrice = resp;
 

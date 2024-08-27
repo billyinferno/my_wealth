@@ -209,7 +209,11 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
               LoadingScreen.instance().show(context: context);
               
               // get the accumulation result from the insight API
-              await _insightAPI.getStockCollect(_accumRate, _fromDate, _toDate).then((resp) {      
+              await _insightAPI.getStockCollect(
+                accumLimit: _accumRate,
+                dateFrom: _fromDate,
+                dateTo: _toDate,
+              ).then((resp) {      
                 // set the collection list as resp
                 setState(() {
                   _stockCollectList!.clear();
@@ -354,7 +358,11 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
         // no stock collection data, means this is the first time
         // so we call the API and stored the stock collection data to the
         // shared preferences for next use
-        await _insightAPI.getStockCollect(_accumRate, _fromDate, _toDate).then((resp) {
+        await _insightAPI.getStockCollect(
+          accumLimit: _accumRate,
+          dateFrom: _fromDate,
+          dateTo: _toDate,
+        ).then((resp) {
           _stockCollectList!.clear();
           _stockCollectList!.addAll(resp);
           

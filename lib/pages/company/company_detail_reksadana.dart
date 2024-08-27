@@ -1771,7 +1771,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     try {
       // company detail information is mandatory, so get the company information
       // first before we call the other API
-      await _companyApi.getCompanyDetail(_companyData.companyId, _companyData.type).then((resp) {
+      await _companyApi.getCompanyDetail(
+        companyId:  _companyData.companyId,
+        type: _companyData.type,
+      ).then((resp) {
         _companyDetail = resp;
 
         // calculate the average daily based on the daily, weekly, monthly, quarterly, semi annual, and yearly
@@ -1816,7 +1819,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       });
 
       await Future.wait([
-        _infoReksadanaAPI.getInfoReksadanaDate(_companyData.companyId, _from, _to).then((resp) {
+        _infoReksadanaAPI.getInfoReksadanaDate(
+          companyId: _companyData.companyId,
+          from: _from,
+          to: _to,
+        ).then((resp) {
           // clear info reksadana
           _infoReksadanaData.clear();
           
@@ -1877,7 +1884,9 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           _generateGraphData();
         }),
 
-        _watchlistAPI.findDetail(_companyData.companyId).then((resp) {
+        _watchlistAPI.findDetail(
+          companyId: _companyData.companyId
+        ).then((resp) {
           // if we got response then map it to the map, so later we can sent it
           // to the graph for rendering the time when we buy the share
           DateTime tempDate;
@@ -1934,7 +1943,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     LoadingScreen.instance().show(context: context);
 
     // get the company detail information
-    await _companyApi.getCompanyByID(_otherCompany.companyId, 'reksadana').then((resp) {
+    await _companyApi.getCompanyByID(
+      companyId: _otherCompany.companyId,
+      type: 'reksadana'
+    ).then((resp) {
       _otherCompanyDetail = resp;
     }).onError((error, stackTrace) {
       Log.error(
@@ -2027,9 +2039,9 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       LoadingScreen.instance().show(context: context);
 
       await _indexAPI.getIndexPriceDate(
-        _indexCompare.indexId,
-        _infoReksadanaData[365]!.last.date,
-        _infoReksadanaData[365]!.first.date
+        indexID: _indexCompare.indexId,
+        from: _infoReksadanaData[365]!.last.date,
+        to: _infoReksadanaData[365]!.first.date
       ).then((resp) async {
         _indexComparePrice = resp;
 

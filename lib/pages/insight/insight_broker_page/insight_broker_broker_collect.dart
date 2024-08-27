@@ -968,12 +968,23 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     LoadingScreen.instance().show(context: context);
 
     // get the transaction
-    await _insightAPI.getBrokerCollect(_brokerCode, _accumRate, _fromDate, _toDate).then((resp) async {
+    await _insightAPI.getBrokerCollect(
+      broker: _brokerCode,
+      accumLimit: _accumRate,
+      dateFrom: _fromDate,
+      dateTo: _toDate,
+    ).then((resp) async {
       // put the response to the broker collect
       _brokerCollect = resp;
       
       // stre the broker collection query result to the shared preferences
-      await InsightSharedPreferences.setBrokerCollect(_brokerCollect!, _brokerCode, _fromDate!, _toDate!, _accumRate);
+      await InsightSharedPreferences.setBrokerCollect(
+        _brokerCollect!,
+        _brokerCode,
+        _fromDate!,
+        _toDate!,
+        _accumRate
+      );
     }).onError((error, stackTrace) {
       Log.error(
         message: 'Error getting broker summary data',
@@ -993,7 +1004,10 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     LoadingScreen.instance().show(context: context);
 
     // get the company detail and go
-    await _companyAPI.getCompanyByCode(code, 'saham').then((resp) {
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
       CompanyDetailArgs args = CompanyDetailArgs(
         companyId: resp.companyId,
         companyName: resp.companyName,

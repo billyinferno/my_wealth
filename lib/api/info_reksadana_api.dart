@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class InfoReksadanaAPI {
-  Future<List<InfoReksadanaModel>> getInfoReksadana(int companyId, [int? limit]) async {
-    int limitUse = (limit ?? 90);
-
+  Future<List<InfoReksadanaModel>> getInfoReksadana({
+    required int companyId,
+    int limit = 90,
+  }) async {
     // get reksadana information using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiInfoReksadana}/id/$companyId/limit/$limitUse'
+      url: '${Globals.apiInfoReksadana}/id/$companyId/limit/$limit'
     ).onError((error, stackTrace) {
         throw Exception(error);
       }
@@ -23,11 +24,11 @@ class InfoReksadanaAPI {
     return listInfoReksadana;
   }
 
-  Future<List<InfoReksadanaModel>> getInfoReksadanaDate(
-    int companyId,
-    DateTime from,
-    DateTime to
-  ) async {
+  Future<List<InfoReksadanaModel>> getInfoReksadanaDate({
+    required int companyId,
+    required DateTime from,
+    required DateTime to
+  }) async {
     // get reksadana information using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoReksadana}/id/$companyId/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'

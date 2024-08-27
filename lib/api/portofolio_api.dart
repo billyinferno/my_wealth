@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
 class PortofolioAPI {
-  Future<List<PortofolioSummaryModel>> getPortofolioSummary(String type) async {
+  Future<List<PortofolioSummaryModel>> getPortofolioSummary({
+    required String type
+  }) async {
     // get portofolio data using netutils
     final String body = await NetUtils.get(
       url: '${Globals.apiPortofolio}/$type'
@@ -21,7 +23,10 @@ class PortofolioAPI {
     return portofolioSummary;
   }
 
-  Future<List<PortofolioDetailModel>> getPortofolioDetail(String type, String companyType) async {
+  Future<List<PortofolioDetailModel>> getPortofolioDetail({
+    required String type,
+    required String companyType
+  }) async {
     // convert the company type into Base64
     String companyTypeBase64 = base64.encode(utf8.encode(companyType));
 

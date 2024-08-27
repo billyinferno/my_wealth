@@ -668,10 +668,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // if not then fetch the data
     await _watchlistAPI.getWatchlistPerformanceMonthYear(
-      _watchlistArgs.type,
-      _watchlistArgs.watchList.watchlistId,
-      useDate.month,
-      useDate.year
+      type: _watchlistArgs.type,
+      id: _watchlistArgs.watchList.watchlistId,
+      month: useDate.month,
+      year: useDate.year,
     ).then((resp) {
       // pl calculation helper
       double? plBefore;
@@ -762,9 +762,9 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // get the performance year
     await _watchlistAPI.getWatchlistPerformanceYear(
-      _watchlistArgs.type,
-      _watchlistArgs.watchList.watchlistId,
-      useDate.year
+      type: _watchlistArgs.type,
+      id: _watchlistArgs.watchList.watchlistId,
+      year: useDate.year
     ).then((resp) {
       // pl calculation helper
       double plCurrent;
@@ -850,8 +850,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     if (firstRun) {
       // get first and last date
       await _watchlistAPI.findFirstLastDate(
-        _watchlistArgs.type,
-        _watchlistArgs.watchList.watchlistId
+        type: _watchlistArgs.type,
+        id: _watchlistArgs.watchList.watchlistId
       ).then((resp) {
         // set the first and end date
         _firstDate = resp.firstdate;

@@ -88,7 +88,7 @@ class WatchlistBuilder extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(5),
                 child: Text(
-                  formatDecimal(data[index].buyTotal, 2),
+                  formatDecimal(value: data[index].buyTotal, decimal: 2),
                   textAlign: TextAlign.center,
                   style: smallFont,
                   overflow: TextOverflow.ellipsis,
@@ -99,7 +99,13 @@ class WatchlistBuilder extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(5),
                 child: Text(
-                  formatCurrency(data[index].buyAvg, false, false, true, 0),
+                  formatCurrency(
+                    amount: data[index].buyAvg,
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true,
+                    decimalNum: 0,
+                  ),
                   textAlign: TextAlign.center,
                   style: smallFont,
                   overflow: TextOverflow.ellipsis,
@@ -110,7 +116,13 @@ class WatchlistBuilder extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(5),
                 child: Text(
-                  formatCurrency(data[index].currentPrice, false, false, true, 0),
+                  formatCurrency(
+                    amount: data[index].currentPrice,
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true,
+                    decimalNum: 0,
+                  ),
                   textAlign: TextAlign.center,
                   style: smallFont,
                   overflow: TextOverflow.ellipsis,
@@ -122,7 +134,13 @@ class WatchlistBuilder extends StatelessWidget {
                 padding: const EdgeInsets.all(5),
                 color: (isMinMax ? plColor : Colors.transparent),
                 child: Text(
-                  formatCurrency(pl, false, false, true, 0),
+                  formatCurrency(
+                    amount: pl,
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true,
+                    decimalNum: 0,
+                  ),
                   textAlign: TextAlign.center,
                   style: smallFont.copyWith(
                     color: (isMinMax ? Colors.white : plColor),
@@ -136,7 +154,13 @@ class WatchlistBuilder extends StatelessWidget {
                 padding: const EdgeInsets.all(5),
                 color: (isPLMinMax ? plDiffColor : Colors.transparent),
                 child: Text(
-                  formatCurrencyWithNull(plDiff, false, false, true, 0),
+                  formatCurrencyWithNull(
+                    amount: plDiff,
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true,
+                    decimalNum: 0,
+                  ),
                   textAlign: TextAlign.center,
                   style: smallFont.copyWith(
                     color: (isPLMinMax ? Colors.white : plDiffColor),

@@ -181,13 +181,37 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              _gainBox(header: "One Year", value: "${formatDecimalWithNull(_filterList[index].oneYear, 100, 2)}%"),
+                              _gainBox(header: "One Year", value: "${
+                                formatDecimalWithNull(
+                                  value: _filterList[index].oneYear,
+                                  times: 100,
+                                  decimal: 2,
+                                )}%"
+                              ),
                               const SizedBox(width: 5,),
-                              _gainBox(header: "Three Year", value: "${formatDecimalWithNull(_filterList[index].threeYear, 100, 2)}%"),
+                              _gainBox(header: "Three Year", value: "${
+                                formatDecimalWithNull(
+                                  value: _filterList[index].threeYear,
+                                  times: 100,
+                                  decimal: 2,
+                                )}%"
+                              ),
                               const SizedBox(width: 5,),
-                              _gainBox(header: "Five Year", value: "${formatDecimalWithNull(_filterList[index].fiveYear, 100, 2)}%"),
+                              _gainBox(header: "Five Year", value: "${
+                                formatDecimalWithNull(
+                                  value: _filterList[index].fiveYear,
+                                  times: 100,
+                                  decimal: 2
+                                )}%"
+                              ),
                               const SizedBox(width: 5,),
-                              _gainBox(header: "Ten Year", value: "${formatDecimalWithNull(_filterList[index].tenYear, 100, 2)}%"),
+                              _gainBox(header: "Ten Year", value: "${
+                                formatDecimalWithNull(
+                                  value: _filterList[index].tenYear,
+                                  times: 100,
+                                  decimal: 2,
+                                )}%"
+                              ),
                             ],
                           )
                         ],

@@ -56,21 +56,24 @@ class StockCandleStickPainter extends CustomPainter {
     // return if no stock data
     if (stockData.isEmpty) {
       // draw border only if the stock is empty
-      _drawBorder(canvas, size);
+      _drawBorder(canvas: canvas, size: size);
       return;
     }
 
     // draw the max - min and the middle
-    _drawCurrency(canvas, size);
+    _drawCurrency(canvas: canvas, size: size);
 
     // draw the candles
-    _drawCandles(canvas, size);
+    _drawCandles(canvas: canvas, size: size);
 
     // draw border
-    _drawBorder(canvas, size);
+    _drawBorder(canvas: canvas, size: size);
   }
 
-  void _drawBorder(Canvas canvas, Size size) {
+  void _drawBorder({
+    required Canvas canvas,
+    required Size size
+  }) {
     // set the rectangle position
     Rect rect = Rect.fromCenter(center: Offset(size.width / 2, size.height / 2), width: (size.width - padding!), height: (size.height));
     Paint border = Paint()
@@ -82,8 +85,11 @@ class StockCandleStickPainter extends CustomPainter {
     canvas.drawRect(rect, border);
   }
 
-  void _drawCandles(Canvas canvas, Size size) {
-    List<Candle> candles = _generateCandleSticks(size);
+  void _drawCandles({
+    required Canvas canvas,
+    required Size size
+  }) {
+    List<Candle> candles = _generateCandleSticks(size: size);
     double candleWidth = (size.width - padding!) / (totalData! + 1) - 1.5;
 
     // paint the candlestick
@@ -91,7 +97,14 @@ class StockCandleStickPainter extends CustomPainter {
       // check if dateText is not null?
       if (candle.dateText!.isNotEmpty) {
         // draw the text here
-        _drawText(canvas, Offset(candle.centerX, size.height), 60, candle.dateText!, 0, 0);
+        _drawText(
+          canvas: canvas,
+          position: Offset(candle.centerX, size.height),
+          width: 60,
+          text: candle.dateText!,
+          left: 0,
+          top: 0
+        );
 
         // draw the horizontal line
         Offset p1 = Offset(candle.centerX, (size.height));
@@ -123,7 +136,7 @@ class StockCandleStickPainter extends CustomPainter {
     }
   }
 
-  List<Candle> _generateCandleSticks(Size size) {
+  List<Candle> _generateCandleSticks({required Size size}) {
     final double pixelPerCandle = (size.width - padding!) / (totalData! + 1);
     final double pixelPerPrice = size.height / (maxHigh - minLow);
 
@@ -205,7 +218,14 @@ class StockCandleStickPainter extends CustomPainter {
     
   }
 
-  void _drawText(Canvas canvas, Offset position, double width, String text, double left, double top) {
+  void _drawText({
+    required Canvas canvas,
+    required Offset position,
+    required double width,
+    required String text,
+    required double left,
+    required double top
+  }) {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -224,7 +244,10 @@ class StockCandleStickPainter extends CustomPainter {
     textPainter.paint(canvas, Offset(position.dx - (textPainter.width + left), (position.dy + top)));
   }
   
-  void _drawCurrency(Canvas canvas, Size size) {
+  void _drawCurrency({
+    required Canvas canvas,
+    required Size size
+  }) {
     double average = (maxHigh - minLow) / 4;
     double pixelPerPrice = (size.height / (maxHigh - minLow));
 
@@ -237,7 +260,14 @@ class StockCandleStickPainter extends CustomPainter {
       canvas.drawLine(p1, p2, _graphRectBorder);
 
       // calculate the position
-      _drawText(canvas, Offset(size.width - 12, (maxHigh - currentPrice) * pixelPerPrice), 60, formatCurrency(currentPrice, false, false, true), 0, 0);
+      _drawText(
+        canvas: canvas,
+        position: Offset(size.width - 12, (maxHigh - currentPrice) * pixelPerPrice),
+        width: 60,
+        text: formatCurrency(currentPrice, false, false, true),
+        left: 0,
+        top: 0
+      );
 
       // next price
       currentPrice -= average;

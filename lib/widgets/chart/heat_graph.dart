@@ -16,7 +16,15 @@ class HeatGraph extends StatelessWidget {
   final bool? enableDailyComparison;
   final UserLoginInfoModel userInfo;
   final bool? weekend;
-  const HeatGraph({ super.key, this.title, required this.currentPrice, required this.data, required this.userInfo, this.enableDailyComparison, this.weekend });
+  const HeatGraph({
+    super.key,
+    this.title,
+    required this.currentPrice,
+    required this.data,
+    required this.userInfo,
+    this.enableDailyComparison,
+    this.weekend
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +74,7 @@ class HeatGraph extends StatelessWidget {
                   }),
                 ),
               ),
-              ..._generateRows(showWeekend),
+              ..._generateRows(showWeekend: showWeekend),
             ],
           ),
         ],
@@ -98,7 +106,7 @@ class HeatGraph extends StatelessWidget {
     return dataExpand;
   }
 
-  List<Widget> _generateRows(bool showWeekend) {
+  List<Widget> _generateRows({required bool showWeekend}) {
     final DateFormat df = DateFormat("dd/MM");
     final bool isEnableDailyComparison = (enableDailyComparison ?? false);
 
@@ -123,7 +131,10 @@ class HeatGraph extends StatelessWidget {
         // we will only do if the date of weekday is below 5
         if (dataExpand[i].date.weekday <= loopLimit) {
           // do this as this is weekday
-          List<Widget> boxes = _generateBoxes(loopLimit, primaryDark);
+          List<Widget> boxes = _generateBoxes(
+            numBox: loopLimit,
+            boxColor: primaryDark,
+          );
 
           // get the label that we will put on this graph based on the
           // 1st day that we will process
@@ -161,7 +172,10 @@ class HeatGraph extends StatelessWidget {
               }
             }
 
-            boxes[day-1] = _generateBox(boxColor, Colors.transparent);
+            boxes[day-1] = _generateBox(
+              boxColor: boxColor,
+              decorationColor: Colors.transparent,
+            );
             endDate = dataExpand[i].date;
           }
           
@@ -182,7 +196,7 @@ class HeatGraph extends StatelessWidget {
           ));
 
           // end of this week, so add this to the return variable
-          response.add(_generateBoxColumn(boxes));
+          response.add(_generateBoxColumn(childs: boxes));
         }
         else {
           // skip this data
@@ -191,7 +205,12 @@ class HeatGraph extends StatelessWidget {
       }
       else {
         // no more data, so here we can just print black boxes
-        response.add(_generateBoxColumn(_generateBoxes(loopLimit, primaryDark)));
+        response.add(_generateBoxColumn(
+          childs: _generateBoxes(
+            numBox: loopLimit,
+            boxColor: primaryDark,
+          )
+        ));
         totalData += 5;
       }
     }
@@ -199,7 +218,10 @@ class HeatGraph extends StatelessWidget {
     return response;
   }
 
-  Widget _generateBox(Color boxColor, Color decorationColor) {
+  Widget _generateBox({
+    required Color boxColor,
+    required Color decorationColor
+  }) {
     return Container(
       width: 18,
       height: 18,
@@ -211,18 +233,24 @@ class HeatGraph extends StatelessWidget {
     );
   }
 
-  List<Widget> _generateBoxes(int numBox, Color boxColor) {
+  List<Widget> _generateBoxes({
+    required int numBox,
+    required Color boxColor
+  }) {
     return List<Widget>.generate(numBox, (index) {
-      return _generateBox(boxColor, Colors.transparent);
+      return _generateBox(
+        boxColor: boxColor,
+        decorationColor: Colors.transparent,
+      );
     });
   }
 
-  Widget _generateBoxColumn(List<Widget> child) {
+  Widget _generateBoxColumn({required List<Widget> childs}) {
     return SizedBox(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: child,
+        children: childs,
       ),
     );
   }

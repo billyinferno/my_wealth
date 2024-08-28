@@ -27,20 +27,20 @@ class LineChartPainter extends CustomPainter {
     // then the min or max probably will be the same.
     if (data.length > 1) {
       // draw the guide line
-      _drawGuideLine(canvas, size, center);
+      _drawGuideLine(canvas: canvas, size: size, center: center);
 
       // check if we got compare or not?
       if ((compare ?? []).isNotEmpty) {
         // then let's draw the compare line
-        _drawCompare(canvas, size, center);
+        _drawCompare(canvas: canvas, size: size, center: center);
       }
 
       // then let's draw the line
-      _drawLine(canvas, size, center);
+      _drawLine(canvas: canvas, size: size, center: center);
     }
 
     // first let's draw the border
-    _drawBorder(canvas, size, center);
+    _drawBorder(canvas: canvas, size: size, center: center);
   }
 
   @override
@@ -74,7 +74,11 @@ class LineChartPainter extends CustomPainter {
     return min;
   }
 
-  void _drawBorder(Canvas canvas, Size size, Offset center) {
+  void _drawBorder({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     // set the rectangle position
     Rect rect = Rect.fromCenter(center: center, width: (size.width - 20), height: (size.height - 20));
     Paint border = Paint()
@@ -86,7 +90,11 @@ class LineChartPainter extends CustomPainter {
     canvas.drawRect(rect, border);
   }
 
-  void _drawGuideLine(Canvas canvas, Size size, Offset center) {
+  void _drawGuideLine({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     // get the max and min data from the graph
     double max = _maxData(data: data);
     double min = _minData(data: data);
@@ -248,7 +256,15 @@ class LineChartPainter extends CustomPainter {
       else {
         yD = ((avgPrice - min) / (max - min)) * graphRect.height;
       }
-      _drawDashedLine(canvas, graphRect, 2, yD, avgPricePaint);
+
+      _drawDashedLine(
+        canvas: canvas,
+        graph: graphRect,
+        width: 2,
+        offset: yD,
+        paint: avgPricePaint
+      );
+
       _drawText(
         canvas: canvas,
         position: Offset(graphRect.right, graphRect.bottom - yD),
@@ -270,7 +286,15 @@ class LineChartPainter extends CustomPainter {
       else {
         yD = ((ma5 - min) / (max - min)) * graphRect.height;
       }
-      _drawDashedLine(canvas, graphRect, 2, yD, ma5PricePaint);
+
+      _drawDashedLine(
+        canvas: canvas,
+        graph: graphRect,
+        width: 2,
+        offset: yD,
+        paint: ma5PricePaint
+      );
+      
       _drawText(
         canvas: canvas,
         position: Offset(graphRect.right, graphRect.bottom - yD),
@@ -292,7 +316,15 @@ class LineChartPainter extends CustomPainter {
       else {
         yD = ((ma8 - min) / (max - min)) * graphRect.height;
       }
-      _drawDashedLine(canvas, graphRect, 2, yD, ma8PricePaint);
+
+      _drawDashedLine(
+        canvas: canvas,
+        graph: graphRect,
+        width: 2,
+        offset: yD,
+        paint: ma8PricePaint
+      );
+      
       _drawText(
         canvas: canvas,
         position: Offset(graphRect.right, graphRect.bottom - yD),
@@ -314,7 +346,15 @@ class LineChartPainter extends CustomPainter {
       else {
         yD = ((ma13 - min) / (max - min)) * graphRect.height;
       }
-      _drawDashedLine(canvas, graphRect, 2, yD, ma13PricePaint);
+
+      _drawDashedLine(
+        canvas: canvas,
+        graph: graphRect,
+        width: 2,
+        offset: yD,
+        paint: ma13PricePaint
+      );
+      
       _drawText(
         canvas: canvas,
         position: Offset(graphRect.right, graphRect.bottom - yD),
@@ -331,7 +371,11 @@ class LineChartPainter extends CustomPainter {
     }
   }
 
-  void _drawCompare(Canvas canvas, Size size, Offset center) {
+  void _drawCompare({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     // get the max and min data from the graph
     double max = _maxData(data: (compare ?? []));
     double min = _minData(data: (compare ?? []));
@@ -418,7 +462,11 @@ class LineChartPainter extends CustomPainter {
     canvas.drawPath(pNoChange, dpNoChange);
   }
 
-  void _drawLine(Canvas canvas, Size size, Offset center) {
+  void _drawLine({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     // get the max and min data from the graph
     double max = _maxData(data: data);
     double min = _minData(data: data);
@@ -555,7 +603,13 @@ class LineChartPainter extends CustomPainter {
     canvas.drawPath(pNoChange, dpNoChange);
   }
 
-  void _drawDashedLine(Canvas canvas, Rect graph, double width, double offset, Paint paint) {
+  void _drawDashedLine({
+    required Canvas canvas,
+    required Rect graph,
+    required double width,
+    required double offset,
+    required Paint paint
+  }) {
     int j = 0;
     for (double i = graph.left; i <= graph.right; i = (i + width)) {
       if (j % 2 == 0) {

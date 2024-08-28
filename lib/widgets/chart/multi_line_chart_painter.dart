@@ -35,16 +35,24 @@ class MultiLineChartPainter extends CustomPainter {
 
       // if all is good only then we will draw the chart
       if (isAllGood) {
-        _drawPoint(canvas, size, center);
+        _drawPoint(canvas: canvas, size: size, center: center);
+        
         for (int i = 0; i < data.length || !isAllGood; i++) {
-          _drawLine(data[i], color[i], canvas, size, center);
+          _drawLine(
+            data: data[i],
+            color: color[i],
+            canvas: canvas,
+            size: size,
+            center: center
+          );
         }
-        _draw0Point(canvas, size, center);
+
+        _draw0Point(canvas: canvas, size: size, center: center);
       }
     }
 
-    // first let's draw the border
-    _drawBorder(canvas, size, center);
+    // finally let's draw the border
+    _drawBorder(canvas: canvas, size: size, center: center);
   }
 
   @override
@@ -52,7 +60,11 @@ class MultiLineChartPainter extends CustomPainter {
     return listEquals<Map<String, double>>(oldDelegate.data, data);
   }
 
-  void _draw0Point(Canvas canvas, Size size, Offset center) {
+  void _draw0Point({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     Paint graphRectBorderWhite = Paint()
       ..color = Colors.white.withOpacity(0.7)
       ..strokeWidth = 1.0
@@ -64,7 +76,14 @@ class MultiLineChartPainter extends CustomPainter {
     if (min < 0) {
       double yD = ((min * -1) / (max - min)) * graphRect.height;
 
-      _drawDashedLine(canvas, graphRect, 2, yD, graphRectBorderWhite);
+      _drawDashedLine(
+        canvas: canvas,
+        graph: graphRect,
+        width: 2,
+        offset: yD,
+        paint: graphRectBorderWhite
+      );
+      
       _drawText(
         canvas: canvas,
         position: Offset(graphRect.right, graphRect.bottom - yD),
@@ -80,7 +99,11 @@ class MultiLineChartPainter extends CustomPainter {
     }
   }
 
-  void _drawBorder(Canvas canvas, Size size, Offset center) {
+  void _drawBorder({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     // set the rectangle position
     Rect rect = Rect.fromCenter(
         center: center, width: (size.width - 20), height: (size.height - 20));
@@ -93,7 +116,11 @@ class MultiLineChartPainter extends CustomPainter {
     canvas.drawRect(rect, border);
   }
 
-  void _drawPoint(Canvas canvas, Size size, Offset center) {
+  void _drawPoint({
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     Paint graphRectBorderWhite = Paint()
       ..color = primaryLight.withOpacity(0.5)
       ..strokeWidth = 1.0
@@ -175,7 +202,13 @@ class MultiLineChartPainter extends CustomPainter {
     canvas.drawRect(graphRect, graphRectBorder);
   }
 
-  void _drawLine(Map<String, double> data, Color color, Canvas canvas, Size size, Offset center) {
+  void _drawLine({
+    required Map<String, double> data,
+    required Color color,
+    required Canvas canvas,
+    required Size size,
+    required Offset center
+  }) {
     double x;
     double y;
 
@@ -222,18 +255,19 @@ class MultiLineChartPainter extends CustomPainter {
     canvas.drawPath(pt, dp);
   }
 
-  void _drawText(
-      {required Canvas canvas,
-      required Offset position,
-      required double width,
-      required String text,
-      required double left,
-      required double top,
-      required double minHeight,
-      required double maxHeight,
-      required double minWidth,
-      required double maxWidth,
-      Color? textColor}) {
+  void _drawText({
+    required Canvas canvas,
+    required Offset position,
+    required double width,
+    required String text,
+    required double left,
+    required double top,
+    required double minHeight,
+    required double maxHeight,
+    required double minWidth,
+    required double maxWidth,
+    Color? textColor
+  }) {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -267,7 +301,13 @@ class MultiLineChartPainter extends CustomPainter {
     textPainter.paint(canvas, Offset(dx, dy));
   }
 
-  void _drawDashedLine(Canvas canvas, Rect graph, double width, double offset, Paint paint) {
+  void _drawDashedLine({
+    required Canvas canvas,
+    required Rect graph,
+    required double width,
+    required double offset,
+    required Paint paint
+  }) {
     int j = 0;
     for (double i = graph.left; i <= graph.right; i = (i + width)) {
       if (j % 2 == 0) {

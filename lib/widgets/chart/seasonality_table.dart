@@ -44,7 +44,7 @@ class SeasonalityTable extends StatelessWidget {
     Map<String, List<SeasonalityModel>> seasonalityData = _filterSeasonality();
 
     // now calculate the year average for each year we have
-    Map<String, SeasonalityTableResult> seasonalityAverage = _computeSeasonalityAverage(seasonalityData);
+    Map<String, SeasonalityTableResult> seasonalityAverage = _computeSeasonalityAverage(data: seasonalityData);
 
     // generate the widget based on the seasonalityData
     return Container(
@@ -99,7 +99,9 @@ class SeasonalityTable extends StatelessWidget {
     );
   }
 
-  List<Widget> _generateYearMenu({required Map<String, List<SeasonalityModel>> data}) {
+  List<Widget> _generateYearMenu({
+    required Map<String, List<SeasonalityModel>> data
+  }) {
     List<Widget> result = [];
 
     data.forEach((key, value) {
@@ -154,7 +156,10 @@ class SeasonalityTable extends StatelessWidget {
     );
   }
 
-  List<Widget> _generateSeasonalityItem({required Map<String, List<SeasonalityModel>> data, required Map<String, SeasonalityTableResult> average}) {
+  List<Widget> _generateSeasonalityItem({
+    required Map<String, List<SeasonalityModel>> data,
+    required Map<String, SeasonalityTableResult> average
+  }) {
     List<Widget> result = [];
     
     // loop thru all the seasonality data
@@ -184,7 +189,9 @@ class SeasonalityTable extends StatelessWidget {
     return result;
   }
 
-  List<Widget> _generateSeasonlityYearlyItem({required List<SeasonalityModel> data}) {
+  List<Widget> _generateSeasonlityYearlyItem({
+    required List<SeasonalityModel> data
+  }) {
     List<Widget> result = [];
 
     // loop for 1 to 12 and check if the month is exists or not?
@@ -223,7 +230,15 @@ class SeasonalityTable extends StatelessWidget {
                 minPrevPrice: data[index].minPrevPrice,
                 maxPrevPrice: data[index].maxPrevPrice,
               ),
-              color: (data[index].averageDiffPrice == 0 ? Colors.black : riskColor((minMaxPrice + data[index].averageDiffPrice), minMaxPrice, (risk ?? 10))),
+              color: (
+                data[index].averageDiffPrice == 0 ?
+                Colors.black :
+                riskColor(
+                  (minMaxPrice + data[index].averageDiffPrice),
+                  minMaxPrice,
+                  (risk ?? 10)
+                )
+              ),
             )
           );
 
@@ -268,7 +283,17 @@ class SeasonalityTable extends StatelessWidget {
       // calculate the text color
       if (diffPrice != 0) {
         cost = (minDiffPrice + maxDiffPrice);
-        range = (minDiffPrice < 0 ? minDiffPrice * (-1) : minDiffPrice) + (maxDiffPrice < 0 ? maxDiffPrice * (-1) : maxDiffPrice);
+        
+        range = (
+          minDiffPrice < 0 ?
+          minDiffPrice * (-1) :
+          minDiffPrice
+        ) + (
+          maxDiffPrice < 0 ?
+          maxDiffPrice * (-1) :
+          maxDiffPrice
+        );
+
         cost = cost / range;
 
         // if the user risk is < 30 then make it lighter color instead
@@ -380,49 +405,49 @@ class SeasonalityTable extends StatelessWidget {
     double? value1,
     double? value2,
     Color? color,
-    double? size
+    double size = 15
   }) {
     if (value1 == null || value2 == null) {
       return Icon(
         Ionicons.remove,
-        size: (size ?? 15),
+        size: size,
         color: (color ?? Colors.white),
       );
     }
     if (value1 == value2) {
       return Icon(
         Ionicons.remove,
-        size: (size ?? 15),
+        size: size,
         color: (color ?? Colors.white),
       );
     }
     else if (value1 < value2) {
       return Icon(
         Ionicons.caret_up,
-        size: (size ?? 15),
+        size: size,
         color: (color ?? Colors.green),
       );
     }
     else {
       return Icon(
         Ionicons.caret_down,
-        size: (size ?? 15),
+        size: size,
         color: (color ?? Colors.red),
       );
     }
   }
 
   Widget _rowItem({
-    Color? color,
+    Color color = Colors.transparent,
+    double width = 145,
+    double height = 85,
     required Widget child,
-    double? width,
-    double? height
   }) {
     return Container(
       padding: const EdgeInsets.all(5),
-      color: (color ?? Colors.transparent),
-      width: (width ?? 145),
-      height: (height ?? 85),
+      color: color,
+      width: width,
+      height: height,
       child: child,
     );
   }
@@ -474,7 +499,9 @@ class SeasonalityTable extends StatelessWidget {
     return result;
   }
 
-  Map<String, SeasonalityTableResult> _computeSeasonalityAverage(Map<String, List<SeasonalityModel>> data) {
+  Map<String, SeasonalityTableResult> _computeSeasonalityAverage({
+    required Map<String, List<SeasonalityModel>> data
+  }) {
     Map<String, SeasonalityTableResult> result = {};
 
     // loop thru the keys

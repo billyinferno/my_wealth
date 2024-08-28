@@ -154,10 +154,37 @@ class _BrokerPageState extends State<BrokerPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                _informationText(flex: 2, text: "Date", value: Globals.dfddMMyyyy.format(_filterBrokerList[index].brokerDate.toLocal())),
-                                _informationText(text: "Volume", value: formatIntWithNull(_filterBrokerList[index].brokerVolume, true, true)),
-                                _informationText(text: "Value", value: formatIntWithNull(_filterBrokerList[index].brokerValue, true, true)),
-                                _informationText(text: "Frequency", value: formatIntWithNull(_filterBrokerList[index].brokerFrequency, false, false)),
+                                _informationText(
+                                  flex: 2,
+                                  text: "Date",
+                                  value: Globals.dfddMMyyyy.format(
+                                    _filterBrokerList[index].brokerDate.toLocal()
+                                  )
+                                ),
+                                _informationText(
+                                  text: "Volume",
+                                  value: formatIntWithNull(
+                                    value: _filterBrokerList[index].brokerVolume,
+                                    checkThousand: true,
+                                    showDecimal: true,
+                                  )
+                                ),
+                                _informationText(
+                                  text: "Value",
+                                  value: formatIntWithNull(
+                                    value: _filterBrokerList[index].brokerValue,
+                                    checkThousand: true,
+                                    showDecimal: true
+                                  )
+                                ),
+                                _informationText(
+                                  text: "Frequency",
+                                  value: formatIntWithNull(
+                                    value: _filterBrokerList[index].brokerFrequency,
+                                    checkThousand: false,
+                                    showDecimal: false
+                                  )
+                                ),
                               ],
                             ),
                           ],

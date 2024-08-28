@@ -41,7 +41,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
     else {
       // v2 is enable, we can calculate this data
       // calculate the _brokerAccumulationLeft and Right
-      _calculateBrokerAccumulationRatio(widget.data[_accumVersion]);
+      _calculateBrokerAccumulationRatio(data: widget.data[_accumVersion]);
     }
 
     super.initState();
@@ -112,7 +112,9 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             }
                                                   
                             setState(() {
-                              _calculateBrokerAccumulationRatio(widget.data[_accumVersion]);
+                              _calculateBrokerAccumulationRatio(
+                                data: widget.data[_accumVersion]
+                              );
                             });
                           })),
                         ),
@@ -407,7 +409,9 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
     );
   }
 
-  void _calculateBrokerAccumulationRatio(BrokerSummaryAccumulationModel data) {
+  void _calculateBrokerAccumulationRatio({
+    required BrokerSummaryAccumulationModel data
+  }) {
     // check if _brokerSummaryAccumulation.brokerSummaryAvgLot == 0, if so then let left and right as 1
     if (data.brokerSummaryAvgLot == 0) {
       // use the current value as the guide to either go left or right

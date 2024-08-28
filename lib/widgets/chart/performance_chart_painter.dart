@@ -87,27 +87,27 @@ class PerformanceChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // at least investment or data shouldn't be empty
     if (data.isNotEmpty) {
-      _drawBorder(canvas, size);
+      _drawBorder(canvas: canvas, size: size);
     }
     
     // if we have investment data, draw the investment data
     if ((showInvestment ?? false) && (investmentProperties != null)) {
-      _drawInvestmentLine(canvas, size);
+      _drawInvestmentLine(canvas: canvas, size: size);
     }
 
     // check if we have compare or not?
     if ((compare ?? []).isNotEmpty) {
       // draw the line for compare
-      _drawCompare(canvas, size);
+      _drawCompare(canvas: canvas, size: size);
     }
 
     // draw the line if we have data
     if (data.isNotEmpty) {
-      _drawLine(canvas, size);
+      _drawLine(canvas: canvas, size: size);
     }
 
     // draw the box
-    _drawBox(canvas, size);
+    _drawBox(canvas: canvas, size: size);
   }
 
   @override
@@ -116,7 +116,10 @@ class PerformanceChartPainter extends CustomPainter {
     return listEquals<PerformanceData>(oldDelegate.data, data);
   }
 
-  void _drawBorder(Canvas canvas, Size size) {
+  void _drawBorder({
+    required Canvas canvas,
+    required Size size
+  }) {
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
 
@@ -159,7 +162,10 @@ class PerformanceChartPainter extends CustomPainter {
     }
   }
 
-  void _drawLine(Canvas canvas, Size size) {
+  void _drawLine({
+    required Canvas canvas,
+    required Size size
+  }) {
     double x;
     double y;
     double left;
@@ -347,7 +353,10 @@ class PerformanceChartPainter extends CustomPainter {
     canvas.drawPath(pNoChange, dpNoChange);
   }
 
-  void _drawInvestmentLine(Canvas canvas, Size size) {
+  void _drawInvestmentLine({
+    required Canvas canvas,
+    required Size size
+  }) {
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
 
@@ -438,7 +447,10 @@ class PerformanceChartPainter extends CustomPainter {
     canvas.drawPath(pInvestment, dpInvestment);
   }
 
-  void _drawCompare(Canvas canvas, Size size) {
+  void _drawCompare({
+    required Canvas canvas,
+    required Size size
+  }) {
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
 
@@ -479,7 +491,10 @@ class PerformanceChartPainter extends CustomPainter {
     canvas.drawPath(pCompare, dpCompare); 
   }
 
-  void _drawBox(Canvas canvas, Size size) {
+  void _drawBox({
+    required Canvas canvas,
+    required Size size
+  }) {
     // calculate the center
     Offset center = Offset(size.width / 2, size.height / 2);
 
@@ -499,18 +514,19 @@ class PerformanceChartPainter extends CustomPainter {
     canvas.drawRect(rect, border);
   }
 
-  void _drawText(
-      {required Canvas canvas,
-      required Offset position,
-      required double width,
-      required String text,
-      required double left,
-      required double top,
-      required double minHeight,
-      required double maxHeight,
-      required double minWidth,
-      required double maxWidth,
-      Color? textColor}) {
+  void _drawText({
+    required Canvas canvas,
+    required Offset position,
+    required double width,
+    required String text,
+    required double left,
+    required double top,
+    required double minHeight,
+    required double maxHeight,
+    required double minWidth,
+    required double maxWidth,
+    Color? textColor
+  }) {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(

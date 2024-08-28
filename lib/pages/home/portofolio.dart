@@ -306,7 +306,15 @@ class _PortofolioPageState extends State<PortofolioPage> {
                           children: <Widget>[
                             Expanded(
                               flex: 3,
-                              child: _largeText(formatCurrency(value, false, true, false), summarySize),
+                              child: _largeText(
+                                text: formatCurrency(
+                                  amount: value,
+                                  checkThousand: false,
+                                  showDecimal:  true,
+                                  shorten: false,
+                                ),
+                                size: summarySize
+                              ),
                             ),
                             Expanded(
                               flex: 2,
@@ -323,7 +331,12 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     ),
                                     const SizedBox(width: 5,),
                                     Text(
-                                      formatCurrency(gain, false, true, false),
+                                      formatCurrency(
+                                        amount: gain,
+                                        checkThousand: false,
+                                        showDecimal: true,
+                                        shorten: false,
+                                      ),
                                       style: TextStyle(
                                         color: trendColor,
                                         fontWeight: FontWeight.bold,
@@ -359,7 +372,12 @@ class _PortofolioPageState extends State<PortofolioPage> {
                             Expanded(
                               flex: 3,
                               child: Text(
-                                formatCurrency(cost, false, true, false),
+                                formatCurrency(
+                                  amount: cost,
+                                  checkThousand: false,
+                                  showDecimal: true,
+                                  shorten: false,
+                                ),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -380,7 +398,12 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     ),
                                     const SizedBox(width: 5,),
                                     Text(
-                                      formatCurrency(realised, false, true, false),
+                                      formatCurrency(
+                                        amount: realised,
+                                        checkThousand: false,
+                                        showDecimal: true,
+                                        shorten: false,
+                                      ),
                                       style: TextStyle(
                                         color: realisedColor,
                                         fontWeight: FontWeight.bold,
@@ -432,13 +455,14 @@ class _PortofolioPageState extends State<PortofolioPage> {
     );
   }
 
-  Widget _largeText(String text, [double? size]) {
-    double textSize = size ?? 20;
-
+  Widget _largeText({
+    required String text,
+    double size = 20
+  }) {
     return Text(
       text,
       style: TextStyle(
-        fontSize: textSize,
+        fontSize: size,
         fontWeight: FontWeight.bold,
       ),
     );

@@ -361,7 +361,12 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                           child: Container(
                             padding: const EdgeInsets.all(2.5),
                             child: Text(
-                              formatIntWithNull(widget.data[1].brokerSummaryData[index].brokerSummaryBuyLot, false, true, 2),
+                              formatIntWithNull(
+                                value: widget.data[1].brokerSummaryData[index].brokerSummaryBuyLot,
+                                checkThousand: false,
+                                showDecimal: true,
+                                decimalNum: 2
+                              ),
                               style: const TextStyle(
                                 fontSize: 10,
                               ),
@@ -374,7 +379,12 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                           child: Container(
                             padding: const EdgeInsets.all(2.5),
                             child: Text(
-                              formatIntWithNull(widget.data[1].brokerSummaryData[index].brokerSummarySellLot, false, true, 2),
+                              formatIntWithNull(
+                                value: widget.data[1].brokerSummaryData[index].brokerSummarySellLot,
+                                checkThousand: false,
+                                showDecimal: true,
+                                decimalNum: 2,
+                              ),
                               style: const TextStyle(
                                 fontSize: 10,
                               ),
@@ -387,7 +397,12 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                           child: Container(
                             padding: const EdgeInsets.all(2.5),
                             child: Text(
-                              formatIntWithNull(widget.data[1].brokerSummaryData[index].brokerSummaryLot, false, true, 2),
+                              formatIntWithNull(
+                                value: widget.data[1].brokerSummaryData[index].brokerSummaryLot,
+                                checkThousand: false,
+                                showDecimal: true,
+                                decimalNum: 2,
+                              ),
                               style: TextStyle(
                                 fontSize: 10,
                                 color: (widget.data[1].brokerSummaryData[index].brokerSummaryLot == 0 ? textPrimary : (widget.data[1].brokerSummaryData[index].brokerSummaryLot < 0) ? secondaryColor : Colors.green),

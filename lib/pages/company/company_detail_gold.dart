@@ -208,7 +208,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                formatCurrency(_companyDetail.companyNetAssetValue!),
+                                formatCurrency(amount: _companyDetail.companyNetAssetValue!),
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -217,7 +217,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
+                                "USD ${formatCurrency(amount: _companyDetail.companyCurrentPriceUsd!)}",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -245,7 +245,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                     ),
                                   )
                                 ),
-                                child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
+                                child: Text(formatCurrency(amount: _companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
                               ),
                               Expanded(child: Container(),),
                               const Icon(
@@ -265,7 +265,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 header: "Min ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(_minPrice!),
+                                  formatCurrencyWithNull(amount: _minPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -274,7 +274,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 header: "Max ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(_maxPrice!),
+                                  formatCurrencyWithNull(amount: _maxPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -283,7 +283,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 header: "Avg ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(_avgPrice!),
+                                  formatCurrencyWithNull(amount: _avgPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -399,7 +399,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   header: "Daily",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, 100)}%",
+                    "${formatDecimalWithNull(value: _companyDetail.companyDailyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -408,7 +408,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   header: "Weekly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, 100)}%",
+                    "${formatDecimalWithNull(value: _companyDetail.companyWeeklyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -417,7 +417,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   header: "Monthly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, 100)}%",
+                    "${formatDecimalWithNull(value: _companyDetail.companyMonthlyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -432,7 +432,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   header: "YTD",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, 100)}%",
+                    "${formatDecimalWithNull(value: _companyDetail.companyYtdReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -441,7 +441,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   header: "Yearly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, 100)}%",
+                    "${formatDecimalWithNull(value: _companyDetail.companyYearlyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -590,10 +590,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             itemBuilder: (context, index) {
               return CompanyDetailPriceList(
                 date: _df.format(_priceGoldSort[index].date),
-                price: formatCurrency(_priceGoldSort[index].price, true),
-                diff: formatCurrency(_priceGoldSort[index].diff, true),
+                price: formatCurrency(amount: _priceGoldSort[index].price, checkThousand: true),
+                diff: formatCurrency(amount: _priceGoldSort[index].diff, checkThousand: true),
                 riskColor: _priceGoldSort[index].riskColor,
-                dayDiff: formatCurrencyWithNull(_priceGoldSort[index].dayDiff),
+                dayDiff: formatCurrencyWithNull(amount: _priceGoldSort[index].dayDiff),
                 dayDiffColor: _priceGoldSort[index].dayDiffColor,
               );
             },

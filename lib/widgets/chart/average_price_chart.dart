@@ -182,7 +182,12 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                 child: const SizedBox(),
               ),
               Text(
-                "${_chartName[_currentSegment]} Price ${formatIntWithNull(_selectedValue, false, false, 0)}",
+                "${_chartName[_currentSegment]} Price ${formatIntWithNull(
+                  value: _selectedValue,
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                )}",
                 style: TextStyle(
                   fontSize: 10,
                   color: _chartColors[_currentSegment],
@@ -292,7 +297,12 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    formatIntWithNull(_min, false, false, 0),
+                    formatIntWithNull(
+                      value: _min,
+                      checkThousand: false,
+                      showDecimal: false,
+                      decimalNum: 0,
+                    ),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 10,
@@ -300,7 +310,12 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                     ),
                   ),
                   Text(
-                    formatIntWithNull(_max, false, false, 0),
+                    formatIntWithNull(
+                      value: _max,
+                      checkThousand: false,
+                      showDecimal: false,
+                      decimalNum: 0,
+                    ),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 10,
@@ -345,7 +360,12 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                 child: const SizedBox(),
               ),
               Text(
-                "Current Price ${formatIntWithNull((widget.company.companyNetAssetValue == null ? 0 : widget.company.companyNetAssetValue!.toInt()), false, false, 0)}",
+                "Current Price ${formatIntWithNull(
+                  value: (widget.company.companyNetAssetValue == null ? 0 : widget.company.companyNetAssetValue!.toInt()),
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                )}",
                 style: const TextStyle(
                   fontSize: 10,
                   color: textPrimary,

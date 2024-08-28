@@ -133,7 +133,7 @@ String formatIntWithNull({
   );
 }
 
-double makePositive({required double value}) {
+double makePositive(double value) {
   if (value < 0) {
     return value * -1;
   }

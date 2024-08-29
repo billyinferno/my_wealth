@@ -798,7 +798,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatDecimalWithNull(
                                   _brokerCollect!.data[index].totalBuyAvg,
-                                  times: 1,
                                   decimal: 2
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -907,7 +906,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatDecimalWithNull(
                                   _brokerCollect!.data[index].totalSellAvg,
-                                  times: 1,
                                   decimal: 2
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -1001,7 +999,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatDecimalWithNull(
                                   avgPrice,
-                                  times: 1,
                                   decimal: 2
                                 ),
                                 overflow: TextOverflow.ellipsis,

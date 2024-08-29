@@ -392,7 +392,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                       TextSpan(
                         text: formatDecimalWithNull(
                           _companySahamCodePrice,
-                          times: 1,
                           decimal: 0
                         ),
                         style: const TextStyle(

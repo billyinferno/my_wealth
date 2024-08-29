@@ -559,7 +559,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         child: Text(
                           "${formatDecimalWithNull(
                             _companyDetail.companyAllTimeHighChangePercentage,
-                            times: 1,
                             decimal: 4,
                           )}%",
                           textAlign: TextAlign.right,
@@ -596,7 +595,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         child: Text(
                           "${formatDecimalWithNull(
                             _companyDetail.companyAllTimeLowChangePercentage,
-                            times: 1,
                             decimal: 4,
                           )}%",
                           textAlign: TextAlign.right,

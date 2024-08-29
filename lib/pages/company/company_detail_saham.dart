@@ -4328,7 +4328,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.eps,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4339,7 +4338,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.per,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4350,7 +4348,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           company.companyPerAnnualized,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4364,7 +4361,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           company.companyBetaOneYear,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4378,7 +4374,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.bvps,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4389,7 +4384,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.pbv,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4403,7 +4397,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           company.companyPsrAnnualized,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4416,7 +4409,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           company.companyPcfrAnnualized,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4430,7 +4422,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.roa,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4441,7 +4432,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.roe,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4452,7 +4442,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.evEbitda,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4466,7 +4455,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.debtEquity,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4480,7 +4468,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.debtTotalcap,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4494,7 +4481,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.debtEbitda,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4508,7 +4494,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatDecimalWithNull(
           fundamental.ebitdaInterestexpense,
-          times: 1,
           decimal: 2
         ),
         showCompare: (_otherCompanyCode != null),

@@ -246,7 +246,6 @@ class PerformanceCalendar extends StatelessWidget {
           Text(
             "${formatDecimalWithNull(
               plRatio,
-              times: 1,
               decimal: 2,
             )}${plRatio != null ? "%" : ""}",
             style: TextStyle(

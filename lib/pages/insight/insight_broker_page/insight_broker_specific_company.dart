@@ -374,7 +374,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                     '' :
                                     formatDecimalWithNull(
                                       _companyDetail!.companyNetAssetValue,
-                                      times: 1,
                                       decimal: 0
                                     )
                                   )}",

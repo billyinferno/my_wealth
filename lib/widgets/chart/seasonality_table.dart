@@ -326,7 +326,6 @@ class SeasonalityTable extends StatelessWidget {
         Text(
           formatDecimalWithNull(
             diffPrice,
-            times: 1,
             decimal: 2
           ),
           style: TextStyle(
@@ -344,7 +343,6 @@ class SeasonalityTable extends StatelessWidget {
                 Text(
                   formatDecimalWithNull(
                     minDiffPrice,
-                    times: 1,
                     decimal: 2
                   ),
                   style: TextStyle(
@@ -363,7 +361,6 @@ class SeasonalityTable extends StatelessWidget {
                     Text(
                       formatDecimalWithNull(
                         minLastPrice,
-                        times: 1,
                         decimal: 2
                       ),
                       style: TextStyle(
@@ -383,7 +380,6 @@ class SeasonalityTable extends StatelessWidget {
                 Text(
                   formatDecimalWithNull(
                     maxDiffPrice,
-                    times: 1,
                     decimal: 2
                   ),
                   style: TextStyle(
@@ -398,7 +394,6 @@ class SeasonalityTable extends StatelessWidget {
                     Text(
                       formatDecimalWithNull(
                         maxLastPrice,
-                        times: 1,
                         decimal: 2
                       ),
                       style: TextStyle(

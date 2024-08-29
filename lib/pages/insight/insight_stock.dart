@@ -609,7 +609,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       title: "Dividend",
                                       value: formatDecimalWithNull(
                                         _stockDividendList[index].cashDividend,
-                                        times: 1,
                                         decimal: 2
                                       )
                                     ),

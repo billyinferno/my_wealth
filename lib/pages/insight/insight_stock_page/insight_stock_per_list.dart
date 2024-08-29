@@ -125,17 +125,14 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
               title: "Average ${_data.averagePerYear}",
               per: formatDecimalWithNull(
                 _data.averagePerDaily,
-                times: 1,
                 decimal: 2
               ),
               periodic: formatDecimalWithNull(
                 _data.averagePerPeriodatic,
-                times: 1,
                 decimal: 2
               ),
               annual: formatDecimalWithNull(
                 _data.averagePerAnnualized,
-                times: 1,
                 decimal: 2
               ),
             ),
@@ -189,19 +186,16 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                       titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: textPrimary),
                       per: formatDecimalWithNull(
                         _codeList[index].perDaily,
-                        times: 1,
                         decimal: 2
                       ),
                       period: _codeList[index].period,
                       year: _codeList[index].year,
                       periodic: formatDecimalWithNull(
                         _codeList[index].perPeriodatic,
-                        times: 1,
                         decimal: 2
                       ),
                       annual: formatDecimalWithNull(
                         _codeList[index].perAnnualized,
-                        times: 1,
                         decimal: 2
                       )
                     ),

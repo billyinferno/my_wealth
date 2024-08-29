@@ -101,7 +101,6 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
               title: "Shares",
               hintText: formatDecimalWithNull(
                 _prevShares,
-                times: 1,
                 decimal: 2
               ),
               decimal: 6,
@@ -111,7 +110,6 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
               title: "Price",
               hintText: formatDecimalWithNull(
                 _prevPrice,
-                times: 1,
                 decimal: 2
               ),
               decimal: 6,

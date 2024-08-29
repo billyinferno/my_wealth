@@ -74,12 +74,10 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
               title: "Shares",
               subTitle: formatDecimalWithNull(
                 _watchlistArgs.currentShare,
-                times: 1,
                 decimal: 5
               ),
               hintText: formatDecimalWithNull(
                 _watchlistArgs.currentShare,
-                times: 1,
                 decimal: 5
               ),
               defaultPrice: _watchlistArgs.currentShare,
@@ -90,7 +88,6 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
               title: "Price",
               hintText: formatDecimalWithNull(
                 _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                times: 1,
                 decimal: 2
               ),
               decimal: 6,

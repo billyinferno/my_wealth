@@ -79,7 +79,6 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
               title: "Price",
               hintText: formatDecimalWithNull(
                 _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                times: 1,
                 decimal: 2
               ),
               decimal: 6,

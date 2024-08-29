@@ -138,7 +138,6 @@ class HeatGraph extends StatelessWidget {
 
           // get the label that we will put on this graph based on the
           // 1st day that we will process
-          // int _weekNumber = weekNumber(_dataExpand[i].date);
           DateTime startDate = dataExpand[i].date;
           DateTime? endDate;
 
@@ -194,7 +193,6 @@ class HeatGraph extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Text(
-                // "Week " + _weekNumber.toString() + " (" + _monthName[_month-1] + ")",
                 "${df.format(startDate)} - ${df.format(endDate!)}",
                 style: const TextStyle(
                   fontSize: 9,

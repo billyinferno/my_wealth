@@ -948,7 +948,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               data[index].brokerTotalLot,
               checkThousand: true,
               showDecimal: false,
-              shorten: true
             ),
             align: Alignment.center,
           ),

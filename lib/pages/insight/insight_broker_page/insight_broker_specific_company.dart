@@ -834,7 +834,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                   formatCurrency(
                     _brokerTopData!.brokerData[i].brokerSummaryAverage,
                     showDecimal: false,
-                    shorten: true
                   ),
                   style: _topBrokerRow,
                 )
@@ -856,7 +855,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                   formatCurrency(
                     currentValue,
                     showDecimal: false,
-                    shorten: true,
                   ),
                   style: _topBrokerRow,
                 )
@@ -868,7 +866,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                   formatCurrency(
                     currentDiff,
                     showDecimal: false,
-                    shorten: true,
                   ),
                   style: _topBrokerRow.copyWith(
                     color: (

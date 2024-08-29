@@ -102,7 +102,6 @@ class WatchlistBuilder extends StatelessWidget {
                   formatCurrency(
                     data[index].buyAvg,
                     showDecimal: false,
-                    shorten: true,
                     decimalNum: 0,
                   ),
                   textAlign: TextAlign.center,
@@ -118,7 +117,6 @@ class WatchlistBuilder extends StatelessWidget {
                   formatCurrency(
                     data[index].currentPrice,
                     showDecimal: false,
-                    shorten: true,
                     decimalNum: 0,
                   ),
                   textAlign: TextAlign.center,
@@ -135,7 +133,6 @@ class WatchlistBuilder extends StatelessWidget {
                   formatCurrency(
                     pl,
                     showDecimal: false,
-                    shorten: true,
                     decimalNum: 0,
                   ),
                   textAlign: TextAlign.center,
@@ -154,7 +151,6 @@ class WatchlistBuilder extends StatelessWidget {
                   formatCurrencyWithNull(
                     plDiff,
                     showDecimal: false,
-                    shorten: true,
                     decimalNum: 0,
                   ),
                   textAlign: TextAlign.center,

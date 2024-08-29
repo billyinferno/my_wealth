@@ -3085,7 +3085,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                   formatCurrency(
                                     _topBroker.brokerData[index].brokerSummaryAverage,
                                     showDecimal: false,
-                                    shorten: true,
                                   ),
                                   style: _topBrokerRow,
                                 )),
@@ -3109,7 +3108,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                   formatCurrency(
                                     currentValue,
                                     showDecimal: false,
-                                    shorten: true,
                                   ),
                                   style: _topBrokerRow,
                                 )),
@@ -3122,7 +3120,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                   formatCurrency(
                                     currentDiff,
                                     showDecimal: false,
-                                    shorten: true,
                                   ),
                                   style: _topBrokerRow.copyWith(
                                     color: (

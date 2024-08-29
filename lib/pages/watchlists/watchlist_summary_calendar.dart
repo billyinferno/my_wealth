@@ -561,7 +561,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           Text(
             formatCurrency(
               value,
-              shorten: true,
               decimalNum: 2
             ),
             style: TextStyle(

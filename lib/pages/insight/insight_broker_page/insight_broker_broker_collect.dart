@@ -429,7 +429,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                           _brokerCollect!.summaryTotalBuyValue,
                           showDecimal: false,
                           decimalNum: 2,
-                          shorten: true
                         ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -522,7 +521,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                           _brokerCollect!.summaryTotalSellValue,
                           showDecimal: false,
                           decimalNum: 2,
-                          shorten: true
                         ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -601,7 +599,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                           _brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue,
                           showDecimal: false,
                           decimalNum: 2,
-                          shorten: true
                         ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(

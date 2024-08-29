@@ -653,7 +653,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           Text(
             formatCurrency(
               value,
-              shorten: true,
               decimalNum: 2
             ),
             style: TextStyle(

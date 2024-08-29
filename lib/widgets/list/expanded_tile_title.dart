@@ -176,7 +176,6 @@ class ExpandedTileTitle extends StatelessWidget {
                                   formatCurrency(
                                     share,
                                     checkThousand: true,
-                                    shorten: true
                                   )
                                 } ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
                                 style: const TextStyle(

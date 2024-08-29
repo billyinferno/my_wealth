@@ -19,4 +19,11 @@ extension CustomComparisonExtension on double {
       }
     }
   }
+
+  double makePositive() {
+    if (this < 0) {
+      return this * (-1);
+    }
+    return this;
+  }
 }

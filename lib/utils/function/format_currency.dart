@@ -128,10 +128,3 @@ String formatIntWithNull(
     decimalNum: decimalNum
   );
 }
-
-double makePositive(double value) {
-  if (value < 0) {
-    return value * -1;
-  }
-  return value;
-}

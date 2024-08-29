@@ -240,7 +240,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                           const SizedBox(width: 5,),
                                           Icon(
                                             (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
-                                            color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
+                                            color: riskColor(
+                                              value: _watchlist.watchlistCompanyNetAssetValue!,
+                                              cost: _watchlist.watchlistCompanyPrevPrice!,
+                                              riskFactor: _userInfo!.risk
+                                            ),
                                           ),
                                           const SizedBox(width: 5,),
                                           Container(
@@ -248,7 +252,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                             decoration: BoxDecoration(
                                               border: Border(
                                                 bottom: BorderSide(
-                                                  color: riskColor(_watchlist.watchlistCompanyNetAssetValue!, _watchlist.watchlistCompanyPrevPrice!, _userInfo!.risk),
+                                                  color: riskColor(
+                                                    value: _watchlist.watchlistCompanyNetAssetValue!,
+                                                    cost: _watchlist.watchlistCompanyPrevPrice!,
+                                                    riskFactor: _userInfo!.risk
+                                                  ),
                                                   width: 2.0,
                                                   style: BorderStyle.solid,
                                                 ),
@@ -276,7 +284,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                         ),
                                         const SizedBox(width: 10,),
                                         Text(
-                                          formatDateWithNulll(date: _watchlist.watchlistCompanyLastUpdate),
+                                          formatDateWithNulll(_watchlist.watchlistCompanyLastUpdate),
                                         ),
                                       ],
                                     )
@@ -488,9 +496,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
                         WatchlistDetailEditArgs args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
                         Color rColor = riskColor(
-                          (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
-                          (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
-                          _userInfo!.risk
+                          value: (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
+                          cost: (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
+                          riskFactor: _userInfo!.risk
                         );
           
                         // check if the watchlist item date is more than company last update

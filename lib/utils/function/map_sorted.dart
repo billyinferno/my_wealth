@@ -1,13 +1,18 @@
-Map<K, V> sortedMap<K, V>({required Map<K, V> data, String? type}) {
+enum MapSortType {
+  ascending,
+  descending,
+}
+
+Map<K, V> sortedMap<K, V>({
+  required Map<K, V> data,
+  MapSortType type = MapSortType.ascending
+}) {
   Map<K, V> sorted = {};
   
-  String sortType = (type ?? 'asc');
-  sortType = sortType.toLowerCase();
-
   List<K> sortedKeys = data.keys.toList()..sort();
   
   // check sort type
-  if (sortType == 'desc') {
+  if (type == MapSortType.descending) {
     sortedKeys = sortedKeys.reversed.toList();
   }
 

@@ -153,9 +153,9 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
             Container(
               width: double.infinity,
               color: riskColor(
-                _totalValue,
-                _totalCost,
-                _userInfo!.risk
+                value: _totalValue,
+                cost: _totalCost,
+                riskFactor: _userInfo!.risk
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

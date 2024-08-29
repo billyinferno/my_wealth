@@ -20,12 +20,18 @@ int weekNumber(DateTime date) {
   return woy;
 }
 
-String formatDate({required DateTime date, required String format}) {
+String formatDate(
+  DateTime date, {
+  required String format
+}) {
   final DateFormat df = DateFormat(format);
   return df.format(date);
 }
 
-String formatDateWithNulll({required DateTime? date, DateFormat? format}) {
+String formatDateWithNulll(
+  DateTime? date, {
+  DateFormat? format
+}) {
   if (date == null) {
     return '-';
   }
@@ -39,7 +45,10 @@ String formatDateWithNulll({required DateTime? date, DateFormat? format}) {
   }
 }
 
-bool isSameDate({required DateTime date1, required DateTime date2}) {
+bool isSameDate({
+  required DateTime date1,
+  required DateTime date2
+}) {
   if (date1.year == date2.year) {
     if (date1.month == date2.month) {
       if (date1.day == date2.day) {
@@ -51,7 +60,10 @@ bool isSameDate({required DateTime date1, required DateTime date2}) {
   return false;
 }
 
-bool isBeforeDate({required DateTime date1, required DateTime date2}) {
+bool isBeforeDate({
+  required DateTime date1,
+  required DateTime date2
+}) {
   final DateTime dt1 = DateTime(date1.year, date1.month, date1.day);
   final DateTime dt2 = DateTime(date2.year, date2.month, date2.day);
 
@@ -61,7 +73,10 @@ bool isBeforeDate({required DateTime date1, required DateTime date2}) {
   return false;
 }
 
-bool isAfterDate({required DateTime date1, required DateTime date2}) {
+bool isAfterDate({
+  required DateTime date1,
+  required DateTime date2
+}) {
   final DateTime dt1 = DateTime(date1.year, date1.month, date1.day);
   final DateTime dt2 = DateTime(date2.year, date2.month, date2.day);
 
@@ -71,14 +86,20 @@ bool isAfterDate({required DateTime date1, required DateTime date2}) {
   return false;
 }
 
-bool isSameOrBefore({required DateTime date, required DateTime checkDate}) {
+bool isSameOrBefore({
+  required DateTime date,
+  required DateTime checkDate
+}) {
   if (isSameDate(date1: date, date2: checkDate) || isBeforeDate(date1: date, date2: checkDate)) {
     return true;
   }
   return false;
 }
 
-bool isSameOrAfter({required DateTime date, required DateTime checkDate}) {
+bool isSameOrAfter({
+  required DateTime date,
+  required DateTime checkDate
+}) {
   if (isSameDate(date1: date, date2: checkDate) || isAfterDate(date1: date, date2: checkDate)) {
     return true;
   }

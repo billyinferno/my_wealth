@@ -381,7 +381,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                       companyId: _sortedFaveList[index].favouritesCompanyId,
                       name: _sortedFaveList[index].favouritesCompanyName,
                       type: Globals.reksadanaCompanyTypeEnum[_sortedFaveList[index].favouritesCompanyType]!,
-                      date: formatDateWithNulll(date: _sortedFaveList[index].favouritesLastUpdate, format: _dt),
+                      date: formatDateWithNulll(_sortedFaveList[index].favouritesLastUpdate, format: _dt),
                       value: _sortedFaveList[index].favouritesNetAssetValue,
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),

@@ -179,7 +179,14 @@ class SeasonalityTable extends StatelessWidget {
                 maxDiffPrice: average[key]!.averageMaxDiffPrice,
                 maxLastPrice: average[key]!.averageMaxLastPrice),
               color: (
-                average[key]!.averageDiffPrice == 0 ? Colors.black : riskColor(((average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice) + average[key]!.averageDiffPrice), (average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice), (risk ?? 10))),
+                average[key]!.averageDiffPrice == 0 ?
+                Colors.black :
+                riskColor(
+                  value: ((average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice) + average[key]!.averageDiffPrice),
+                  cost: (average[key]!.averageMaxDiffPrice - average[key]!.averageMinDiffPrice),
+                  riskFactor: (risk ?? 10)
+                )
+              ),
             ),
           ],
         )
@@ -234,9 +241,9 @@ class SeasonalityTable extends StatelessWidget {
                 data[index].averageDiffPrice == 0 ?
                 Colors.black :
                 riskColor(
-                  (minMaxPrice + data[index].averageDiffPrice),
-                  minMaxPrice,
-                  (risk ?? 10)
+                  value: (minMaxPrice + data[index].averageDiffPrice),
+                  cost: minMaxPrice,
+                  riskFactor: (risk ?? 10)
                 )
               ),
             )

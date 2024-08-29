@@ -110,8 +110,16 @@ List<ComputeWatchlistResult> computeWatchlistDetail({
       totalDayGain = 0;
     }
     
-    headerRiskColor = riskColor((totalShare * watchlist.watchlistCompanyNetAssetValue!), totalCost, userInfo.risk);
-    subHeaderRiskColor = riskColor((totalDayGain + totalCost), totalCost, userInfo.risk);
+    headerRiskColor = riskColor(
+      value: (totalShare * watchlist.watchlistCompanyNetAssetValue!),
+      cost: totalCost,
+      riskFactor: userInfo.risk
+    );
+    subHeaderRiskColor = riskColor(
+      value: (totalDayGain + totalCost),
+      cost: totalCost,
+      riskFactor: userInfo.risk
+    );
 
     ComputeWatchlistResult result = ComputeWatchlistResult(
       totalShare: totalShare, totalGain: totalGain, totalDayGain: totalDayGain,

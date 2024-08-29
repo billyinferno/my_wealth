@@ -57,7 +57,11 @@ class WatchlistSubSummary extends StatelessWidget {
             Container(
               width: 10,
               height: double.infinity,
-              color: riskColor(value, cost, riskFactor),
+              color: riskColor(
+                value: value,
+                cost: cost,
+                riskFactor: riskFactor
+              ),
             ),
             const SizedBox(width: 10,),
             Expanded(
@@ -93,7 +97,11 @@ class WatchlistSubSummary extends StatelessWidget {
                             decimal: 2,
                           )}%)" : ""),
                           style: TextStyle(
-                            color: riskColor(value, cost, riskFactor)
+                            color: riskColor(
+                              value: value,
+                              cost: cost,
+                              riskFactor: riskFactor
+                            )
                           ),
                         )
                       ),

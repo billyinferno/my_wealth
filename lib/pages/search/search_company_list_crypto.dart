@@ -162,7 +162,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
                       companyId: _filterList[index].favouritesCompanyId,
                       name: "(${_filterList[index].favouritesSymbol}) ${_filterList[index].favouritesCompanyName}",
                       type: _filterList[index].favouritesCompanyType,
-                      date: formatDateWithNulll(date: _filterList[index].favouritesLastUpdate, format: _dt),
+                      date: formatDateWithNulll(_filterList[index].favouritesLastUpdate, format: _dt),
                       value: _filterList[index].favouritesNetAssetValue,
                       isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_filterList[index].favouritesFCA ?? false),

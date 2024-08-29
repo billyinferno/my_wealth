@@ -25,7 +25,12 @@ class ExpandedTileChildren extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color rColor = riskColor((shares * currentPrice), (shares * price), risk);
+    Color rColor = riskColor(
+      value: (shares * currentPrice),
+      cost: (shares * price),
+      riskFactor: risk
+    );
+
     if (!calculateLoss) {
       rColor = Colors.black;
     }

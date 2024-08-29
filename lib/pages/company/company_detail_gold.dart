@@ -181,7 +181,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+              color: riskColor(
+                value: _companyDetail.companyNetAssetValue!,
+                cost: _companyDetail.companyPrevPrice!,
+                riskFactor: _userInfo!.risk
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -231,7 +235,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                             children: <Widget>[
                               Icon(
                                 currentIcon,
-                                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                color: riskColor(
+                                  value: _companyDetail.companyNetAssetValue!,
+                                  cost: _companyDetail.companyPrevPrice!,
+                                  riskFactor: _userInfo!.risk
+                                ),
                               ),
                               const SizedBox(width: 10,),
                               Container(
@@ -239,7 +247,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                      color: riskColor(
+                                        value: _companyDetail.companyNetAssetValue!,
+                                        cost: _companyDetail.companyPrevPrice!,
+                                        riskFactor: _userInfo!.risk
+                                      ),
                                       width: 2.0,
                                       style: BorderStyle.solid,
                                     ),
@@ -253,7 +265,12 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 color: primaryLight,
                               ),
                               const SizedBox(width: 10,),
-                              Text(formatDateWithNulll(date: _companyDetail.companyLastUpdate, format: _df)),
+                              Text(
+                                formatDateWithNulll(
+                                  _companyDetail.companyLastUpdate,
+                                  format: _df
+                                )
+                              ),
                             ],
                           ),
                           const SizedBox(height: 10,),
@@ -950,10 +967,18 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
         prevPrice = _priceGold[index-1].priceGoldIdr;
       }
       priceDiff = _companyDetail.companyNetAssetValue! - _priceGold[index].priceGoldIdr;
-      risk = riskColor(_companyDetail.companyNetAssetValue!, _priceGold[index].priceGoldIdr, _userInfo!.risk);
+      risk = riskColor(
+        value: _companyDetail.companyNetAssetValue!,
+        cost: _priceGold[index].priceGoldIdr,
+        riskFactor: _userInfo!.risk
+      );
 
       dayDiff = currPrice - prevPrice;
-      dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+      dayDiffColor = riskColor(
+        value: currPrice,
+        cost: prevPrice,
+        riskFactor: _userInfo!.risk
+      );
 
       CompanyDetailList dataIDR = CompanyDetailList(
         date: _priceGold[index].priceGoldDate.toLocal(),
@@ -979,10 +1004,18 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
         prevPrice = _priceGold[index-1].priceGoldUsd;
       }
       priceDiff = _companyDetail.companyCurrentPriceUsd! - _priceGold[index].priceGoldUsd;
-      risk = riskColor(_companyDetail.companyCurrentPriceUsd!, _priceGold[index].priceGoldUsd, _userInfo!.risk);
+      risk = riskColor(
+        value: _companyDetail.companyCurrentPriceUsd!,
+        cost: _priceGold[index].priceGoldUsd,
+        riskFactor: _userInfo!.risk
+      );
 
       dayDiff = currPrice - prevPrice;
-      dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+      dayDiffColor = riskColor(
+        value: currPrice,
+        cost: prevPrice,
+        riskFactor: _userInfo!.risk
+      );
 
       CompanyDetailList dataUSD = CompanyDetailList(
         date: _priceGold[index].priceGoldDate.toLocal(),

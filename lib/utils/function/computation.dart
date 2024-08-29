@@ -104,6 +104,10 @@ WatchlistComputationResult detailWatchlistComputation({required WatchlistListMod
       totalSharesSell: totalSharesSell,
       totalBuyAmount: totalBuyAmount,
       totalSellAmount: totalSellAmount,
-      riskColor: riskColor(totalValue, totalCost, riskFactor)
+      riskColor: riskColor(
+        value: totalValue,
+        cost: totalCost,
+        riskFactor: riskFactor
+      )
     );
   }

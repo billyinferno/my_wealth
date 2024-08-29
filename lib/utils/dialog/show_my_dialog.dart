@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class ShowMyDialog {
-  final String? title;
-  final String? text;
-  final String? confirmLabel;
-  final String? cancelLabel;
-  Color? confirmColor;
-  Color? cancelColor;
+  final String title;
+  final String text;
+  final String confirmLabel;
+  final String cancelLabel;
+  Color confirmColor;
+  Color cancelColor;
 
-  ShowMyDialog({this.title, this.text, this.confirmLabel, this.confirmColor, this.cancelLabel});
+  ShowMyDialog({
+    this.title = "Confirmation",
+    this.text = "Are you sure?",
+    this.confirmLabel = "Confirm",
+    this.confirmColor = textPrimary,
+    this.cancelLabel = "Cancel",
+    this.cancelColor = secondaryColor,
+  });
 
   Future<bool?> show(BuildContext context) {
     return showDialog(
@@ -19,7 +26,7 @@ class ShowMyDialog {
       builder: ((BuildContext context) {
         return CupertinoAlertDialog(
           title: Text(
-            title ?? "Confirmation",
+            title,
             style: const TextStyle(
               fontFamily: '--apple-system',
             ),
@@ -27,7 +34,7 @@ class ShowMyDialog {
           content: Container(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: Text(
-              text ?? "Are you sure?",
+              text,
               style: const TextStyle(
                 fontFamily: '--apple-system',
               ),
@@ -40,10 +47,10 @@ class ShowMyDialog {
                 Navigator.pop(context, true);
               }),
               child: Text(
-                confirmLabel ?? "Confirm",
+                confirmLabel,
                 style: TextStyle(
                   fontFamily: '--apple-system',
-                  color: (confirmColor ?? textPrimary)
+                  color: confirmColor
                 ),
               ),
             ),
@@ -52,10 +59,10 @@ class ShowMyDialog {
                 Navigator.pop(context, false);
               }),
               child: Text(
-                cancelLabel ?? "Cancel",
+                cancelLabel,
                 style: TextStyle(
                   fontFamily: '--apple-system',
-                  color: (cancelColor ?? textPrimary),
+                  color: cancelColor,
                 ),
               ),
             ),

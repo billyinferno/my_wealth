@@ -17,7 +17,11 @@ class SimpleListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = riskColor((price + priceChange), price, riskFactor);
+    final Color color = riskColor(
+      value: (price + priceChange),
+      cost: price,
+      riskFactor: riskFactor
+    );
 
     return Container(
       decoration: BoxDecoration(

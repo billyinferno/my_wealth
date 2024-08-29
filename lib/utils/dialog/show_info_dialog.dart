@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class ShowInfoDialog {
-  final String? title;
+  final String title;
   final String text;
-  final String? okayLabel;
-  Color? okayColor;
+  final String okayLabel;
+  Color okayColor;
 
-  ShowInfoDialog({this.title, required this.text, this.okayLabel, this.okayColor});
+  ShowInfoDialog({
+    this.title = "Information",
+    required this.text,
+    this.okayLabel = "Okay",
+    this.okayColor = textPrimary
+  });
 
   Future<void> show(BuildContext context) {
     return showDialog(
@@ -17,7 +22,7 @@ class ShowInfoDialog {
       builder: ((BuildContext context) {
         return CupertinoAlertDialog(
           title: Text(
-            title ?? "Information",
+            title,
             style: const TextStyle(
               fontFamily: '--apple-system',
             ),
@@ -38,10 +43,10 @@ class ShowInfoDialog {
                 Navigator.pop(context, true);
               }),
               child: Text(
-                okayLabel ?? "Okay",
+                okayLabel,
                 style: TextStyle(
                   fontFamily: '--apple-system',
-                  color: (okayColor ?? textPrimary)
+                  color: okayColor
                 ),
               ),
             ),

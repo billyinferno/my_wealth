@@ -145,7 +145,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+              color: riskColor(
+                value: _companyDetail.companyNetAssetValue!,
+                cost: _companyDetail.companyPrevPrice!,
+                riskFactor: _userInfo!.risk
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -195,7 +199,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                             children: <Widget>[
                               Icon(
                                 currentIcon,
-                                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                color: riskColor(
+                                  value: _companyDetail.companyNetAssetValue!,
+                                  cost: _companyDetail.companyPrevPrice!,
+                                  riskFactor: _userInfo!.risk
+                                ),
                               ),
                               const SizedBox(width: 10,),
                               Container(
@@ -203,7 +211,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                      color: riskColor(
+                                        value: _companyDetail.companyNetAssetValue!,
+                                        cost: _companyDetail.companyPrevPrice!,
+                                        riskFactor: _userInfo!.risk
+                                      ),
                                       width: 2.0,
                                       style: BorderStyle.solid,
                                     ),
@@ -221,7 +233,12 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 color: primaryLight,
                               ),
                               const SizedBox(width: 10,),
-                              Text(formatDateWithNulll(date: _companyDetail.companyLastUpdate, format: _df)),
+                              Text(
+                                formatDateWithNulll(
+                                  _companyDetail.companyLastUpdate,
+                                  format: _df
+                                )
+                              ),
                             ],
                           ),
                           const SizedBox(height: 10,),
@@ -732,7 +749,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 double currPrice = _companyDetail.companyPrices[index].priceValue;
                 double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
                 dayDiff = currPrice - prevPrice;
-                dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+                dayDiffColor = riskColor(
+                  value: currPrice,
+                  cost: prevPrice,
+                  riskFactor: _userInfo!.risk
+                );
               }
               return CompanyDetailPriceList(
                 date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
@@ -741,7 +762,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   _companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue,
                   checkThousand: true,
                 ),
-                riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
+                riskColor: riskColor(
+                  value: _companyDetail.companyNetAssetValue!,
+                  cost: _companyDetail.companyPrices[index].priceValue,
+                  riskFactor: _userInfo!.risk
+                ),
                 dayDiff: formatCurrencyWithNull(dayDiff, checkThousand: true),
                 dayDiffColor: dayDiffColor,
               );

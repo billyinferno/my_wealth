@@ -170,7 +170,11 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                       addAvgPerPeriod = avgPerPeriod;
                     }
         
-                    indicatorColor = riskColor(avgPer + avgPerAnnul + avgPerPeriod, (_codeList[index].perDaily! + addAvgPer) + (_codeList[index].perAnnualized! + addAvgPerAnnul) + (_codeList[index].perPeriodatic! + addAvgPerPeriod), _userInfo!.risk);
+                    indicatorColor = riskColor(
+                      value: avgPer + avgPerAnnul + avgPerPeriod,
+                      cost: (_codeList[index].perDaily! + addAvgPer) + (_codeList[index].perAnnualized! + addAvgPerAnnul) + (_codeList[index].perPeriodatic! + addAvgPerPeriod),
+                      riskFactor: _userInfo!.risk
+                    );
                   }
             
                   return InkWell(

@@ -359,8 +359,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               ),
             ),
             Container(
-              color: riskColor(_companyDetail.companyNetAssetValue!,
-                  _companyDetail.companyPrevPrice!, _userInfo!.risk),
+              color: riskColor(
+                value: _companyDetail.companyNetAssetValue!,
+                cost: _companyDetail.companyPrevPrice!,
+                riskFactor: _userInfo!.risk
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -377,10 +380,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            (_companyDetail.companySymbol == null
-                                    ? ""
-                                    : "(${_companyDetail.companySymbol!}) ") +
-                                _companyData.companyName,
+                            (
+                              _companyDetail.companySymbol == null ?
+                              "" :
+                              "(${_companyDetail.companySymbol!}) "
+                            ) + _companyData.companyName,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -466,9 +470,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                               Icon(
                                 currentIcon,
                                 color: riskColor(
-                                    _companyDetail.companyNetAssetValue!,
-                                    _companyDetail.companyPrevPrice!,
-                                    _userInfo!.risk),
+                                  value: _companyDetail.companyNetAssetValue!,
+                                  cost: _companyDetail.companyPrevPrice!,
+                                  riskFactor: _userInfo!.risk
+                                ),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -479,9 +484,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                     border: Border(
                                   bottom: BorderSide(
                                     color: riskColor(
-                                        _companyDetail.companyNetAssetValue!,
-                                        _companyDetail.companyPrevPrice!,
-                                        _userInfo!.risk),
+                                      value: _companyDetail.companyNetAssetValue!,
+                                      cost: _companyDetail.companyPrevPrice!,
+                                      riskFactor: _userInfo!.risk
+                                    ),
                                     width: 2.0,
                                     style: BorderStyle.solid,
                                   ),
@@ -502,9 +508,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                               const SizedBox(
                                 width: 10,
                               ),
-                              Text(formatDateWithNulll(
-                                  date: _companyDetail.companyLastUpdate,
-                                  format: _df)),
+                              Text(
+                                formatDateWithNulll(
+                                  _companyDetail.companyLastUpdate,
+                                  format: _df
+                                )
+                              ),
                             ],
                           ),
                           const SizedBox(
@@ -2125,15 +2134,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
       // generate item dividend
       ret.add(_itemDividend(
-        cumDate: formatDateWithNulll(
-            date: dividend.cumDividend, format: Globals.dfddMMyy),
+        cumDate: formatDateWithNulll(dividend.cumDividend, format: Globals.dfddMMyy),
         exDate: Globals.dfddMMyy.format(dividend.exDividend.toLocal()),
         recordDate: Globals.dfddMMyy.format(dividend.recordDate.toLocal()),
         paymentDate: Globals.dfddMMyy.format(dividend.paymentDate.toLocal()),
         cashDividend: formatCurrency(dividend.cashDividend.toDouble()),
         price: formatCurrencyWithNull(dividend.price),
-        priceDate: formatDateWithNulll(
-            date: dividend.priceDate, format: Globals.dfddMMyy),
+        priceDate: formatDateWithNulll(dividend.priceDate, format: Globals.dfddMMyy),
         note: dividend.note,
       ));
     }
@@ -3503,35 +3510,35 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                     Expanded(
                                         flex: 2,
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             Container(
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        bottom: BorderSide(
-                                                  color: riskColor(
-                                                      _companyDetail
-                                                          .companyNetAssetValue!,
-                                                      _infoSahamPriceSort[index]
-                                                          .lastPrice,
-                                                      _userInfo!.risk),
-                                                  width: 2.0,
-                                                  style: BorderStyle.solid,
-                                                ))),
-                                                child: Text(
-                                                  formatCurrency(
-                                                    _companyDetail.companyNetAssetValue! - _infoSahamPriceSort[index].lastPrice,
-                                                    checkThousand: false,
-                                                    showDecimal: false
-                                                  ),
-                                                  textAlign: TextAlign.right,
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                  ),
-                                                )),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                    color: riskColor(
+                                                      value: _companyDetail.companyNetAssetValue!,
+                                                      cost: _infoSahamPriceSort[index].lastPrice,
+                                                      riskFactor: _userInfo!.risk
+                                                    ),
+                                                    width: 2.0,
+                                                    style: BorderStyle.solid,
+                                                  )
+                                                )
+                                              ),
+                                              child: Text(
+                                                formatCurrency(
+                                                  _companyDetail.companyNetAssetValue! - _infoSahamPriceSort[index].lastPrice,
+                                                  checkThousand: false,
+                                                  showDecimal: false
+                                                ),
+                                                textAlign: TextAlign.right,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
                                             Text(
                                               formatCurrency(
                                                 _infoSahamPriceSort[index].lowDiff,
@@ -5464,13 +5471,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     for (int index = 0; index < _infoSahamPrice.length; index++) {
       dayDiff = null;
       dayDiffColor = Colors.transparent;
-      priceToCurrentColor = riskColor(_companyDetail.companyNetAssetValue!,
-          _infoSahamPrice[index].lastPrice.toDouble(), _userInfo!.risk);
-      lowDiff = _infoSahamPrice[index].lastPrice -
-          _infoSahamPrice[index].adjustedLowPrice;
-      highDiff = (_infoSahamPrice[index].lastPrice -
-              _infoSahamPrice[index].adjustedHighPrice) *
-          -1;
+      priceToCurrentColor = riskColor(
+        value: _companyDetail.companyNetAssetValue!,
+        cost: _infoSahamPrice[index].lastPrice.toDouble(),
+        riskFactor: _userInfo!.risk
+      );
+
+      lowDiff = _infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedLowPrice;
+      highDiff = (_infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedHighPrice) * -1;
 
       if ((index + 1) < _infoSahamPrice.length) {
         currPrice = _infoSahamPrice[index].lastPrice.toDouble();
@@ -5478,21 +5486,25 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         dayDiff = currPrice - prevPrice;
 
         dayDiffColor = riskColor(
-            currPrice.toDouble(), prevPrice.toDouble(), _userInfo!.risk);
+          value: currPrice.toDouble(),
+          cost: prevPrice.toDouble(),
+          riskFactor: _userInfo!.risk
+        );
       }
 
       SahamPriceList data = SahamPriceList(
-          date: _infoSahamPrice[index].date,
-          volume: _infoSahamPrice[index].volume,
-          lastPrice: _infoSahamPrice[index].lastPrice.toDouble(),
-          lastPriceColor: priceToCurrentColor,
-          adjustedLowPrice: _infoSahamPrice[index].adjustedLowPrice.toDouble(),
-          adjustedHighPrice:
-              _infoSahamPrice[index].adjustedHighPrice.toDouble(),
-          lowDiff: lowDiff.toDouble(),
-          highDiff: highDiff.toDouble(),
-          dayDiff: dayDiff,
-          dayDiffColor: dayDiffColor);
+        date: _infoSahamPrice[index].date,
+        volume: _infoSahamPrice[index].volume,
+        lastPrice: _infoSahamPrice[index].lastPrice.toDouble(),
+        lastPriceColor: priceToCurrentColor,
+        adjustedLowPrice: _infoSahamPrice[index].adjustedLowPrice.toDouble(),
+        adjustedHighPrice:
+            _infoSahamPrice[index].adjustedHighPrice.toDouble(),
+        lowDiff: lowDiff.toDouble(),
+        highDiff: highDiff.toDouble(),
+        dayDiff: dayDiff,
+        dayDiffColor: dayDiffColor
+      );
 
       _infoSahamPriceSort.add(data);
     }

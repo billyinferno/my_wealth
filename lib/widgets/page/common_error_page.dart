@@ -4,12 +4,16 @@ import 'package:my_wealth/_index.g.dart';
 
 class CommonErrorPage extends StatelessWidget {
   final String errorText;
-  final bool? isNeedScaffold;
-  const CommonErrorPage({super.key, required this.errorText, this.isNeedScaffold});
+  final bool isNeedScaffold;
+  const CommonErrorPage({
+    super.key,
+    required this.errorText,
+    this.isNeedScaffold = true
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (isNeedScaffold ?? true) {
+    if (isNeedScaffold) {
       return Scaffold(
         appBar: AppBar(
           title: const Center(

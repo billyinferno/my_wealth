@@ -3,28 +3,33 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class CommonLoadingPage extends StatelessWidget {
-  final bool? isNeedScaffold;
-  const CommonLoadingPage({super.key, this.isNeedScaffold});
+  final bool isNeedScaffold;
+  final String loadingText;
+  const CommonLoadingPage({
+    super.key,
+    this.isNeedScaffold = true,
+    this.loadingText = "Loading data...",
+  });
 
   @override
   Widget build(BuildContext context) {
-    if ((isNeedScaffold ?? true)) {
+    if ((isNeedScaffold)) {
       return Scaffold(
         body: Container(
           width: double.infinity,
           color: primaryColor,
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SpinKitCubeGrid(
+              const SpinKitCubeGrid(
                 color: secondaryColor,
                 size: 25,
               ),
-              SizedBox(height: 5,),
+              const SizedBox(height: 5,),
               Text(
-                "Loading data...",
-                style: TextStyle(
+                loadingText,
+                style: const TextStyle(
                   color: secondaryColor,
                   fontSize: 10,
                 ),
@@ -40,18 +45,18 @@ class CommonLoadingPage extends StatelessWidget {
       return Container(
         width: double.infinity,
         color: primaryColor,
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SpinKitCubeGrid(
+            const SpinKitCubeGrid(
               color: secondaryColor,
               size: 25,
             ),
-            SizedBox(height: 5,),
+            const SizedBox(height: 5,),
             Text(
-              "Loading data...",
-              style: TextStyle(
+              loadingText,
+              style: const TextStyle(
                 color: secondaryColor,
                 fontSize: 10,
               ),

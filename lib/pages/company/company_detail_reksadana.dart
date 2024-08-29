@@ -273,7 +273,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+              color: riskColor(
+                value: _companyDetail.companyNetAssetValue!,
+                cost: _companyDetail.companyPrevPrice!,
+                riskFactor: _userInfo!.risk
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -308,7 +312,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             children: <Widget>[
                               Icon(
                                 currentIcon,
-                                color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                color: riskColor(
+                                  value: _companyDetail.companyNetAssetValue!,
+                                  cost: _companyDetail.companyPrevPrice!,
+                                  riskFactor: _userInfo!.risk
+                                ),
                               ),
                               const SizedBox(width: 10,),
                               Container(
@@ -316,7 +324,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrevPrice!, _userInfo!.risk),
+                                      color: riskColor(
+                                        value: _companyDetail.companyNetAssetValue!,
+                                        cost: _companyDetail.companyPrevPrice!,
+                                        riskFactor: _userInfo!.risk
+                                      ),
                                       width: 2.0,
                                       style: BorderStyle.solid,
                                     ),
@@ -330,7 +342,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 color: primaryLight,
                               ),
                               const SizedBox(width: 10,),
-                              Text(formatDateWithNulll(date: _companyDetail.companyLastUpdate, format: _df)),
+                              Text(
+                                formatDateWithNulll(
+                                  _companyDetail.companyLastUpdate,
+                                  format: _df
+                                )
+                              ),
                             ],
                           ),
                           const SizedBox(height: 10,),
@@ -2181,7 +2198,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         currPrice = _infoReksadana[index].netAssetValue;
         prevPrice = _infoReksadana[index + 1].netAssetValue;
         dayDiff = currPrice - prevPrice;
-        dayDiffColor = riskColor(currPrice, prevPrice, _userInfo!.risk);
+        dayDiffColor = riskColor(
+          value: currPrice,
+          cost: prevPrice,
+          riskFactor: _userInfo!.risk
+        );
       }
 
       // create the list data
@@ -2189,7 +2210,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         date: _infoReksadana[index].date,
         price: _infoReksadana[index].netAssetValue,
         diff: _companyDetail.companyNetAssetValue! - _infoReksadana[index].netAssetValue,
-        riskColor: riskColor(_companyDetail.companyNetAssetValue!, _infoReksadana[index].netAssetValue, _userInfo!.risk),
+        riskColor: riskColor(
+          value: _companyDetail.companyNetAssetValue!,
+          cost: _infoReksadana[index].netAssetValue,
+          riskFactor: _userInfo!.risk
+        ),
         dayDiff: dayDiff,
         dayDiffColor: dayDiffColor
       );

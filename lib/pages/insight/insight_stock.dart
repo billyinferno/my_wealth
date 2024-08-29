@@ -173,8 +173,15 @@ class _InsightStockPageState extends State<InsightStockPage> {
                         }
                         
                         // Color bgColor = (sectorAverage >= 0 ? Colors.green : secondaryColor);
-                        Color bgColor = riskColor((1 + sectorAverage), 1, _userInfo!.risk);
-                        Color textColor = riskColorReverse((1 + sectorAverage), 1);
+                        Color bgColor = riskColor(
+                          value: (1 + sectorAverage),
+                          cost: 1,
+                          riskFactor: _userInfo!.risk
+                        );
+                        Color textColor = riskColorReverse(
+                          value: (1 + sectorAverage),
+                          cost: 1
+                        );
                         Color borderColor = (sectorAverage >= 0 ? const Color.fromARGB(255, 15, 88, 17) : secondaryDark);
                   
                         return InkWell(
@@ -482,7 +489,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     _smallBox(
                                       title: "Listed Date",
                                       value: formatDateWithNulll(
-                                        date: _stockNewListedList[index].listedDate
+                                        _stockNewListedList[index].listedDate
                                       )
                                     ),
                                   ],
@@ -593,14 +600,14 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     _smallBox(
                                       title: "Cum Date",
                                       value: formatDateWithNulll(
-                                        date: _stockDividendList[index].cumDividend
+                                        _stockDividendList[index].cumDividend
                                       )
                                     ),
                                     const SizedBox(width: 10,),
                                     _smallBox(
                                       title: "Ex Date",
                                       value: formatDateWithNulll(
-                                        date: _stockDividendList[index].exDividend
+                                        _stockDividendList[index].exDividend
                                       )
                                     ),
                                     const SizedBox(width: 10,),
@@ -622,14 +629,14 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     _smallBox(
                                       title: "Record Date",
                                       value: formatDateWithNulll(
-                                        date: _stockDividendList[index].recordDate
+                                        _stockDividendList[index].recordDate
                                       )
                                     ),
                                     const SizedBox(width: 10,),
                                     _smallBox(
                                       title: "Payment Date",
                                       value: formatDateWithNulll(
-                                        date: _stockDividendList[index].paymentDate
+                                        _stockDividendList[index].paymentDate
                                       )
                                     ),
                                     const SizedBox(width: 10,),
@@ -728,7 +735,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     _smallBox(
                                       title: "Split Date",
                                       value: formatDateWithNulll(
-                                        date: _stockSplitList[index].listingDate
+                                        _stockSplitList[index].listingDate
                                       )
                                     ),
                                   ],

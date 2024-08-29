@@ -149,7 +149,11 @@ class HeatGraph extends StatelessWidget {
               // change the box data with the current data
               // generate the color
               if(prevPrice > 0) {
-                boxColor = riskColor(dataExpand[i].price, prevPrice, userInfo.risk);
+                boxColor = riskColor(
+                  value: dataExpand[i].price,
+                  cost: prevPrice,
+                  riskFactor: userInfo.risk
+                );
               }
               else {
                 boxColor = Colors.white;
@@ -167,7 +171,11 @@ class HeatGraph extends StatelessWidget {
               }
               else {
                 if(currentPrice > 0 && dataExpand[i].price > 0) {
-                  boxColor = riskColor(currentPrice, dataExpand[i].price, userInfo.risk) ;
+                  boxColor = riskColor(
+                    value: currentPrice,
+                    cost: dataExpand[i].price,
+                    riskFactor: userInfo.risk
+                  );
                 }
               }
             }

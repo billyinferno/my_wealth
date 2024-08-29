@@ -229,8 +229,16 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
   }
 
   Widget _periodButton({required double value, required String title}) {
-    Color bgColor = riskColor((1 + value), 1, _userInfo!.risk);
-    Color textColor = riskColorReverse((1 + value), 1);
+    Color bgColor = riskColor(
+      value: (1 + value),
+      cost: 1,
+      riskFactor: _userInfo!.risk
+    );
+
+    Color textColor = riskColorReverse(
+      value: (1 + value),
+      cost: 1
+    );
 
     return GestureDetector(
       onTap: (() {
@@ -306,8 +314,15 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
           break;
       }
 
-      Color bgColor = riskColor((1 + sectorAverage), 1, _userInfo!.risk);
-      Color textColor = riskColorReverse((1 + sectorAverage), 1);
+      Color bgColor = riskColor(
+        value: (1 + sectorAverage),
+        cost: 1,
+        riskFactor: _userInfo!.risk
+      );
+      Color textColor = riskColorReverse(
+        value: (1 + sectorAverage),
+        cost: 1
+      );
       Color borderColor = (sectorAverage >= 0 ? const Color.fromARGB(255, 15, 88, 17) : secondaryDark);
       IconData? icon = (type == 'subsector' ? Globals.subSectorIcon[sectorList[index].sectorName] : Globals.industryIcon[sectorList[index].sectorName]);
       icon ??= Ionicons.help;

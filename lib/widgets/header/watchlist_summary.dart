@@ -72,7 +72,11 @@ class WatchlistSummary extends StatelessWidget {
           ],
         ),
         child: Container(
-          color: riskColor(value, cost, riskFactor),
+          color: riskColor(
+            value: value,
+            cost: cost,
+            riskFactor: riskFactor
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -125,7 +129,11 @@ class WatchlistSummary extends StatelessWidget {
                                         decimal: 2
                                       )}%)",
                                       style: TextStyle(
-                                        color: riskColor(value, cost, riskFactor),
+                                        color: riskColor(
+                                          value: value,
+                                          cost: cost,
+                                          riskFactor: riskFactor
+                                        ),
                                       ),
                                     )
                                   ),

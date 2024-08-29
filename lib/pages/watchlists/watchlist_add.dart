@@ -150,9 +150,9 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                   _companySearchResult![index].companyLastUpdate.toLocal()
                 ),
                 riskColor: riskColor(
-                  _companySearchResult![index].companyNetAssetValue!,
-                  _companySearchResult![index].companyPrevPrice!,
-                  _userInfo!.risk
+                  value: _companySearchResult![index].companyNetAssetValue!,
+                  cost: _companySearchResult![index].companyPrevPrice!,
+                  riskFactor: _userInfo!.risk
                 ),
                 canAdd: _companySearchResult![index].companyCanAdd,
                 fca: (_companySearchResult![index].companyFCA ?? false),

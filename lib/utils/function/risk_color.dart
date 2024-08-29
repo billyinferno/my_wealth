@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
-Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor, Color? negativeColor]) {
+Color riskColor({
+  required double value,
+  required double cost,
+  required int riskFactor,
+  Color positiveColor = Colors.green,
+  Color negativeColor = Colors.red,
+}) {
   // assuming that the colors is green
-  Color result = (positiveColor ?? Colors.green);
+  Color result = positiveColor;
   // calculate the gain
   double gain = value - cost;
 
@@ -16,7 +22,7 @@ Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor
   // check if gain is less than 0, it means that
   if (gain < 0) {
     gain = gain * (-1);
-    result = (negativeColor ?? Colors.red);
+    result = negativeColor;
   }
 
   // now calculate the gain percentage from cost
@@ -35,7 +41,7 @@ Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor
     }
 
     // print("Darken : " + _darken.toString());
-    return darken(result, darkenValue);
+    return darken(result, amount: darkenValue);
   }
   else {
     // lighten the color
@@ -47,46 +53,31 @@ Color riskColor(double value, double cost, int riskFactor, [Color? positiveColor
     }
 
     // print("Lighten : " + _lighten.toString());
-    return lighten(result, lightenValue);
+    return lighten(result, amount: lightenValue);
   }
 }
 
 Color riskColor2({
   required double percentage,
   required double diff,
-  bool? reverse,
-  List<int>? colorNumber,
+  bool reverse = false,
+  List<int> colorNumber = const [700, 800, 900],
 }) {
   double absPercentage = (percentage < 0 ? percentage * (-1) : percentage);
   int value = (((absPercentage * 100).toInt()) % 100) ~/ 10;
-  List<int> colorValue = [];
-
-  // assign default color to color value
-  colorValue.add(700);
-  colorValue.add(800);
-  colorValue.add(900);
-
-  // check if color number being passed is not null
-  if (colorNumber != null) {
-    // ensure the length is 3
-    if (colorNumber.length == 3) {
-      // we can just assign color value to color number
-      colorValue = colorNumber;
-    }
-  }
-
-  if (reverse ?? false) {
+ 
+  if (reverse) {
     value = 1000 - (value * 100);
   }
 
   if (value >= 0 && value <= 300) {
-    value = colorValue[0];
+    value = colorNumber[0];
   }
   else if(value >= 400 && value <= 700) {
-    value = colorValue[1];
+    value = colorNumber[1];
   }
   else {
-    value = colorValue[2];
+    value = colorNumber[2];
   }
   
   if (diff < 0) {
@@ -97,7 +88,7 @@ Color riskColor2({
   }
 }
 
-Color riskColorReverse(double value, double cost) {
+Color riskColorReverse({required double value, required double cost}) {
   // assuming that the colors is green
   Color result = Colors.green;
 

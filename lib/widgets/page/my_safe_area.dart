@@ -6,18 +6,18 @@ class MySafeArea extends StatelessWidget {
   final bool left;
   final bool right;
   final bool bottom;
-  final Widget child;
   final Color? color;
   final double? bottomPadding;
+  final Widget child;
   const MySafeArea({
     super.key,
     this.top = true,
     this.left = true,
     this.right = true,
     this.bottom = true,
-    required this.child,
     this.color,
     this.bottomPadding,
+    required this.child,
   });
 
   @override

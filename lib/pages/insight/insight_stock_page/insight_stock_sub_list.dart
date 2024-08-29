@@ -124,7 +124,11 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                 itemBuilder: ((context, index) {
                   double currentPrice = (_companyFilter[index].companyNetAssetValue ?? 0);
                   double prevPrice = (_companyFilter[index].companyPrevPrice ?? 0);
-                  Color color = riskColor(currentPrice, prevPrice, _userInfo!.risk);
+                  Color color = riskColor(
+                    value: currentPrice,
+                    cost: prevPrice,
+                    riskFactor: _userInfo!.risk
+                  );
                   
                   return InkWell(
                     onTap: (() {

@@ -64,7 +64,12 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     _userInfo = UserSharedPreferences.getUserInfo();
 
     _priceDiff = _index.indexNetAssetValue - _index.indexPrevPrice;
-    _riskColor = riskColor(_index.indexNetAssetValue, _index.indexPrevPrice, _userInfo!.risk);
+    _riskColor = riskColor(
+      value: _index.indexNetAssetValue,
+      cost: _index.indexPrevPrice,
+      riskFactor: _userInfo!.risk
+    );
+
     _bodyPage = 0;
     _numPrice = 0;
 
@@ -813,10 +818,18 @@ class IndexDetailPageState extends State<IndexDetailPage> {
             double? currDayPrice = _indexPriceData[180]![index].indexPriceValue;
             double? prevDayPrice = _indexPriceData[180]![index+1].indexPriceValue;
             dayDiff = (currDayPrice - prevDayPrice);
-            dayDiffColor = riskColor(currDayPrice, prevDayPrice, _userInfo!.risk);
+            dayDiffColor = riskColor(
+              value: currDayPrice,
+              cost: prevDayPrice,
+              riskFactor: _userInfo!.risk
+            );
           }
           return Container(
-            color: riskColor(_index.indexNetAssetValue, _indexPriceData[180]![index].indexPriceValue, _userInfo!.risk),
+            color: riskColor(
+              value: _index.indexNetAssetValue,
+              cost: _indexPriceData[180]![index].indexPriceValue,
+              riskFactor: _userInfo!.risk
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -860,7 +873,11 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                 border: Border(
                                   bottom: BorderSide(
                                     width: 2.0,
-                                    color: riskColor(_index.indexNetAssetValue, _indexPriceData[180]![index].indexPriceValue, _userInfo!.risk),
+                                    color: riskColor(
+                                      value: _index.indexNetAssetValue,
+                                      cost: _indexPriceData[180]![index].indexPriceValue,
+                                      riskFactor: _userInfo!.risk
+                                    ),
                                     style: BorderStyle.solid,
                                   )
                                 )

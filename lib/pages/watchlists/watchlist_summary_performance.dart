@@ -250,7 +250,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           children: <Widget>[
             Container(
               width: double.infinity,
-              color: riskColor(_totalValue, _totalCost, _userInfo.risk),
+              color: riskColor(
+                value: _totalValue,
+                cost: _totalCost,
+                riskFactor: _userInfo.risk
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,

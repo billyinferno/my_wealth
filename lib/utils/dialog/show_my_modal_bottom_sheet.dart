@@ -5,18 +5,18 @@ import 'package:my_wealth/_index.g.dart';
 
 class ShowMyModalBottomSheet {
   final BuildContext context;
-  final String? title;
-  final Color? bgColor;
-  final double? maxHeight;
+  final String title;
+  final Color bgColor;
+  final double maxHeight;
   final Map<String, String> filterList;
   final String filterMode;
   final Function(String) onFilterSelect;
 
   ShowMyModalBottomSheet({
     required this.context,
-    this.title,
-    this.bgColor,
-    this.maxHeight,
+    this.title = "Select Filter",
+    this.bgColor = Colors.black,
+    this.maxHeight = 400,
     required this.filterList,
     required this.filterMode,
     required this.onFilterSelect}
@@ -29,11 +29,11 @@ class ShowMyModalBottomSheet {
       isDismissible: true,
       builder: (context) {
         return Container(
-          height: (min((filterList.length * 40) + 50, (maxHeight ?? 400))),
+          height: (min((filterList.length * 40) + 50, maxHeight)),
           margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           decoration: BoxDecoration(
-            color: (bgColor ?? Colors.black),
+            color: bgColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -41,7 +41,7 @@ class ShowMyModalBottomSheet {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Center(
-                child: Text((title ?? "Select Filter")),
+                child: Text(title),
               ),
               Expanded(
                 child: MySafeArea(

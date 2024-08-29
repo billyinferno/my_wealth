@@ -78,7 +78,11 @@ class _PortofolioPageState extends State<PortofolioPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _summaryBox(
-              barColor: riskColor(_watchlistAll!.totalValue, _watchlistAll!.totalCost, _userInfo!.risk),
+              barColor: riskColor(
+                value: _watchlistAll!.totalValue,
+                cost: _watchlistAll!.totalCost,
+                riskFactor: _userInfo!.risk
+              ),
               backgroundColor: primaryDark,
               value: _watchlistAll!.totalValue,
               cost: _watchlistAll!.totalCost,

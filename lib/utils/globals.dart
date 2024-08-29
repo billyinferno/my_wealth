@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:my_wealth/themes/colors.dart';
 
 class Globals {
   static String apiURL = (dotenv.env['API_URL'] ?? 'http://192.168.1.176:1337/');
@@ -51,14 +52,14 @@ class Globals {
   static DateFormat dfyyyyMMdd = DateFormat('yyyy-MM-dd');
   static DateFormat dfyyyyMM = DateFormat('yyyy/MM');
 
-  static String runAs() {
+  static (String, Color) runAs() {
     if (kIsWasm) {
-      return " run as WASM";
+      return ("WASM", Colors.green);
     }
-    if (kIsWeb) {
-      return " run as JS";
+    else if (kIsWeb) {
+      return ("JS (Web)", Colors.amber);
     }
-    return "";
+    return ("Native", secondaryColor);
   }
 
   static List<Color> colorList = [

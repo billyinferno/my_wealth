@@ -14,12 +14,16 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final UserAPI _userApi = UserAPI();
   late UserLoginInfoModel? _userInfo;
+  late String _type;
   bool _isVisible = false;
   bool _showLots = false;
   bool _showEmptyWatchlist = true;
   
   @override
   void initState() {
+    var (type, _) = Globals.runAs();
+    _type = type;
+
     super.initState();
   }
 
@@ -366,7 +370,60 @@ class _UserPageState extends State<UserPage> {
                                       ],
                                     ),
                                     Text(
-                                      '${Globals.appVersion}${Globals.runAs()}',
+                                      Globals.appVersion,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: primaryLight,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        ),
+                        Container(
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                            )
+                          ),
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    const Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Ionicons.rocket,
+                                          color: secondaryColor,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Run As",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      _type,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: primaryLight,

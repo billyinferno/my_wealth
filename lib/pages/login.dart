@@ -40,7 +40,8 @@ class LoginPageState extends State<LoginPage> {
     super.initState();
 
     // get the type of the application run, whether this is run as web or WASM
-    _type = Globals.runAs();
+    var (type, _) = Globals.runAs();
+    _type = type;
 
     // check if user already login
     _isLogin = false;
@@ -78,6 +79,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget _splashScreen() {
+    var (type, color) = Globals.runAs();
+
     return Center(
       child: Container(
         color: primaryColor,
@@ -88,9 +91,7 @@ class LoginPageState extends State<LoginPage> {
             const SpinKitCubeGrid(
               color: secondaryColor,
             ),
-            const SizedBox(
-              height: 25,
-            ),
+            const SizedBox(height: 25,),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -113,13 +114,49 @@ class LoginPageState extends State<LoginPage> {
                 ).animate().fade(duration: const Duration(milliseconds: 1000)).slideY(),
               ],
             ),
-            Text(
-              'version - ${Globals.appVersion}$_type',
-              style: const TextStyle(
-                color: textPrimary,
-                fontSize: 10,
-                fontStyle: FontStyle.italic,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Version ${Globals.appVersion}',
+                  style: const TextStyle(
+                    color: textPrimary,
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                const Text(
+                  ' (',
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                Icon(
+                  Ionicons.rocket_outline,
+                  size: 10,
+                  color: color,
+                ),
+                const SizedBox(width: 2,),
+                Text(
+                  type,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                const Text(
+                  ')',
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

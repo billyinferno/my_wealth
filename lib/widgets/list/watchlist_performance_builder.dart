@@ -101,7 +101,6 @@ class WatchlistBuilder extends StatelessWidget {
                 child: Text(
                   formatCurrency(
                     data[index].buyAvg,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true,
                     decimalNum: 0,
@@ -118,7 +117,6 @@ class WatchlistBuilder extends StatelessWidget {
                 child: Text(
                   formatCurrency(
                     data[index].currentPrice,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true,
                     decimalNum: 0,
@@ -136,7 +134,6 @@ class WatchlistBuilder extends StatelessWidget {
                 child: Text(
                   formatCurrency(
                     pl,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true,
                     decimalNum: 0,
@@ -156,7 +153,6 @@ class WatchlistBuilder extends StatelessWidget {
                 child: Text(
                   formatCurrencyWithNull(
                     plDiff,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true,
                     decimalNum: 0,

@@ -610,7 +610,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
         );
         buyAverage = formatCurrencyWithNull(
           _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryAverage,
-          checkThousand: false,
           showDecimal: false
         );
       }
@@ -629,7 +628,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
         );
         sellAverage = formatCurrencyWithNull(
           _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryAverage,
-          checkThousand: false,
           showDecimal: false
         );
       }
@@ -824,7 +822,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: Text(
                   formatIntWithNull(
                     _brokerTopData!.brokerData[i].brokerSummaryLot,
-                    checkThousand: false,
                     showDecimal: false
                   ),
                   style: _topBrokerRow,
@@ -836,7 +833,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: Text(
                   formatCurrency(
                     _brokerTopData!.brokerData[i].brokerSummaryAverage,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true
                   ),
@@ -859,7 +855,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: Text(
                   formatCurrency(
                     currentValue,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true,
                   ),
@@ -872,7 +867,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: Text(
                   formatCurrency(
                     currentDiff,
-                    checkThousand: false,
                     showDecimal: false,
                     shorten: true,
                   ),

@@ -313,7 +313,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                               child: _largeText(
                                 text: formatCurrency(
                                   value,
-                                  checkThousand: false,
                                   showDecimal:  true,
                                   shorten: false,
                                 ),
@@ -337,7 +336,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     Text(
                                       formatCurrency(
                                         gain,
-                                        checkThousand: false,
                                         showDecimal: true,
                                         shorten: false,
                                       ),
@@ -378,7 +376,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                               child: Text(
                                 formatCurrency(
                                   cost,
-                                  checkThousand: false,
                                   showDecimal: true,
                                   shorten: false,
                                 ),
@@ -404,7 +401,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     Text(
                                       formatCurrency(
                                         realised,
-                                        checkThousand: false,
                                         showDecimal: true,
                                         shorten: false,
                                       ),

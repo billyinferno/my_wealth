@@ -470,7 +470,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       title: "Offering Price",
                                       value: formatCurrencyWithNull(
                                         (_stockNewListedList[index].offering ?? 0).toDouble(),
-                                        checkThousand: false,
                                         showDecimal: false,
                                         shorten: false,
                                         decimalNum: 0
@@ -503,7 +502,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       title: "Current Price",
                                       value: formatCurrencyWithNull(
                                         (_stockNewListedList[index].currentPrice ?? 0).toDouble(),
-                                        checkThousand: false,
                                         showDecimal: false,
                                         shorten: false,
                                         decimalNum: 0
@@ -513,7 +511,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       title: "Diff Price",
                                       value: formatIntWithNull(
                                         (_stockNewListedList[index].currentPrice! > 0 ? _stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering! : null),
-                                        checkThousand: false,
                                         showDecimal: false,
                                         decimalNum: 0
                                       )

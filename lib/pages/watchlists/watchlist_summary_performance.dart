@@ -438,7 +438,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                     child: Text(
                       formatCurrency(
                         _gainDifference,
-                        checkThousand: false,
                         showDecimal: true,
                         shorten: false,
                         decimalNum: 2
@@ -545,7 +544,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                           child: Text(
                             formatCurrency(
                               _perfDataSort[index].pl,
-                              checkThousand: false,
                               showDecimal: false,
                               shorten: false,
                               decimalNum: 0
@@ -565,7 +563,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                           child: Text(
                             formatCurrencyWithNull(
                               _perfDataSort[index].diff,
-                              checkThousand: false,
                               showDecimal: false,
                               shorten: false,
                               decimalNum: 0
@@ -657,7 +654,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           Text(
             formatCurrency(
               value,
-              checkThousand: false,
               showDecimal: true,
               shorten: true,
               decimalNum: 2

@@ -353,7 +353,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                                   Text(
                                     formatIntWithNull(
                                       _listAccumulation[index].lastPrice,
-                                      checkThousand: false,
                                       showDecimal: false
                                     ),
                                   ),
@@ -383,7 +382,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                               titleColor: Colors.green,
                               value: formatIntWithNull(
                                 _listAccumulation[index].buyLot,
-                                checkThousand: false,
                                 showDecimal: false,
                                 decimalNum: 0,
                                 shorten: false
@@ -395,7 +393,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                               titleColor: secondaryColor,
                               value: formatIntWithNull(
                                 _listAccumulation[index].sellLot,
-                                checkThousand: false,
                                 showDecimal: false,
                                 decimalNum: 0,
                                 shorten: false,
@@ -406,7 +403,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                               title: 'Diff',
                               value: formatIntWithNull(
                                 _listAccumulation[index].diff,
-                                checkThousand: false,
                                 showDecimal: false,
                                 decimalNum: 0,
                                 shorten: false,

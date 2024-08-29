@@ -202,14 +202,12 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                                           '${
                                             formatCurrency(
                                               currentPrice,
-                                              checkThousand: false,
                                               showDecimal: false,
                                               shorten: false
                                             )
                                           } (${
                                             formatCurrency(
                                               (currentPrice-prevPrice),
-                                              checkThousand: false,
                                               showDecimal: false,
                                               shorten: false
                                             )

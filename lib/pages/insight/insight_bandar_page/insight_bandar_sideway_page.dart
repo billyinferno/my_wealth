@@ -343,7 +343,6 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                               titleColor: Colors.grey,
                               value: formatCurrency(
                                 _sortedList[index].lastPrice.toDouble(),
-                                checkThousand: false,
                                 showDecimal: false,
                                 shorten: false
                               ),
@@ -358,7 +357,6 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                               titleColor: Colors.grey,
                               value: formatCurrency(
                                 _sortedList[index].prevClosingPrice.toDouble(),
-                                checkThousand: false,
                                 showDecimal: false,
                                 shorten: false
                               ),

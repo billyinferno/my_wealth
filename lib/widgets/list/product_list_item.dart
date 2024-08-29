@@ -118,7 +118,6 @@ class ProductListItem extends StatelessWidget {
                               child: Text(
                                 formatCurrencyWithNull(
                                   value,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   shorten: false
                                 ),
@@ -195,7 +194,6 @@ class ProductListItem extends StatelessWidget {
                                     Text(
                                       formatCurrency(
                                         unrealisedGain,
-                                        checkThousand: false,
                                         showDecimal: false,
                                         shorten: false
                                       ),
@@ -234,7 +232,6 @@ class ProductListItem extends StatelessWidget {
                                 Text(
                                   formatCurrencyWithNull(
                                     (realised ?? 0),
-                                    checkThousand: false,
                                     showDecimal: false,
                                     shorten: false
                                   ),
@@ -260,7 +257,6 @@ class ProductListItem extends StatelessWidget {
                                 Text(
                                   formatCurrency(
                                     (dayGain ?? 0),
-                                    checkThousand: false,
                                     showDecimal: false,
                                     shorten: false
                                   ),
@@ -327,7 +323,6 @@ class ProductListItem extends StatelessWidget {
           Text(
             formatCurrencyWithNull(
               netAssetValue,
-              checkThousand: false,
               showDecimal: true,
               shorten: false,
               decimalNum: 2,

@@ -181,7 +181,6 @@ class _BrokerPageState extends State<BrokerPage> {
                                   text: "Frequency",
                                   value: formatIntWithNull(
                                     _filterBrokerList[index].brokerFrequency,
-                                    checkThousand: false,
                                     showDecimal: false
                                   )
                                 ),

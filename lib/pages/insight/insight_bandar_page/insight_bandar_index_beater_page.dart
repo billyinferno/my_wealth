@@ -173,7 +173,6 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                             Text(
                               formatIntWithNull(
                                 _sortedBeaterList[index].lastPrice,
-                                checkThousand: false,
                                 showDecimal: false
                               ),
                               style: const TextStyle(
@@ -181,7 +180,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                             ),
                             const SizedBox(width: 2,),
                             Text(
-                              "(${(priceDiff > 0 ? "+" : (priceDiff == 0 ? "" : "-"))}${formatIntWithNull(priceDiff, checkThousand: false, showDecimal: false)})",
+                              "(${(priceDiff > 0 ? "+" : (priceDiff == 0 ? "" : "-"))}${formatIntWithNull(priceDiff, showDecimal: false)})",
                               style: TextStyle(
                                 fontSize: 10,
                                 color: (priceDiff < 0 ? secondaryColor : (priceDiff > 0 ? Colors.green : textPrimary)),

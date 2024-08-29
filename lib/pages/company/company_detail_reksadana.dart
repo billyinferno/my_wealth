@@ -1628,14 +1628,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           )}%",
           interest: formatCurrency(
             calcAmount,
-            checkThousand: false,
             showDecimal: false,
             shorten: false,
             decimalNum: 0,
           ),
           value: formatCurrency(
             (calcAmount + amount),
-            checkThousand: false,
             showDecimal: false,
             shorten: false,
             decimalNum: 0,
@@ -1659,14 +1657,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         )}%",
         interest: formatCurrency(
           totalInterest,
-          checkThousand: false,
           showDecimal: false,
           shorten: false,
           decimalNum: 0,
         ),
         value: formatCurrency(
           totalAmount,
-          checkThousand: false,
           showDecimal: false,
           shorten: false,
           decimalNum: 0,

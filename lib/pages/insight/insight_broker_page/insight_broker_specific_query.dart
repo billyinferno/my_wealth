@@ -580,7 +580,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     Text(
                       formatCurrency(
                         shareValue,
-                        checkThousand: false,
                         showDecimal: false,
                         shorten: false,
                         decimalNum: 0
@@ -611,7 +610,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                       "${
                         formatCurrency(
                           shareAvg,
-                          checkThousand: false,
                           showDecimal: false,
                           shorten: false,
                           decimalNum: 0
@@ -647,7 +645,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     Text(
                       formatCurrency(
                         sharePL,
-                        checkThousand: false,
                         showDecimal: false,
                         shorten: false,
                         decimalNum: 0
@@ -841,7 +838,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         date: Globals.dfddMM.format(key.toLocal()),
         buyLot: formatIntWithNull(
           value.brokerSummaryBuyLot,
-          checkThousand: false,
           showDecimal: false
         ),
         buyValue: formatCurrencyWithNull(
@@ -851,12 +847,10 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         ),
         buyAverage: formatCurrencyWithNull(
           value.brokerSummaryBuyAverage,
-          checkThousand: false,
           showDecimal: false
         ),
         sellLot: formatIntWithNull(
           value.brokerSummarySellLot,
-          checkThousand: false,
           showDecimal: false
         ),
         sellValue: formatCurrencyWithNull(
@@ -866,7 +860,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         ),
         sellAverage: formatCurrencyWithNull(
           value.brokerSummarySellAverage,
-          checkThousand: false,
           showDecimal: false
         )
       ));
@@ -931,7 +924,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         date: "Total",
         buyLot: formatIntWithNull(
           totalBuyLot,
-          checkThousand: false,
           showDecimal: false
         ),
         buyValue: formatCurrencyWithNull(
@@ -941,12 +933,10 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         ),
         buyAverage: formatCurrencyWithNull(
           totalBuyAverage,
-          checkThousand: false,
           showDecimal: false
         ),
         sellLot: formatIntWithNull(
           totalSellLot,
-          checkThousand: false,
           showDecimal: false
         ),
         sellValue: formatCurrencyWithNull(
@@ -956,7 +946,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         ),
         sellAverage: formatCurrencyWithNull(
           totalSellAverage,
-          checkThousand: false,
           showDecimal: false
         ),
         isBold: false,

@@ -266,7 +266,6 @@ class StockCandleStickPainter extends CustomPainter {
         width: 60,
         text: formatCurrency(
           currentPrice,
-          checkThousand: false,
           showDecimal: false,
           shorten: true,
         ),

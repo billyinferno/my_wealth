@@ -192,7 +192,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                             Text(
                               formatIntWithNull(
                                 _transactionList.brokerSummaryFrequency,
-                                checkThousand: false,
                                 showDecimal: false
                               )
                             ),
@@ -415,12 +414,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                             _transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 1000000 ?
                                             formatIntWithNull(
                                               _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
-                                              checkThousand: false,
                                               showDecimal: true
                                             ) :
                                             formatIntWithNull(
                                               _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
-                                              checkThousand: false,
                                               showDecimal: false
                                             )
                                           ),
@@ -449,7 +446,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         Text(
                                           formatCurrencyWithNull(
                                             _transactionList.brokerSummaryCodeList[index].brokerSummaryValue,
-                                            checkThousand: false,
                                             showDecimal: true,
                                           ),
                                           style: const TextStyle(
@@ -477,7 +473,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         Text(
                                           formatIntWithNull(
                                             _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice,
-                                            checkThousand: false,
                                             showDecimal: false
                                           ),
                                           style: const TextStyle(
@@ -489,7 +484,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         Text(
                                           '(${formatIntWithNull(
                                             currLeftPrice,
-                                            checkThousand: false,
                                             showDecimal: false,
                                           )})',
                                           style: TextStyle(
@@ -712,7 +706,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         Globals.dfddMM.format(key.toLocal()),
         formatIntWithNull(
           value.brokerSummaryBuyLot,
-          checkThousand: false,
           showDecimal: false,
         ),
         formatCurrencyWithNull(
@@ -722,12 +715,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         ),
         formatCurrencyWithNull(
           value.brokerSummaryBuyAverage,
-          checkThousand: false,
           showDecimal: false
         ),
         formatIntWithNull(
           value.brokerSummarySellLot,
-          checkThousand: false,
           showDecimal: false
         ),
         formatCurrencyWithNull(
@@ -737,7 +728,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         ),
         formatCurrencyWithNull(
           value.brokerSummarySellAverage,
-          checkThousand: false,
           showDecimal: false,
         )
       ));
@@ -783,7 +773,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         "Total",
         formatIntWithNull(
           totalBuyLot,
-          checkThousand: false,
           showDecimal: false,
         ),
         formatCurrencyWithNull(
@@ -793,12 +782,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         ),
         formatCurrencyWithNull(
           totalBuyAverage,
-          checkThousand: false,
           showDecimal: false,
         ),
         formatIntWithNull(
           totalSellLot,
-          checkThousand: false,
           showDecimal: false,
         ),
         formatCurrencyWithNull(
@@ -808,7 +795,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         ),
         formatCurrencyWithNull(
           totalSellAverage,
-          checkThousand: false,
           showDecimal: false,
         ),
         false,

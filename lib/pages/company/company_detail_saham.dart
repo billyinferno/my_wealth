@@ -2320,7 +2320,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         splitFactor: formatDecimal(split.splitFactor, decimal: 2),
         listedShares: formatCurrency(
           split.listedShares,
-          checkThousand: false,
           showDecimal: true,
           shorten: false,
           decimalNum: 2,
@@ -2345,7 +2344,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         _text(
           text: formatIntWithNull(
             fundamental.lastPrice,
-            checkThousand: false,
             showDecimal: false
           ),
           bgColor: primaryDark,
@@ -2357,7 +2355,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         _text(
           text: formatIntWithNull(
             fundamental.marketCap,
-            checkThousand: false,
             showDecimal: true
           ),
           bgColor: primaryDark,
@@ -2744,7 +2741,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                       ),
                                       average: formatCurrencyWithNull(
                                         _brokerSummaryBuySell.brokerSummaryBuy[index].brokerSummaryAverage,
-                                        checkThousand: false,
                                         showDecimal: false
                                       ),
                                     );
@@ -2817,7 +2813,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                       ),
                                       average: formatCurrencyWithNull(
                                         _brokerSummaryBuySell.brokerSummarySell[index].brokerSummaryAverage,
-                                        checkThousand: false,
                                         showDecimal: false
                                       ),
                                     );
@@ -2847,7 +2842,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                   ),
                                   average: formatCurrencyWithNull(
                                     _totalSellAverage,
-                                    checkThousand: false,
                                     showDecimal: false
                                   ),
                                   isBold: true,
@@ -3080,7 +3074,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 child: Text(
                                   formatIntWithNull(
                                     _topBroker.brokerData[index].brokerSummaryLot,
-                                    checkThousand: false,
                                     showDecimal: false
                                   ),
                                   style: _topBrokerRow,
@@ -3093,7 +3086,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 child: Text(
                                   formatCurrency(
                                     _topBroker.brokerData[index].brokerSummaryAverage,
-                                    checkThousand: false,
                                     showDecimal: false,
                                     shorten: true,
                                   ),
@@ -3118,7 +3110,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 child: Text(
                                   formatCurrency(
                                     currentValue,
-                                    checkThousand: false,
                                     showDecimal: false,
                                     shorten: true,
                                   ),
@@ -3132,7 +3123,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 child: Text(
                                   formatCurrency(
                                     currentDiff,
-                                    checkThousand: false,
                                     showDecimal: false,
                                     shorten: true,
                                   ),
@@ -3472,7 +3462,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                             Text(
                                               formatCurrency(
                                                 _infoSahamPriceSort[index].lastPrice,
-                                                checkThousand: false,
                                                 showDecimal: false
                                               ),
                                               textAlign: TextAlign.right,
@@ -3483,7 +3472,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                             Text(
                                               formatCurrency(
                                                 _infoSahamPriceSort[index].adjustedLowPrice,
-                                                checkThousand: false,
                                                 showDecimal: false
                                               ),
                                               textAlign: TextAlign.right,
@@ -3494,7 +3482,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                             Text(
                                               formatCurrency(
                                                 _infoSahamPriceSort[index].adjustedHighPrice,
-                                                checkThousand: false,
                                                 showDecimal: false
                                               ),
                                               textAlign: TextAlign.right,
@@ -3530,7 +3517,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                               child: Text(
                                                 formatCurrency(
                                                   _companyDetail.companyNetAssetValue! - _infoSahamPriceSort[index].lastPrice,
-                                                  checkThousand: false,
                                                   showDecimal: false
                                                 ),
                                                 textAlign: TextAlign.right,
@@ -3542,7 +3528,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                             Text(
                                               formatCurrency(
                                                 _infoSahamPriceSort[index].lowDiff,
-                                                checkThousand: false,
                                                 showDecimal: false
                                               ),
                                               textAlign: TextAlign.right,
@@ -3554,7 +3539,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                             Text(
                                               formatCurrency(
                                                 _infoSahamPriceSort[index].highDiff,
-                                                checkThousand: false,
                                                 showDecimal: false
                                               ),
                                               textAlign: TextAlign.right,
@@ -3587,7 +3571,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                               child: Text(
                                                 formatCurrencyWithNull(
                                                   _infoSahamPriceSort[index].dayDiff,
-                                                  checkThousand: false,
                                                   showDecimal: false
                                                 ),
                                                 textAlign: TextAlign.right,
@@ -4170,7 +4153,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.lastPrice,
-          checkThousand: false,
           showDecimal: false
         )
       ),
@@ -4244,7 +4226,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.cash,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4255,7 +4236,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.totalAsset,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4268,7 +4248,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.stBorrowing,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4281,7 +4260,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.ltBorrowing,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4294,7 +4272,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.totalEquity,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4312,7 +4289,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.revenue,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4325,7 +4301,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.grossProfit,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4338,7 +4313,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.operatingProfit,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4351,7 +4325,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.netProfit,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4364,7 +4337,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.ebitda,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),
@@ -4377,7 +4349,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         borderColor: borderColor,
         text: formatIntWithNull(
           fundamental.interestExpense,
-          checkThousand: false,
           showDecimal: true
         ),
         showCompare: (_otherCompanyCode != null),

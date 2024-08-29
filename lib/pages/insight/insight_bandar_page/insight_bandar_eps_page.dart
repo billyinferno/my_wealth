@@ -361,7 +361,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "BUY LOT",
                               value: formatIntWithNull(
                                 _epsList[index].buyLot,
-                                checkThousand: false,
                                 showDecimal: true,
                               )
                             ),
@@ -370,7 +369,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "SELL LOT",
                               value: formatIntWithNull(
                                 _epsList[index].sellLot,
-                                checkThousand: false,
                                 showDecimal: true,
                               )
                             ),
@@ -379,7 +377,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "DIFF LOT",
                               value: formatIntWithNull(
                                 _epsList[index].diffLot,
-                                checkThousand: false,
                                 showDecimal: true,
                               )
                             ),
@@ -413,12 +410,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "Market Cap",
                               value1: formatIntWithNull(
                                 _epsList[index].currentMarketCap,
-                                checkThousand: false,
                                 showDecimal: true,
                               ),
                               value2: formatIntWithNull(
                                 _epsList[index].prevMarketCap,
-                                checkThousand: false,
                                 showDecimal: true,
                               )
                             ),
@@ -426,12 +421,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "Revenue",
                               value1: formatIntWithNull(
                                 _epsList[index].currentRevenue,
-                                checkThousand: false,
                                 showDecimal: true,
                               ),
                               value2: formatIntWithNull(
                                 _epsList[index].prevRevenue,
-                                checkThousand: false,
                                 showDecimal: true,
                               )
                             ),
@@ -439,12 +432,10 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "Net Profit",
                               value1: formatIntWithNull(
                                 _epsList[index].currentNetProfit,
-                                checkThousand: false,
                                 showDecimal: true,
                               ),
                               value2: formatIntWithNull(
                                 _epsList[index].prevNetProfit,
-                                checkThousand: false,
                                 showDecimal: true,
                               )
                             ),

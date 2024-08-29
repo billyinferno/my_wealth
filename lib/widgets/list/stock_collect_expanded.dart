@@ -106,14 +106,12 @@ class StockCollectExpanded extends StatelessWidget {
                 headerWeight: FontWeight.bold,
                 value: formatIntWithNull(
                   data.summaryTotalBuy,
-                  checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,
                   shorten: false
                 ),
                 subText: "${formatIntWithNull(
                   data.summaryCountBuy,
-                  checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,
                   shorten: false
@@ -126,14 +124,12 @@ class StockCollectExpanded extends StatelessWidget {
                 headerWeight: FontWeight.bold,
                 value: formatIntWithNull(
                   data.summaryTotalSell,
-                  checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,
                   shorten: false
                 ),
                 subText: "${formatIntWithNull(
                   data.summaryCountSell,
-                  checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,
                   shorten: false
@@ -146,7 +142,6 @@ class StockCollectExpanded extends StatelessWidget {
                 headerWeight: FontWeight.bold,
                 value: formatIntWithNull(
                   data.summaryTotalLeft,
-                  checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,
                   shorten: false
@@ -266,7 +261,6 @@ class StockCollectExpanded extends StatelessWidget {
           _itemSubItem(value: [
             formatIntWithNull(
               item.totalBuy,
-              checkThousand: false,
               showDecimal: false,
               decimalNum: 0,
               shorten: false
@@ -274,7 +268,6 @@ class StockCollectExpanded extends StatelessWidget {
             "${
               formatIntWithNull(
                 item.countBuy,
-                checkThousand: false,
                 showDecimal: false,
                 decimalNum: 0,
                 shorten: false
@@ -285,7 +278,6 @@ class StockCollectExpanded extends StatelessWidget {
           _itemSubItem(value: [
             formatIntWithNull(
               item.totalSell,
-              checkThousand: false,
               showDecimal: false,
               decimalNum: 0,
               shorten: false
@@ -293,7 +285,6 @@ class StockCollectExpanded extends StatelessWidget {
             "${
               formatIntWithNull(
                 item.countSell,
-                checkThousand: false,
                 showDecimal: false,
                 decimalNum: 0,
                 shorten: false
@@ -304,7 +295,6 @@ class StockCollectExpanded extends StatelessWidget {
           _itemSubItem(value: [
             formatIntWithNull(
               item.totalLeft,
-              checkThousand: false,
               showDecimal: false,
               decimalNum: 0,
               shorten: false

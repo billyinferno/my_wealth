@@ -216,7 +216,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                   Text(
                                     formatCurrencyWithNull(
                                       _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                                      checkThousand: false,
                                       showDecimal: true,
                                       shorten: false,
                                       decimalNum: 2
@@ -245,7 +244,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                     child: Text(
                                       formatCurrencyWithNull(
                                         _watchlistComputation.priceDiff,
-                                        checkThousand: false,
                                         showDecimal: true,
                                         shorten: false,
                                         decimalNum: 2
@@ -411,7 +409,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                   child: Text(
                     formatCurrency(
                       _gainDifference,
-                      checkThousand: false,
                       showDecimal: true,
                       shorten: false,
                       decimalNum: 2

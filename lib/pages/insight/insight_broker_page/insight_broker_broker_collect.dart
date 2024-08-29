@@ -407,7 +407,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         formatIntWithNull(
                           _brokerCollect!.summaryTotalBuy,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 0,
                           shorten: false,
@@ -428,7 +427,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         formatIntWithNull(
                           _brokerCollect!.summaryTotalBuyValue,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 2,
                           shorten: true
@@ -449,7 +447,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         "${formatIntWithNull(
                           _brokerCollect!.summaryCountBuy,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 0,
                           shorten: false
@@ -503,7 +500,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         formatIntWithNull(
                           _brokerCollect!.summaryTotalSell,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 0,
                           shorten: false
@@ -524,7 +520,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         formatIntWithNull(
                           _brokerCollect!.summaryTotalSellValue,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 2,
                           shorten: true
@@ -545,7 +540,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         "${formatIntWithNull(
                           _brokerCollect!.summaryCountSell,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 0,
                           shorten: false
@@ -585,7 +579,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         formatIntWithNull(
                           _brokerCollect!.summaryTotalLeft,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 0,
                           shorten: false
@@ -606,7 +599,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       Text(
                         formatIntWithNull(
                           _brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue,
-                          checkThousand: false,
                           showDecimal: false,
                           decimalNum: 2,
                           shorten: true
@@ -727,7 +719,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                           child: Text(
                             formatIntWithNull(
                               _brokerCollect!.data[index].lastPrice,
-                              checkThousand: false,
                               showDecimal: false,
                               decimalNum: 0,
                               shorten: false
@@ -771,7 +762,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatIntWithNull(
                                   _brokerCollect!.data[index].totalBuy,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   decimalNum: 0,
                                   shorten: false
@@ -882,7 +872,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatIntWithNull(
                                   _brokerCollect!.data[index].totalSell,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   decimalNum: 0,
                                   shorten: false
@@ -902,7 +891,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatIntWithNull(
                                   _brokerCollect!.data[index].totalSellValue,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   decimalNum: 0,
                                   shorten: false
@@ -940,7 +928,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 "${formatIntWithNull(
                                   _brokerCollect!.data[index].countSell,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   decimalNum: 0,
                                   shorten: false
@@ -979,7 +966,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatIntWithNull(
                                   _brokerCollect!.data[index].totalLeft,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   decimalNum: 0,
                                   shorten: false
@@ -999,7 +985,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               Text(
                                 formatIntWithNull(
                                   _brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue,
-                                  checkThousand: false,
                                   showDecimal: false,
                                   decimalNum: 0,
                                   shorten: false

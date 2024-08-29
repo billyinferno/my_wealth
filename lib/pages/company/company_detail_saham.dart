@@ -2320,7 +2320,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         splitFactor: formatDecimal(split.splitFactor, decimal: 2),
         listedShares: formatCurrency(
           split.listedShares,
-          showDecimal: true,
           shorten: false,
           decimalNum: 2,
         ),
@@ -2355,7 +2354,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         _text(
           text: formatIntWithNull(
             fundamental.marketCap,
-            showDecimal: true
           ),
           bgColor: primaryDark,
         ),
@@ -4224,20 +4222,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.cash,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.cash,),
         showCompare: (_otherCompanyCode != null),
         isBigger: ((fundamental.cash ?? 0) - (otherFundamental.cash ?? 0)).toDouble()
       ),
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.totalAsset,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.totalAsset,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (fundamental.totalAsset ?? 0) - (otherFundamental.totalAsset ?? 0)
@@ -4246,10 +4238,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.stBorrowing,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.stBorrowing,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (otherFundamental.stBorrowing ?? 0) - (fundamental.stBorrowing ?? 0)
@@ -4258,10 +4247,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.ltBorrowing,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.ltBorrowing,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (otherFundamental.ltBorrowing ?? 0) -(fundamental.ltBorrowing ?? 0)
@@ -4270,10 +4256,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.totalEquity,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.totalEquity,),
         showCompare: (_otherCompanyCode != null),
         isBigger: ((
           fundamental.totalEquity ?? 0) - (otherFundamental.totalEquity ?? 0)
@@ -4287,10 +4270,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.revenue,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.revenue,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (fundamental.revenue ?? 0) - (otherFundamental.revenue ?? 0)
@@ -4299,10 +4279,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.grossProfit,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.grossProfit,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (fundamental.grossProfit ?? 0) - (otherFundamental.grossProfit ?? 0)
@@ -4311,10 +4288,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.operatingProfit,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.operatingProfit,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (fundamental.operatingProfit ?? 0) - (otherFundamental.operatingProfit ?? 0)
@@ -4323,10 +4297,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.netProfit,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.netProfit,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (fundamental.netProfit ?? 0) - (otherFundamental.netProfit ?? 0)
@@ -4335,10 +4306,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.ebitda,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.ebitda,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (fundamental.ebitda ?? 0) - (otherFundamental.ebitda ?? 0)
@@ -4347,10 +4315,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       CompareFields(
         color: primaryDark,
         borderColor: borderColor,
-        text: formatIntWithNull(
-          fundamental.interestExpense,
-          showDecimal: true
-        ),
+        text: formatIntWithNull(fundamental.interestExpense,),
         showCompare: (_otherCompanyCode != null),
         isBigger: (
           (otherFundamental.interestExpense ?? 0) - (fundamental.interestExpense ?? 0)

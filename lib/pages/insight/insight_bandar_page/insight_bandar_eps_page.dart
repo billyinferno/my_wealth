@@ -361,7 +361,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "BUY LOT",
                               value: formatIntWithNull(
                                 _epsList[index].buyLot,
-                                showDecimal: true,
                               )
                             ),
                             const SizedBox(width: 5,),
@@ -369,7 +368,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "SELL LOT",
                               value: formatIntWithNull(
                                 _epsList[index].sellLot,
-                                showDecimal: true,
                               )
                             ),
                             const SizedBox(width: 5,),
@@ -377,7 +375,6 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "DIFF LOT",
                               value: formatIntWithNull(
                                 _epsList[index].diffLot,
-                                showDecimal: true,
                               )
                             ),
                           ],
@@ -410,33 +407,27 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                               title: "Market Cap",
                               value1: formatIntWithNull(
                                 _epsList[index].currentMarketCap,
-                                showDecimal: true,
                               ),
                               value2: formatIntWithNull(
                                 _epsList[index].prevMarketCap,
-                                showDecimal: true,
                               )
                             ),
                             _tableRowText(
                               title: "Revenue",
                               value1: formatIntWithNull(
                                 _epsList[index].currentRevenue,
-                                showDecimal: true,
                               ),
                               value2: formatIntWithNull(
                                 _epsList[index].prevRevenue,
-                                showDecimal: true,
                               )
                             ),
                             _tableRowText(
                               title: "Net Profit",
                               value1: formatIntWithNull(
                                 _epsList[index].currentNetProfit,
-                                showDecimal: true,
                               ),
                               value2: formatIntWithNull(
                                 _epsList[index].prevNetProfit,
-                                showDecimal: true,
                               )
                             ),
                             _tableRowText(

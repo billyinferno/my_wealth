@@ -843,7 +843,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         buyValue: formatCurrencyWithNull(
           value.brokerSummaryBuyValue,
           checkThousand: true,
-          showDecimal: true
         ),
         buyAverage: formatCurrencyWithNull(
           value.brokerSummaryBuyAverage,
@@ -856,7 +855,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         sellValue: formatCurrencyWithNull(
           value.brokerSummarySellValue,
           checkThousand: true,
-          showDecimal: true
         ),
         sellAverage: formatCurrencyWithNull(
           value.brokerSummarySellAverage,
@@ -929,7 +927,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         buyValue: formatCurrencyWithNull(
           totalBuyValue,
           checkThousand: true,
-          showDecimal: true
         ),
         buyAverage: formatCurrencyWithNull(
           totalBuyAverage,
@@ -942,7 +939,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         sellValue: formatCurrencyWithNull(
           totalSellValue,
           checkThousand: true,
-          showDecimal: true
         ),
         sellAverage: formatCurrencyWithNull(
           totalSellAverage,

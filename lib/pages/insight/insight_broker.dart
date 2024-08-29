@@ -140,7 +140,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                                             child: Text(
                                               formatIntWithNull(
                                                 _marketToday.buy.brokerSummaryTotalLot,
-                                                showDecimal: true
                                               ),
                                             )
                                           ),
@@ -162,7 +161,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                                             child: Text(
                                               formatIntWithNull(
                                                 _marketToday.buy.brokerSummaryTotalValue,
-                                                showDecimal: true
                                               ),
                                             )
                                           ),
@@ -218,7 +216,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                                             child: Text(
                                               formatIntWithNull(
                                                 _marketToday.sell.brokerSummaryTotalLot,
-                                                showDecimal: true
                                               ),
                                             )
                                           ),
@@ -240,7 +237,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                                             child: Text(
                                               formatIntWithNull(
                                                 _marketToday.sell.brokerSummaryTotalValue,
-                                                showDecimal: true
                                               ),
                                             )
                                           ),
@@ -658,10 +654,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               padding: const EdgeInsets.all(5),
               color: primaryDark,
               child: Text(
-                formatIntWithNull(
-                  marketCap,
-                  showDecimal: true
-                ),
+                formatIntWithNull(marketCap,),
                 textAlign: TextAlign.center,
               )
             ),
@@ -671,10 +664,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               padding: const EdgeInsets.all(5),
               color: primaryDark,
               child: Text(
-                formatIntWithNull(
-                  shareOut,
-                  showDecimal: true
-                ),
+                formatIntWithNull(shareOut,),
                 textAlign: TextAlign.center,
               )
             ),
@@ -909,7 +899,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
               lot: formatIntWithNull(
                 data[index].brokerSummaryLot,
                 checkThousand: true,
-                showDecimal: true
               ),
               count: data[index].brokerSummaryCount,
               backgroundColor: primaryDark

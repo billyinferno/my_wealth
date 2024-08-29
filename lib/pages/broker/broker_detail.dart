@@ -414,7 +414,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                             _transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 1000000 ?
                                             formatIntWithNull(
                                               _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
-                                              showDecimal: true
                                             ) :
                                             formatIntWithNull(
                                               _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
@@ -446,7 +445,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         Text(
                                           formatCurrencyWithNull(
                                             _transactionList.brokerSummaryCodeList[index].brokerSummaryValue,
-                                            showDecimal: true,
                                           ),
                                           style: const TextStyle(
                                             fontSize: 10,
@@ -711,7 +709,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         formatCurrencyWithNull(
           value.brokerSummaryBuyValue,
           checkThousand: true,
-          showDecimal: true,
         ),
         formatCurrencyWithNull(
           value.brokerSummaryBuyAverage,
@@ -724,7 +721,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         formatCurrencyWithNull(
           value.brokerSummarySellValue,
           checkThousand: true,
-          showDecimal: true,
         ),
         formatCurrencyWithNull(
           value.brokerSummarySellAverage,
@@ -778,7 +774,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         formatCurrencyWithNull(
           totalBuyValue,
           checkThousand: true,
-          showDecimal: true,
         ),
         formatCurrencyWithNull(
           totalBuyAverage,
@@ -791,7 +786,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         formatCurrencyWithNull(
           totalSellValue,
           checkThousand: true,
-          showDecimal: true,
         ),
         formatCurrencyWithNull(
           totalSellAverage,

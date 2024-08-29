@@ -363,7 +363,6 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             child: Text(
                               formatIntWithNull(
                                 widget.data[1].brokerSummaryData[index].brokerSummaryBuyLot,
-                                showDecimal: true,
                                 decimalNum: 2
                               ),
                               style: const TextStyle(
@@ -380,7 +379,6 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             child: Text(
                               formatIntWithNull(
                                 widget.data[1].brokerSummaryData[index].brokerSummarySellLot,
-                                showDecimal: true,
                                 decimalNum: 2,
                               ),
                               style: const TextStyle(
@@ -397,7 +395,6 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             child: Text(
                               formatIntWithNull(
                                 widget.data[1].brokerSummaryData[index].brokerSummaryLot,
-                                showDecimal: true,
                                 decimalNum: 2,
                               ),
                               style: TextStyle(

@@ -236,7 +236,6 @@ class PerformanceCalendar extends StatelessWidget {
             formatCurrencyWithNull(
               pl,
               checkThousand: true,
-              showDecimal: true,
               shorten: true,
               decimalNum: 2
             ),

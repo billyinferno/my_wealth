@@ -416,7 +416,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                   Text(
                     formatCurrency(
                       _plTotal,
-                      showDecimal: true,
                       shorten: false,
                       decimalNum: 2
                     ),
@@ -493,7 +492,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                   Text(
                     formatCurrency(
                       _plTotalYear,
-                      showDecimal: true,
                       shorten: false,
                       decimalNum: 2
                     ),
@@ -563,7 +561,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           Text(
             formatCurrency(
               value,
-              showDecimal: true,
               shorten: true,
               decimalNum: 2
             ),

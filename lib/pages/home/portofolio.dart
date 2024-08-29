@@ -336,7 +336,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     Text(
                                       formatCurrency(
                                         gain,
-                                        showDecimal: true,
                                         shorten: false,
                                       ),
                                       style: TextStyle(
@@ -376,7 +375,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                               child: Text(
                                 formatCurrency(
                                   cost,
-                                  showDecimal: true,
                                   shorten: false,
                                 ),
                                 style: const TextStyle(
@@ -401,7 +399,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     Text(
                                       formatCurrency(
                                         realised,
-                                        showDecimal: true,
                                         shorten: false,
                                       ),
                                       style: TextStyle(

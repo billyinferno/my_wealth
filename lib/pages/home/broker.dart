@@ -166,7 +166,6 @@ class _BrokerPageState extends State<BrokerPage> {
                                   value: formatIntWithNull(
                                     _filterBrokerList[index].brokerVolume,
                                     checkThousand: true,
-                                    showDecimal: true,
                                   )
                                 ),
                                 _informationText(
@@ -174,7 +173,6 @@ class _BrokerPageState extends State<BrokerPage> {
                                   value: formatIntWithNull(
                                     _filterBrokerList[index].brokerValue,
                                     checkThousand: true,
-                                    showDecimal: true
                                   )
                                 ),
                                 _informationText(

@@ -240,7 +240,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                                   Text(
                                     formatCurrencyWithNull(
                                       _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                                      showDecimal: true,
                                       shorten: false,
                                       decimalNum: 2
                                     ),
@@ -265,7 +264,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                                     child: Text(
                                       formatCurrencyWithNull(
                                         _watchlistComputation.priceDiff,
-                                        showDecimal: true,
                                         shorten: false,
                                         decimalNum: 2
                                       ),
@@ -539,7 +537,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                   Text(
                     formatCurrency(
                       _plTotal,
-                      showDecimal: true,
                       shorten: false,
                       decimalNum: 2
                     ),
@@ -616,7 +613,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                   Text(
                     formatCurrency(
                       _plTotalYear,
-                      showDecimal: true,
                       shorten: false,
                       decimalNum: 2
                     ),

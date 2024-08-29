@@ -323,7 +323,6 @@ class ProductListItem extends StatelessWidget {
           Text(
             formatCurrencyWithNull(
               netAssetValue,
-              showDecimal: true,
               shorten: false,
               decimalNum: 2,
             ),

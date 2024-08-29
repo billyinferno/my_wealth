@@ -436,7 +436,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       value: formatIntWithNull(
                                         _stockNewListedList[index].listedShares,
                                         checkThousand: true,
-                                        showDecimal: true,
                                         decimalNum: 2
                                       )
                                     ),
@@ -446,7 +445,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       value: formatIntWithNull(
                                         _stockNewListedList[index].numOfShares,
                                         checkThousand: true,
-                                        showDecimal: true,
                                         decimalNum: 2
                                       )
                                     ),
@@ -480,7 +478,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       value: formatIntWithNull(
                                         _stockNewListedList[index].fundRaised,
                                         checkThousand: true,
-                                        showDecimal: true,
                                         decimalNum: 2
                                       )
                                     ),
@@ -724,7 +721,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                       value: formatIntWithNull(
                                         _stockSplitList[index].listedShares,
                                         checkThousand: true,
-                                        showDecimal: true,
                                         decimalNum: 2
                                       )
                                     ),

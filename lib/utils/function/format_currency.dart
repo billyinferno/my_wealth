@@ -5,10 +5,10 @@ String formatCurrency(
   bool checkThousand = false,
   bool showDecimal = true,
   bool shorten = true,
-  int? decimalNum
+  int decimalNum = 2
 }) {
   NumberFormat ccy = NumberFormat("#,##0.00", "en_US");
-  int currentDecimalNum = (showDecimal ? (decimalNum ?? 2) : 0);
+  int currentDecimalNum = (showDecimal ? decimalNum : 0);
 
   if (!showDecimal) {
     ccy = NumberFormat("#,##0", "en_US");
@@ -63,7 +63,7 @@ String formatCurrencyWithNull(
   bool checkThousand = false,
   bool showDecimal = true,
   bool shorten = true,
-  int? decimalNum
+  int decimalNum = 2,
 }) {
   if (amount == null) {
     return "-";
@@ -81,6 +81,7 @@ String formatCurrencyWithNull(
 
 String formatDecimal(
   double value, {
+  double times = 1,
   int decimal = 6
 }) {
   String decimalFormat = "0" * decimal;
@@ -91,7 +92,7 @@ String formatDecimal(
   else {
     decFormat = NumberFormat("##0");
   }
-  return decFormat.format(value);
+  return decFormat.format(value * times);
 }
 
 String formatDecimalWithNull(
@@ -99,26 +100,21 @@ String formatDecimalWithNull(
   double times = 1,
   int decimal = 6,
 }) {
-  String decimalFormat = "0" * decimal;
-
-  NumberFormat dec;
-  if (decimal > 0) {
-    dec = NumberFormat("##0.$decimalFormat");
-  }
-  else {
-    dec = NumberFormat("##0");
-  }
   if (value == null) {
     return "-";
   }
-  return dec.format(value * times);
+  return formatDecimal(
+    value,
+    times: times,
+    decimal: decimal,
+  );
 }
 
 String formatIntWithNull(
   int? value, {
   bool checkThousand = false,
   bool showDecimal = true,
-  int? decimalNum,
+  int decimalNum = 2,
   bool shorten = true
 }) {
   if (value == null) {

@@ -233,14 +233,24 @@ class PerformanceCalendar extends StatelessWidget {
           Text(text),
           const SizedBox(height: 5,),
           Text(
-            formatCurrencyWithNull(pl, true, true, true, 2),
+            formatCurrencyWithNull(
+              pl,
+              checkThousand: true,
+              showDecimal: true,
+              shorten: true,
+              decimalNum: 2
+            ),
             style: TextStyle(
               fontSize: 10,
               color: (plColor ?? primaryLight),
             ),
           ),
           Text(
-            "${formatDecimalWithNull(plRatio, 1, 2)}${plRatio != null ? "%" : ""}",
+            "${formatDecimalWithNull(
+              plRatio,
+              times: 1,
+              decimal: 2,
+            )}${plRatio != null ? "%" : ""}",
             style: TextStyle(
               fontSize: 10,
               color: (plRatioColor ?? primaryLight),

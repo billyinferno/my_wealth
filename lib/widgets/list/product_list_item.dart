@@ -116,7 +116,12 @@ class ProductListItem extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                formatCurrencyWithNull(value, false, false, false),
+                                formatCurrencyWithNull(
+                                  value,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  shorten: false
+                                ),
                               ),
                             ),
                           ),
@@ -127,7 +132,13 @@ class ProductListItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "${formatDecimalWithNull(itemPercentage, 100, 2)}%",
+                            "${
+                              formatDecimalWithNull(
+                                itemPercentage,
+                                times: 100,
+                                decimal: 2,
+                              )
+                            }%",
                             style: const TextStyle(
                               fontSize: 10,
                             ),
@@ -157,7 +168,10 @@ class ProductListItem extends StatelessWidget {
                           Expanded(
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: _priceItem(netAssetValue: netAssetValue, oneDay: oneDay)
+                              child: _priceItem(
+                                netAssetValue: netAssetValue,
+                                oneDay: oneDay
+                              )
                             ),
                           ),
                         ],
@@ -179,7 +193,12 @@ class ProductListItem extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      formatCurrency(unrealisedGain, false, false, false),
+                                      formatCurrency(
+                                        unrealisedGain,
+                                        checkThousand: false,
+                                        showDecimal: false,
+                                        shorten: false
+                                      ),
                                       style: TextStyle(
                                         color: unrealisedColor,
                                         fontSize: 12,
@@ -187,7 +206,13 @@ class ProductListItem extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 2,),
                                     Text(
-                                      "(${formatDecimalWithNull((gainPercentage < 0 ? gainPercentage * -1 : gainPercentage), 100, 0)}%)",
+                                      "(${
+                                        formatDecimalWithNull(
+                                          (gainPercentage < 0 ? gainPercentage * -1 : gainPercentage),
+                                          times: 100,
+                                          decimal: 0,
+                                        )
+                                      }%)",
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: unrealisedColor,
@@ -207,7 +232,12 @@ class ProductListItem extends StatelessWidget {
                               children: <Widget>[
                                 _subHeader(header: "REALISED GAIN"),
                                 Text(
-                                  formatCurrencyWithNull((realised ?? 0), false, false, false),
+                                  formatCurrencyWithNull(
+                                    (realised ?? 0),
+                                    checkThousand: false,
+                                    showDecimal: false,
+                                    shorten: false
+                                  ),
                                   style: TextStyle(
                                     color: realisedColor,
                                     fontSize: 12,
@@ -223,9 +253,17 @@ class ProductListItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                _subHeader(header: "DAY GAIN", align: Alignment.centerRight),
+                                _subHeader(
+                                  header: "DAY GAIN",
+                                  align: Alignment.centerRight
+                                ),
                                 Text(
-                                  formatCurrency((dayGain ?? 0), false, false, false),
+                                  formatCurrency(
+                                    (dayGain ?? 0),
+                                    checkThousand: false,
+                                    showDecimal: false,
+                                    shorten: false
+                                  ),
                                   style: TextStyle(
                                     color: dayColor,
                                     fontSize: 12,
@@ -287,7 +325,13 @@ class ProductListItem extends StatelessWidget {
           ),
           const SizedBox(width: 5,),
           Text(
-            formatCurrencyWithNull(netAssetValue, false, true, false, 2),
+            formatCurrencyWithNull(
+              netAssetValue,
+              checkThousand: false,
+              showDecimal: true,
+              shorten: false,
+              decimalNum: 2,
+            ),
             style: const TextStyle(
               color: textPrimary,
               fontSize: 10,
@@ -295,7 +339,13 @@ class ProductListItem extends StatelessWidget {
           ),
           const SizedBox(width: 5,),
           Text(
-            "(${formatDecimalWithNull(oneDay, 100, 2)}%)",
+            "(${
+              formatDecimalWithNull(
+                oneDay,
+                times: 100,
+                decimal: 2,
+              )
+            }%)",
             style: TextStyle(
               color: priceColor,
               fontSize: 10,

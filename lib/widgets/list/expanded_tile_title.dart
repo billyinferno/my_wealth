@@ -172,7 +172,14 @@ class ExpandedTileTitle extends StatelessWidget {
                             Expanded(
                               flex: 2,
                               child: Text(
-                                (share > 0 ? "${formatCurrency(share, true, true, true)} ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
+                                (share > 0 ? "${
+                                  formatCurrency(
+                                    share,
+                                    checkThousand: true,
+                                    showDecimal: true,
+                                    shorten: true
+                                  )
+                                } ${shareTitle ?? "Shares"}" : "- ${shareTitle ?? "Shares"}"),
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),
@@ -206,8 +213,8 @@ class ExpandedTileTitle extends StatelessWidget {
                                       child: Text(
                                         formatCurrency(
                                           price,
-                                          (checkThousandOnPrice ?? false),
-                                          (showDecimal ?? true),
+                                          checkThousand: (checkThousandOnPrice ?? false),
+                                          showDecimal: (showDecimal ?? true),
                                         ),
                                         style: const TextStyle(
                                           fontSize: 12,

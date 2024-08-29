@@ -317,7 +317,11 @@ class SeasonalityTable extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          formatDecimalWithNull(diffPrice, 1, 2),
+          formatDecimalWithNull(
+            diffPrice,
+            times: 1,
+            decimal: 2
+          ),
           style: TextStyle(
             color: textColor,
           ),
@@ -331,7 +335,11 @@ class SeasonalityTable extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  formatDecimalWithNull(minDiffPrice, 1, 2),
+                  formatDecimalWithNull(
+                    minDiffPrice,
+                    times: 1,
+                    decimal: 2
+                  ),
                   style: TextStyle(
                     fontSize: 9,
                     color: textColor,
@@ -346,7 +354,11 @@ class SeasonalityTable extends StatelessWidget {
                       value2: minLastPrice,
                     ),
                     Text(
-                      formatDecimalWithNull(minLastPrice, 1, 2),
+                      formatDecimalWithNull(
+                        minLastPrice,
+                        times: 1,
+                        decimal: 2
+                      ),
                       style: TextStyle(
                         fontSize: 9,
                         color: textColor,
@@ -362,7 +374,11 @@ class SeasonalityTable extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  formatDecimalWithNull(maxDiffPrice, 1, 2),
+                  formatDecimalWithNull(
+                    maxDiffPrice,
+                    times: 1,
+                    decimal: 2
+                  ),
                   style: TextStyle(
                     fontSize: 9,
                     color: textColor,
@@ -373,7 +389,11 @@ class SeasonalityTable extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      formatDecimalWithNull(maxLastPrice, 1, 2),
+                      formatDecimalWithNull(
+                        maxLastPrice,
+                        times: 1,
+                        decimal: 2
+                      ),
                       style: TextStyle(
                         fontSize: 9,
                         color: textColor,
@@ -391,7 +411,11 @@ class SeasonalityTable extends StatelessWidget {
         ),
         const SizedBox(height: 5,),
         Text(
-          "${formatDecimalWithNull(totalPercentageDiff, 100, 2)}%",
+          "${formatDecimalWithNull(
+            totalPercentageDiff,
+            times: 100,
+            decimal: 2
+          )}%",
           style: TextStyle(
             fontSize: 10,
             color: textColor

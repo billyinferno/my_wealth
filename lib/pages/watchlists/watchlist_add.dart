@@ -143,14 +143,24 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
               ),
               child: WatchlistList(
                 name: _companySearchResult![index].companyName,
-                price: formatCurrency(_companySearchResult![index].companyNetAssetValue!),
-                date: _df.format(_companySearchResult![index].companyLastUpdate.toLocal()),
-                riskColor: riskColor(_companySearchResult![index].companyNetAssetValue!, _companySearchResult![index].companyPrevPrice!, _userInfo!.risk),
+                price: formatCurrency(
+                  _companySearchResult![index].companyNetAssetValue!
+                ),
+                date: _df.format(
+                  _companySearchResult![index].companyLastUpdate.toLocal()
+                ),
+                riskColor: riskColor(
+                  _companySearchResult![index].companyNetAssetValue!,
+                  _companySearchResult![index].companyPrevPrice!,
+                  _userInfo!.risk
+                ),
                 canAdd: _companySearchResult![index].companyCanAdd,
                 fca: (_companySearchResult![index].companyFCA ?? false),
                 onPress: (() async {
                   await _addCompanyToWatchlist(index).then((_) async {
-                    Log.success(message: "🏁 Add Company ${_companySearchResult![index].companyName} to watchlist");
+                    Log.success(
+                      message: "🏁 Add Company ${_companySearchResult![index].companyName} to watchlist"
+                    );
                   }).onError((error, stackTrace) {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(

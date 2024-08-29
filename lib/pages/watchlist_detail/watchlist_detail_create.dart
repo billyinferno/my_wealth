@@ -77,7 +77,11 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
             WatchlistDetailCreateTextFields(
               controller: _priceController,
               title: "Price",
-              hintText: formatDecimalWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, 1, 2),
+              hintText: formatDecimalWithNull(
+                _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                times: 1,
+                decimal: 2
+              ),
               decimal: 6,
               defaultPrice: _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
             ),

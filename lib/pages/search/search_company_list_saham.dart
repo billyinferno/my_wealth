@@ -270,7 +270,11 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
             ),
           ),
           Text(
-            "${formatDecimalWithNull(value, 100, 2)}%",
+            "${formatDecimalWithNull(
+              value,
+              times: 100,
+              decimal: 2
+            )}%",
             style: TextStyle(
               fontSize: 10,
               color: valueColor

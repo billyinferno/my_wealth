@@ -414,7 +414,13 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                     ),
                   ),
                   Text(
-                    formatCurrency(_plTotal, false, true, false, 2),
+                    formatCurrency(
+                      _plTotal,
+                      checkThousand: false,
+                      showDecimal: true,
+                      shorten: false,
+                      decimalNum: 2
+                    ),
                     style: TextStyle(
                       color: _plTotalColor,
                     ),
@@ -433,7 +439,10 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                     ),
                   ),
                   Text(
-                    "${formatDecimal(_plRatio, 2)}%",
+                    "${formatDecimal(
+                      _plRatio,
+                      decimal: 2,
+                    )}%",
                     style: TextStyle(
                       color: _plRatioColor,
                     ),
@@ -483,7 +492,13 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                     ),
                   ),
                   Text(
-                    formatCurrency(_plTotalYear, false, true, false, 2),
+                    formatCurrency(
+                      _plTotalYear,
+                      checkThousand: false,
+                      showDecimal: true,
+                      shorten: false,
+                      decimalNum: 2
+                    ),
                     style: TextStyle(
                       color: _plTotalYearColor,
                     ),
@@ -502,7 +517,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                     ),
                   ),
                   Text(
-                    "${formatDecimal(_plRatioYear, 2)}%",
+                    "${formatDecimal(_plRatioYear, decimal: 2)}%",
                     style: TextStyle(
                       color: _plRatioYearColor,
                     ),
@@ -548,7 +563,13 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
             ),
           ),
           Text(
-            formatCurrency(value, false, true, true, 2),
+            formatCurrency(
+              value,
+              checkThousand: false,
+              showDecimal: true,
+              shorten: true,
+              decimalNum: 2
+            ),
             style: TextStyle(
               color: textColor
             ),

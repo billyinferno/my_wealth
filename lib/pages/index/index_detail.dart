@@ -208,7 +208,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Daily",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexDailyReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexDailyReturn,
+                                      times: 100,
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -217,7 +220,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Weekly",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexWeeklyReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexWeeklyReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -226,7 +232,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Monthly",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexMonthlyReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -241,7 +250,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "MTD",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexMtdReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexMtdReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -250,7 +262,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Monhtly",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexMonthlyReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexMonthlyReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -259,7 +274,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Quarterly",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexQuarterlyReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexQuarterlyReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -274,7 +292,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Semi Annual",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexSemiAnnualReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexSemiAnnualReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -283,7 +304,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "YTD",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexYtdReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexYtdReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -292,7 +316,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   header: "Yearly",
                                   headerAlign: MainAxisAlignment.end,
                                   child: Text(
-                                    "${formatDecimalWithNull(_index.indexYearlyReturn, 100)}%",
+                                    "${formatDecimalWithNull(
+                                      _index.indexYearlyReturn,
+                                      times: 100
+                                    )}%",
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -864,7 +891,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                 )
                               ),
                               child: Text(
-                                (dayDiff == null ? "-" : formatCurrency(dayDiff)),
+                                formatCurrencyWithNull(dayDiff),
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),

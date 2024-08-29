@@ -72,15 +72,27 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
               title: "Shares",
-              subTitle: formatDecimalWithNull(_watchlistArgs.currentShare, 1, 5),
-              hintText: formatDecimalWithNull(_watchlistArgs.currentShare, 1, 5),
+              subTitle: formatDecimalWithNull(
+                _watchlistArgs.currentShare,
+                times: 1,
+                decimal: 5
+              ),
+              hintText: formatDecimalWithNull(
+                _watchlistArgs.currentShare,
+                times: 1,
+                decimal: 5
+              ),
               defaultPrice: _watchlistArgs.currentShare,
               decimal: 6,
             ),
             WatchlistDetailCreateTextFields(
               controller: _priceController,
               title: "Price",
-              hintText: formatDecimalWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, 1, 2),
+              hintText: formatDecimalWithNull(
+                _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                times: 1,
+                decimal: 2
+              ),
               decimal: 6,
               defaultPrice: _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
             ),
@@ -96,7 +108,10 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   icon: Ionicons.bag_remove,
                   callback: (() async {
                     await _addDetail().then((_) {
-                      Log.success(message: "💾 Sell the watchlist detail for ${_watchlist.watchlistId}");
+                      Log.success(
+                        message: "💾 Sell the watchlist detail for ${_watchlist.watchlistId}"
+                      );
+
                       if (context.mounted) {
                         // return back to the previous page
                         Navigator.pop(context);

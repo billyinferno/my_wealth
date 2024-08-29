@@ -464,7 +464,12 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                   text: " for ",
                                 ),
                                 TextSpan(
-                                  text: formatDecimal(makePositive(_watchlistHistory![index].watchlistDetailShare), 2),
+                                  text: formatDecimal(
+                                    makePositive(
+                                      _watchlistHistory![index].watchlistDetailShare
+                                    ),
+                                    decimal: 2,
+                                  ),
                                   style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 const TextSpan(text: "@"),
@@ -473,7 +478,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                   style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 TextSpan(
-                                  text: " (${formatCurrency(makePositive(_watchlistHistory![index].watchlistDetailShare) * _watchlistHistory![index].watchlistDetailPrice)})",
+                                  text: " (${
+                                    formatCurrency(
+                                      makePositive(_watchlistHistory![index].watchlistDetailShare) * _watchlistHistory![index].watchlistDetailPrice
+                                    )
+                                  })",
                                   style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 const TextSpan(text: " at "),

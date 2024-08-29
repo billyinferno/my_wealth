@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
-String formatCurrency({
-  required double amount,
+String formatCurrency(
+  double amount, {
   bool checkThousand = false,
   bool showDecimal = true,
   bool shorten = true,
@@ -58,8 +58,8 @@ String formatCurrency({
   return result;
 }
 
-String formatCurrencyWithNull({
-  required double? amount,
+String formatCurrencyWithNull(
+  double? amount, {
   bool checkThousand = false,
   bool showDecimal = true,
   bool shorten = true,
@@ -70,7 +70,7 @@ String formatCurrencyWithNull({
   }
   else {
     return formatCurrency(
-      amount: amount,
+      amount,
       checkThousand: checkThousand,
       showDecimal: showDecimal,
       shorten: shorten,
@@ -79,8 +79,8 @@ String formatCurrencyWithNull({
   }
 }
 
-String formatDecimal({
-  required double value,
+String formatDecimal(
+  double value, {
   int decimal = 6
 }) {
   String decimalFormat = "0" * decimal;
@@ -94,8 +94,8 @@ String formatDecimal({
   return decFormat.format(value);
 }
 
-String formatDecimalWithNull({
-  required double? value,
+String formatDecimalWithNull(
+  double? value, {
   double times = 1,
   int decimal = 6,
 }) {
@@ -114,8 +114,8 @@ String formatDecimalWithNull({
   return dec.format(value * times);
 }
 
-String formatIntWithNull({
-  required int? value,
+String formatIntWithNull(
+  int? value, {
   bool checkThousand = false,
   bool showDecimal = true,
   int? decimalNum,
@@ -125,7 +125,7 @@ String formatIntWithNull({
     return "-";
   }
   return formatCurrency(
-    amount: value.toDouble(),
+    value.toDouble(),
     checkThousand: checkThousand,
     showDecimal: showDecimal,
     shorten: shorten,

@@ -308,7 +308,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                               flex: 3,
                               child: _largeText(
                                 text: formatCurrency(
-                                  amount: value,
+                                  value,
                                   checkThousand: false,
                                   showDecimal:  true,
                                   shorten: false,
@@ -332,7 +332,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     const SizedBox(width: 5,),
                                     Text(
                                       formatCurrency(
-                                        amount: gain,
+                                        gain,
                                         checkThousand: false,
                                         showDecimal: true,
                                         shorten: false,
@@ -373,7 +373,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                               flex: 3,
                               child: Text(
                                 formatCurrency(
-                                  amount: cost,
+                                  cost,
                                   checkThousand: false,
                                   showDecimal: true,
                                   shorten: false,
@@ -399,7 +399,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                     const SizedBox(width: 5,),
                                     Text(
                                       formatCurrency(
-                                        amount: realised,
+                                        realised,
                                         checkThousand: false,
                                         showDecimal: true,
                                         shorten: false,

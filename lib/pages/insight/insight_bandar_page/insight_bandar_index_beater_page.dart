@@ -171,13 +171,17 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
                             ),
                             const SizedBox(width: 10,),
                             Text(
-                              formatIntWithNull(_sortedBeaterList[index].lastPrice, false, false),
+                              formatIntWithNull(
+                                _sortedBeaterList[index].lastPrice,
+                                checkThousand: false,
+                                showDecimal: false
+                              ),
                               style: const TextStyle(
                               ),
                             ),
                             const SizedBox(width: 2,),
                             Text(
-                              "(${(priceDiff > 0 ? "+" : (priceDiff == 0 ? "" : "-"))}${formatIntWithNull(priceDiff, false, false)})",
+                              "(${(priceDiff > 0 ? "+" : (priceDiff == 0 ? "" : "-"))}${formatIntWithNull(priceDiff, checkThousand: false, showDecimal: false)})",
                               style: TextStyle(
                                 fontSize: 10,
                                 color: (priceDiff < 0 ? secondaryColor : (priceDiff > 0 ? Colors.green : textPrimary)),
@@ -241,7 +245,11 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
             overflow: TextOverflow.ellipsis,
           ),
           Text(
-            "${formatDecimalWithNull(value, 100, 2)}%",
+            "${formatDecimalWithNull(
+              value,
+              times: 100,
+              decimal: 2
+            )}%",
             style: TextStyle(
               color: (value == 0 ? Colors.white : (value > 0 ? Colors.green : secondaryColor)),
             ),

@@ -281,7 +281,11 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              "(${formatDecimalWithNull(_epsList[index].diffEpsRate, 100, 2)}%)",
+                              "(${formatDecimalWithNull(
+                                _epsList[index].diffEpsRate,
+                                times: 100,
+                                decimal: 2
+                              )}%)",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: (_epsList[index].diffEpsRate < 0 ? secondaryColor : (_epsList[index].diffEpsRate > 0 ? Colors.green : textPrimary)),
@@ -294,11 +298,58 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _rowText(title: "ONE MONTH", value: "${formatDecimalWithNull(_epsList[index].oneMonth, 100, 2)}%", valueColor: (_epsList[index].oneMonth < 0 ? secondaryColor : (_epsList[index].oneMonth > 0) ? Colors.green : textPrimary)),
+                            _rowText(
+                              title: "ONE MONTH",
+                              value: "${formatDecimalWithNull(
+                                _epsList[index].oneMonth,
+                                times: 100,
+                                decimal: 2
+                              )}%",
+                              valueColor: (
+                                _epsList[index].oneMonth < 0 ?
+                                secondaryColor :
+                                (
+                                  _epsList[index].oneMonth > 0 ?
+                                  Colors.green :
+                                  textPrimary
+                                )
+                              )
+                            ),
                             const SizedBox(width: 5,),
-                            _rowText(title: "SIX MONTH", value: "${formatDecimalWithNull(_epsList[index].sixMonth, 100, 2)}%", valueColor: (_epsList[index].sixMonth < 0 ? secondaryColor : (_epsList[index].sixMonth > 0) ? Colors.green : textPrimary)),
+                            _rowText(
+                              title: "SIX MONTH",
+                              value: "${formatDecimalWithNull(
+                                _epsList[index].sixMonth,
+                                times: 100,
+                                decimal: 2
+                              )}%",
+                              valueColor: (
+                                _epsList[index].sixMonth < 0 ?
+                                secondaryColor :
+                                (
+                                  _epsList[index].sixMonth > 0 ?
+                                  Colors.green :
+                                  textPrimary
+                                )
+                              )
+                            ),
                             const SizedBox(width: 5,),
-                            _rowText(title: "ONE YEAR", value: "${formatDecimalWithNull(_epsList[index].oneYear, 100, 2)}%", valueColor: (_epsList[index].oneYear < 0 ? secondaryColor : (_epsList[index].oneYear > 0) ? Colors.green : textPrimary)),
+                            _rowText(
+                              title: "ONE YEAR",
+                              value: "${formatDecimalWithNull(
+                                _epsList[index].oneYear,
+                                times: 100,
+                                decimal: 2
+                              )}%",
+                              valueColor: (
+                                _epsList[index].oneYear < 0 ?
+                                secondaryColor : (
+                                  _epsList[index].oneYear > 0 ?
+                                  Colors.green :
+                                  textPrimary
+                                )
+                              )
+                            ),
                           ],
                         ),
                         const SizedBox(height: 5,),
@@ -306,11 +357,32 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _rowText(title: "BUY LOT", value: formatIntWithNull(_epsList[index].buyLot, false, true)),
+                            _rowText(
+                              title: "BUY LOT",
+                              value: formatIntWithNull(
+                                _epsList[index].buyLot,
+                                checkThousand: false,
+                                showDecimal: true,
+                              )
+                            ),
                             const SizedBox(width: 5,),
-                            _rowText(title: "SELL LOT", value: formatIntWithNull(_epsList[index].sellLot, false, true)),
+                            _rowText(
+                              title: "SELL LOT",
+                              value: formatIntWithNull(
+                                _epsList[index].sellLot,
+                                checkThousand: false,
+                                showDecimal: true,
+                              )
+                            ),
                             const SizedBox(width: 5,),
-                            _rowText(title: "DIFF LOT", value: formatIntWithNull(_epsList[index].diffLot, false, true)),
+                            _rowText(
+                              title: "DIFF LOT",
+                              value: formatIntWithNull(
+                                _epsList[index].diffLot,
+                                checkThousand: false,
+                                showDecimal: true,
+                              )
+                            ),
                           ],
                         ),
                         const SizedBox(height: 10,),
@@ -318,15 +390,95 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            _tableRowText(title: "", value1: "CURRENT", value1Weight: FontWeight.bold, value1Color: accentColor, value2: "PREVIOUS", value2Weight: FontWeight.bold, value2Color: accentColor),
-                            _tableRowText(title: "Period", value1: "${_epsList[index].currentPeriod}M ${_epsList[index].currentYear}", value2: "${_epsList[index].prevPeriod}M ${_epsList[index].prevYear}"),
-                            _tableRowText(title: "Price", value1: "${_epsList[index].currentPrice}", value2: "${_epsList[index].prevPrice}"),
-                            _tableRowText(title: "Market Cap", value1: formatIntWithNull(_epsList[index].currentMarketCap, false, true), value2: formatIntWithNull(_epsList[index].prevMarketCap, false, true)),
-                            _tableRowText(title: "Revenue", value1: formatIntWithNull(_epsList[index].currentRevenue, false, true), value2: formatIntWithNull(_epsList[index].prevRevenue, false, true)),
-                            _tableRowText(title: "Net Profit", value1: formatIntWithNull(_epsList[index].currentNetProfit, false, true), value2: formatIntWithNull(_epsList[index].prevNetProfit, false, true)),
-                            _tableRowText(title: "Deviden", value1: formatDecimalWithNull(_epsList[index].currentDeviden), value2: formatDecimalWithNull(_epsList[index].prevDeviden)),
-                            _tableRowText(title: "EPS", value1: formatDecimalWithNull(_epsList[index].currentEps), value2: formatDecimalWithNull(_epsList[index].prevEps)),
-                            _tableRowText(title: "EPS/Price", value1: "${formatDecimalWithNull(_epsList[index].currentEpsRate, 100, 2)}%", value2: "${formatDecimalWithNull(_epsList[index].prevEpsRate, 100, 2)}%"),
+                            _tableRowText(
+                              title: "",
+                              value1: "CURRENT",
+                              value1Weight: FontWeight.bold,
+                              value1Color: accentColor,
+                              value2: "PREVIOUS",
+                              value2Weight: FontWeight.bold,
+                              value2Color: accentColor
+                            ),
+                            _tableRowText(
+                              title: "Period",
+                              value1: "${_epsList[index].currentPeriod}M ${_epsList[index].currentYear}",
+                              value2: "${_epsList[index].prevPeriod}M ${_epsList[index].prevYear}"
+                            ),
+                            _tableRowText(
+                              title: "Price",
+                              value1: "${_epsList[index].currentPrice}",
+                              value2: "${_epsList[index].prevPrice}"
+                            ),
+                            _tableRowText(
+                              title: "Market Cap",
+                              value1: formatIntWithNull(
+                                _epsList[index].currentMarketCap,
+                                checkThousand: false,
+                                showDecimal: true,
+                              ),
+                              value2: formatIntWithNull(
+                                _epsList[index].prevMarketCap,
+                                checkThousand: false,
+                                showDecimal: true,
+                              )
+                            ),
+                            _tableRowText(
+                              title: "Revenue",
+                              value1: formatIntWithNull(
+                                _epsList[index].currentRevenue,
+                                checkThousand: false,
+                                showDecimal: true,
+                              ),
+                              value2: formatIntWithNull(
+                                _epsList[index].prevRevenue,
+                                checkThousand: false,
+                                showDecimal: true,
+                              )
+                            ),
+                            _tableRowText(
+                              title: "Net Profit",
+                              value1: formatIntWithNull(
+                                _epsList[index].currentNetProfit,
+                                checkThousand: false,
+                                showDecimal: true,
+                              ),
+                              value2: formatIntWithNull(
+                                _epsList[index].prevNetProfit,
+                                checkThousand: false,
+                                showDecimal: true,
+                              )
+                            ),
+                            _tableRowText(
+                              title: "Deviden",
+                              value1: formatDecimalWithNull(
+                                _epsList[index].currentDeviden,
+                              ),
+                              value2: formatDecimalWithNull(
+                                _epsList[index].prevDeviden,
+                              )
+                            ),
+                            _tableRowText(
+                              title: "EPS",
+                              value1: formatDecimalWithNull(
+                                _epsList[index].currentEps,
+                              ),
+                              value2: formatDecimalWithNull(
+                                _epsList[index].prevEps,
+                              )
+                            ),
+                            _tableRowText(
+                              title: "EPS/Price",
+                              value1: "${formatDecimalWithNull(
+                                _epsList[index].currentEpsRate,
+                                times: 100,
+                                decimal: 2,
+                              )}%",
+                              value2: "${formatDecimalWithNull(
+                                _epsList[index].prevEpsRate,
+                                times: 100,
+                                decimal: 2,
+                              )}%"
+                            ),
                           ],
                         )
                       ],

@@ -172,7 +172,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                formatCurrency(amount: _companyDetail.companyNetAssetValue!),
+                                formatCurrency(_companyDetail.companyNetAssetValue!),
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                "USD ${formatCurrency(amount: _companyDetail.companyCurrentPriceUsd!)}",
+                                "USD ${formatCurrency(_companyDetail.companyCurrentPriceUsd!)}",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -211,7 +211,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 ),
                                 child: Text(
                                   formatCurrency(
-                                    amount: _companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!
+                                    _companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!
                                   )
                                 ),
                               ),
@@ -233,7 +233,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Market Cap",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _companyDetail.companyMarketCap),
+                                  formatCurrencyWithNull(_companyDetail.companyMarketCap),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -242,7 +242,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Rank",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatIntWithNull(value: _companyDetail.companyMarketCapRank),
+                                  formatIntWithNull(_companyDetail.companyMarketCapRank),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -251,7 +251,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Fully Dilluted",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _companyDetail.companyFullyDilutedValuation),
+                                  formatCurrencyWithNull(_companyDetail.companyFullyDilutedValuation),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -266,7 +266,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Min ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _minPrice!),
+                                  formatCurrencyWithNull(_minPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -275,7 +275,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Max ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _maxPrice!),
+                                  formatCurrencyWithNull(_maxPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -284,7 +284,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 header: "Avg ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _avgPrice!),
+                                  formatCurrencyWithNull(_avgPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -403,7 +403,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Total Volume",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          formatCurrencyWithNull(amount: _companyDetail.companyTotalUnit),
+                          formatCurrencyWithNull(_companyDetail.companyTotalUnit),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -412,7 +412,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Circulating",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          formatCurrencyWithNull(amount: _companyDetail.companyCirculatingSupply),
+                          formatCurrencyWithNull(_companyDetail.companyCirculatingSupply),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -427,7 +427,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Total Supply",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          formatCurrencyWithNull(amount: _companyDetail.companyTotalSupply),
+                          formatCurrencyWithNull(_companyDetail.companyTotalSupply),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -436,7 +436,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Max Supply",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          formatCurrencyWithNull(amount: _companyDetail.companyMaxSupply),
+                          formatCurrencyWithNull(_companyDetail.companyMaxSupply),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -451,7 +451,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "High 24H",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          "\$ ${formatCurrencyWithNull(amount: _companyDetail.companyHigh24H)}",
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyHigh24H)}",
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -460,7 +460,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Low 24H",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          "\$ ${formatCurrencyWithNull(amount: _companyDetail.companyLow24H)}",
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyLow24H)}",
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -475,7 +475,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Price Change 24H",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          "\$ ${formatCurrencyWithNull(amount: _companyDetail.companyPriceChange24H)}",
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyPriceChange24H)}",
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -485,7 +485,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
                           "${formatDecimalWithNull(
-                            value: _companyDetail.companyPriceChangePercentage24H,
+                            _companyDetail.companyPriceChangePercentage24H,
                             times: 100,
                             decimal: 4,
                           )}%",
@@ -503,7 +503,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Market Cap Chg 24H",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          "\$ ${formatCurrencyWithNull(amount: _companyDetail.companyMarketCapChange24H)}",
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyMarketCapChange24H)}",
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -513,7 +513,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
                           "${formatDecimalWithNull(
-                            value: _companyDetail.companyMarketCapChangePercentage24H,
+                            _companyDetail.companyMarketCapChangePercentage24H,
                             times: 100,
                             decimal: 4
                           )}%",
@@ -531,7 +531,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "ATH",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          "\$ ${formatCurrencyWithNull(amount: _companyDetail.companyAllTimeHigh)}",
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeHigh)}",
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -541,7 +541,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
                           "${formatDecimalWithNull(
-                            value: _companyDetail.companyAllTimeHighChangePercentage,
+                            _companyDetail.companyAllTimeHighChangePercentage,
                             times: 1,
                             decimal: 4,
                           )}%",
@@ -568,7 +568,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "ATL",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          "\$ ${formatCurrencyWithNull(amount: _companyDetail.companyAllTimeLow)}",
+                          "\$ ${formatCurrencyWithNull(_companyDetail.companyAllTimeLow)}",
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -578,7 +578,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
                           "${formatDecimalWithNull(
-                            value: _companyDetail.companyAllTimeLowChangePercentage,
+                            _companyDetail.companyAllTimeLowChangePercentage,
                             times: 1,
                             decimal: 4,
                           )}%",
@@ -736,13 +736,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
               }
               return CompanyDetailPriceList(
                 date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
-                price: formatCurrency(amount: _companyDetail.companyPrices[index].priceValue),
+                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
                 diff: formatCurrency(
-                  amount: _companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue,
+                  _companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue,
                   checkThousand: true,
                 ),
                 riskColor: riskColor(_companyDetail.companyNetAssetValue!, _companyDetail.companyPrices[index].priceValue, _userInfo!.risk),
-                dayDiff: (dayDiff == null ? "-" : formatCurrency(amount: dayDiff, checkThousand: true)),
+                dayDiff: formatCurrencyWithNull(dayDiff, checkThousand: true),
                 dayDiffColor: dayDiffColor,
               );
             },

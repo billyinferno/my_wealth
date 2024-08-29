@@ -99,13 +99,21 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
               title: "Shares",
-              hintText: formatDecimalWithNull(_prevShares, 1, 2),
+              hintText: formatDecimalWithNull(
+                _prevShares,
+                times: 1,
+                decimal: 2
+              ),
               decimal: 6,
             ),
             WatchlistDetailCreateTextFields(
               controller: _priceController,
               title: "Price",
-              hintText: formatDecimalWithNull(_prevPrice, 1, 2),
+              hintText: formatDecimalWithNull(
+                _prevPrice,
+                times: 1,
+                decimal: 2
+              ),
               decimal: 6,
               defaultPrice: _prevPrice,
             ),
@@ -122,7 +130,10 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   callback: (() async {
                     await _updateDetail().then((resp) {
                       if(resp) {                      
-                        Log.success(message: "💾 Update the watchlist detail ID ${_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId} for ${_watchlist.watchlistId}");
+                        Log.success(
+                          message: "💾 Update the watchlist detail ID ${_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId} for ${_watchlist.watchlistId}"
+                        );
+
                         if (context.mounted) {
                           // return back to the previous page
                           Navigator.pop(context);

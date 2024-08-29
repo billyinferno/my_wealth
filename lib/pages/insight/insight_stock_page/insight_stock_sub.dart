@@ -350,7 +350,10 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
               ),
               Center(
                 child: Text(
-                  "${formatDecimal((sectorAverage * 100), 2)}%",
+                  "${formatDecimal(
+                    (sectorAverage * 100),
+                    decimal: 2,
+                  )}%",
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -479,7 +482,10 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
                 ),
                 const SizedBox(width: 5,),
                 Text(
-                  '${formatDecimal(info[index].gain * 100, 2)}%',
+                  '${formatDecimal(
+                    info[index].gain * 100,
+                    decimal: 2,
+                  )}%',
                   style: TextStyle(
                     color: gainColor,
                     fontSize: 12,

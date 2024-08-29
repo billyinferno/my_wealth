@@ -390,7 +390,11 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                         text: " is ",
                       ),
                       TextSpan(
-                        text: formatDecimalWithNull(_companySahamCodePrice, 1, 0),
+                        text: formatDecimalWithNull(
+                          _companySahamCodePrice,
+                          times: 1,
+                          decimal: 0
+                        ),
                         style: const TextStyle(
                           color: accentColor,
                           fontWeight: FontWeight.bold,
@@ -448,7 +452,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         fontWeight: FontWeight.bold
       ),
     ));
-    _pageItems.add(_generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true));
+    _pageItems.add(_generateRow(
+      date: "Date",
+      buyLot: "B.lot",
+      buyValue: "B.val",
+      buyAverage: "B.avg",
+      sellLot: "S.lot",
+      sellValue: "S.val",
+      sellAverage: "S.avg",
+      isBold: true,
+      isBackground: true
+    ));
     _pageItems.addAll(_generateCombineRows(combineAll));
     _pageItems.add(_generateAverage(combineAll, true));
     _pageItems.add(const SizedBox(height: 10,));
@@ -461,7 +475,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         fontWeight: FontWeight.bold
       ),
     ));
-    _pageItems.add(_generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true));
+    _pageItems.add(_generateRow(
+      date: "Date",
+      buyLot: "B.lot",
+      buyValue: "B.val",
+      buyAverage: "B.avg",
+      sellLot: "S.lot",
+      sellValue: "S.val",
+      sellAverage: "S.avg",
+      isBold: true,
+      isBackground: true,
+    ));
     _pageItems.addAll(_generateCombineRows(combineDomestic));
     _pageItems.add(_generateAverage(combineDomestic));
     _pageItems.add(const SizedBox(height: 10,));
@@ -474,7 +498,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         fontWeight: FontWeight.bold
       ),
     ));
-    _pageItems.add(_generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true));
+    _pageItems.add(_generateRow(
+      date: "Date",
+      buyLot: "B.lot",
+      buyValue: "B.val",
+      buyAverage: "B.avg",
+      sellLot: "S.lot",
+      sellValue: "S.val",
+      sellAverage: "S.avg",
+      isBold: true,
+      isBackground: true,
+    ));
     _pageItems.addAll(_generateCombineRows(combineForeign));
     _pageItems.add(_generateAverage(combineForeign));
 
@@ -520,7 +554,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     ),
                     const SizedBox(width: 5,),
                     Text(
-                      "${formatDecimal(shareLeft/100, 0)} lots",
+                      "${formatDecimal(shareLeft/100, decimal: 0)} lots",
                       style: TextStyle(
                         fontSize: 10,
                         color: shareLeftColor,
@@ -544,7 +578,13 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     ),
                     const SizedBox(width: 5,),
                     Text(
-                      formatCurrency(shareValue, false, false, false, 0),
+                      formatCurrency(
+                        shareValue,
+                        checkThousand: false,
+                        showDecimal: false,
+                        shorten: false,
+                        decimalNum: 0
+                      ),
                       style: TextStyle(
                         fontSize: 10,
                         color: shareValueColor,
@@ -568,7 +608,20 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     ),
                     const SizedBox(width: 5,),
                     Text(
-                      "${formatCurrency(shareAvg, false, false, false, 0)} (${formatDecimal(companySahamCodePrice - shareAvg, 0)})",
+                      "${
+                        formatCurrency(
+                          shareAvg,
+                          checkThousand: false,
+                          showDecimal: false,
+                          shorten: false,
+                          decimalNum: 0
+                        )
+                      } (${
+                        formatDecimal(
+                          companySahamCodePrice - shareAvg,
+                          decimal: 0,
+                        )
+                      })",
                       style: TextStyle(
                         fontSize: 10,
                         color: shareAvgColor,
@@ -592,7 +645,13 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     ),
                     const SizedBox(width: 5,),
                     Text(
-                      formatCurrency(sharePL, false, false, false, 0),
+                      formatCurrency(
+                        sharePL,
+                        checkThousand: false,
+                        showDecimal: false,
+                        shorten: false,
+                        decimalNum: 0
+                      ),
                       style: TextStyle(
                         fontSize: 10,
                         color: sharePLColor,
@@ -668,23 +727,32 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     return result;
   }
 
-  Widget _generateRow(String date, String buyLot, String buyValue, String buyAverage, String sellLot, String sellValue, String sellAverage, [bool? isBold, bool? isBackground, Color? dateColor, Color? buyColor, Color? sellColor]) {
-    bool isBoldUse = (isBold ?? false);
-    bool isBackgroundUse = (isBackground ?? false);
+  Widget _generateRow({
+    required String date,
+    required String buyLot,
+    required String buyValue,
+    required String buyAverage,
+    required String sellLot,
+    required String sellValue,
+    required String sellAverage,
+    bool isBold = false,
+    bool isBackground = false,
+    Color? dateColor,
+    Color buyColor = Colors.green,
+    Color sellColor = secondaryColor,
+  }) {
     Color dateColorUse = (dateColor ?? Colors.amber[700]!);
-    Color buyColorUse = (buyColor ?? Colors.green);
-    Color sellColorUse = (sellColor ?? secondaryColor);
 
     TextStyle textStyleBuy = TextStyle(
       fontSize: 10,
-      fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-      color: (isBackgroundUse ? Colors.white : buyColorUse),
+      fontWeight: (isBold ? FontWeight.bold : FontWeight.normal),
+      color: (isBackground ? Colors.white : buyColor),
     );
 
     TextStyle textStyleSell = TextStyle(
       fontSize: 10,
-      fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-      color: (isBackgroundUse ? Colors.white : sellColorUse),
+      fontWeight: (isBold ? FontWeight.bold : FontWeight.normal),
+      color: (isBackground ? Colors.white : sellColor),
     );
 
     return Row(
@@ -693,18 +761,18 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       children: <Widget>[
         Container(
           width: 40,
-          color: (isBackgroundUse ? accentDark : Colors.transparent),
+          color: (isBackground ? accentDark : Colors.transparent),
           child: Text(
             date,
             style: TextStyle(
               fontSize: 10,
-              color: (isBackgroundUse ? Colors.white : dateColorUse)
+              color: (isBackground ? Colors.white : dateColorUse)
             ),
           ),
         ),
         Expanded(
           child: Container(
-            color: (isBackgroundUse ? buyColorUse : Colors.transparent),
+            color: (isBackground ? buyColor : Colors.transparent),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -733,7 +801,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         ),
         Expanded(
           child: Container(
-            color: (isBackgroundUse ? sellColorUse : Colors.transparent),
+            color: (isBackground ? sellColor : Colors.transparent),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -770,19 +838,51 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     // iterate thru data
     data.forEach((key, value) {
       result.add(_generateRow(
-        Globals.dfddMM.format(key.toLocal()),
-        formatIntWithNull(value.brokerSummaryBuyLot, false, false),
-        formatCurrencyWithNull(value.brokerSummaryBuyValue, true, true),
-        formatCurrencyWithNull(value.brokerSummaryBuyAverage, false, false),
-        formatIntWithNull(value.brokerSummarySellLot, false, false),
-        formatCurrencyWithNull(value.brokerSummarySellValue, true, true),
-        formatCurrencyWithNull(value.brokerSummarySellAverage, false, false)
+        date: Globals.dfddMM.format(key.toLocal()),
+        buyLot: formatIntWithNull(
+          value.brokerSummaryBuyLot,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        buyValue: formatCurrencyWithNull(
+          value.brokerSummaryBuyValue,
+          checkThousand: true,
+          showDecimal: true
+        ),
+        buyAverage: formatCurrencyWithNull(
+          value.brokerSummaryBuyAverage,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        sellLot: formatIntWithNull(
+          value.brokerSummarySellLot,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        sellValue: formatCurrencyWithNull(
+          value.brokerSummarySellValue,
+          checkThousand: true,
+          showDecimal: true
+        ),
+        sellAverage: formatCurrencyWithNull(
+          value.brokerSummarySellAverage,
+          checkThousand: false,
+          showDecimal: false
+        )
       ));
     });
 
     // ensure that we have at least 1 result, if not then generate a dummy result with all '-'
     if (result.isEmpty) {
-      result.add(_generateRow('-', '-', '-', '-', '-', '-', '-'));
+      result.add(_generateRow(
+        date: '-',
+        buyLot: '-',
+        buyValue: '-',
+        buyAverage: '-',
+        sellLot: '-',
+        sellValue: '-',
+        sellAverage: '-'
+      ));
     }
 
     return result;
@@ -828,18 +928,42 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       }
 
       return _generateRow(
-        "Total",
-        formatIntWithNull(totalBuyLot, false, false),
-        formatCurrencyWithNull(totalBuyValue, true, true),
-        formatCurrencyWithNull(totalBuyAverage, false, false),
-        formatIntWithNull(totalSellLot, false, false),
-        formatCurrencyWithNull(totalSellValue, true, true),
-        formatCurrencyWithNull(totalSellAverage, false, false),
-        false,
-        true,
-        Colors.amber[900]!,
-        Colors.green[900],
-        secondaryDark,
+        date: "Total",
+        buyLot: formatIntWithNull(
+          totalBuyLot,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        buyValue: formatCurrencyWithNull(
+          totalBuyValue,
+          checkThousand: true,
+          showDecimal: true
+        ),
+        buyAverage: formatCurrencyWithNull(
+          totalBuyAverage,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        sellLot: formatIntWithNull(
+          totalSellLot,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        sellValue: formatCurrencyWithNull(
+          totalSellValue,
+          checkThousand: true,
+          showDecimal: true
+        ),
+        sellAverage: formatCurrencyWithNull(
+          totalSellAverage,
+          checkThousand: false,
+          showDecimal: false
+        ),
+        isBold: false,
+        isBackground: true,
+        dateColor: Colors.amber[900]!,
+        buyColor: Colors.green[900]!,
+        sellColor: secondaryDark,
       );
     }
   }

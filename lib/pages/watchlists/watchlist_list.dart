@@ -315,7 +315,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(
                                       title: "SHARES",
-                                      text: formatDecimal(_totalSharesBuy, 2)
+                                      text: formatDecimal(
+                                        _totalSharesBuy,
+                                        decimal: 2
+                                      )
                                     ),
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(
@@ -336,7 +339,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(
                                       title: "SHARES",
-                                      text: formatDecimal(_totalSharesSell, 2)
+                                      text: formatDecimal(
+                                        _totalSharesSell,
+                                        decimal: 2
+                                      )
                                     ),
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(
@@ -352,7 +358,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   children: <Widget>[
                                     WatchlistDetailSummaryBox(
                                       title: "CURRENT",
-                                      text: formatDecimal(_totalCurrentShares, 2)
+                                      text: formatDecimal(
+                                        _totalCurrentShares,
+                                        decimal: 2
+                                      )
                                     ),
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(

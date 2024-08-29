@@ -216,7 +216,10 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                 ),
                                 Center(
                                   child: Text(
-                                    "${formatDecimal((sectorAverage * 100), 2)}%",
+                                    "${formatDecimal(
+                                      (sectorAverage * 100),
+                                      decimal: 2
+                                    )}%",
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
@@ -421,11 +424,34 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockNewListedList[index].listedShares, true, true, 2)),
+                                    _smallBox(
+                                      title: "Listed Shares",
+                                      value: formatIntWithNull(
+                                        _stockNewListedList[index].listedShares,
+                                        checkThousand: true,
+                                        showDecimal: true,
+                                        decimalNum: 2
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Shares Offered", value: formatIntWithNull(_stockNewListedList[index].numOfShares, true, true, 2)),
+                                    _smallBox(
+                                      title: "Shares Offered",
+                                      value: formatIntWithNull(
+                                        _stockNewListedList[index].numOfShares,
+                                        checkThousand: true,
+                                        showDecimal: true,
+                                        decimalNum: 2
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "% Shares", value: "${formatDecimalWithNull((_stockNewListedList[index].numOfShares ?? 0) / (_stockNewListedList[index].listedShares ?? 1), 100, 2)}%"),
+                                    _smallBox(
+                                      title: "% Shares",
+                                      value: "${formatDecimalWithNull(
+                                        (_stockNewListedList[index].numOfShares ?? 0) / (_stockNewListedList[index].listedShares ?? 1),
+                                        times: 100,
+                                        decimal: 2
+                                      )}%"
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 5,),
@@ -433,11 +459,32 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Offering Price", value: formatCurrencyWithNull((_stockNewListedList[index].offering ?? 0).toDouble(), false, false, false, 0)),
+                                    _smallBox(
+                                      title: "Offering Price",
+                                      value: formatCurrencyWithNull(
+                                        (_stockNewListedList[index].offering ?? 0).toDouble(),
+                                        checkThousand: false,
+                                        showDecimal: false,
+                                        shorten: false,
+                                        decimalNum: 0
+                                      )),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Fund Raised", value: formatIntWithNull(_stockNewListedList[index].fundRaised, true, true, 2)),
+                                    _smallBox(
+                                      title: "Fund Raised",
+                                      value: formatIntWithNull(
+                                        _stockNewListedList[index].fundRaised,
+                                        checkThousand: true,
+                                        showDecimal: true,
+                                        decimalNum: 2
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Listed Date", value: formatDateWithNulll(date: _stockNewListedList[index].listedDate)),
+                                    _smallBox(
+                                      title: "Listed Date",
+                                      value: formatDateWithNulll(
+                                        date: _stockNewListedList[index].listedDate
+                                      )
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 5,),
@@ -445,11 +492,33 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Current Price", value: formatCurrencyWithNull((_stockNewListedList[index].currentPrice ?? 0).toDouble(), false, false, false, 0)),
+                                    _smallBox(
+                                      title: "Current Price",
+                                      value: formatCurrencyWithNull(
+                                        (_stockNewListedList[index].currentPrice ?? 0).toDouble(),
+                                        checkThousand: false,
+                                        showDecimal: false,
+                                        shorten: false,
+                                        decimalNum: 0
+                                      )),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Diff Price", value: formatIntWithNull((_stockNewListedList[index].currentPrice! > 0 ? _stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering! : null), false, false, 0)),
+                                    _smallBox(
+                                      title: "Diff Price",
+                                      value: formatIntWithNull(
+                                        (_stockNewListedList[index].currentPrice! > 0 ? _stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering! : null),
+                                        checkThousand: false,
+                                        showDecimal: false,
+                                        decimalNum: 0
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "% Diff", value: "${formatDecimalWithNull((_stockNewListedList[index].currentPrice! > 0 ? (_stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering!) / _stockNewListedList[index].offering! : null), 100, 2)}%"),
+                                    _smallBox(
+                                      title: "% Diff",
+                                      value: "${formatDecimalWithNull(
+                                        (_stockNewListedList[index].currentPrice! > 0 ? (_stockNewListedList[index].currentPrice! - _stockNewListedList[index].offering!) / _stockNewListedList[index].offering! : null),
+                                        times: 100,
+                                        decimal: 2
+                                      )}%"),
                                   ],
                                 ),
                               ],
@@ -521,11 +590,28 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Cum Date", value: formatDateWithNulll(date: _stockDividendList[index].cumDividend)),
+                                    _smallBox(
+                                      title: "Cum Date",
+                                      value: formatDateWithNulll(
+                                        date: _stockDividendList[index].cumDividend
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Ex Date", value: formatDateWithNulll(date: _stockDividendList[index].exDividend)),
+                                    _smallBox(
+                                      title: "Ex Date",
+                                      value: formatDateWithNulll(
+                                        date: _stockDividendList[index].exDividend
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Dividend", value: formatDecimalWithNull(_stockDividendList[index].cashDividend, 1, 2)),
+                                    _smallBox(
+                                      title: "Dividend",
+                                      value: formatDecimalWithNull(
+                                        _stockDividendList[index].cashDividend,
+                                        times: 1,
+                                        decimal: 2
+                                      )
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 5,),
@@ -533,11 +619,25 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Record Date", value: formatDateWithNulll(date: _stockDividendList[index].recordDate)),
+                                    _smallBox(
+                                      title: "Record Date",
+                                      value: formatDateWithNulll(
+                                        date: _stockDividendList[index].recordDate
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Payment Date", value: formatDateWithNulll(date: _stockDividendList[index].paymentDate)),
+                                    _smallBox(
+                                      title: "Payment Date",
+                                      value: formatDateWithNulll(
+                                        date: _stockDividendList[index].paymentDate
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    const Expanded(child: SizedBox(width: double.infinity,),),
+                                    const Expanded(
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -610,11 +710,27 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    _smallBox(title: "Ratio", value: _stockSplitList[index].ratio),
+                                    _smallBox(
+                                      title: "Ratio",
+                                      value: _stockSplitList[index].ratio
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Listed Shares", value: formatIntWithNull(_stockSplitList[index].listedShares, true, true, 2)),
+                                    _smallBox(
+                                      title: "Listed Shares",
+                                      value: formatIntWithNull(
+                                        _stockSplitList[index].listedShares,
+                                        checkThousand: true,
+                                        showDecimal: true,
+                                        decimalNum: 2
+                                      )
+                                    ),
                                     const SizedBox(width: 10,),
-                                    _smallBox(title: "Split Date", value: formatDateWithNulll(date: _stockSplitList[index].listingDate)),
+                                    _smallBox(
+                                      title: "Split Date",
+                                      value: formatDateWithNulll(
+                                        date: _stockSplitList[index].listingDate
+                                      )
+                                    ),
                                   ],
                                 ),
                               ],
@@ -786,7 +902,10 @@ class _InsightStockPageState extends State<InsightStockPage> {
                 ),
                 const SizedBox(width: 5,),
                 Text(
-                  '${formatDecimal(info[index].gain * 100, 2)}%',
+                  '${formatDecimal(
+                    info[index].gain * 100,
+                    decimal: 2,
+                  )}%',
                   style: TextStyle(
                     color: gainColor,
                     fontSize: 12,

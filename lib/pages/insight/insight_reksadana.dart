@@ -374,7 +374,10 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
                 ),
                 const SizedBox(width: 5,),
                 Text(
-                  '${formatDecimal(info[index].gain * 100, 2)}%',
+                  '${formatDecimal(
+                    info[index].gain * 100,
+                    decimal: 2,
+                  )}%',
                   style: TextStyle(
                     color: gainColor,
                     fontSize: 12,

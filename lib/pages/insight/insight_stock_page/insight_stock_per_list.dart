@@ -123,9 +123,21 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
               bgColor: primaryDark,
               code: '',
               title: "Average ${_data.averagePerYear}",
-              per: formatDecimalWithNull(_data.averagePerDaily, 1, 2),
-              periodic: formatDecimalWithNull(_data.averagePerPeriodatic, 1, 2),
-              annual: formatDecimalWithNull(_data.averagePerAnnualized, 1, 2),
+              per: formatDecimalWithNull(
+                _data.averagePerDaily,
+                times: 1,
+                decimal: 2
+              ),
+              periodic: formatDecimalWithNull(
+                _data.averagePerPeriodatic,
+                times: 1,
+                decimal: 2
+              ),
+              annual: formatDecimalWithNull(
+                _data.averagePerAnnualized,
+                times: 1,
+                decimal: 2
+              ),
             ),
             Expanded(
               child: ListView.builder(
@@ -171,11 +183,23 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                       codeTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: accentColor),
                       title: _codeList[index].name,
                       titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: textPrimary),
-                      per: formatDecimalWithNull(_codeList[index].perDaily, 1, 2),
+                      per: formatDecimalWithNull(
+                        _codeList[index].perDaily,
+                        times: 1,
+                        decimal: 2
+                      ),
                       period: _codeList[index].period,
                       year: _codeList[index].year,
-                      periodic: formatDecimalWithNull(_codeList[index].perPeriodatic, 1, 2),
-                      annual: formatDecimalWithNull(_codeList[index].perAnnualized, 1, 2)
+                      periodic: formatDecimalWithNull(
+                        _codeList[index].perPeriodatic,
+                        times: 1,
+                        decimal: 2
+                      ),
+                      annual: formatDecimalWithNull(
+                        _codeList[index].perAnnualized,
+                        times: 1,
+                        decimal: 2
+                      )
                     ),
                   );
                 })

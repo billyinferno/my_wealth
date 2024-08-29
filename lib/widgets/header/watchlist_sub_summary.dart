@@ -87,7 +87,11 @@ class WatchlistSubSummary extends StatelessWidget {
                       Visibility(
                         visible: (cost > 0),
                         child: Text(
-                          (isUserVisible ? "(${formatDecimalWithNull((cost > 0 ? (value - cost) / cost : 0), 100, 2)}%)" : ""),
+                          (isUserVisible ? "(${formatDecimalWithNull(
+                            (cost > 0 ? (value - cost) / cost : 0),
+                            times: 100,
+                            decimal: 2,
+                          )}%)" : ""),
                           style: TextStyle(
                             color: riskColor(value, cost, riskFactor)
                           ),

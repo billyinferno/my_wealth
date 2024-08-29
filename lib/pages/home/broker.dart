@@ -164,7 +164,7 @@ class _BrokerPageState extends State<BrokerPage> {
                                 _informationText(
                                   text: "Volume",
                                   value: formatIntWithNull(
-                                    value: _filterBrokerList[index].brokerVolume,
+                                    _filterBrokerList[index].brokerVolume,
                                     checkThousand: true,
                                     showDecimal: true,
                                   )
@@ -172,7 +172,7 @@ class _BrokerPageState extends State<BrokerPage> {
                                 _informationText(
                                   text: "Value",
                                   value: formatIntWithNull(
-                                    value: _filterBrokerList[index].brokerValue,
+                                    _filterBrokerList[index].brokerValue,
                                     checkThousand: true,
                                     showDecimal: true
                                   )
@@ -180,7 +180,7 @@ class _BrokerPageState extends State<BrokerPage> {
                                 _informationText(
                                   text: "Frequency",
                                   value: formatIntWithNull(
-                                    value: _filterBrokerList[index].brokerFrequency,
+                                    _filterBrokerList[index].brokerFrequency,
                                     checkThousand: false,
                                     showDecimal: false
                                   )

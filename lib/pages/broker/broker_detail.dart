@@ -151,9 +151,9 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(formatIntWithNull(
-                              value: _transactionList.brokerSummaryVolume
-                            )),
+                            Text(
+                              formatIntWithNull(_transactionList.brokerSummaryVolume)
+                            ),
                           ],
                         ),
                       ),
@@ -170,9 +170,9 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(formatCurrencyWithNull(
-                              amount: _transactionList.brokerSummaryValue
-                            )),
+                            Text(
+                              formatCurrencyWithNull(_transactionList.brokerSummaryValue)
+                            ),
                           ],
                         ),
                       ),
@@ -191,7 +191,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                             ),
                             Text(
                               formatIntWithNull(
-                                value: _transactionList.brokerSummaryFrequency,
+                                _transactionList.brokerSummaryFrequency,
                                 checkThousand: false,
                                 showDecimal: false
                               )
@@ -414,12 +414,12 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                           (
                                             _transactionList.brokerSummaryCodeList[index].brokerSummaryLot > 1000000 ?
                                             formatIntWithNull(
-                                              value: _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
+                                              _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
                                               checkThousand: false,
                                               showDecimal: true
                                             ) :
                                             formatIntWithNull(
-                                              value: _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
+                                              _transactionList.brokerSummaryCodeList[index].brokerSummaryLot,
                                               checkThousand: false,
                                               showDecimal: false
                                             )
@@ -448,7 +448,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         ),
                                         Text(
                                           formatCurrencyWithNull(
-                                            amount: _transactionList.brokerSummaryCodeList[index].brokerSummaryValue,
+                                            _transactionList.brokerSummaryCodeList[index].brokerSummaryValue,
                                             checkThousand: false,
                                             showDecimal: true,
                                           ),
@@ -476,7 +476,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         ),
                                         Text(
                                           formatIntWithNull(
-                                            value: _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice,
+                                            _transactionList.brokerSummaryCodeList[index].brokerSummaryLastPrice,
                                             checkThousand: false,
                                             showDecimal: false
                                           ),
@@ -488,7 +488,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                         const SizedBox(width: 5,),
                                         Text(
                                           '(${formatIntWithNull(
-                                            value: currLeftPrice,
+                                            currLeftPrice,
                                             checkThousand: false,
                                             showDecimal: false,
                                           )})',
@@ -711,32 +711,32 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       result.add(_generateRow(
         Globals.dfddMM.format(key.toLocal()),
         formatIntWithNull(
-          value: value.brokerSummaryBuyLot,
+          value.brokerSummaryBuyLot,
           checkThousand: false,
           showDecimal: false,
         ),
         formatCurrencyWithNull(
-          amount: value.brokerSummaryBuyValue,
+          value.brokerSummaryBuyValue,
           checkThousand: true,
           showDecimal: true,
         ),
         formatCurrencyWithNull(
-          amount: value.brokerSummaryBuyAverage,
+          value.brokerSummaryBuyAverage,
           checkThousand: false,
           showDecimal: false
         ),
         formatIntWithNull(
-          value: value.brokerSummarySellLot,
+          value.brokerSummarySellLot,
           checkThousand: false,
           showDecimal: false
         ),
         formatCurrencyWithNull(
-          amount: value.brokerSummarySellValue,
+          value.brokerSummarySellValue,
           checkThousand: true,
           showDecimal: true,
         ),
         formatCurrencyWithNull(
-          amount: value.brokerSummarySellAverage,
+          value.brokerSummarySellAverage,
           checkThousand: false,
           showDecimal: false,
         )
@@ -782,32 +782,32 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       return _generateRow(
         "Total",
         formatIntWithNull(
-          value: totalBuyLot,
+          totalBuyLot,
           checkThousand: false,
           showDecimal: false,
         ),
         formatCurrencyWithNull(
-          amount: totalBuyValue,
+          totalBuyValue,
           checkThousand: true,
           showDecimal: true,
         ),
         formatCurrencyWithNull(
-          amount: totalBuyAverage,
+          totalBuyAverage,
           checkThousand: false,
           showDecimal: false,
         ),
         formatIntWithNull(
-          value: totalSellLot,
+          totalSellLot,
           checkThousand: false,
           showDecimal: false,
         ),
         formatCurrencyWithNull(
-          amount: totalSellValue,
+          totalSellValue,
           checkThousand: true,
           showDecimal: true,
         ),
         formatCurrencyWithNull(
-          amount: totalSellAverage,
+          totalSellAverage,
           checkThousand: false,
           showDecimal: false,
         ),

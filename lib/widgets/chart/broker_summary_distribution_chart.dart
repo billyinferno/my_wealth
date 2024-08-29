@@ -362,7 +362,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             padding: const EdgeInsets.all(2.5),
                             child: Text(
                               formatIntWithNull(
-                                value: widget.data[1].brokerSummaryData[index].brokerSummaryBuyLot,
+                                widget.data[1].brokerSummaryData[index].brokerSummaryBuyLot,
                                 checkThousand: false,
                                 showDecimal: true,
                                 decimalNum: 2
@@ -380,7 +380,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             padding: const EdgeInsets.all(2.5),
                             child: Text(
                               formatIntWithNull(
-                                value: widget.data[1].brokerSummaryData[index].brokerSummarySellLot,
+                                widget.data[1].brokerSummaryData[index].brokerSummarySellLot,
                                 checkThousand: false,
                                 showDecimal: true,
                                 decimalNum: 2,
@@ -398,7 +398,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                             padding: const EdgeInsets.all(2.5),
                             child: Text(
                               formatIntWithNull(
-                                value: widget.data[1].brokerSummaryData[index].brokerSummaryLot,
+                                widget.data[1].brokerSummaryData[index].brokerSummaryLot,
                                 checkThousand: false,
                                 showDecimal: true,
                                 decimalNum: 2,

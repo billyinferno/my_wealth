@@ -167,7 +167,9 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // check whether we need to calculate the average price or not?
     if (_watchlistComputation.totalCurrentShares > 0 ) {
-      avgPrice = formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares);
+      avgPrice = formatCurrency(
+        _watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares
+      );
     }
 
     return Scaffold(
@@ -238,10 +240,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                                   Text(
                                     formatCurrencyWithNull(
                                       _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                                      false,
-                                      true,
-                                      false,
-                                      2
+                                      checkThousand: false,
+                                      showDecimal: true,
+                                      shorten: false,
+                                      decimalNum: 2
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
@@ -264,10 +266,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                                     child: Text(
                                       formatCurrencyWithNull(
                                         _watchlistComputation.priceDiff,
-                                        false,
-                                        true,
-                                        false,
-                                        2
+                                        checkThousand: false,
+                                        showDecimal: true,
+                                        shorten: false,
+                                        decimalNum: 2
                                       ),
                                     ),
                                   )
@@ -537,7 +539,13 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                     ),
                   ),
                   Text(
-                    formatCurrency(_plTotal, false, true, false, 2),
+                    formatCurrency(
+                      _plTotal,
+                      checkThousand: false,
+                      showDecimal: true,
+                      shorten: false,
+                      decimalNum: 2
+                    ),
                     style: TextStyle(
                       color: _plTotalColor,
                     ),
@@ -556,7 +564,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                     ),
                   ),
                   Text(
-                    "${formatDecimal(_plRatio, 2)}%",
+                    "${formatDecimal(
+                      _plRatio,
+                      decimal: 2
+                    )}%",
                     style: TextStyle(
                       color: _plRatioColor,
                     ),
@@ -606,7 +617,13 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                     ),
                   ),
                   Text(
-                    formatCurrency(_plTotalYear, false, true, false, 2),
+                    formatCurrency(
+                      _plTotalYear,
+                      checkThousand: false,
+                      showDecimal: true,
+                      shorten: false,
+                      decimalNum: 2
+                    ),
                     style: TextStyle(
                       color: _plTotalYearColor,
                     ),
@@ -625,7 +642,10 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                     ),
                   ),
                   Text(
-                    "${formatDecimal(_plRatioYear, 2)}%",
+                    "${formatDecimal(
+                      _plRatioYear,
+                      decimal: 2
+                    )}%",
                     style: TextStyle(
                       color: _plRatioYearColor,
                     ),

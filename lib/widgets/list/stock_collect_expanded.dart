@@ -104,24 +104,60 @@ class StockCollectExpanded extends StatelessWidget {
                 header: "BUY (LOT)",
                 headerColor: Colors.green,
                 headerWeight: FontWeight.bold,
-                value: formatIntWithNull(data.summaryTotalBuy, false, false, 0, false),
-                subText: "${formatIntWithNull(data.summaryCountBuy, false, false, 0, false)} times",
+                value: formatIntWithNull(
+                  data.summaryTotalBuy,
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                  shorten: false
+                ),
+                subText: "${formatIntWithNull(
+                  data.summaryCountBuy,
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                  shorten: false
+                )} times",
               ),
               const SizedBox(width: 10,),
               _itemSubText(
                 header: "SELL (LOT)",
                 headerColor: secondaryColor,
                 headerWeight: FontWeight.bold,
-                value: formatIntWithNull(data.summaryTotalSell, false, false, 0, false),
-                subText: "${formatIntWithNull(data.summaryCountSell, false, false, 0, false)} times",
+                value: formatIntWithNull(
+                  data.summaryTotalSell,
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                  shorten: false
+                ),
+                subText: "${formatIntWithNull(
+                  data.summaryCountSell,
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                  shorten: false
+                )} times",
               ),
               const SizedBox(width: 10,),
               _itemSubText(
                 header: "LEFT (LOT)",
                 headerColor: Colors.blue,
                 headerWeight: FontWeight.bold,
-                value: formatIntWithNull(data.summaryTotalLeft, false, false, 0, false),
-                subText: "${formatDecimalWithNull(data.summaryTotalLeft / data.summaryTotalBuy, 100, 2)} %",
+                value: formatIntWithNull(
+                  data.summaryTotalLeft,
+                  checkThousand: false,
+                  showDecimal: false,
+                  decimalNum: 0,
+                  shorten: false
+                ),
+                subText: "${
+                  formatDecimalWithNull(
+                    data.summaryTotalLeft / data.summaryTotalBuy,
+                    times: 100,
+                    decimal: 2,
+                  )
+                } %",
               ),
             ],
           ),
@@ -228,18 +264,58 @@ class StockCollectExpanded extends StatelessWidget {
           ),
           const SizedBox(width: 5,),
           _itemSubItem(value: [
-            formatIntWithNull(item.totalBuy, false, false, 0, false),
-            "${formatIntWithNull(item.countBuy, false, false, 0, false)} times",
+            formatIntWithNull(
+              item.totalBuy,
+              checkThousand: false,
+              showDecimal: false,
+              decimalNum: 0,
+              shorten: false
+            ),
+            "${
+              formatIntWithNull(
+                item.countBuy,
+                checkThousand: false,
+                showDecimal: false,
+                decimalNum: 0,
+                shorten: false
+              )
+            } times",
           ]),
           const SizedBox(width: 5,),
           _itemSubItem(value: [
-            formatIntWithNull(item.totalSell, false, false, 0, false),
-            "${formatIntWithNull(item.countSell, false, false, 0, false)} times",
+            formatIntWithNull(
+              item.totalSell,
+              checkThousand: false,
+              showDecimal: false,
+              decimalNum: 0,
+              shorten: false
+            ),
+            "${
+              formatIntWithNull(
+                item.countSell,
+                checkThousand: false,
+                showDecimal: false,
+                decimalNum: 0,
+                shorten: false
+              )
+            } times",
           ]),
           const SizedBox(width: 5,),
           _itemSubItem(value: [
-            formatIntWithNull(item.totalLeft, false, false, 0, false),
-            "${formatDecimalWithNull(item.totalPercentage, 100, 2)} %",
+            formatIntWithNull(
+              item.totalLeft,
+              checkThousand: false,
+              showDecimal: false,
+              decimalNum: 0,
+              shorten: false
+            ),
+            "${
+              formatDecimalWithNull(
+                item.totalPercentage,
+                times: 100,
+                decimal: 2,
+              )
+            } %",
           ]),
         ],
       ),

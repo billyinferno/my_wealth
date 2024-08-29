@@ -192,7 +192,12 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                           ),
                         ),
                         Text(
-                          formatCurrency(_args.value, false, false, false),
+                          formatCurrency(
+                            _args.value,
+                            checkThousand: false,
+                            showDecimal: false,
+                            shorten: false
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 22,
@@ -216,7 +221,12 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrency((_args.unrealised ?? 0), false, false, false),
+                              formatCurrency(
+                                (_args.unrealised ?? 0),
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -225,7 +235,11 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             ),
                             const SizedBox(width: 2,),
                             Text(
-                              "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
+                              "(${formatDecimalWithNull(
+                                (_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null),
+                                times: 100,
+                                decimal: 0
+                              )}%)",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,
@@ -252,7 +266,12 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrencyWithNull(_args.realised, false, false, false),
+                              formatCurrencyWithNull(
+                                _args.realised,
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -276,7 +295,12 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                           ),
                         ),
                         Text(
-                          formatCurrency(_args.cost, false, false, false),
+                          formatCurrency(
+                            _args.cost,
+                            checkThousand: false,
+                            showDecimal: false,
+                            shorten: false
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 22,
@@ -301,7 +325,12 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrency(_totalGain, false, false, false),
+                              formatCurrency(
+                                _totalGain,
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -328,7 +357,12 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrencyWithNull(_totalDayGain, false, false, false),
+                              formatCurrencyWithNull(
+                                _totalDayGain,
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -352,9 +386,20 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                   int colorMap = (index % Globals.colorList.length);
                 
                   return ProductListItem(
-                    bgColor: (_portofolioFiltered[index].watchlistSubTotalShare > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
-                    title: (_args.type == 'reksadana' ? _portofolioFiltered[index].companyName : "(${_portofolioFiltered[index].companyCode}) ${_portofolioFiltered[index].companyName}"),
-                    subTitle: "${formatDecimal(_portofolioFiltered[index].watchlistSubTotalShare, 2)} shares",
+                    bgColor: (
+                      _portofolioFiltered[index].watchlistSubTotalShare > 0 ?
+                      Globals.colorList[colorMap] :
+                      Colors.grey[900]!
+                    ),
+                    title: (
+                      _args.type == 'reksadana' ?
+                      _portofolioFiltered[index].companyName :
+                      "(${_portofolioFiltered[index].companyCode}) ${_portofolioFiltered[index].companyName}"
+                    ),
+                    subTitle: "${formatDecimal(
+                      _portofolioFiltered[index].watchlistSubTotalShare,
+                      decimal: 2,
+                    )} shares",
                     value: _portofolioFiltered[index].watchlistSubTotalValue,
                     cost: _portofolioFiltered[index].watchlistSubTotalCost,
                     realised: _portofolioFiltered[index].watchlistSubTotalRealised,
@@ -364,7 +409,10 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                     netAssetValue: _portofolioFiltered[index].companyNetAssetValue,
                     oneDay: _portofolioFiltered[index].companyDailyReturn,
                     onTap: (() async {
-                      _goFindSpecificAndGo(type: _args.type, id: _portofolioFiltered[index].watchlistId);
+                      _goFindSpecificAndGo(
+                        type: _args.type,
+                        id: _portofolioFiltered[index].watchlistId
+                      );
                     }),
                   );
                 }),

@@ -51,7 +51,10 @@ class ExpandedTileChildren extends StatelessWidget {
         const SizedBox(width: 10,),
         Expanded(
           child: Text(
-            formatDecimal((shares > 0 ? (isInLot ? shares / 100 : shares) : ((isInLot ? shares / 100 : shares) * -1)), 2),
+            formatDecimal(
+              (shares > 0 ? (isInLot ? shares / 100 : shares) : ((isInLot ? shares / 100 : shares) * -1)),
+              decimal: 2,
+            ),
             style: const TextStyle(
               fontSize: 10,
             ),

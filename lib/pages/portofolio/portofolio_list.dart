@@ -204,7 +204,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                           ),
                         ),
                         Text(
-                          formatCurrency(_args.value, false, false, false),
+                          formatCurrency(
+                            _args.value,
+                            checkThousand: false,
+                            showDecimal: false,
+                            shorten: false
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 22,
@@ -228,7 +233,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrency((_args.unrealised ?? 0), false, false, false),
+                              formatCurrency(
+                                (_args.unrealised ?? 0),
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -237,7 +247,11 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                             ),
                             const SizedBox(width: 2,),
                             Text(
-                              "(${formatDecimalWithNull((_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null), 100, 0)}%)",
+                              "(${formatDecimalWithNull(
+                                (_args.cost > 0 ? ((_args.unrealised ?? 0) / _args.cost) : null),
+                                times: 100,
+                                decimal: 0
+                              )}%)",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,
@@ -264,7 +278,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrencyWithNull(_args.realised, false, false, false),
+                              formatCurrencyWithNull(
+                                _args.realised,
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -288,7 +307,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                           ),
                         ),
                         Text(
-                          formatCurrency(_args.cost, false, false, false),
+                          formatCurrency(
+                          _args.cost,
+                            checkThousand: false,
+                            showDecimal: false,
+                            shorten: false
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 22,
@@ -313,7 +337,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrency(_totalGain, false, false, false),
+                              formatCurrency(
+                                _totalGain,
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -340,7 +369,12 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                             ),
                             const SizedBox(width: 5,),
                             Text(
-                              formatCurrencyWithNull(_totalDayGain, false, false, false),
+                              formatCurrencyWithNull(
+                                _totalDayGain,
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,

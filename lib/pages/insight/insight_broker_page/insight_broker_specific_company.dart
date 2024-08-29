@@ -369,7 +369,15 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                 ),
                                 const SizedBox(height: 5,),
                                 Text(
-                                  "Current Price: ${(_companyDetail == null ? '' : formatDecimalWithNull(_companyDetail!.companyNetAssetValue, 1, 0))}",
+                                  "Current Price: ${(
+                                    _companyDetail == null ?
+                                    '' :
+                                    formatDecimalWithNull(
+                                      _companyDetail!.companyNetAssetValue,
+                                      times: 1,
+                                      decimal: 0
+                                    )
+                                  )}",
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -592,18 +600,18 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
         buyCode = _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryID!;
         buyLot = formatIntWithNull(
           _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryLot,
-          true,
-          false
+          checkThousand: true,
+          showDecimal: false
         );
         buyValue = formatCurrencyWithNull(
           _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryValue,
-          true,
-          false
+          checkThousand: true,
+          showDecimal: false
         );
         buyAverage = formatCurrencyWithNull(
           _brokerSummaryCurrent.brokerSummaryBuy[i].brokerSummaryAverage,
-          false,
-          false
+          checkThousand: false,
+          showDecimal: false
         );
       }
 
@@ -611,18 +619,18 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
         sellCode = _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryID!;
         sellLot = formatIntWithNull(
           _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryLot,
-          true,
-          false
+          checkThousand: true,
+          showDecimal: false
         );
         sellValue = formatCurrencyWithNull(
           _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryValue,
-          true,
-          false
+          checkThousand: true,
+          showDecimal: false
         );
         sellAverage = formatCurrencyWithNull(
           _brokerSummaryCurrent.brokerSummarySell[i].brokerSummaryAverage,
-          false,
-          false
+          checkThousand: false,
+          showDecimal: false
         );
       }
 
@@ -816,8 +824,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: Text(
                   formatIntWithNull(
                     _brokerTopData!.brokerData[i].brokerSummaryLot,
-                    false,
-                    false
+                    checkThousand: false,
+                    showDecimal: false
                   ),
                   style: _topBrokerRow,
                 )
@@ -828,9 +836,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 child: Text(
                   formatCurrency(
                     _brokerTopData!.brokerData[i].brokerSummaryAverage,
-                    false,
-                    false,
-                    true
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true
                   ),
                   style: _topBrokerRow,
                 )
@@ -839,7 +847,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               Expanded(
                 flex: 3,
                 child: Text(
-                  formatCurrencyWithNull(_brokerTopData!.brokerData[i].brokerSummaryValue * 100),
+                  formatCurrencyWithNull(
+                    _brokerTopData!.brokerData[i].brokerSummaryValue * 100
+                  ),
                   style: _topBrokerRow,
                 )
               ),
@@ -847,7 +857,12 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               Expanded(
                 flex: 3,
                 child: Text(
-                  formatCurrency(currentValue, false, false, true),
+                  formatCurrency(
+                    currentValue,
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true,
+                  ),
                   style: _topBrokerRow,
                 )
               ),
@@ -855,9 +870,22 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
               Expanded(
                 flex: 3,
                 child: Text(
-                  formatCurrency(currentDiff, false, false, true),
+                  formatCurrency(
+                    currentDiff,
+                    checkThousand: false,
+                    showDecimal: false,
+                    shorten: true,
+                  ),
                   style: _topBrokerRow.copyWith(
-                    color: (currentDiff < 0 ? secondaryColor : currentDiff > 0 ? Colors.green : textPrimary)
+                    color: (
+                      currentDiff < 0 ?
+                      secondaryColor :
+                      (
+                        currentDiff > 0 ?
+                        Colors.green :
+                        textPrimary
+                      )
+                    )
                   ),
                 )
               ),

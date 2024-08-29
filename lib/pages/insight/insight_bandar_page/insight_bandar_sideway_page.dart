@@ -341,20 +341,37 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                             ColumnInfo(
                               title: "Price",
                               titleColor: Colors.grey,
-                              value: formatCurrency(_sortedList[index].lastPrice.toDouble(), false, false, false),
-                              valueColor: _getValueColorInt(_sortedList[index].lastPrice, _sortedList[index].prevClosingPrice),
+                              value: formatCurrency(
+                                _sortedList[index].lastPrice.toDouble(),
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
+                              valueColor: _getValueColorInt(
+                                _sortedList[index].lastPrice,
+                                _sortedList[index].prevClosingPrice
+                              ),
                               valueSize: 15,
                             ),
                             ColumnInfo(
                               title: "Prev Price",
                               titleColor: Colors.grey,
-                              value: formatCurrency(_sortedList[index].prevClosingPrice.toDouble(), false, false, false),
+                              value: formatCurrency(
+                                _sortedList[index].prevClosingPrice.toDouble(),
+                                checkThousand: false,
+                                showDecimal: false,
+                                shorten: false
+                              ),
                               valueSize: 15,
                             ),
                             ColumnInfo(
                               title: "AVG Daily",
                               titleColor: Colors.grey,
-                              value: "${formatDecimalWithNull(_sortedList[index].avgDaily, 100, 2)}%",
+                              value: "${formatDecimalWithNull(
+                                _sortedList[index].avgDaily,
+                                times: 100,
+                                decimal: 2
+                              )}%",
                               valueColor: _getValueColorDouble(_sortedList[index].avgDaily, 0),
                               valueSize: 15,
                             ),
@@ -368,21 +385,33 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                             ColumnInfo(
                               title: "One Day",
                               titleColor: Colors.grey,
-                              value: "${formatDecimalWithNull(_sortedList[index].oneDay, 100, 2)}%",
+                              value: "${formatDecimalWithNull(
+                                _sortedList[index].oneDay,
+                                times: 100,
+                                decimal: 2
+                              )}%",
                               valueColor: _getValueColorDouble(_sortedList[index].oneDay, 0),
                               valueSize: 15,
                             ),
                             ColumnInfo(
                               title: "One Week",
                               titleColor: Colors.grey,
-                              value: "${formatDecimalWithNull(_sortedList[index].oneWeek, 100, 2)}%",
+                              value: "${formatDecimalWithNull(
+                                _sortedList[index].oneWeek,
+                                times: 100,
+                                decimal: 2
+                              )}%",
                               valueColor: _getValueColorDouble(_sortedList[index].oneWeek,  0),
                               valueSize: 15,
                             ),
                             ColumnInfo(
                               title: "One Month",
                               titleColor: Colors.grey,
-                              value: "${formatDecimalWithNull(_sortedList[index].oneMonth, 100, 2)}%",
+                              value: "${formatDecimalWithNull(
+                                _sortedList[index].oneMonth,
+                                times: 100,
+                                decimal: 2
+                              )}%",
                               valueColor: _getValueColorDouble(_sidewayList[index].oneMonth, 0),
                               valueSize: 15,
                             ),

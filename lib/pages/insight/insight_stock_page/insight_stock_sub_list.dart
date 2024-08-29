@@ -195,7 +195,21 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                                           )
                                         ),
                                         child: Text(
-                                          '${formatCurrency(currentPrice, false, false, false)} (${formatCurrency((currentPrice-prevPrice), false, false, false)})',
+                                          '${
+                                            formatCurrency(
+                                              currentPrice,
+                                              checkThousand: false,
+                                              showDecimal: false,
+                                              shorten: false
+                                            )
+                                          } (${
+                                            formatCurrency(
+                                              (currentPrice-prevPrice),
+                                              checkThousand: false,
+                                              showDecimal: false,
+                                              shorten: false
+                                            )
+                                          })',
                                           style: const TextStyle(
                                             fontSize: 10,
                                           ),
@@ -275,7 +289,11 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
               ),
             ),
             Text(
-              formatDecimalWithNull(value, 100, 1),
+              formatDecimalWithNull(
+                value,
+                times: 100,
+                decimal: 1
+              ),
               style: TextStyle(
                 fontSize: 10,
                 color: color

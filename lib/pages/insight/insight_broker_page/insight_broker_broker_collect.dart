@@ -405,7 +405,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalBuy, false, false, 0, false),
+                        formatIntWithNull(
+                          _brokerCollect!.summaryTotalBuy,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 0,
+                          shorten: false,
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -420,7 +426,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalBuyValue, false, false, 2, true),
+                        formatIntWithNull(
+                          _brokerCollect!.summaryTotalBuyValue,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 2,
+                          shorten: true
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -435,7 +447,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        "${formatIntWithNull(_brokerCollect!.summaryCountBuy, false, false, 0, false)}x",
+                        "${formatIntWithNull(
+                          _brokerCollect!.summaryCountBuy,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 0,
+                          shorten: false
+                        )}x",
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -483,7 +501,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalSell, false, false, 0, false),
+                        formatIntWithNull(
+                          _brokerCollect!.summaryTotalSell,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 0,
+                          shorten: false
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -498,7 +522,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalSellValue, false, false, 2, true),
+                        formatIntWithNull(
+                          _brokerCollect!.summaryTotalSellValue,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 2,
+                          shorten: true
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -513,7 +543,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        "${formatIntWithNull(_brokerCollect!.summaryCountSell, false, false, 0, false)}x",
+                        "${formatIntWithNull(
+                          _brokerCollect!.summaryCountSell,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 0,
+                          shorten: false
+                        )}x",
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -547,7 +583,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalLeft, false, false, 0, false),
+                        formatIntWithNull(
+                          _brokerCollect!.summaryTotalLeft,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 0,
+                          shorten: false
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -562,7 +604,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        formatIntWithNull(_brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue, false, false, 2, true),
+                        formatIntWithNull(
+                          _brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue,
+                          checkThousand: false,
+                          showDecimal: false,
+                          decimalNum: 2,
+                          shorten: true
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -577,7 +625,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Text(
-                        "${formatDecimalWithNull(_brokerCollect!.summaryTotalLeft / _brokerCollect!.summaryTotalBuy, 100, 2)} %",
+                        "${formatDecimalWithNull(
+                          _brokerCollect!.summaryTotalLeft / _brokerCollect!.summaryTotalBuy,
+                          times: 100,
+                          decimal: 2
+                        )} %",
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
@@ -673,7 +725,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                             color: priceColor,
                           ),
                           child: Text(
-                            formatIntWithNull(_brokerCollect!.data[index].lastPrice, false, false, 0, false),
+                            formatIntWithNull(
+                              _brokerCollect!.data[index].lastPrice,
+                              checkThousand: false,
+                              showDecimal: false,
+                              decimalNum: 0,
+                              shorten: false
+                            ),
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -711,7 +769,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatIntWithNull(_brokerCollect!.data[index].totalBuy, false, false, 0, false),
+                                formatIntWithNull(
+                                  _brokerCollect!.data[index].totalBuy,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  decimalNum: 0,
+                                  shorten: false
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -725,7 +789,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatIntWithNull(_brokerCollect!.data[index].totalBuyValue, false, false, 0, false),
+                                formatIntWithNull(
+                                  _brokerCollect!.data[index].totalBuyValue,
+                                  checkThousand:false,
+                                  showDecimal:false,
+                                  decimalNum:0,
+                                  shorten:false
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -739,7 +809,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatDecimalWithNull(_brokerCollect!.data[index].totalBuyAvg, 1, 2),
+                                formatDecimalWithNull(
+                                  _brokerCollect!.data[index].totalBuyAvg,
+                                  times: 1,
+                                  decimal: 2
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -753,7 +827,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                "${formatIntWithNull(_brokerCollect!.data[index].countBuy, false, false, 0, false)}x",
+                                "${formatIntWithNull(
+                                  _brokerCollect!.data[index].countBuy,
+                                  checkThousand:false,
+                                  showDecimal:false,
+                                  decimalNum:0,
+                                  shorten:false
+                                )}x",
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -800,7 +880,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatIntWithNull(_brokerCollect!.data[index].totalSell, false, false, 0, false),
+                                formatIntWithNull(
+                                  _brokerCollect!.data[index].totalSell,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  decimalNum: 0,
+                                  shorten: false
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -814,7 +900,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatIntWithNull(_brokerCollect!.data[index].totalSellValue, false, false, 0, false),
+                                formatIntWithNull(
+                                  _brokerCollect!.data[index].totalSellValue,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  decimalNum: 0,
+                                  shorten: false
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -828,7 +920,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatDecimalWithNull(_brokerCollect!.data[index].totalSellAvg, 1, 2),
+                                formatDecimalWithNull(
+                                  _brokerCollect!.data[index].totalSellAvg,
+                                  times: 1,
+                                  decimal: 2
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -842,7 +938,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                "${formatIntWithNull(_brokerCollect!.data[index].countSell, false, false, 0, false)}x",
+                                "${formatIntWithNull(
+                                  _brokerCollect!.data[index].countSell,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  decimalNum: 0,
+                                  shorten: false
+                                )}x",
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -875,7 +977,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatIntWithNull(_brokerCollect!.data[index].totalLeft, false, false, 0, false),
+                                formatIntWithNull(
+                                  _brokerCollect!.data[index].totalLeft,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  decimalNum: 0,
+                                  shorten: false
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -889,7 +997,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatIntWithNull(_brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue, false, false, 0, false),
+                                formatIntWithNull(
+                                  _brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue,
+                                  checkThousand: false,
+                                  showDecimal: false,
+                                  decimalNum: 0,
+                                  shorten: false
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -903,7 +1017,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                formatDecimalWithNull(avgPrice, 1, 2),
+                                formatDecimalWithNull(
+                                  avgPrice,
+                                  times: 1,
+                                  decimal: 2
+                                ),
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -917,7 +1035,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                "${formatDecimalWithNull(_brokerCollect!.data[index].totalPercentage, 100, 2)} %",
+                                "${formatDecimalWithNull(
+                                  _brokerCollect!.data[index].totalPercentage,
+                                  times: 100,
+                                  decimal: 2
+                                )} %",
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 12,

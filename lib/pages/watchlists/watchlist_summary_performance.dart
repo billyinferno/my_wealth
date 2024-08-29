@@ -432,7 +432,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Text(
-                      formatCurrency(_gainDifference, false, true, false, 2),
+                      formatCurrency(
+                        _gainDifference,
+                        checkThousand: false,
+                        showDecimal: true,
+                        shorten: false,
+                        decimalNum: 2
+                      ),
                       style: const TextStyle(
                         fontSize: 10,
                       ),
@@ -533,7 +539,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                           padding: const EdgeInsets.all(5),
                           color: (_perfDataSort[index].isPLMinMax ? _perfDataSort[index].plColor : Colors.transparent),
                           child: Text(
-                            formatCurrency(_perfDataSort[index].pl, false, false, false, 0),
+                            formatCurrency(
+                              _perfDataSort[index].pl,
+                              checkThousand: false,
+                              showDecimal: false,
+                              shorten: false,
+                              decimalNum: 0
+                            ),
                             textAlign: TextAlign.center,
                             style: _smallFont.copyWith(
                               color: (_perfDataSort[index].isPLMinMax ? Colors.white : _perfDataSort[index].plColor),
@@ -547,7 +559,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                           padding: const EdgeInsets.all(5),
                           color: (_perfDataSort[index].isDiffMinMax ? _perfDataSort[index].diffColor : Colors.transparent),
                           child: Text(
-                            formatCurrencyWithNull(_perfDataSort[index].diff, false, false, false, 0),
+                            formatCurrencyWithNull(
+                              _perfDataSort[index].diff,
+                              checkThousand: false,
+                              showDecimal: false,
+                              shorten: false,
+                              decimalNum: 0
+                            ),
                             textAlign: TextAlign.center,
                             style: _smallFont.copyWith(
                               color: (_perfDataSort[index].isDiffMinMax ? Colors.white : _perfDataSort[index].diffColor),
@@ -561,7 +579,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         color: (_perfDataSort[index].isPLMinMax ? _perfDataSort[index].plColor : Colors.transparent),
                         padding: const EdgeInsets.all(5),
                         child: Text(
-                          "${formatDecimalWithNull(_perfDataSort[index].percentage, 100, 2)}%",
+                          "${formatDecimalWithNull(
+                            _perfDataSort[index].percentage,
+                            times: 100,
+                            decimal: 2
+                          )}%",
                           textAlign: TextAlign.center,
                           style: _smallFont.copyWith(
                             color: (_perfDataSort[index].isPLMinMax ? Colors.white : _perfDataSort[index].plColor),
@@ -629,7 +651,13 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
             ),
           ),
           Text(
-            formatCurrency(value, false, true, true, 2),
+            formatCurrency(
+              value,
+              checkThousand: false,
+              showDecimal: true,
+              shorten: true,
+              decimalNum: 2
+            ),
             style: TextStyle(
               color: textColor
             ),

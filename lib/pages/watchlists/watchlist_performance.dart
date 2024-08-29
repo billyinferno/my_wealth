@@ -127,6 +127,16 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   }
 
   Widget _generatePage() {
+    Icon iconPriceDiff = (
+      _watchlistComputation.priceDiff == 0 ?
+      const Icon(Ionicons.remove_outline, color: textPrimary, size: 15,) :
+      (
+        _watchlistComputation.priceDiff > 0 ?
+        const Icon(Ionicons.caret_up, color: Colors.green, size: 12,) :
+        const Icon(Ionicons.caret_down, color: secondaryColor, size: 12,)
+      )
+    );
+    
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -204,23 +214,42 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    formatCurrencyWithNull(_watchlistArgs.watchList.watchlistCompanyNetAssetValue, false, true, false, 2),
+                                    formatCurrencyWithNull(
+                                      _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                                      checkThousand: false,
+                                      showDecimal: true,
+                                      shorten: false,
+                                      decimalNum: 2
+                                    ),
                                   ),
                                   const SizedBox(width: 5,),
-                                  (_watchlistComputation.priceDiff == 0 ? const Icon(Ionicons.remove_outline, color: textPrimary, size: 15,) : (_watchlistComputation.priceDiff > 0 ? const Icon(Ionicons.caret_up, color: Colors.green, size: 12,) : const Icon(Ionicons.caret_down, color: secondaryColor, size: 12,))),
+                                  iconPriceDiff,
                                   const SizedBox(width: 5,),
                                   Container(
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: (_watchlistComputation.priceDiff == 0 ? textPrimary : (_watchlistComputation.priceDiff > 0 ? Colors.green : secondaryColor)),
+                                          color: (
+                                            _watchlistComputation.priceDiff == 0 ? textPrimary :
+                                            (
+                                              _watchlistComputation.priceDiff > 0 ?
+                                              Colors.green :
+                                              secondaryColor
+                                            )
+                                          ),
                                           width: 2.0,
                                           style: BorderStyle.solid,
                                         )
                                       )
                                     ),
                                     child: Text(
-                                      formatCurrencyWithNull(_watchlistComputation.priceDiff, false, true, false, 2),
+                                      formatCurrencyWithNull(
+                                        _watchlistComputation.priceDiff,
+                                        checkThousand: false,
+                                        showDecimal: true,
+                                        shorten: false,
+                                        decimalNum: 2
+                                      ),
                                     ),
                                   )
                                 ],
@@ -237,7 +266,9 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                   ),
                                   const SizedBox(width: 5,),
                                   Text(
-                                    Globals.dfddMMyyyy.format(_watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()),
+                                    Globals.dfddMMyyyy.format(
+                                      _watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()
+                                    ),
                                   ),
                                 ],
                               ),
@@ -248,11 +279,24 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              RowChild(headerText: "AVG PRICE", valueText: (_watchlistComputation.totalCurrentShares > 0 ? formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) : "-")),
+                              RowChild(
+                                headerText: "AVG PRICE",
+                                valueText: (
+                                  _watchlistComputation.totalCurrentShares > 0 ?
+                                  formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) :
+                                  "-"
+                                )
+                              ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText: "COST", valueText: formatCurrency(_watchlistComputation.totalCost)),
+                              RowChild(
+                                headerText: "COST",
+                                valueText: formatCurrency(_watchlistComputation.totalCost)
+                              ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText: "VALUE", valueText: formatCurrency(_watchlistComputation.totalValue)),
+                              RowChild(
+                                headerText: "VALUE",
+                                valueText: formatCurrency(_watchlistComputation.totalValue)
+                              ),
                             ],
                           ),
                           const SizedBox(height: 5,),
@@ -260,11 +304,22 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              RowChild(headerText: "SHARES", valueText: formatCurrency(_watchlistComputation.totalCurrentShares)),
+                              RowChild(
+                                headerText: "SHARES",
+                                valueText: formatCurrency(_watchlistComputation.totalCurrentShares)
+                              ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText: "UNREALISED", valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain), valueColor: _unrealisedColor),
+                              RowChild(
+                                headerText: "UNREALISED",
+                                valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain),
+                                valueColor: _unrealisedColor
+                              ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText: "REALISED", valueText: formatCurrency(_watchlistComputation.totalRealisedGain), valueColor: _realisedColor),
+                              RowChild(headerText
+                              : "REALISED",
+                              valueText: formatCurrency(_watchlistComputation.totalRealisedGain),
+                              valueColor: _realisedColor
+                            ),
                             ],
                           ),
                           const SizedBox(height: 5,),
@@ -272,11 +327,23 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              RowChild(headerText: "MAX", valueText: formatCurrencyWithNull(_max), valueColor: _maxColor),
+                              RowChild(
+                                headerText: "MAX",
+                                valueText: formatCurrencyWithNull(_max),
+                                valueColor: _maxColor
+                              ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText: "MIN", valueText: formatCurrencyWithNull(_min), valueColor: _minColor),
+                              RowChild(
+                                headerText: "MIN",
+                                valueText: formatCurrencyWithNull(_min),
+                                valueColor: _minColor
+                              ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText: "AVERAGE", valueText: formatCurrencyWithNull(_avg), valueColor: _avgColor),
+                              RowChild(
+                                headerText: "AVERAGE",
+                                valueText: formatCurrencyWithNull(_avg),
+                                valueColor:
+                              _avgColor),
                             ],
                           ),
                         ],
@@ -342,7 +409,13 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Text(
-                    formatCurrency(_gainDifference, false, true, false, 2),
+                    formatCurrency(
+                      _gainDifference,
+                      checkThousand: false,
+                      showDecimal: true,
+                      shorten: false,
+                      decimalNum: 2
+                    ),
                     style: const TextStyle(
                       fontSize: 10,
                     ),

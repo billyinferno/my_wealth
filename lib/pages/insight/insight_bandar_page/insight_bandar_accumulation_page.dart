@@ -351,10 +351,18 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
                                   Text(
-                                    formatIntWithNull(_listAccumulation[index].lastPrice, false, false),
+                                    formatIntWithNull(
+                                      _listAccumulation[index].lastPrice,
+                                      checkThousand: false,
+                                      showDecimal: false
+                                    ),
                                   ),
                                   Text(
-                                    '(${formatDecimalWithNull(_listAccumulation[index].oneDay, 100, 2)}%)',
+                                    '(${formatDecimalWithNull(
+                                      _listAccumulation[index].oneDay,
+                                      times: 100,
+                                      decimal: 2
+                                    )}%)',
                                     style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors.green
@@ -373,18 +381,36 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                             ColumnInfo(
                               title: 'Buy',
                               titleColor: Colors.green,
-                              value: formatIntWithNull(_listAccumulation[index].buyLot, false, false, 0, false),
+                              value: formatIntWithNull(
+                                _listAccumulation[index].buyLot,
+                                checkThousand: false,
+                                showDecimal: false,
+                                decimalNum: 0,
+                                shorten: false
+                              ),
                               valueSize: 15,
                             ),
                             ColumnInfo(
                               title: 'Sell',
                               titleColor: secondaryColor,
-                              value: formatIntWithNull(_listAccumulation[index].sellLot, false, false, 0, false),
+                              value: formatIntWithNull(
+                                _listAccumulation[index].sellLot,
+                                checkThousand: false,
+                                showDecimal: false,
+                                decimalNum: 0,
+                                shorten: false,
+                              ),
                               valueSize: 15,
                             ),
                             ColumnInfo(
                               title: 'Diff',
-                              value: formatIntWithNull(_listAccumulation[index].diff, false, false, 0, false),
+                              value: formatIntWithNull(
+                                _listAccumulation[index].diff,
+                                checkThousand: false,
+                                showDecimal: false,
+                                decimalNum: 0,
+                                shorten: false,
+                              ),
                               valueSize: 15,
                             ),
                           ],

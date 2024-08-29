@@ -296,7 +296,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            formatCurrency(amount: _companyDetail.companyNetAssetValue!),
+                            formatCurrency(_companyDetail.companyNetAssetValue!),
                             style: const TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -322,7 +322,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                     ),
                                   )
                                 ),
-                                child: Text(formatCurrency(amount: _companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
+                                child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
                               ),
                               Expanded(child: Container(),),
                               const Icon(
@@ -377,7 +377,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 header: "Min ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _minPrice!),
+                                  formatCurrencyWithNull(_minPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -386,7 +386,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 header: "Max ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _maxPrice!),
+                                  formatCurrencyWithNull(_maxPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -395,7 +395,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 header: "Avg ($_numPrice)",
                                 headerAlign: MainAxisAlignment.end,
                                 child: Text(
-                                  formatCurrencyWithNull(amount: _avgPrice!),
+                                  formatCurrencyWithNull(_avgPrice!),
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -601,7 +601,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Daily",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companyDailyReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companyDailyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -610,7 +610,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Weekly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companyWeeklyReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companyWeeklyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -619,7 +619,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Monthly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companyMonthlyReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companyMonthlyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -634,7 +634,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Quarterly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companyQuarterlyReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companyQuarterlyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -643,7 +643,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Semi Annual",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companySemiAnnualReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companySemiAnnualReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -652,7 +652,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Yearly",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companyYearlyReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companyYearlyReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -667,7 +667,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "YTD",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    "${formatDecimalWithNull(value: _companyDetail.companyYtdReturn, times: 100)}%",
+                    "${formatDecimalWithNull(_companyDetail.companyYtdReturn, times: 100)}%",
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -676,7 +676,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Total Asset",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    formatCurrency(amount: _companyDetail.companyAssetUnderManagement!),
+                    formatCurrency(_companyDetail.companyAssetUnderManagement!),
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -685,7 +685,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   header: "Total Unit",
                   headerAlign: MainAxisAlignment.end,
                   child: Text(
-                    formatCurrency(amount: _companyDetail.companyTotalUnit!),
+                    formatCurrency(_companyDetail.companyTotalUnit!),
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -851,69 +851,69 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: formatCurrencyWithNull(amount: companyA?.companyNetAssetValue),
+            text: formatCurrencyWithNull(companyA?.companyNetAssetValue),
             showCompare: false,
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companyDailyReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companyDailyReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companyDailyReturn ?? 0) - (companyB.companyDailyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companyWeeklyReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companyWeeklyReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companyWeeklyReturn ?? 0) - (companyB.companyWeeklyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companyMonthlyReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companyMonthlyReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companyMonthlyReturn ?? 0) - (companyB.companyMonthlyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companyQuarterlyReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companyQuarterlyReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companyQuarterlyReturn ?? 0) - (companyB.companyQuarterlyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companySemiAnnualReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companySemiAnnualReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companySemiAnnualReturn ?? 0) - (companyB.companySemiAnnualReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companyYearlyReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companyYearlyReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companyYearlyReturn ?? 0) - (companyB.companyYearlyReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: "${formatDecimalWithNull(value: companyA?.companyYtdReturn, times: 100)}%",
+            text: "${formatDecimalWithNull(companyA?.companyYtdReturn, times: 100)}%",
             isBigger: (companyB != null ? ((companyA?.companyYtdReturn ?? 0) - (companyB.companyYtdReturn ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: formatCurrencyWithNull(amount: companyA?.companyAssetUnderManagement!),
+            text: formatCurrencyWithNull(companyA?.companyAssetUnderManagement!),
             isBigger: (companyB != null ? ((companyA?.companyAssetUnderManagement ?? 0) - (companyB.companyAssetUnderManagement ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
           CompareFields(
             color: primaryDark,
             borderColor: color,
-            text: formatCurrencyWithNull(amount: companyA?.companyTotalUnit!),
+            text: formatCurrencyWithNull(companyA?.companyTotalUnit!),
             isBigger: (companyB != null ? ((companyA?.companyTotalUnit ?? 0) - (companyB.companyTotalUnit ?? 0)) : 0),
             showCompare: (compare != null ? true : false),
           ),
@@ -1072,10 +1072,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               // generate the company detail price list
               return CompanyDetailPriceList(
                 date: _df.format(_infoReksadanaSort[index].date.toLocal()),
-                price: formatCurrency(amount: _infoReksadanaSort[index].price),
-                diff: formatCurrency(amount: _infoReksadanaSort[index].diff),
+                price: formatCurrency(_infoReksadanaSort[index].price),
+                diff: formatCurrency(_infoReksadanaSort[index].diff),
                 riskColor: _infoReksadanaSort[index].riskColor,
-                dayDiff: formatCurrencyWithNull(amount: _infoReksadanaSort[index].dayDiff),
+                dayDiff: formatCurrencyWithNull(_infoReksadanaSort[index].dayDiff),
                 dayDiffColor: _infoReksadanaSort[index].dayDiffColor,
               ); 
             },
@@ -1434,7 +1434,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     const SizedBox(width: 10,),
                     Expanded(
                       child: Text(
-                        "${formatDecimalWithNull(value: _avgDaily, times: 100)}%",
+                        "${formatDecimalWithNull(_avgDaily, times: 100)}%",
                         textAlign: TextAlign.right,
                         style: const TextStyle(
                           color: textPrimary,
@@ -1605,19 +1605,19 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         _calcTableResult.add(_calcRow(
           month: "$m",
           percentage: "${formatDecimalWithNull(
-            value: calcPercentage,
+            calcPercentage,
             times: 100,
             decimal: 2
           )}%",
           interest: formatCurrency(
-            amount: calcAmount,
+            calcAmount,
             checkThousand: false,
             showDecimal: false,
             shorten: false,
             decimalNum: 0,
           ),
           value: formatCurrency(
-            amount: (calcAmount + amount),
+            (calcAmount + amount),
             checkThousand: false,
             showDecimal: false,
             shorten: false,
@@ -1636,19 +1636,19 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _calcTableResult.add(_calcRow(
         month: "Total",
         percentage: "${formatDecimalWithNull(
-          value: (averagePercentage / month),
+          (averagePercentage / month),
           times: 100,
           decimal: 2
         )}%",
         interest: formatCurrency(
-          amount: totalInterest,
+          totalInterest,
           checkThousand: false,
           showDecimal: false,
           shorten: false,
           decimalNum: 0,
         ),
         value: formatCurrency(
-          amount: totalAmount,
+          totalAmount,
           checkThousand: false,
           showDecimal: false,
           shorten: false,

@@ -183,7 +183,7 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
               ),
               Text(
                 "${_chartName[_currentSegment]} Price ${formatIntWithNull(
-                  value: _selectedValue,
+                  _selectedValue,
                   checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,
@@ -298,7 +298,7 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                 children: <Widget>[
                   Text(
                     formatIntWithNull(
-                      value: _min,
+                      _min,
                       checkThousand: false,
                       showDecimal: false,
                       decimalNum: 0,
@@ -311,7 +311,7 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                   ),
                   Text(
                     formatIntWithNull(
-                      value: _max,
+                      _max,
                       checkThousand: false,
                       showDecimal: false,
                       decimalNum: 0,
@@ -361,7 +361,7 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
               ),
               Text(
                 "Current Price ${formatIntWithNull(
-                  value: (widget.company.companyNetAssetValue == null ? 0 : widget.company.companyNetAssetValue!.toInt()),
+                  (widget.company.companyNetAssetValue == null ? 0 : widget.company.companyNetAssetValue!.toInt()),
                   checkThousand: false,
                   showDecimal: false,
                   decimalNum: 0,

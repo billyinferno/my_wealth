@@ -59,7 +59,7 @@ List<ComputeWatchlistResult> computeWatchlistDetail({
       // check if the date is before or same as companyDate
       // we will just perform the calculation only if the date is same or before
       // the company date (check date).
-      if (isSameOrBefore(date: detail.watchlistDetailDate.toLocal(), checkDate: checkDate.toLocal())) {
+      if (detail.watchlistDetailDate.toLocal().isSameOrBefore(date: checkDate.toLocal())) {
         // check whether buy or sell
         if (detail.watchlistDetailShare > 0) {
           // if buy we add the total share

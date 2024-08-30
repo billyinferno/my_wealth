@@ -19,4 +19,52 @@ extension CustomDateFunction on DateTime {
     }
     return woy;
   }
+
+  bool isSameDate({required DateTime date}) {
+    if (year == date.year) {
+      if (month == date.month) {
+        if (day == date.day) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  bool isBeforeDate({required DateTime date}) {
+    final DateTime dt1 = DateTime(year, month, day);
+    final DateTime dt2 = DateTime(date.year, date.month, date.day);
+
+    if (dt1.isBefore(dt2)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isAfterDate({required DateTime date}) {
+    final DateTime dt1 = DateTime(year, month, day);
+    final DateTime dt2 = DateTime(date.year, date.month, date.day);
+
+    if (dt1.isAfter(dt2)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isSameOrBefore({required DateTime date}) {
+    if (isSameDate(date: date) || isBeforeDate(date: date)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isSameOrAfter({
+    required DateTime date
+  }) {
+    if (isSameDate(date: date) || isAfterDate(date: date)) {
+      return true;
+    }
+    return false;
+  }
 }

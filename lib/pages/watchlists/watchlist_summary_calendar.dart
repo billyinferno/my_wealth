@@ -659,7 +659,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
       Map<DateTime, SummaryPerformanceModel> tmpPerf = {};
       
       // first generate all the date from first to end date
-      while(isSameOrBefore(date: firstDate, checkDate: endDate)) {
+      while(firstDate.isSameOrBefore(date: endDate)) {
         tmpPerf[firstDate] = SummaryPerformanceModel(
           plDate: firstDate,
           plValue: double.negativeInfinity,

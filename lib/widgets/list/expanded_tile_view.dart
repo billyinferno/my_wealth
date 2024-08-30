@@ -92,9 +92,8 @@ class ExpandedTileView extends StatelessWidget {
             currentPrice: watchlist.watchlistCompanyNetAssetValue!,
             averagePrice: watchlistResult.averagePrice,
             risk: risk,
-            calculateLoss: isSameOrBefore(
-              date: watchlist.watchlistDetail[index].watchlistDetailDate.toLocal(),
-              checkDate: checkDate.toLocal(),
+            calculateLoss: watchlist.watchlistDetail[index].watchlistDetailDate.toLocal().isSameOrBefore(
+              date: checkDate.toLocal(),
             ),
           );
         }),

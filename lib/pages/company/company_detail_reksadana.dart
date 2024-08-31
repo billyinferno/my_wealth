@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -48,8 +47,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late String _infoSort;
   late int _currentDayIndex;
 
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
-  final DateFormat _dfShort = DateFormat("dd/MM");
   final Bit _bitData = Bit();
   final List<Widget> _calcTableResult = [];
   late List<Map<String, double>> _movementData;
@@ -343,9 +340,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                formatDateWithNulll(
+                                Globals.dfddMMyyyy.formatDateWithNull(
                                   _companyDetail.companyLastUpdate,
-                                  format: _df
                                 )
                               ),
                             ],
@@ -1088,7 +1084,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             itemBuilder: (context, index) {
               // generate the company detail price list
               return CompanyDetailPriceList(
-                date: _df.format(_infoReksadanaSort[index].date.toLocal()),
+                date: Globals.dfddMMyyyy.format(_infoReksadanaSort[index].date.toLocal()),
                 price: formatCurrency(_infoReksadanaSort[index].price),
                 diff: formatCurrency(_infoReksadanaSort[index].diff),
                 riskColor: _infoReksadanaSort[index].riskColor,
@@ -2056,10 +2052,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _assetData.add(GraphData(date: data.date.toLocal(), price: data.totalUnit * data.netAssetValue));
 
       // generate the movement chart data
-      daily[_dfShort.format(data.date)] = data.dailyReturn * 100;
-      weekly[_dfShort.format(data.date)] = data.weeklyReturn * 100;
-      monhtly[_dfShort.format(data.date)] = data.monthlyReturn * 100;
-      yearly[_dfShort.format(data.date)] = data.yearlyReturn * 100;
+      daily[Globals.dfddMM.format(data.date)] = data.dailyReturn * 100;
+      weekly[Globals.dfddMM.format(data.date)] = data.weeklyReturn * 100;
+      monhtly[Globals.dfddMM.format(data.date)] = data.monthlyReturn * 100;
+      yearly[Globals.dfddMM.format(data.date)] = data.yearlyReturn * 100;
     }
 
     // add the movement data

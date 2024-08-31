@@ -195,7 +195,7 @@ class StockCandleStickPainter extends CustomPainter {
 
       // check if current i % 10?
       if (i % currentDateOffset == 0) {
-        dateText = formatDate(stockData[i].date, format: 'dd/MM');
+        dateText = Globals.dfddMM.format(stockData[i].date);
       }
 
       candles.add(Candle(

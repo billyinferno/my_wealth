@@ -169,7 +169,7 @@ class LineChartPainter extends CustomPainter {
           canvas: canvas,
           position: Offset(xLeft, graphRect.bottom),
           width: 60,
-          text: formatDate(data[i].date, format: "dd/MM"),
+          text: Globals.dfddMM.format(data[i].date),
           left: -15,
           top: 5,
           minHeight: 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -37,7 +38,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late double _minPL;
   late int _totalData;
   late String _graphSelection;
-  late String _dateFormat;
+  late DateFormat _dateFormat;
   late double _gainDifference;
 
   @override
@@ -94,7 +95,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
     // set the graph selection as "9" (90 days)
     _graphSelection = "9";
-    _dateFormat = "dd/MM";
+    _dateFormat = Globals.dfddMM;
 
     // initialize the result watchlist performance
     _watchlistPerformance = [];
@@ -368,19 +369,19 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     switch(_graphSelection) {
                       case "9":
                         _watchlistPerformance = _watchlistPerformance90Day.toList();
-                        _dateFormat = "dd/MM";
+                        _dateFormat = Globals.dfddMM;
                         break;
                       case "m":
                         _watchlistPerformance = _watchlistPerformanceMonth.toList();
-                        _dateFormat = "MM/yy";
+                        _dateFormat = Globals.dfMMyy;
                         break;
                       case "y":
                         _watchlistPerformance = _watchlistPerformanceYear.toList();
-                        _dateFormat = "MM/yy";
+                        _dateFormat = Globals.dfMMyy;
                         break;
                       default:
                         _watchlistPerformance = _watchlistPerformanceDaily.toList();
-                        _dateFormat = "dd/MM";
+                        _dateFormat = Globals.dfddMM;
                         break;
                     }
             

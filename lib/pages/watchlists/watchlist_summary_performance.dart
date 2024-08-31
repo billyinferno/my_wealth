@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -89,7 +90,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
   late int _totalData;
   late String _graphSelection;
-  late String _dateFormat;
+  late DateFormat _dateFormat;
   late double _gainDifference;
 
   @override
@@ -127,7 +128,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _perfDataSort = [];
 
     // defaulted the date format to dd/MM
-    _dateFormat = "dd/MM";
+    _dateFormat = Globals.dfddMM;
 
     // get the arguments passed on this
     _args = widget.args as WatchlistSummaryPerformanceArgs;
@@ -1334,7 +1335,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       case "9":
         _perfData = _perfData90D.toList();
         _indexData = _indexData90D.toList();
-        _dateFormat = "dd/MM";
+        _dateFormat = Globals.dfddMM;
         _max = _max90;
         _min = _min90;
         _maxPL = _max90PL;
@@ -1343,7 +1344,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       case "m":
         _perfData = _perfDataMonhtly.toList();
         _indexData = _indexDataMonthly.toList();
-        _dateFormat = "MM/yy";
+        _dateFormat = Globals.dfMMyy;
         _max = _maxMonthly;
         _min = _minMonthly;
         _maxPL = _maxMonthlyPL;
@@ -1352,7 +1353,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       case "y":
         _perfData = _perfDataYearly.toList();
         _indexData = _indexDataYearly.toList();
-        _dateFormat = "MM/yy";
+        _dateFormat = Globals.dfMMyy;
         _max = _maxYearly;
         _min = _minYearly;
         _maxPL = _maxYearlyPL;
@@ -1361,7 +1362,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       default:
         _perfData = _perfDataDaily.toList();
         _indexData = _indexDataDaily.toList();
-        _dateFormat = "dd/MM";
+        _dateFormat = Globals.dfddMM;
         _max = _maxDaily;
         _min = _minDaily;
         _maxPL = _maxDailyPL;

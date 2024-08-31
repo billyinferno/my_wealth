@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -12,9 +11,7 @@ class BrokerSummaryDistributionChart extends StatefulWidget {
   State<BrokerSummaryDistributionChart> createState() => _BrokerSummaryDistributionChartState();
 }
 
-class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributionChart> {
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
-  
+class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributionChart> {  
   late int _brokerAccumulationLeft;
   late int _brokerAccumulationRight;
 
@@ -349,7 +346,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                           width: 80,
                           padding: const EdgeInsets.all(2.5),
                           child: Text(
-                            _df.format(widget.data[1].brokerSummaryData[index].brokerSummaryDate),
+                            Globals.dfddMMyyyy.format(widget.data[1].brokerSummaryData[index].brokerSummaryDate),
                             style: const TextStyle(
                               fontSize: 10,
                             ),

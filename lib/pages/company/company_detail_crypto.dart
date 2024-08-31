@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -26,7 +25,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   
   final CompanyAPI _companyApi = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
   final Bit _bitData = Bit();
 
   bool _showCurrentPriceComparison = false;
@@ -234,9 +232,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                formatDateWithNulll(
-                                  _companyDetail.companyLastUpdate,
-                                  format: _df
+                                Globals.dfddMMyyyy.formatDateWithNull(
+                                  _companyDetail.companyLastUpdate, 
                                 )
                               ),
                             ],
@@ -569,7 +566,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Date",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeHighDate!)),
+                          Globals.dfddMMyyyy.formatDateWithNull(
+                            _companyDetail.companyAllTimeHighDate,
+                            nullText: '',
+                          ),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -605,7 +605,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         header: "Date",
                         headerAlign: MainAxisAlignment.end,
                         child: Text(
-                          (_companyDetail.companyAllTimeHighDate == null ? "" : _df.format(_companyDetail.companyAllTimeLowDate!)),
+                          Globals.dfddMMyyyy.formatDateWithNull(
+                            _companyDetail.companyAllTimeHighDate,
+                            nullText: ''
+                          ),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -754,7 +757,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 );
               }
               return CompanyDetailPriceList(
-                date: _df.format(_companyDetail.companyPrices[index].priceDate.toLocal()),
+                date: Globals.dfddMMyyyy.format(
+                  _companyDetail.companyPrices[index].priceDate.toLocal()
+                ),
                 price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
                 diff: formatCurrency(
                   _companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue,

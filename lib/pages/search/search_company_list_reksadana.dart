@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
@@ -15,7 +14,6 @@ class SearchCompanyListReksadanaPage extends StatefulWidget {
 class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksadanaPage> {
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final ScrollController _scrollController = ScrollController();
-  final DateFormat _dt = DateFormat("dd/MM/yyyy");
   final TextEditingController _textController = TextEditingController();
   final StepperSelectorController _stepperControllerRating = StepperSelectorController();
   final StepperSelectorController _stepperControllerRisk = StepperSelectorController();
@@ -381,7 +379,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                       companyId: _sortedFaveList[index].favouritesCompanyId,
                       name: _sortedFaveList[index].favouritesCompanyName,
                       type: Globals.reksadanaCompanyTypeEnum[_sortedFaveList[index].favouritesCompanyType]!,
-                      date: formatDateWithNulll(_sortedFaveList[index].favouritesLastUpdate, format: _dt),
+                      date: Globals.dfddMMyyyy.formatDateWithNull(_sortedFaveList[index].favouritesLastUpdate),
                       value: _sortedFaveList[index].favouritesNetAssetValue,
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),

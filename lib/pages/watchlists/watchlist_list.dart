@@ -284,7 +284,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                         ),
                                         const SizedBox(width: 10,),
                                         Text(
-                                          formatDateWithNulll(_watchlist.watchlistCompanyLastUpdate),
+                                          Globals.dfddMMyyyy.formatDateWithNull(
+                                            _watchlist.watchlistCompanyLastUpdate
+                                          ),
                                         ),
                                       ],
                                     )

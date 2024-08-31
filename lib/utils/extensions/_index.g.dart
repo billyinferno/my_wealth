@@ -1,4 +1,6 @@
 export './custom_scroll_behaviour.dart';
+export './color.dart';
+export './date_format.dart';
 export './date.dart';
 export './decimal_formater.dart';
 export './double.dart';

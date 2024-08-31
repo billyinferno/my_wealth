@@ -484,7 +484,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     const SizedBox(width: 10,),
                                     _smallBox(
                                       title: "Listed Date",
-                                      value: formatDateWithNulll(
+                                      value: Globals.dfddMMyyyy.formatDateWithNull(
                                         _stockNewListedList[index].listedDate
                                       )
                                     ),
@@ -593,14 +593,14 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   children: <Widget>[
                                     _smallBox(
                                       title: "Cum Date",
-                                      value: formatDateWithNulll(
+                                      value: Globals.dfddMMyyyy.formatDateWithNull(
                                         _stockDividendList[index].cumDividend
                                       )
                                     ),
                                     const SizedBox(width: 10,),
                                     _smallBox(
                                       title: "Ex Date",
-                                      value: formatDateWithNulll(
+                                      value: Globals.dfddMMyyyy.formatDateWithNull(
                                         _stockDividendList[index].exDividend
                                       )
                                     ),
@@ -621,14 +621,14 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                   children: <Widget>[
                                     _smallBox(
                                       title: "Record Date",
-                                      value: formatDateWithNulll(
+                                      value: Globals.dfddMMyyyy.formatDateWithNull(
                                         _stockDividendList[index].recordDate
                                       )
                                     ),
                                     const SizedBox(width: 10,),
                                     _smallBox(
                                       title: "Payment Date",
-                                      value: formatDateWithNulll(
+                                      value: Globals.dfddMMyyyy.formatDateWithNull(
                                         _stockDividendList[index].paymentDate
                                       )
                                     ),
@@ -726,7 +726,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
                                     const SizedBox(width: 10,),
                                     _smallBox(
                                       title: "Split Date",
-                                      value: formatDateWithNulll(
+                                      value: Globals.dfddMMyyyy.formatDateWithNull(
                                         _stockSplitList[index].listingDate
                                       )
                                     ),

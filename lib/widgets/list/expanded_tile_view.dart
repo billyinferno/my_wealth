@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class ExpandedTileView extends StatelessWidget {
@@ -32,7 +31,6 @@ class ExpandedTileView extends StatelessWidget {
     // initialize the value
     bool isShowedLots = (showedLot ?? false);
     bool isInLot = (inLot ?? false);
-    final DateFormat dt = DateFormat("dd/MM/yy");
     final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now());
 
     // after that check if the showEmptyWatchlist is set as false?
@@ -69,7 +67,7 @@ class ExpandedTileView extends StatelessWidget {
           price: (watchlist.watchlistCompanyNetAssetValue ?? 0),
           prevPrice: watchlist.watchlistCompanyPrevPrice,
           gain: (isVisible ? watchlistResult.totalGain : null),
-          lastUpdate: formatDateWithNulll(watchlist.watchlistCompanyLastUpdate, format: Globals.dfddMM),
+          lastUpdate: Globals.dfddMM.formatDateWithNull(watchlist.watchlistCompanyLastUpdate),
           riskColor: headerRiskColor,
           checkThousandOnPrice: (checkThousandOnPrice ?? false),
           subHeaderRiskColor: subHeaderRiskColor,
@@ -85,7 +83,7 @@ class ExpandedTileView extends StatelessWidget {
         textColor: textPrimary,
         children: List<Widget>.generate(watchlist.watchlistDetail.length, (index) {
           return ExpandedTileChildren(
-            date: dt.format(watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
+            date: Globals.dfddMMyy.format(watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
             shares: watchlist.watchlistDetail[index].watchlistDetailShare,
             isInLot: isInLot,
             price: watchlist.watchlistDetail[index].watchlistDetailPrice,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
@@ -14,7 +13,6 @@ class FavouritesPage extends StatefulWidget {
 
 class FavouritesPageState extends State<FavouritesPage>
     with SingleTickerProviderStateMixin {
-  final DateFormat df = DateFormat("dd/MM/yyyy");
   final ScrollController _scrollControllerMutual = ScrollController();
   final ScrollController _scrollControllerStock = ScrollController();
   final ScrollController _scrollControllerCrypto = ScrollController();
@@ -264,7 +262,7 @@ class FavouritesPageState extends State<FavouritesPage>
                   fca: fave.favouritesFCA,
                   name: _generateName(
                       type, fave.favouritesCompanyName, fave.favouritesSymbol),
-                  date: df.format(fave.favouritesLastUpdate.toLocal()),
+                  date: Globals.dfddMMyyyy.format(fave.favouritesLastUpdate.toLocal()),
                   price: fave.favouritesNetAssetValue,
                   percentChange: fave.favouritesCompanyDailyReturn,
                   priceChange: (fave.favouritesNetAssetValue -

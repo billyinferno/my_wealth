@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class ChartComputeResult {
@@ -20,7 +21,7 @@ class PerformanceChart extends StatelessWidget {
   final List<WatchlistDetailListModel>? watchlist;
   final double? height;
   final int? dateOffset;
-  final String? dateFormat;
+  final DateFormat dateFormat;
 
   const PerformanceChart({
     super.key,
@@ -30,7 +31,7 @@ class PerformanceChart extends StatelessWidget {
     this.watchlist,
     this.height,
     this.dateOffset,
-    this.dateFormat,
+    required this.dateFormat,
   });
 
   @override

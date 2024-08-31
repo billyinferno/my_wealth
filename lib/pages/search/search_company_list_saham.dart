@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -15,7 +14,6 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final DateFormat _dt = DateFormat("dd/MM/yyyy");
 
   late String _filterMode;
   late String _filterSort;
@@ -187,7 +185,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
                       companyId: _sortedFaveList[index].favouritesCompanyId,
                       name: "(${_sortedFaveList[index].favouritesSymbol}) ${_sortedFaveList[index].favouritesCompanyName}",
                       type: _sortedFaveList[index].favouritesCompanyType,
-                      date: formatDateWithNulll(_sortedFaveList[index].favouritesLastUpdate, format: _dt),
+                      date: Globals.dfddMMyyyy.formatDateWithNull(_sortedFaveList[index].favouritesLastUpdate),
                       value: _sortedFaveList[index].favouritesNetAssetValue,
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),

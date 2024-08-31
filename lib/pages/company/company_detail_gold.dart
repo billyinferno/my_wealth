@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -27,7 +26,6 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final PriceAPI _priceAPI = PriceAPI();
 
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
   final Bit _bitData = Bit();
 
   late DateTime _fromDate;
@@ -266,9 +264,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                formatDateWithNulll(
+                                Globals.dfddMMyyyy.formatDateWithNull(
                                   _companyDetail.companyLastUpdate,
-                                  format: _df
                                 )
                               ),
                             ],
@@ -606,7 +603,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             itemCount: _priceGoldSort.length,
             itemBuilder: (context, index) {
               return CompanyDetailPriceList(
-                date: _df.format(_priceGoldSort[index].date),
+                date: Globals.dfddMMyyyy.format(_priceGoldSort[index].date),
                 price: formatCurrency(_priceGoldSort[index].price, checkThousand: true),
                 diff: formatCurrency(_priceGoldSort[index].diff, checkThousand: true),
                 riskColor: _priceGoldSort[index].riskColor,

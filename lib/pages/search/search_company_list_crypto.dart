@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -15,7 +14,6 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
   final FavouritesAPI _faveAPI = FavouritesAPI();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final DateFormat _dt = DateFormat("dd/MM/yyyy");
 
   late Future<bool> _getData;
 
@@ -162,7 +160,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
                       companyId: _filterList[index].favouritesCompanyId,
                       name: "(${_filterList[index].favouritesSymbol}) ${_filterList[index].favouritesCompanyName}",
                       type: _filterList[index].favouritesCompanyType,
-                      date: formatDateWithNulll(_filterList[index].favouritesLastUpdate, format: _dt),
+                      date: Globals.dfddMMyyyy.formatDateWithNull(_filterList[index].favouritesLastUpdate),
                       value: _filterList[index].favouritesNetAssetValue,
                       isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_filterList[index].favouritesFCA ?? false),

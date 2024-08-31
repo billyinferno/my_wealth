@@ -41,7 +41,7 @@ Color riskColor({
     }
 
     // print("Darken : " + _darken.toString());
-    return darken(result, amount: darkenValue);
+    return result.darken(amount: darkenValue);
   }
   else {
     // lighten the color
@@ -53,7 +53,7 @@ Color riskColor({
     }
 
     // print("Lighten : " + _lighten.toString());
-    return lighten(result, amount: lightenValue);
+    return result.lighten(amount: lightenValue);
   }
 }
 

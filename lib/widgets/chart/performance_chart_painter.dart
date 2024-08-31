@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:my_wealth/_index.g.dart';
 
 class PerformanceData {
@@ -26,7 +27,7 @@ class PerformanceChartPainter extends CustomPainter {
   final ChartProperties? investmentProperties;
   final Map<DateTime, int>? watchlist;
   final int? datePrintOffset;
-  final String? dateFormat;
+  final intl.DateFormat dateFormat;
 
 
   PerformanceChartPainter({
@@ -37,7 +38,7 @@ class PerformanceChartPainter extends CustomPainter {
     required this.showInvestment,
     required this.investmentProperties,
     this.datePrintOffset,
-    this.dateFormat,
+    required this.dateFormat,
     this.watchlist,
   });
 
@@ -211,7 +212,7 @@ class PerformanceChartPainter extends CustomPainter {
             canvas: canvas,
             position: Offset(xLeft, graphRect.bottom),
             width: 60,
-            text: formatDate(data[i].date, format: (dateFormat ?? "dd/MM")),
+            text: dateFormat.format(data[i].date),
             left: left,
             top: 5,
             minHeight: 0,

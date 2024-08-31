@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +19,6 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   final ScrollController _scrollControllerCrypto = ScrollController();
   final ScrollController _scrollControllerGold = ScrollController();
   final ScrollController _scrollControllerHistory = ScrollController();
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
   final TextStyle _historyStyle = const TextStyle(fontSize: 11, color: textPrimary);
   late TabController _tabController;
   late UserLoginInfoModel? _userInfo;
@@ -486,7 +484,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                 ),
                                 const TextSpan(text: " at "),
                                 TextSpan(
-                                  text: _df.format(_watchlistHistory![index].watchlistDetailDate.toLocal()),
+                                  text: Globals.dfddMMyyyy.format(_watchlistHistory![index].watchlistDetailDate.toLocal()),
                                   style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],

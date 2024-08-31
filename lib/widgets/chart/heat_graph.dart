@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class GraphData {
@@ -107,7 +106,6 @@ class HeatGraph extends StatelessWidget {
   }
 
   List<Widget> _generateRows({required bool showWeekend}) {
-    final DateFormat df = DateFormat("dd/MM");
     final bool isEnableDailyComparison = (enableDailyComparison ?? false);
 
     List<Widget> response = [];
@@ -193,7 +191,7 @@ class HeatGraph extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Text(
-                "${df.format(startDate)} - ${df.format(endDate!)}",
+                "${Globals.dfddMM.format(startDate)} - ${Globals.dfddMM.format(endDate!)}",
                 style: const TextStyle(
                   fontSize: 9,
                 ),

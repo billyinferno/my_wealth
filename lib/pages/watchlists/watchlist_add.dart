@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
@@ -15,7 +14,6 @@ class WatchlistAddPage extends StatefulWidget {
 
 class WatchlistAddPageState extends State<WatchlistAddPage> {
   final TextEditingController _textController = TextEditingController();
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
   final CompanyAPI _companyAPI = CompanyAPI();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
@@ -146,7 +144,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 price: formatCurrency(
                   _companySearchResult![index].companyNetAssetValue!
                 ),
-                date: _df.format(
+                date: Globals.dfddMMyyyy.format(
                   _companySearchResult![index].companyLastUpdate.toLocal()
                 ),
                 riskColor: riskColor(

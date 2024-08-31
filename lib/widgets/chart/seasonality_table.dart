@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -121,8 +120,6 @@ class SeasonalityTable extends StatelessWidget {
   }
 
   Widget _generateMonthHeader() {
-    final DateFormat df = DateFormat("MMM");
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -132,7 +129,7 @@ class SeasonalityTable extends StatelessWidget {
             height: 50,
             child: Center(
               child: Text(
-                df.format(DateTime(DateTime.now().year, (index + 1), 1)),
+                Globals.dfMMM.format(DateTime(DateTime.now().year, (index + 1), 1)),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),

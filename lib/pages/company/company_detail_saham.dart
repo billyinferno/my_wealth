@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -98,7 +97,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final IndexAPI _indexAPI = IndexAPI();
 
-  final DateFormat _df = DateFormat("dd/MM/yyyy");
   final TextStyle _topBrokerHeader = const TextStyle(
     color: accentColor,
     fontWeight: FontWeight.bold,
@@ -509,9 +507,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 width: 10,
                               ),
                               Text(
-                                formatDateWithNulll(
+                                Globals.dfddMMyyyy.formatDateWithNull(
                                   _companyDetail.companyLastUpdate,
-                                  format: _df
                                 )
                               ),
                             ],
@@ -2134,13 +2131,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
       // generate item dividend
       ret.add(_itemDividend(
-        cumDate: formatDateWithNulll(dividend.cumDividend, format: Globals.dfddMMyy),
+        cumDate: Globals.dfddMMyy.formatDateWithNull(dividend.cumDividend),
         exDate: Globals.dfddMMyy.format(dividend.exDividend.toLocal()),
         recordDate: Globals.dfddMMyy.format(dividend.recordDate.toLocal()),
         paymentDate: Globals.dfddMMyy.format(dividend.paymentDate.toLocal()),
         cashDividend: formatCurrency(dividend.cashDividend.toDouble()),
         price: formatCurrencyWithNull(dividend.price),
-        priceDate: formatDateWithNulll(dividend.priceDate, format: Globals.dfddMMyy),
+        priceDate: Globals.dfddMMyy.formatDateWithNull(dividend.priceDate),
         note: dividend.note,
       ));
     }
@@ -2591,8 +2588,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           width: 20,
                         ),
                         Text(
-                          _df.format(
-                              _brokerSummary.brokerSummaryFromDate.toLocal()),
+                          Globals.dfddMMyyyy.format(
+                            _brokerSummary.brokerSummaryFromDate.toLocal()
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: secondaryLight,
@@ -2606,8 +2604,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           ),
                         ),
                         Text(
-                          _df.format(
-                              _brokerSummary.brokerSummaryToDate.toLocal()),
+                          Globals.dfddMMyyyy.format(
+                            _brokerSummary.brokerSummaryToDate.toLocal()
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: secondaryLight,
@@ -2914,9 +2913,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          _df.format((_topBroker.brokerMinDate == null
-                              ? DateTime.now()
-                              : _topBroker.brokerMinDate!.toLocal())),
+                          Globals.dfddMMyyyy.format(
+                            _topBroker.brokerMinDate == null ?
+                            DateTime.now() :
+                            _topBroker.brokerMinDate!.toLocal()
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: secondaryLight,
@@ -2930,9 +2931,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           ),
                         ),
                         Text(
-                          _df.format((_topBroker.brokerMaxDate == null
-                              ? DateTime.now()
-                              : _topBroker.brokerMaxDate!.toLocal())),
+                          Globals.dfddMMyyyy.format(
+                            _topBroker.brokerMaxDate == null ?
+                            DateTime.now() :
+                            _topBroker.brokerMaxDate!.toLocal()
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: secondaryLight,
@@ -3424,7 +3427,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                               MainAxisAlignment.start,
                                           children: [
                                             Text(
-                                              _df.format(
+                                              Globals.dfddMMyyyy.format(
                                                 _infoSahamPriceSort[index].date.toLocal()
                                               ),
                                               style: const TextStyle(

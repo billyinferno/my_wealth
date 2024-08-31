@@ -1,9 +1,7 @@
 export './binary_computation.dart';
-export './color_utils.dart';
 export './computation.dart';
 export './compute_watchlist.dart';
 export './compute_watchlist_all.dart';
-export './date_utils.dart';
 export './format_currency.dart';
 export './list_equals.dart';
 export './map_sorted.dart';

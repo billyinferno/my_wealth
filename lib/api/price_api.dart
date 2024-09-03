@@ -9,9 +9,13 @@ class PriceAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiPriceSaham}/ma/code/$stockCode'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getPriceMovingAverage',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get saham moving average price
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -26,9 +30,13 @@ class PriceAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiPriceSaham}/movement/code/$stockCode'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getPriceMovement',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the price movement data
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -44,9 +52,13 @@ class PriceAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiPriceGold}/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getGoldPrice',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to reksdana information
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

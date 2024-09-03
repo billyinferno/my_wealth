@@ -12,9 +12,13 @@ class UserAPI {
       body: {'identifier': username, 'password': password},
       requiredJWT: false,
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on login',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginModel userLogin = UserLoginModel.fromJson(jsonDecode(body));
@@ -26,9 +30,13 @@ class UserAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiUsers}/me'
     ).onError((error, stackTrace) {
-        throw error as NetException;
-      }
-    );
+      Log.error(
+        message: 'Error on me',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));
@@ -41,9 +49,13 @@ class UserAPI {
       url: Globals.apiRisk,
       body: {'risk': risk},
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updateRisk',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));
@@ -58,9 +70,13 @@ class UserAPI {
       url: '${Globals.apiVisibility}/summary',
       body: {'visibility': visibility},
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updateVisibilitySummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));
@@ -75,9 +91,13 @@ class UserAPI {
       url: '${Globals.apiVisibility}/lots',
       body: {'show_lots': showLots},
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updateShowLots',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));
@@ -92,9 +112,13 @@ class UserAPI {
       url: '${Globals.apiVisibility}/emptywatchlist',
       body: {'show_empty_watchlist': showEmptyWatchlist},
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updateShowEmptyWatchlist',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));
@@ -113,9 +137,13 @@ class UserAPI {
         'newPassword': newPassword
       },
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updatePassword',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));
@@ -128,9 +156,13 @@ class UserAPI {
       url: Globals.apiBot,
       body: {'bot': bot},
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updateBotToken',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response and put on user login model
     UserLoginInfoModel userInfo = UserLoginInfoModel.fromJson(jsonDecode(body));

@@ -9,9 +9,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/type/${type.toLowerCase()}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on findCompany',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the data and process each one
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -34,9 +38,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/${type.toLowerCase()}/detail/$companyId'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanyDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the detail company information
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -52,9 +60,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/$type/name/${companyName.toLowerCase()}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanyByName',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the company search result
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -74,9 +86,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/$type/id/$companyId'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanyByID',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the company detail information based on the
     // company ID
@@ -93,9 +109,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/$type/code/${companyCode.toUpperCase()}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanyByCode',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the company detail information based on the
     // company code (this is usually for stock company)
@@ -118,9 +138,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/sector/$sectorNameBase64/$type/$subSectorNameBase64'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanySectorAndSubSector',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the company list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -137,9 +161,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/sector/list'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSectorNameList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the sector name list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -161,9 +189,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/sector/$sectorNameBase64/per'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanySectorPER',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get each sector PER
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -185,9 +217,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanies}/broker/$code/from/$dateFromString/to/$dateToString/limit/$limit'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanyTopBroker',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get top broker information
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -202,9 +238,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/findother/${companyCode.toUpperCase()}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getOtherCompany',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to find similar company
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -217,9 +257,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/list'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanySahamList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get company saham list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -238,9 +282,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/seasonality/$code'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSeasonality',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get seasonality information for this company
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -259,9 +307,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/dividend/$code'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanySahamDividend',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the company detail information based on the
     // company ID
@@ -277,9 +329,13 @@ class CompanyAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiCompanySaham}/split/$code'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getCompanySahamSplit',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the company detail information based on the
     // company ID

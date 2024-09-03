@@ -11,9 +11,13 @@ class InfoSahamsAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoSaham}/code/$code/offset/$offset/limit/$limit'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getInfoSahamPrice',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse saham information list data
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -34,9 +38,13 @@ class InfoSahamsAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoSaham}/code/$code/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getInfoSahamPriceDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse saham information list data
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

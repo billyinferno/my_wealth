@@ -7,9 +7,13 @@ class BrokerAPI {
     final String body = await NetUtils.get(
       url: Globals.apiBroker
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getBroker',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the body we got
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

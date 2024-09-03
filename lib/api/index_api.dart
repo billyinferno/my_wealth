@@ -7,9 +7,13 @@ class IndexAPI {
     final String body = await NetUtils.get(
       url: Globals.apiIndices
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getIndex',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the list of index
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -26,9 +30,13 @@ class IndexAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/$indexId'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getIndexPrice',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the list of price for specific index data
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -49,9 +57,13 @@ class IndexAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/id/$indexID/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getIndexPriceDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the list of price for specific index data
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -68,9 +80,13 @@ class IndexAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiIndicePrice}/seasonality/$id'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSeasonality',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get seasonality information for this company
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

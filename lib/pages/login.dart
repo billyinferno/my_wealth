@@ -389,18 +389,32 @@ class LoginPageState extends State<LoginPage> {
 
       // check if this is rejection from server
       if(error.code != 200) {
-        // check if we have jwt token or not?
-        if (currJwtToken.isNotEmpty) {
-          // if already got token but unable to login, it means that the token already invalid
-          _isInvalidToken = true;
-          
-          // since we knew that this is invalid token, then just clear the JWT
-          // otherwise it will causing the login to be invalid as we still have
-          // the invalid JWT token in the NetUtils
-          NetUtils.clearJWT();
+        // check the error code, if -1 it means this is client exception
+        // if -2 it means that it's a generic error
+        if (error.code == -1) {
+          _showScaffoldMessage(text: "Unable to connect to server");
+        }
+        else if (error.code == -2) {
+          _showScaffoldMessage(text: "Error processing on applicatoin");
+        }
+        else {
+          // check if we have jwt token or not?
+          if (currJwtToken.isNotEmpty) {
+            // if already got token but unable to login, it means that the token already invalid
+            _isInvalidToken = true;
+            
+            // since we knew that this is invalid token, then just clear the JWT
+            // otherwise it will causing the login to be invalid as we still have
+            // the invalid JWT token in the NetUtils
+            NetUtils.clearJWT();
 
-          // show invalid token message on the login screen
-          _showScaffoldMessage(text: "Token expired, please re-login");
+            // show invalid token message on the login screen
+            _showScaffoldMessage(text: "Token expired, please re-login");
+          }
+          else {
+            // show invalid token message on the login screen
+            _showScaffoldMessage(text: error.message);
+          }
         }
       }
     }
@@ -471,9 +485,19 @@ class LoginPageState extends State<LoginPage> {
       });
     }
     on NetException catch (error, _) {
-      // login failed
-      Log.error(message: "🔐 Login failed");
-      _showScaffoldMessage(text: "Invalid identifier or password");
+      // check the error code, if -1 it means this is client exception
+      // if -2 it means that it's a generic error
+      if (error.code == -1) {
+        _showScaffoldMessage(text: "Unable to connect to server");
+      }
+      else if (error.code == -2) {
+        _showScaffoldMessage(text: "Error processing on applicatoin");
+      }
+      else {
+        // login failed
+        Log.error(message: "🔐 Login failed");
+        _showScaffoldMessage(text: "Invalid identifier or password");
+      }
     }
     on ClientException catch (error, _) {
       Log.error(message: "🌏 No Internet Connection");

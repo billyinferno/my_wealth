@@ -10,9 +10,13 @@ class InfoFundamentalAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoFundamentals}/code/$code/quarter/$quarter'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getInfoFundamental',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get company fundamental information
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

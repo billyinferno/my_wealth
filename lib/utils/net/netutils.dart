@@ -59,7 +59,31 @@ class NetUtils {
           message: 'Gateway Timeout for $url'
         );
       },
-    );
+    ).onError<http.ClientException>((error, stackTrace) {
+      Log.error(
+        message: 'Client exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -1,
+        type: NetType.get,
+        message: '[ClientException] ${error.toString()}',
+      );
+    },).onError((error, stackTrace) {
+      Log.error(
+        message: 'Generic exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -2,
+        type: NetType.get,
+        message: '[Exception] ${error.toString()}',
+      );
+    },);
 
     // check the response we got from http
     if (response.statusCode == 200) {
@@ -136,7 +160,31 @@ class NetUtils {
           message: 'Gateway Timeout for $url'
         );
       },
-    );
+    ).onError<http.ClientException>((error, stackTrace) {
+      Log.error(
+        message: 'Client exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -1,
+        type: NetType.post,
+        message: '[ClientException] ${error.toString()}',
+      );
+    },).onError((error, stackTrace) {
+      Log.error(
+        message: 'Generic exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -2,
+        type: NetType.post,
+        message: '[Exception] ${error.toString()}',
+      );
+    },);
 
     // check the response we got from http
     if (response.statusCode == 200) {
@@ -192,7 +240,31 @@ class NetUtils {
           message: 'Gateway Timeout for $url'
         );
       },
-    );
+    ).onError<http.ClientException>((error, stackTrace) {
+      Log.error(
+        message: 'Client exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -1,
+        type: NetType.delete,
+        message: '[ClientException] ${error.toString()}',
+      );
+    },).onError((error, stackTrace) {
+      Log.error(
+        message: 'Generic exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -2,
+        type: NetType.delete,
+        message: '[Exception] ${error.toString()}',
+      );
+    },);
 
     // check the response we got from http
     if (response.statusCode == 200) {
@@ -250,7 +322,31 @@ class NetUtils {
           message: 'Gateway Timeout for $url'
         );
       },
-    );
+    ).onError<http.ClientException>((error, stackTrace) {
+      Log.error(
+        message: 'Client exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -1,
+        type: NetType.patch,
+        message: '[ClientException] ${error.toString()}',
+      );
+    },).onError((error, stackTrace) {
+      Log.error(
+        message: 'Generic exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -2,
+        type: NetType.patch,
+        message: '[Exception] ${error.toString()}',
+      );
+    },);
 
     // check the response we got from http
     if (response.statusCode == 200) {
@@ -308,7 +404,31 @@ class NetUtils {
           message: 'Gateway Timeout for $url'
         );
       },
-    );
+    ).onError<http.ClientException>((error, stackTrace) {
+      Log.error(
+        message: 'Client exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -1,
+        type: NetType.put,
+        message: '[ClientException] ${error.toString()}',
+      );
+    },).onError((error, stackTrace) {
+      Log.error(
+        message: 'Generic exception error',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      throw NetException(
+        code: -2,
+        type: NetType.put,
+        message: '[Exception] ${error.toString()}',
+      );
+    },);
 
     // check the response we got from http
     if (response.statusCode == 200) {

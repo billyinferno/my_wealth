@@ -7,9 +7,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlist',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get list of watchlist
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -29,9 +33,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/find/$type/id/$id'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on findSpecific',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get detailed watchlist information
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -48,9 +56,13 @@ class WatchlistAPI {
       url: Globals.apiWatchlists,
       body: {'watchlist_company_id': companyId, 'watchlist_company_type': type}
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on add',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get watchlist information that we just added
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -63,9 +75,13 @@ class WatchlistAPI {
     await NetUtils.delete(
       url: '${Globals.apiWatchlists}/$watchlistId',
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on delete',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // if delete success, then return true
     return true;
@@ -87,9 +103,13 @@ class WatchlistAPI {
         'watchlist_detail_watchlist_id': id
       }
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on addDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get watchlist detail information
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -106,9 +126,13 @@ class WatchlistAPI {
     await NetUtils.delete(
       url: '${Globals.apiWatchlistDetails}/$id',
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on deleteDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // if delete success, then return true
     return true;
@@ -129,9 +153,13 @@ class WatchlistAPI {
         'watchlist_detail_date': date.toUtc().toIso8601String()
       },
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on updateDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // return true if update success
     return true;
@@ -144,9 +172,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/detail/$companyId'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on findDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the detail for specific watchlist
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -166,9 +198,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/$type/$id'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistPerformance',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist performance list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -190,9 +226,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/$type/$id/month/$month/year/$year'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistPerformanceMonthYear',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist performance list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -213,9 +253,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/$type/$id/year/$year'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistPerformanceYear',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist performance list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -234,9 +278,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/summary/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistPerformanceSummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist performance summary list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -257,9 +305,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/summary/$type/month/$month/year/$year'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistPerformanceSummaryMonthYear',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist performance summary list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -279,9 +331,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/performance/summary/$type/year/$year'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistPerformanceSummaryYear',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist performance list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -298,9 +354,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiWatchlists}/history'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getWatchlistHistory',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the watchlist history list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -331,9 +391,13 @@ class WatchlistAPI {
     final String body = await NetUtils.get(
       url: url
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on findFirstLastDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the watchlist response data
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));

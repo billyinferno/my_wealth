@@ -7,9 +7,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/summary/sector'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSectorSummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get sector summart list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -32,9 +36,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/summary/sectorname/$sectorNameBase64/list/$sortType'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSectorSummaryList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get company sector list
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -52,9 +60,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/summary/industry/sectorname/$sectorNameBase64'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getIndustrySummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get sector summary based on their industry list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -76,9 +88,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/summary/subsector/sectorname/$sectorNameBase64'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSubSectorSummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get sector summary list based on sub sector
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -97,9 +113,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/stock/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getTopWorseCompany',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get top and worse company data
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -112,9 +132,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/broker/top'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getBrokerTopTransaction',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to broker top transaction list
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -130,9 +154,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/reksadana/$topWorse/type/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getTopWorseReksadana',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get reksdana top and worse company
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -145,9 +173,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/bandar/interesting'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getBandarInteresting',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
     
     // parse the response to get interesting stock from bandar
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -168,9 +200,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/accumulation/oneday/$oneDayRate/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getTopAccumulation',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get top accumulation for stock
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -190,9 +226,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/eps/top/min/$minDiff/diff/$minDiffRate'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getTopEPS',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get EPS information list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -213,9 +253,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/sideway/oneday/$maxOneDay/onedayrange/$oneDayRange/oneweekrange/$oneWeekRange'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getSideway',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get stock that currently in sideway position
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -232,9 +276,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/markettoday'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getMarketToday',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get market today information
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -247,9 +295,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/marketcap'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getMarketCap',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get market cap from stock
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -266,9 +318,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/indexbeater'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getIndexBeater',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get all stock code that get return better than
     // index.
@@ -286,9 +342,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/stock/new'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getStockNewListed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get all the new stock
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -305,9 +365,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/stock/dividend'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getStockDividendList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get dividend information that currently
     // bein distributed
@@ -325,9 +389,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/stock/split'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getStockSplitList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the data and process each one
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -354,9 +422,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/stockcollect/accum/$accumLimit/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getStockCollect',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get the stock collection information list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -384,9 +456,13 @@ class InsightAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInsight}/brokercollect/broker/$broker/accum/$accumLimit/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getBrokerCollect',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get stock that currently being collected by broker
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));

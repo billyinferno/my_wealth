@@ -7,9 +7,13 @@ class FavouritesAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiFavourites}/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getFavourites',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get user favourite list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -28,9 +32,13 @@ class FavouritesAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiFavourites}/list/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on listFavouritesCompanies',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get user favorit list
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -52,9 +60,13 @@ class FavouritesAPI {
       url: '${Globals.apiFavourites}/$type',
       body: {'favourites_company_id': companyId}
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on add',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response from adding company as favourites
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
@@ -67,9 +79,13 @@ class FavouritesAPI {
     await NetUtils.delete(
       url: '${Globals.apiFavourites}/$favouriteId',
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on delete',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
     
     // no need to response the data returned by delete
     return;

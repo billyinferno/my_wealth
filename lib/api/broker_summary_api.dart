@@ -17,7 +17,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/code/$stockCode/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the body
@@ -42,7 +47,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/net/code/$stockCode/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryNet',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the data and process each one
@@ -68,7 +78,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/broker/$brokerCode/from/$dateFromString/to/$dateToString/start/$start/limit/$limit'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerTransactionList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the data and process each one
@@ -93,7 +108,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/detail/broker/$brokerCode/code/$stockCode/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerTransactionDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the broker transaction detail data
@@ -119,7 +139,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: url
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryTop',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get broker summary top result
@@ -135,7 +160,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/date/code/$stockCode'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryCodeDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get broker summary data based on the stock code
@@ -151,7 +181,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/date/broker/$brokerID'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryBrokerDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get broker summary date
@@ -165,7 +200,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/date/all'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the broker summary date for all
@@ -183,7 +223,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${Globals.dfyyyyMMdd.format(date)}'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryAccumulation',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the broker summary accumulation data
@@ -199,7 +244,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/stat/daily/code/$code'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryDailyStat',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the broker summary daily statistic
@@ -215,7 +265,12 @@ class BrokerSummaryAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/stat/monthly/code/$code'
     ).onError((error, stackTrace) {
-      throw Exception(error);
+      Log.error(
+        message: 'Error on getBrokerSummaryMonthlyStat',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
     });
 
     // parse the response to get the broker summary monthly statistic

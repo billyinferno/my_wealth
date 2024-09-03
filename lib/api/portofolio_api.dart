@@ -9,9 +9,13 @@ class PortofolioAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiPortofolio}/$type'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getPortofolioSummary',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get portofolio summary list for this type
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -34,9 +38,13 @@ class PortofolioAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiPortofolio}/detail/$type/companytype/$companyTypeBase64'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getPortofolioDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to get list of portofolio detail for this type
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

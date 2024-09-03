@@ -10,9 +10,13 @@ class InfoReksadanaAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoReksadana}/id/$companyId/limit/$limit'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getInfoReksadana',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to reksdana information
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
@@ -33,9 +37,13 @@ class InfoReksadanaAPI {
     final String body = await NetUtils.get(
       url: '${Globals.apiInfoReksadana}/id/$companyId/from/${Globals.dfyyyyMMdd.format(from)}/to/${Globals.dfyyyyMMdd.format(to)}'
     ).onError((error, stackTrace) {
-        throw Exception(error);
-      }
-    );
+      Log.error(
+        message: 'Error on getInfoReksadanaDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
 
     // parse the response to reksdana information
     CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));

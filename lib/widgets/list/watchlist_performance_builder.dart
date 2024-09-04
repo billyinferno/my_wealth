@@ -65,9 +65,9 @@ class WatchlistBuilder extends StatelessWidget {
           plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
         }
 
-        String dateText = Globals.dfddMM.format(data[index].buyDate);
+        String dateText = Globals.dfddMM.format(data[index].buyDate.toLocal());
         if (graphSelection == "m" || graphSelection == "y") {
-          dateText = Globals.dfMMyy.format(data[index].buyDate);
+          dateText = Globals.dfMMyy.format(data[index].buyDate.toLocal());
         }
 
 

@@ -119,7 +119,7 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                         ),
                         child: Center(
                           child: Text(
-                            Globals.dfyyyyMMdd.format(_fromDate!),
+                            Globals.dfyyyyMMdd.formatDateWithNull(_fromDate),
                             style: const TextStyle(
                               color: textPrimary,
                             ),
@@ -161,7 +161,7 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                         ),
                         child: Center(
                           child: Text(
-                            Globals.dfyyyyMMdd.format(_toDate!),
+                            Globals.dfyyyyMMdd.formatDateWithNull(_toDate),
                             style: const TextStyle(
                               color: textPrimary,
                             ),

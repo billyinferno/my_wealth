@@ -532,7 +532,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         padding: const EdgeInsets.all(5),
                         width: 100,
                         child: Text(
-                          Globals.dfddMMyyyy.format(_perfDataSort[index].date),
+                          Globals.dfddMMyyyy.format(_perfDataSort[index].date.toLocal()),
                           textAlign: TextAlign.center,
                           style: _smallFont,
                         ),

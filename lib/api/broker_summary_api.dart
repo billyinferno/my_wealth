@@ -10,8 +10,8 @@ class BrokerSummaryAPI {
     // get the date we want to check
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
-    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom.toLocal());
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo.toLocal());
 
     // get the API response
     final String body = await NetUtils.get(
@@ -40,8 +40,8 @@ class BrokerSummaryAPI {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
-    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom.toLocal());
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo.toLocal());
 
     // get the API response
     final String body = await NetUtils.get(
@@ -71,8 +71,8 @@ class BrokerSummaryAPI {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
-    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom.toLocal());
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo.toLocal());
 
     // get the API response
     final String body = await NetUtils.get(
@@ -101,8 +101,8 @@ class BrokerSummaryAPI {
     // check if we got date or not?
     DateTime currentDateFrom = (dateFrom ?? DateTime.now().toLocal());
     DateTime currentDateTo = (dateTo ?? DateTime.now().toLocal());
-    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom);
-    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo);
+    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom.toLocal());
+    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo.toLocal());
 
     // get the API response
     final String body = await NetUtils.get(
@@ -131,7 +131,7 @@ class BrokerSummaryAPI {
       url = '${Globals.apiBrokerSummary}/top/last';
     }
     else {
-      String dateSearchText = Globals.dfyyyyMMdd.format(searchDate);
+      String dateSearchText = Globals.dfyyyyMMdd.format(searchDate.toLocal());
       url = '${Globals.apiBrokerSummary}/top/date/$dateSearchText';
     }
 
@@ -221,7 +221,7 @@ class BrokerSummaryAPI {
   }) async {
     // get the API response
     final String body = await NetUtils.get(
-      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${Globals.dfyyyyMMdd.format(date)}'
+      url: '${Globals.apiBrokerSummary}/accum/$version/code/$stockCode/date/${Globals.dfyyyyMMdd.format(date.toLocal())}'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getBrokerSummaryAccumulation',

@@ -266,7 +266,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                       ),
                                       child: Center(
                                         child: Text(
-                                          Globals.dfddMMyyyy2.format(_dateFrom),
+                                          Globals.dfddMMyyyy2.format(_dateFrom.toLocal()),
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),
@@ -291,7 +291,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                       ),
                                       child: Center(
                                         child: Text(
-                                          Globals.dfddMMyyyy2.format(_dateTo),
+                                          Globals.dfddMMyyyy2.format(_dateTo.toLocal()),
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),

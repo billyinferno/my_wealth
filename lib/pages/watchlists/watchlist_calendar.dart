@@ -418,7 +418,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Text(Globals.dfyyyyMM.format(_currentDate)),
+              Text(Globals.dfyyyyMM.format(_currentDate.toLocal())),
               const SizedBox(width: 5,),
               const Icon(
                 Ionicons.caret_down_sharp,
@@ -528,7 +528,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "${Globals.dfMMMyyyy.format(_currentDate)} P&L",
+                    "${Globals.dfMMMyyyy.format(_currentDate.toLocal())} P&L",
                     style: const TextStyle(
                       color: textPrimary,
                       fontSize: 10,
@@ -830,7 +830,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
           // update the year calendar PL list for this month
           _yearCalendarPL[resp[i].buyDate.month - 1] = CalendarDatePL(
-            date: Globals.dfMMM.format(priceDate),
+            date: Globals.dfMMM.format(priceDate.toLocal()),
             pl: (plCurrent - plBefore),
             plRatio: (plCurrentRatio * 100),
           );

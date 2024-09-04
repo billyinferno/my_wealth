@@ -227,7 +227,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                       ),
                                       child: Center(
                                         child: Text(
-                                          Globals.dfddMMyy.format(_fromDate!),
+                                          Globals.dfddMMyy.formatDateWithNull(_fromDate),
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),
@@ -252,7 +252,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                       ),
                                       child: Center(
                                         child: Text(
-                                          Globals.dfddMMyy.format(_toDate!),
+                                          Globals.dfddMMyy.formatDateWithNull(_toDate),
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),

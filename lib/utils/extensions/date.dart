@@ -21,9 +21,9 @@ extension CustomDateFunction on DateTime {
   }
 
   bool isSameDate({required DateTime date}) {
-    if (year == date.year) {
-      if (month == date.month) {
-        if (day == date.day) {
+    if (toLocal().year == date.toLocal().year) {
+      if (toLocal().month == date.toLocal().month) {
+        if (toLocal().day == date.toLocal().day) {
           return true;
         }
       }
@@ -33,8 +33,16 @@ extension CustomDateFunction on DateTime {
   }
 
   bool isBeforeDate({required DateTime date}) {
-    final DateTime dt1 = DateTime(year, month, day);
-    final DateTime dt2 = DateTime(date.year, date.month, date.day);
+    final DateTime dt1 = DateTime(
+      toLocal().year,
+      toLocal().month,
+      toLocal().day
+    );
+    final DateTime dt2 = DateTime(
+      date.toLocal().year,
+      date.toLocal().month,
+      date.toLocal().day
+    );
 
     if (dt1.isBefore(dt2)) {
       return true;
@@ -43,8 +51,16 @@ extension CustomDateFunction on DateTime {
   }
 
   bool isAfterDate({required DateTime date}) {
-    final DateTime dt1 = DateTime(year, month, day);
-    final DateTime dt2 = DateTime(date.year, date.month, date.day);
+    final DateTime dt1 = DateTime(
+      toLocal().year,
+      toLocal().month,
+      toLocal().day
+    );
+    final DateTime dt2 = DateTime(
+      date.toLocal().year,
+      date.toLocal().month,
+      date.toLocal().day
+    );
 
     if (dt1.isAfter(dt2)) {
       return true;

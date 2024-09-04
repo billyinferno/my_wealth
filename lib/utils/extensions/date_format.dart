@@ -5,6 +5,6 @@ extension CustomDateFormat on DateFormat {
     if (date == null) {
       return nullText;
     }
-    return format(date);
+    return format(date.toLocal());
   }
 }

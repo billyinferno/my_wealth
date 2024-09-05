@@ -44,22 +44,50 @@ class NetUtils {
     }
 
     // bearer token is not empty, we can perform call to the API
-    final response = await http.get(
-      uri,
-      headers: {
-        HttpHeaders.authorizationHeader: "Bearer $bearerToken",
-        'Content-Type': 'application/json',
-      },
-    ).timeout(
-      Duration(seconds: Globals.apiTimeOut),
-      onTimeout: () {
-        throw NetException(
-          code: 504,
-          type: NetType.get,
-          message: 'Gateway Timeout for $url'
+    try {
+      final response = await http.get(
+        uri,
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $bearerToken",
+          'Content-Type': 'application/json',
+        },
+      ).timeout(
+        Duration(seconds: Globals.apiTimeOut),
+        onTimeout: () {
+          throw NetException(
+            code: 504,
+            type: NetType.get,
+            message: 'Gateway Timeout for $url'
+          );
+        },
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Generic exception error',
+          error: error,
+          stackTrace: stackTrace,
         );
-      },
-    ).onError<http.ClientException>((error, stackTrace) {
+
+        throw NetException(
+          code: -2,
+          type: NetType.get,
+          message: '[Exception] ${error.toString()}',
+        );
+      },);
+
+      // check the response we got from http
+      if (response.statusCode == 200) {
+        return response.body;
+      }
+
+      // status code is not 200, means we got error
+      throw NetException(
+        code: response.statusCode,
+        type: NetType.get,
+        message: response.reasonPhrase ?? '',
+        body: response.body,
+      );
+    }
+    on http.ClientException catch(error, stackTrace) {
       Log.error(
         message: 'Client exception error',
         error: error,
@@ -71,32 +99,10 @@ class NetUtils {
         type: NetType.get,
         message: '[ClientException] ${error.toString()}',
       );
-    },).onError((error, stackTrace) {
-      Log.error(
-        message: 'Generic exception error',
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      throw NetException(
-        code: -2,
-        type: NetType.get,
-        message: '[Exception] ${error.toString()}',
-      );
-    },);
-
-    // check the response we got from http
-    if (response.statusCode == 200) {
-      return response.body;
     }
-
-    // status code is not 200, means we got error
-    throw NetException(
-      code: response.statusCode,
-      type: NetType.get,
-      message: response.reasonPhrase ?? '',
-      body: response.body,
-    );
+    catch (_) {
+      rethrow;
+    }
   }
 
   /// post
@@ -146,21 +152,49 @@ class NetUtils {
       uri = uri.replace(queryParameters: params);
     }
 
-    // bearer token is not empty, we can perform call to the API
-    final response = await http.post(
-      uri,
-      headers: headers,
-      body: jsonEncode(body)
-    ).timeout(
-      Duration(seconds: Globals.apiTimeOut),
-      onTimeout: () {
-        throw NetException(
-          code: 504,
-          type: NetType.post,
-          message: 'Gateway Timeout for $url'
+    try {
+      // bearer token is not empty, we can perform call to the API
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode(body)
+      ).timeout(
+        Duration(seconds: Globals.apiTimeOut),
+        onTimeout: () {
+          throw NetException(
+            code: 504,
+            type: NetType.post,
+            message: 'Gateway Timeout for $url'
+          );
+        },
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Generic exception error',
+          error: error,
+          stackTrace: stackTrace,
         );
-      },
-    ).onError<http.ClientException>((error, stackTrace) {
+
+        throw NetException(
+          code: -2,
+          type: NetType.post,
+          message: '[Exception] ${error.toString()}',
+        );
+      },);
+
+      // check the response we got from http
+      if (response.statusCode == 200) {
+        return response.body;
+      }
+
+      // status code is not 200, means we got error
+      throw NetException(
+        code: response.statusCode,
+        type: NetType.post,
+        message: response.reasonPhrase ?? '',
+        body: response.body,
+      );
+    }
+    on http.ClientException catch(error, stackTrace) {
       Log.error(
         message: 'Client exception error',
         error: error,
@@ -172,32 +206,10 @@ class NetUtils {
         type: NetType.post,
         message: '[ClientException] ${error.toString()}',
       );
-    },).onError((error, stackTrace) {
-      Log.error(
-        message: 'Generic exception error',
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      throw NetException(
-        code: -2,
-        type: NetType.post,
-        message: '[Exception] ${error.toString()}',
-      );
-    },);
-
-    // check the response we got from http
-    if (response.statusCode == 200) {
-      return response.body;
     }
-
-    // status code is not 200, means we got error
-    throw NetException(
-      code: response.statusCode,
-      type: NetType.post,
-      message: response.reasonPhrase ?? '',
-      body: response.body,
-    );
+    catch (_) {
+      rethrow;
+    }
   }
 
   /// delete
@@ -224,23 +236,51 @@ class NetUtils {
       uri = uri.replace(queryParameters: params);
     }
 
-    // bearer token is not empty, we can perform call to the API
-    final response = await http.delete(
-      uri,
-      headers: {
-        HttpHeaders.authorizationHeader: "Bearer $bearerToken",
-        'Content-Type': 'application/json',
-      },
-    ).timeout(
-      Duration(seconds: Globals.apiTimeOut),
-      onTimeout: () {
-        throw NetException(
-          code: 504,
-          type: NetType.delete,
-          message: 'Gateway Timeout for $url'
+    try {
+      // bearer token is not empty, we can perform call to the API
+      final response = await http.delete(
+        uri,
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $bearerToken",
+          'Content-Type': 'application/json',
+        },
+      ).timeout(
+        Duration(seconds: Globals.apiTimeOut),
+        onTimeout: () {
+          throw NetException(
+            code: 504,
+            type: NetType.delete,
+            message: 'Gateway Timeout for $url'
+          );
+        },
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Generic exception error',
+          error: error,
+          stackTrace: stackTrace,
         );
-      },
-    ).onError<http.ClientException>((error, stackTrace) {
+
+        throw NetException(
+          code: -2,
+          type: NetType.delete,
+          message: '[Exception] ${error.toString()}',
+        );
+      },);
+
+      // check the response we got from http
+      if (response.statusCode == 200) {
+        return response.body;
+      }
+
+      // status code is not 200, means we got error
+      throw NetException(
+        code: response.statusCode,
+        type: NetType.delete,
+        message: response.reasonPhrase ?? '',
+        body: response.body,
+      );
+    }
+    on http.ClientException catch(error, stackTrace) {
       Log.error(
         message: 'Client exception error',
         error: error,
@@ -252,32 +292,10 @@ class NetUtils {
         type: NetType.delete,
         message: '[ClientException] ${error.toString()}',
       );
-    },).onError((error, stackTrace) {
-      Log.error(
-        message: 'Generic exception error',
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      throw NetException(
-        code: -2,
-        type: NetType.delete,
-        message: '[Exception] ${error.toString()}',
-      );
-    },);
-
-    // check the response we got from http
-    if (response.statusCode == 200) {
-      return response.body;
     }
-
-    // status code is not 200, means we got error
-    throw NetException(
-      code: response.statusCode,
-      type: NetType.delete,
-      message: response.reasonPhrase ?? '',
-      body: response.body,
-    );
+    catch (_) {
+      rethrow;
+    }
   }
 
   /// patch
@@ -305,24 +323,52 @@ class NetUtils {
       uri = uri.replace(queryParameters: params);
     }
 
-    // bearer token is not empty, we can perform call to the API
-    final response = await http.patch(
-      uri,
-      headers: {
-        HttpHeaders.authorizationHeader: "Bearer $bearerToken",
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body)
-    ).timeout(
-      Duration(seconds: Globals.apiTimeOut),
-      onTimeout: () {
-        throw NetException(
-          code: 504,
-          type: NetType.patch,
-          message: 'Gateway Timeout for $url'
+    try {
+      // bearer token is not empty, we can perform call to the API
+      final response = await http.patch(
+        uri,
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $bearerToken",
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body)
+      ).timeout(
+        Duration(seconds: Globals.apiTimeOut),
+        onTimeout: () {
+          throw NetException(
+            code: 504,
+            type: NetType.patch,
+            message: 'Gateway Timeout for $url'
+          );
+        },
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Generic exception error',
+          error: error,
+          stackTrace: stackTrace,
         );
-      },
-    ).onError<http.ClientException>((error, stackTrace) {
+
+        throw NetException(
+          code: -2,
+          type: NetType.patch,
+          message: '[Exception] ${error.toString()}',
+        );
+      },);
+
+      // check the response we got from http
+      if (response.statusCode == 200) {
+        return response.body;
+      }
+
+      // status code is not 200, means we got error
+      throw NetException(
+        code: response.statusCode,
+        type: NetType.patch,
+        message: response.reasonPhrase ?? '',
+        body: response.body,
+      );
+    }
+    on http.ClientException catch(error, stackTrace) {
       Log.error(
         message: 'Client exception error',
         error: error,
@@ -334,32 +380,10 @@ class NetUtils {
         type: NetType.patch,
         message: '[ClientException] ${error.toString()}',
       );
-    },).onError((error, stackTrace) {
-      Log.error(
-        message: 'Generic exception error',
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      throw NetException(
-        code: -2,
-        type: NetType.patch,
-        message: '[Exception] ${error.toString()}',
-      );
-    },);
-
-    // check the response we got from http
-    if (response.statusCode == 200) {
-      return response.body;
     }
-
-    // status code is not 200, means we got error
-    throw NetException(
-      code: response.statusCode,
-      type: NetType.patch,
-      message: response.reasonPhrase ?? '',
-      body: response.body,
-    );
+    catch (_) {
+      rethrow;
+    }
   }
 
   /// put
@@ -387,24 +411,52 @@ class NetUtils {
       uri = uri.replace(queryParameters: params);
     }
 
-    // bearer token is not empty, we can perform call to the API
-    final response = await http.put(
-      uri,
-      headers: {
-        HttpHeaders.authorizationHeader: "Bearer $bearerToken",
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body)
-    ).timeout(
-      Duration(seconds: Globals.apiTimeOut),
-      onTimeout: () {
-        throw NetException(
-          code: 504,
-          type: NetType.put,
-          message: 'Gateway Timeout for $url'
+    try {
+      // bearer token is not empty, we can perform call to the API
+      final response = await http.put(
+        uri,
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $bearerToken",
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body)
+      ).timeout(
+        Duration(seconds: Globals.apiTimeOut),
+        onTimeout: () {
+          throw NetException(
+            code: 504,
+            type: NetType.put,
+            message: 'Gateway Timeout for $url'
+          );
+        },
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Generic exception error',
+          error: error,
+          stackTrace: stackTrace,
         );
-      },
-    ).onError<http.ClientException>((error, stackTrace) {
+
+        throw NetException(
+          code: -2,
+          type: NetType.put,
+          message: '[Exception] ${error.toString()}',
+        );
+      },);
+
+      // check the response we got from http
+      if (response.statusCode == 200) {
+        return response.body;
+      }
+
+      // status code is not 200, means we got error
+      throw NetException(
+        code: response.statusCode,
+        type: NetType.put,
+        message: response.reasonPhrase ?? '',
+        body: response.body,
+      );
+    }
+    on http.ClientException catch(error, stackTrace) {
       Log.error(
         message: 'Client exception error',
         error: error,
@@ -416,31 +468,9 @@ class NetUtils {
         type: NetType.put,
         message: '[ClientException] ${error.toString()}',
       );
-    },).onError((error, stackTrace) {
-      Log.error(
-        message: 'Generic exception error',
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      throw NetException(
-        code: -2,
-        type: NetType.put,
-        message: '[Exception] ${error.toString()}',
-      );
-    },);
-
-    // check the response we got from http
-    if (response.statusCode == 200) {
-      return response.body;
     }
-
-    // status code is not 200, means we got error
-    throw NetException(
-      code: response.statusCode,
-      type: NetType.put,
-      message: response.reasonPhrase ?? '',
-      body: response.body,
-    );
+    catch (_) {
+      rethrow;
+    }
   }
 }

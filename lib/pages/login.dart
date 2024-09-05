@@ -388,16 +388,16 @@ class LoginPageState extends State<LoginPage> {
       Log.error(message: "⛔ ${error.message}");
 
       // check if this is rejection from server
-      if(error.code != 200) {
-        // check the error code, if -1 it means this is client exception
-        // if -2 it means that it's a generic error
-        if (error.code == -1) {
-          _showScaffoldMessage(text: "Unable to connect to server");
-        }
-        else if (error.code == -2) {
-          _showScaffoldMessage(text: "Error processing on applicatoin");
-        }
-        else {
+      // check the error code, if -1 it means this is client exception
+      if (error.code == -1) {
+        _showScaffoldMessage(text: "Unable to connect to server");
+      }
+      // if -2 it means that it's a generic error
+      else if (error.code == -2) {
+        _showScaffoldMessage(text: "Error processing on applicatoin");
+      }
+      else {
+        if(error.code != 200) {
           // check if we have jwt token or not?
           if (currJwtToken.isNotEmpty) {
             // if already got token but unable to login, it means that the token already invalid
@@ -417,16 +417,6 @@ class LoginPageState extends State<LoginPage> {
           }
         }
       }
-    }
-    on ClientException catch (error, stackTrace) {
-      Log.error(
-        message: "⛔ Client exception with error ${error.message}",
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      // show no connection to API
-      _showScaffoldMessage(text: "Unable to connect to server");
     }
     catch (error, stackTrace) {
       Log.error(

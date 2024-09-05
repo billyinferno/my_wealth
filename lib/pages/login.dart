@@ -412,8 +412,10 @@ class LoginPageState extends State<LoginPage> {
             _showScaffoldMessage(text: "Token expired, please re-login");
           }
           else {
-            // show invalid token message on the login screen
-            _showScaffoldMessage(text: error.message);
+            if (error.code != 401) {
+              // show invalid token message on the login screen
+              _showScaffoldMessage(text: error.message);
+            }
           }
         }
       }
@@ -472,6 +474,23 @@ class LoginPageState extends State<LoginPage> {
             }
           });
         }
+
+        // and we can call all the rest of the API that we also need when user
+        // already login.
+        await _getAdditionalInfo().onError((error, stackTrace) {
+          // set the return into false
+          ret = false;
+
+          // print error on the console
+          Log.error(
+            message: "ℹ️ Unable to get additional information",
+            error: error,
+            stackTrace: stackTrace,
+          );
+
+          // show the error on the scaffold
+          _showScaffoldMessage(text: "Unable to get additional info");
+        },);
       });
     }
     on NetException catch (error, _) {
@@ -504,23 +523,6 @@ class LoginPageState extends State<LoginPage> {
       // show generic error on application
       _showScaffoldMessage(text: "Error processing on applicatoin");
     }
-
-    // and we can call all the rest of the API that we also need when user already
-    // login.
-    await _getAdditionalInfo().onError((error, stackTrace) {
-      // set the return into false
-      ret = false;
-
-      // print error on the console
-      Log.error(
-        message: "ℹ️ Unable to get additional information",
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      // show the error on the scaffold
-      _showScaffoldMessage(text: "Unable to get additional info");
-    },);
 
     // remove the loading screen
     LoadingScreen.instance().hide();

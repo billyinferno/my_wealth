@@ -19,8 +19,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late WatchlistListArgs _watchlistArgs;
   late UserLoginInfoModel _userInfo;
   late WatchlistComputationResult _watchlistComputation;
-  late Color _unrealisedColor;
-  late Color _realisedColor;
   late Future<bool> _getData;
   late List<WatchlistPerformanceModel> _watchlistPerformance;
   late List<WatchlistPerformanceModel> _watchlistPerformance90Day;
@@ -29,11 +27,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late List<WatchlistPerformanceModel> _watchlistPerformanceYear;
   late CompanyDetailArgs _companyArgs;
   late double _max;
-  late Color _maxColor;
   late double _min;
-  late Color _minColor;
   late double _avg;
-  late Color _avgColor;
   late double _maxPL;
   late double _minPL;
   late int _totalData;
@@ -61,35 +56,13 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       type: _watchlistArgs.type
     );
 
-    // set the unrealised and realised default color
-    _unrealisedColor = textPrimary;
-    _realisedColor = textPrimary;
-
     // get the computation for the watchlist
     _watchlistComputation = detailWatchlistComputation(watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk);
 
-    // check the unrealised and realised after computation to showed the correct color
-    if (_watchlistComputation.totalUnrealisedGain > 0) {
-      _unrealisedColor = Colors.green;
-    }
-    else if (_watchlistComputation.totalUnrealisedGain < 0) {
-      _unrealisedColor = secondaryColor;
-    }
-
-    if (_watchlistComputation.totalRealisedGain > 0) {
-      _realisedColor = Colors.green;
-    }
-    else if (_watchlistComputation.totalRealisedGain < 0) {
-      _realisedColor = secondaryColor;
-    }
-
     // assume max, min, and average is null
     _max = 0;
-    _maxColor = textPrimary;
     _min = 0;
-    _minColor = textPrimary;
     _avg = 0;
-    _avgColor = textPrimary;
     _maxPL = 0;
     _minPL = 0;
 
@@ -278,21 +251,21 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             children: <Widget>[
                               RowChild(
                                 headerText: "AVG PRICE",
-                                valueText: (
+                                value: (
                                   _watchlistComputation.totalCurrentShares > 0 ?
-                                  formatCurrency(_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) :
-                                  "-"
+                                  (_watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares) :
+                                  null
                                 )
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "COST",
-                                valueText: formatCurrency(_watchlistComputation.totalCost)
+                                value: _watchlistComputation.totalCost
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "VALUE",
-                                valueText: formatCurrency(_watchlistComputation.totalValue)
+                                value: _watchlistComputation.totalValue
                               ),
                             ],
                           ),
@@ -303,20 +276,20 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             children: <Widget>[
                               RowChild(
                                 headerText: "SHARES",
-                                valueText: formatCurrency(_watchlistComputation.totalCurrentShares)
+                                value: _watchlistComputation.totalCurrentShares
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "UNREALISED",
-                                valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain),
-                                valueColor: _unrealisedColor
+                                value: _watchlistComputation.totalUnrealisedGain,
+                                autoColor: true,
                               ),
                               const SizedBox(width: 10,),
-                              RowChild(headerText
-                              : "REALISED",
-                              valueText: formatCurrency(_watchlistComputation.totalRealisedGain),
-                              valueColor: _realisedColor
-                            ),
+                              RowChild(
+                                headerText: "REALISED",
+                                value: _watchlistComputation.totalRealisedGain,
+                                autoColor: true,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 5,),
@@ -326,21 +299,21 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             children: <Widget>[
                               RowChild(
                                 headerText: "MAX",
-                                valueText: formatCurrencyWithNull(_max),
-                                valueColor: _maxColor
+                                value: _max,
+                                autoColor: true,
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "MIN",
-                                valueText: formatCurrencyWithNull(_min),
-                                valueColor: _minColor
+                                value: _min,
+                                autoColor: true,
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "AVERAGE",
-                                valueText: formatCurrencyWithNull(_avg),
-                                valueColor:
-                              _avgColor),
+                                value: _avg,
+                                autoColor: true,
+                              ),
                             ],
                           ),
                         ],
@@ -711,29 +684,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
         if (_totalData > 0) {
           _max = max;
-          if (_max > 0) {
-            _maxColor = Colors.green;
-          }
-          else if (_max < 0) {
-            _maxColor = secondaryColor;
-          }
-
           _min = min;
-          if (_min > 0) {
-            _minColor = Colors.green;
-          }
-          else if (_min < 0) {
-            _minColor = secondaryColor;
-          }
-
           _avg = avg / _totalData;
-          if (_avg > 0) {
-            _avgColor = Colors.green;
-          }
-          else if (_avg < 0) {
-            _avgColor = secondaryColor;
-          }
-
           _maxPL = plDiffMax;
           _minPL = plDiffMin;
         }

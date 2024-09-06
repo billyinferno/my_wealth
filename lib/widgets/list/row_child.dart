@@ -3,19 +3,30 @@ import 'package:my_wealth/_index.g.dart';
 
 class RowChild extends StatelessWidget {
   final String headerText;
-  final Color? headerColor;
-  final String valueText;
-  final Color? valueColor;
+  final Color headerColor;
+  final double? value;
+  final bool autoColor;
   const RowChild({
     super.key,
     required this.headerText,
-    this.headerColor,
-    required this.valueText,
-    this.valueColor
+    this.headerColor = textPrimary,
+    required this.value,
+    this.autoColor = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    Color valueColor = textPrimary;
+    if (autoColor) {
+      // if auto color is set into true, then we need to check if the
+      if ((value ?? 0) < 0) {
+        valueColor = secondaryColor;
+      }
+      if ((value ?? 0) > 0) {
+        valueColor = Colors.green;
+      }
+    }
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,14 +38,14 @@ class RowChild extends StatelessWidget {
               headerText,
               style: TextStyle(
                 fontSize: 10,
-                color: (headerColor ?? textPrimary)
+                color: headerColor
               ),
             ),
           ),
           Text(
-            valueText,
+            formatCurrencyWithNull(value),
             style: TextStyle(
-              color: (valueColor ?? textPrimary),
+              color: valueColor,
             ),
           ),
         ],

@@ -28,9 +28,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   late String _calendarSelection;
   late DateTime _currentDate;
 
-  late Color _unrealisedColor;
-  late Color _realisedColor;
-
   late Future<bool> _getData;
   late Map<DateTime, WatchlistPerformanceModel> _watchlistMapPerformance;
   late List<CalendarDatePL> _monthYearCalendarPL;
@@ -82,23 +79,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     _watchlistComputation = detailWatchlistComputation(
       watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk
     );
-
-    // set the unrealised and realised default color
-    _unrealisedColor = textPrimary;
-    _realisedColor = textPrimary;
-
-    // check the unrealised and realised after computation to showed the correct color
-    if (_watchlistComputation.totalUnrealisedGain > 0) {
-      _unrealisedColor = Colors.green;
-    } else if (_watchlistComputation.totalUnrealisedGain < 0) {
-      _unrealisedColor = secondaryColor;
-    }
-
-    if (_watchlistComputation.totalRealisedGain > 0) {
-      _realisedColor = Colors.green;
-    } else if (_watchlistComputation.totalRealisedGain < 0) {
-      _realisedColor = secondaryColor;
-    }
 
     // initialize pl month and year
     _plTotal = 0;
@@ -153,7 +133,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   Widget _generatePage() {
     Color color = textPrimary;
     IconData iconToUsed = Ionicons.remove_outline;
-    String avgPrice = '-';
+    double? avgPrice;
 
     // get the icon and color that we will used on the page
     if (_watchlistComputation.priceDiff > 0) {
@@ -167,9 +147,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // check whether we need to calculate the average price or not?
     if (_watchlistComputation.totalCurrentShares > 0 ) {
-      avgPrice = formatCurrency(
-        _watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares
-      );
+      avgPrice = _watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares;
     }
 
     return Scaffold(
@@ -298,17 +276,17 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                             children: <Widget>[
                               RowChild(
                                 headerText: "AVG PRICE",
-                                valueText:avgPrice
+                                value: avgPrice
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "COST",
-                                valueText: formatCurrency(_watchlistComputation.totalCost)
+                                value: _watchlistComputation.totalCost
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "VALUE",
-                                valueText: formatCurrency(_watchlistComputation.totalValue)
+                                value: _watchlistComputation.totalValue
                               ),
                             ],
                           ),
@@ -319,19 +297,19 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                             children: <Widget>[
                               RowChild(
                                 headerText: "SHARES",
-                                valueText: formatCurrency(_watchlistComputation.totalCurrentShares),
+                                value: _watchlistComputation.totalCurrentShares,
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "UNREALISED",
-                                valueText: formatCurrency(_watchlistComputation.totalUnrealisedGain),
-                                valueColor: _unrealisedColor,
+                                value: _watchlistComputation.totalUnrealisedGain,
+                                autoColor: true,
                               ),
                               const SizedBox(width: 10,),
                               RowChild(
                                 headerText: "REALISED",
-                                valueText: formatCurrency(_watchlistComputation.totalRealisedGain),
-                                valueColor: _realisedColor,
+                                value: _watchlistComputation.totalRealisedGain,
+                                autoColor: true,
                               ),
                             ],
                           ),

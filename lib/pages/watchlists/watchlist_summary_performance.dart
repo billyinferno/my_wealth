@@ -76,6 +76,10 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late double _minYearly;
   late double _maxYearlyPL;
   late double _minYearlyPL;
+  late double _avg90;
+  late double _avgDaily;
+  late double _avgMonthly;
+  late double _avgYearly;
   late double _maxPL;
   late double _minPL;
 
@@ -310,7 +314,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                               const SizedBox(width: 10,),
                               _rowItem(text: "MAX (${_perfData.length})", value: _max, needColor: true),
                               const SizedBox(width: 10,),
-                              _rowItem(text: "AVERAGE", value: _avg, needColor: true),
+                              _rowItem(text: "AVERAGE (${_perfData.length})", value: _avg, needColor: true),
                             ],
                           ),
                         ],
@@ -922,6 +926,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _maxYearlyPL = double.negativeInfinity;
     _minYearlyPL = double.infinity;
 
+    _avg90 = 0;
+    _avgDaily = 0;
+    _avgMonthly = 0;
+    _avgYearly = 0;
+
     PerformanceData? prevData;
     double plDiff;
 
@@ -948,9 +957,16 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         if (_min90PL > plDiff) {
           _min90PL = plDiff;
         }
+
+        _avg90 = _avg90 + plDiff;
       }
       // set current data as prev data
       prevData = data;
+    }
+
+    // calculate avg for 90d
+    if (_perfData90D.length > 1) {
+      _avg90 = (_avg90 / (_perfData90D.length - 1));
     }
 
     // set previous data into null before we start next data
@@ -976,9 +992,16 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         if (_minDailyPL > plDiff) {
           _minDailyPL = plDiff;
         }
+
+        _avgDaily = _avgDaily + plDiff;
       }
       // set current data as prev data
       prevData = data;
+    }
+
+    // calculate avg for daily
+    if (_perfDataDaily.length > 1) {
+      _avgDaily = (_avgDaily / (_perfDataDaily.length - 1));
     }
 
     // set previous data into null before we start next data
@@ -1004,9 +1027,16 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         if (_minMonthlyPL > plDiff) {
           _minMonthlyPL = plDiff;
         }
+
+        _avgMonthly = _avgMonthly + plDiff;
       }
       // set current data as prev data
       prevData = data;
+    }
+
+    // calculate avg monthly
+    if (_perfDataMonhtly.length > 1) {
+      _avgMonthly = (_avgMonthly / (_perfDataMonhtly.length - 1));
     }
 
     // set previous data into null before we start next data
@@ -1032,9 +1062,16 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         if (_minYearlyPL > plDiff) {
           _minYearlyPL = plDiff;
         }
+
+        _avgYearly = _avgYearly + plDiff;
       }
       // set current data as prev data
       prevData = data;
+    }
+
+    // calculate avg monthly
+    if (_perfDataYearly.length > 1) {
+      _avgYearly = (_avgYearly / (_perfDataYearly.length - 1));
     }
 
     // check again to ensure all being set
@@ -1340,6 +1377,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         _min = _min90;
         _maxPL = _max90PL;
         _minPL = _min90PL;
+        _avg = _avg90;
         break;
       case "m":
         _perfData = _perfDataMonhtly.toList();
@@ -1349,6 +1387,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         _min = _minMonthly;
         _maxPL = _maxMonthlyPL;
         _minPL = _minMonthlyPL;
+        _avg = _avgMonthly;
         break;
       case "y":
         _perfData = _perfDataYearly.toList();
@@ -1358,6 +1397,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         _min = _minYearly;
         _maxPL = _maxYearlyPL;
         _minPL = _minYearlyPL;
+        _avg = _avgYearly;
         break;
       default:
         _perfData = _perfDataDaily.toList();
@@ -1367,6 +1407,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         _min = _minDaily;
         _maxPL = _maxDailyPL;
         _minPL = _minDailyPL;
+        _avg = _avgDaily;
         break;
     }
 

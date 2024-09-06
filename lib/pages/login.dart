@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
@@ -507,10 +506,6 @@ class LoginPageState extends State<LoginPage> {
         Log.error(message: "🔐 Login failed");
         _showScaffoldMessage(text: "Invalid identifier or password");
       }
-    }
-    on ClientException catch (error, _) {
-      Log.error(message: "🌏 No Internet Connection");
-      _showScaffoldMessage(text: "Unable to connect to API");
     }
     catch (error, stackTrace) {
       // generic error

@@ -7,11 +7,6 @@ class IndexSharedPreferences {
   static Future<void> setIndexList({
     required List<IndexModel> indexList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> indexListResp = [];
     for (IndexModel index in indexList) {
@@ -24,11 +19,6 @@ class IndexSharedPreferences {
   }
 
   static List<IndexModel> getIndexList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> indexList = (LocalBox.getStringList(key: _indexKey) ?? []);
 

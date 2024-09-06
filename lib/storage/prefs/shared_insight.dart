@@ -38,11 +38,6 @@ class InsightSharedPreferences {
   static Future<void> setSectorSummaryList({
     required List<SectorSummaryModel> sectorSummaryList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> sectorSummaryListResp = [];
     for (SectorSummaryModel sector in sectorSummaryList) {
@@ -55,11 +50,6 @@ class InsightSharedPreferences {
   }
 
   static List<SectorSummaryModel> getSectorSummaryList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> sectorSummaryList = (
       LocalBox.getStringList(key: _sectorSummaryKey) ?? []
@@ -87,11 +77,6 @@ class InsightSharedPreferences {
     required String type,
     required TopWorseCompanyListModel topWorseList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     String topWorseString = jsonEncode(topWorseList.toJson());
     LocalBox.putString(
@@ -103,11 +88,6 @@ class InsightSharedPreferences {
   static TopWorseCompanyListModel getTopWorseCompanyList({
     required String type
   }) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String topWorseString = (
       LocalBox.getString(key: _topWorseCompanyListKey + type) ?? ''
@@ -141,11 +121,6 @@ class InsightSharedPreferences {
   static Future<void> setBrokerTopTxn({
     required BrokerTopTransactionModel brokerTopList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     String brokerTopListString = jsonEncode(brokerTopList.toJson());
     LocalBox.putString(
@@ -155,11 +130,6 @@ class InsightSharedPreferences {
   }
 
   static BrokerTopTransactionModel getBrokerTopTxn() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String brokerTopListString = (
       LocalBox.getString(key: _brokerTopTransactionKey) ?? ''
@@ -187,11 +157,6 @@ class InsightSharedPreferences {
     required String type,
     required TopWorseCompanyListModel topReksadanaList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     String topReksadanaString = jsonEncode(topReksadanaList.toJson());
     LocalBox.putString(
@@ -201,11 +166,6 @@ class InsightSharedPreferences {
   }
 
   static TopWorseCompanyListModel getTopReksadanaList({required String type}) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String topReksadanaString = (
       LocalBox.getString(key: _topReksadanaListKey + type) ?? ''
@@ -240,11 +200,6 @@ class InsightSharedPreferences {
     required String type,
     required TopWorseCompanyListModel worseReksadanaList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     String worseReksadanaString = jsonEncode(worseReksadanaList.toJson());
     LocalBox.putString(
@@ -256,11 +211,6 @@ class InsightSharedPreferences {
   static TopWorseCompanyListModel getWorseReksadanaList({
     required String type
   }) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String worseReksadanaString = (
       LocalBox.getString(key: "$_worseReksadanaListKey$type") ?? ''
@@ -296,11 +246,6 @@ class InsightSharedPreferences {
   static Future<void> setBandarInterestingList({
     required InsightBandarInterestModel bandarInterest
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     String bandarInterestString = jsonEncode(bandarInterest.toJson());
     LocalBox.putString(
@@ -310,11 +255,6 @@ class InsightSharedPreferences {
   }
 
   static InsightBandarInterestModel getBandarInterestingList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String bandarInterestString = (
       LocalBox.getString(key: _bandarInterestingKey) ?? ''
@@ -342,11 +282,6 @@ class InsightSharedPreferences {
     required int rate,
     required List<InsightAccumulationModel> accum
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // store the from and to date
     LocalBox.putString(
       key: _topAccumFromDateKey,
@@ -375,11 +310,6 @@ class InsightSharedPreferences {
   }
 
   static DateTime getTopAccumulationFromDate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String fromDateString = (
       LocalBox.getString(key: _topAccumFromDateKey) ?? ''
@@ -392,11 +322,6 @@ class InsightSharedPreferences {
   }
 
   static DateTime getTopAccumulationToDate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String toDateString = (
       LocalBox.getString(key: _topAccumToDateKey) ?? ''
@@ -409,11 +334,6 @@ class InsightSharedPreferences {
   }
 
   static int getTopAccumulationRate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (
       LocalBox.getString(key: _topAccumRateKey) ?? ''
@@ -427,11 +347,6 @@ class InsightSharedPreferences {
   }
 
   static List<InsightAccumulationModel> getTopAccumulationResult() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> accumString = (
       LocalBox.getStringList(key: _topAccumResultKey) ?? []
@@ -452,12 +367,6 @@ class InsightSharedPreferences {
   }
 
   static Future<void> clearTopAccumulation() async {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      // null no need to clear
-      return;
-    }
-
     // clear all the key for the topAccumulation
     LocalBox.delete(key: _topAccumFromDateKey, exact: true);
     LocalBox.delete(key: _topAccumToDateKey, exact: true);
@@ -470,11 +379,6 @@ class InsightSharedPreferences {
     required int diffRate,
     required List<InsightEpsModel> epsList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // store the from and to date
     LocalBox.putString(key: _epsMinRateKey, value: minRate.toString());
     LocalBox.putString(key: _epsMinDiffRateKey, value: diffRate.toString());
@@ -488,11 +392,6 @@ class InsightSharedPreferences {
   }
 
   static int getEpsMinRate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (LocalBox.getString(key: _epsMinRateKey) ?? '');
     if (rateString.isNotEmpty) {
@@ -504,11 +403,6 @@ class InsightSharedPreferences {
   }
 
   static int getEpsMinDiffRate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (LocalBox.getString(key: _epsMinDiffRateKey) ?? '');
     if (rateString.isNotEmpty) {
@@ -520,11 +414,6 @@ class InsightSharedPreferences {
   }
 
   static List<InsightEpsModel> getEpsResult() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> epsString = (LocalBox.getStringList(key: _epsResultKey) ?? []);
     if (epsString.isNotEmpty) {
@@ -543,12 +432,6 @@ class InsightSharedPreferences {
   }
 
   static Future<void> clearEps() async {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      // null no need to clear
-      return;
-    }
-
     // clear all the key for the eps data
     LocalBox.delete(key: _epsMinRateKey, exact: true);
     LocalBox.delete(key: _epsMinDiffRateKey, exact: true);
@@ -561,11 +444,6 @@ class InsightSharedPreferences {
     required int avgOneWeek,
     required List<InsightSidewayModel> sidewayList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // store the from and to date
     LocalBox.putString(key: _sidewayOneDayRateKey, value: oneDay.toString());
     LocalBox.putString(key: _sidewayAvgOneDayKey, value: avgOneDay.toString());
@@ -580,11 +458,6 @@ class InsightSharedPreferences {
   }
 
   static int getSidewayOneDayRate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (LocalBox.getString(key: _sidewayOneDayRateKey) ?? '');
     if (rateString.isNotEmpty) {
@@ -596,11 +469,6 @@ class InsightSharedPreferences {
   }
 
   static int getSidewayAvgOneDay() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (LocalBox.getString(key: _sidewayAvgOneDayKey) ?? '');
     if (rateString.isNotEmpty) {
@@ -612,11 +480,6 @@ class InsightSharedPreferences {
   }
 
   static int getSidewayAvgOneWeek() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (LocalBox.getString(key: _sidewayAvgOneWeekKey) ?? '');
     if (rateString.isNotEmpty) {
@@ -628,11 +491,6 @@ class InsightSharedPreferences {
   }
 
   static List<InsightSidewayModel> getSidewayResult() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> sidewaysString = (
       LocalBox.getStringList(key: _sidewayResultKey) ?? []
@@ -655,12 +513,6 @@ class InsightSharedPreferences {
   }
 
   static Future<void> clearSideway() async {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      // null no need to clear
-      return;
-    }
-
     // clear all the key for the sideway data
     LocalBox.delete(key: _sidewayOneDayRateKey, exact: true);
     LocalBox.delete(key: _sidewayAvgOneDayKey, exact: true);
@@ -671,22 +523,12 @@ class InsightSharedPreferences {
   static Future<void> setBrokerMarketToday({
     required MarketTodayModel marketToday
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     String marketTodayString = jsonEncode(marketToday.toJson());
     LocalBox.putString(key: _brokerMarketToday, value: marketTodayString);
   }
 
   static MarketTodayModel getBrokerMarketToday() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String marketTodayString = (
       LocalBox.getString(key: _brokerMarketToday) ?? ''
@@ -721,11 +563,6 @@ class InsightSharedPreferences {
   static Future<void> setMarketCap({
     required List<MarketCapModel> marketCapList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> marketCapListResp = [];
     for (MarketCapModel sector in marketCapList) {
@@ -735,11 +572,6 @@ class InsightSharedPreferences {
   }
 
   static List<MarketCapModel> getMarketCap() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> marketCapList = (
       LocalBox.getStringList(key: _marketCapKey) ?? []
@@ -768,11 +600,6 @@ class InsightSharedPreferences {
   static Future<void> setIndexBeater({
     required List<IndexBeaterModel> indexBeaterList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> indexBeaterListResp = [];
     for (IndexBeaterModel indexBeater in indexBeaterList) {
@@ -782,11 +609,6 @@ class InsightSharedPreferences {
   }
 
   static List<IndexBeaterModel> getIndexBeater() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> indexBeaterList = (
       LocalBox.getStringList(key: _indexBeaterKey) ?? []
@@ -811,12 +633,6 @@ class InsightSharedPreferences {
   }
 
   static Future<void> clearIndexBeater() async {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      // null no need to clear
-      return;
-    }
-
     // clear all the key for the index beaterdata
     LocalBox.delete(key: _indexBeaterKey, exact: true);
   }
@@ -824,11 +640,6 @@ class InsightSharedPreferences {
   static Future<void> setStockNewListed({
     required List<StockNewListedModel> stockNewList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> stockNewListResp = [];
     for (StockNewListedModel stock in stockNewList) {
@@ -838,11 +649,6 @@ class InsightSharedPreferences {
   }
 
   static List<StockNewListedModel> getStockNewListed() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> stockNewList = (
       LocalBox.getStringList(key: _stockNewListedKey) ?? []
@@ -869,11 +675,6 @@ class InsightSharedPreferences {
   static Future<void> setStockDividendList({
     required List<StockDividendListModel> stockDividendList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> stockDividendListResp = [];
     for (StockDividendListModel stock in stockDividendList) {
@@ -886,11 +687,6 @@ class InsightSharedPreferences {
   }
 
   static List<StockDividendListModel> getStockDividendList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> stockDividendList = (
       LocalBox.getStringList(key: _stockDividendListKey) ?? []
@@ -917,11 +713,6 @@ class InsightSharedPreferences {
   static Future<void> setStockSplitList({
     required List<StockSplitListModel> stockDividendList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> stockSplitListResp = [];
     for (StockSplitListModel stock in stockDividendList) {
@@ -931,11 +722,6 @@ class InsightSharedPreferences {
   }
 
   static List<StockSplitListModel> getStockSplitList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> stockSplitList = (
       LocalBox.getStringList(key: _stockSplitListKey) ?? []
@@ -965,11 +751,6 @@ class InsightSharedPreferences {
     required DateTime toDate,
     required int rate
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // store the from and to date
     LocalBox.putString(
       key: _stockCollectFromDateKey,
@@ -995,11 +776,6 @@ class InsightSharedPreferences {
   }
 
   static List<InsightStockCollectModel> getStockCollect() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> stockCollectList = (
       LocalBox.getStringList(key: _stockCollectKey) ?? []
@@ -1024,11 +800,6 @@ class InsightSharedPreferences {
   }
 
   static DateTime? getStockCollectDate({required String type}) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String dateString = '';
     switch(type.toLowerCase()) {
@@ -1049,11 +820,6 @@ class InsightSharedPreferences {
   }
 
   static int getStockCollectAccumulationRate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (
       LocalBox.getString(key: _stockCollectAccumRateKey) ?? ''
@@ -1067,12 +833,6 @@ class InsightSharedPreferences {
   }
 
   static Future<void> clearStockCollect() async {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      // null no need to clear
-      return;
-    }
-
     // clear all the data for stock collect
     LocalBox.delete(key: _stockCollectKey, exact: true);
     LocalBox.delete(key: _stockCollectFromDateKey, exact: true);
@@ -1087,11 +847,6 @@ class InsightSharedPreferences {
     required DateTime toDate,
     required int rate
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // store the broker id
     LocalBox.putString(
       key: _brokerCollectIDKey,
@@ -1122,11 +877,6 @@ class InsightSharedPreferences {
   }
 
   static InsightBrokerCollectModel? getBrokerCollect() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String brokerCollectString = (
       LocalBox.getString(key: _brokerCollectKey) ?? ''
@@ -1145,11 +895,6 @@ class InsightSharedPreferences {
   }
 
   static String getBrokerCollectID() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String brokerId = (LocalBox.getString(key: _brokerCollectIDKey) ?? '');
     if (brokerId.isNotEmpty) {
@@ -1160,11 +905,6 @@ class InsightSharedPreferences {
   }
 
   static DateTime? getBrokerCollectDate({required String type}) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String dateString = '';
     switch(type.toLowerCase()) {
@@ -1185,11 +925,6 @@ class InsightSharedPreferences {
   }
 
   static int getBrokerCollectAccumulationRate() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String rateString = (
       LocalBox.getString(key: _brokerCollectAccumRateKey) ?? ''
@@ -1203,12 +938,6 @@ class InsightSharedPreferences {
   }
 
   static Future<void> clearBrokerCollect() async {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      // null no need to clear
-      return;
-    }
-
     // clear all the data for stock collect
     LocalBox.delete(key: _brokerCollectKey, exact: true);
     LocalBox.delete(key: _brokerCollectIDKey, exact: true);

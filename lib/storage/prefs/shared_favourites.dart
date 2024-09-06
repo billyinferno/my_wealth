@@ -8,11 +8,6 @@ class FavouritesSharedPreferences {
     required String type,
     required List<FavouritesModel> favouriteList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> favouriteListRet = [];
     for (FavouritesModel fave in favouriteList) {
@@ -25,11 +20,6 @@ class FavouritesSharedPreferences {
   }
 
   static List<FavouritesModel> getFavouritesList({required String type}) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> favouriteListString = (
       LocalBox.getStringList(key: "${_favouriteKey}_$type") ?? []

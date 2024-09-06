@@ -3,13 +3,13 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class LocalBox {
-  static Box<dynamic>? keyBox;
-  static Box<dynamic>? encryptedBox;
+  static Box<dynamic>? _keyBox;
+  static Box<dynamic>? _encryptedBox;
 
   static Future<void> init() async {
-    if(keyBox == null) {
+    if(_keyBox == null) {
       Log.info(message: "📦 Initialize Box");
-      keyBox = await Hive.openBox('storage', compactionStrategy: ((entries, deletedEntries) {
+      _keyBox = await Hive.openBox('storage', compactionStrategy: ((entries, deletedEntries) {
         return deletedEntries > 50;
       }));
     }
@@ -17,22 +17,22 @@ class LocalBox {
     List<int> key = [];
     Uint8List keyInt;
     // check whether we already have key or not?
-    if(!keyBox!.containsKey('key')) {
+    if(!_keyBox!.containsKey('key')) {
       // don't have key, so we need to generate a new key
       key = Hive.generateSecureKey();
       keyInt = key as Uint8List;
-      keyBox!.put('key', key);
+      _keyBox!.put('key', key);
     }
     else {
       // key already exists, get the current key
-      key = keyBox!.get('key');
+      key = _keyBox!.get('key');
       keyInt = key as Uint8List;
     }
 
     // open the encrypted box based on the key we have
-    if (encryptedBox == null) {
+    if (_encryptedBox == null) {
       Log.info(message: "🔐 Initialized Secured Box");
-      encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(keyInt), compactionStrategy: (entries, deletedEntries) {
+      _encryptedBox = await Hive.openBox('vault', encryptionCipher: HiveAesCipher(keyInt), compactionStrategy: (entries, deletedEntries) {
         return deletedEntries > 10;
       },);
     }
@@ -43,12 +43,12 @@ class LocalBox {
     required String value
   }) async {
     // check if keyBox still null?
-    if (keyBox == null) {
+    if (_keyBox == null) {
       await init();
     }
 
     // put the key and string value to the keyBox
-    keyBox!.put(key, value);
+    _keyBox!.put(key, value);
   }
 
   static Future<void> putStringList({
@@ -56,23 +56,23 @@ class LocalBox {
     required List<String> value
   }) async {
     // check if keyBox still null?
-    if (keyBox == null) {
+    if (_keyBox == null) {
       await init();
     }
 
     // put the key and string value to the keyBox
-    keyBox!.put(key, value);
+    _keyBox!.put(key, value);
   }
 
   static String? getString({required String key}) {
     // if null then return null
-    if (keyBox == null) {
+    if (_keyBox == null) {
       return null;
     }
     else {
       // check if contains key or not?
-      if (keyBox!.containsKey(key)) {
-        return keyBox!.get(key).toString();
+      if (_keyBox!.containsKey(key)) {
+        return _keyBox!.get(key).toString();
       }
       else {
         return null;
@@ -82,13 +82,13 @@ class LocalBox {
 
   static List<String>? getStringList({required String key}) {
     // if null then return null
-    if (keyBox == null) {
+    if (_keyBox == null) {
       return null;
     }
     else {
       // check if contains key for the string list or not?
-      if (keyBox!.containsKey(key)) {
-        return List<String>.from(keyBox!.get(key));
+      if (_keyBox!.containsKey(key)) {
+        return List<String>.from(_keyBox!.get(key));
       }
       else {
         return [];
@@ -101,25 +101,25 @@ class LocalBox {
     required String value
   }) async {
     // check if keyBox still null?
-    if (encryptedBox == null) {
+    if (_encryptedBox == null) {
       await init();
     }
 
     // put the key and string value to the keyBox
-    encryptedBox!.put(key, value);
+    _encryptedBox!.put(key, value);
   }
 
   static String? getSecuredString({
     required String key
   }) {
     // if null then return null
-    if (encryptedBox == null) {
+    if (_encryptedBox == null) {
       return null;
     }
     else {
       // check if contains key or not?
-      if (encryptedBox!.containsKey(key)) {
-        return encryptedBox!.get(key).toString();
+      if (_encryptedBox!.containsKey(key)) {
+        return _encryptedBox!.get(key).toString();
       }
       else {
         return null;
@@ -130,26 +130,26 @@ class LocalBox {
   static Future<void> clear() async {
     // clear both the key box and encrypted box
     // first clear the box
-    if (keyBox != null) {
+    if (_keyBox != null) {
       // loop thru all the key box keys
-      Iterable<dynamic> keys = keyBox!.keys;
+      Iterable<dynamic> keys = _keyBox!.keys;
       for(var key in keys) {
         // check if this is "key", if so don't delete this so we can still
         // open the encrypted box later on
         if(key.toString().toLowerCase() != "key") {
-          keyBox!.delete(key);
+          _keyBox!.delete(key);
         }
       }
 
       // compact the storage
-      await keyBox!.compact();
+      await _keyBox!.compact();
     }
 
     // then clear the encrytped box
-    if (encryptedBox != null) {
-      Iterable<dynamic> secureKeys = encryptedBox!.keys;
+    if (_encryptedBox != null) {
+      Iterable<dynamic> secureKeys = _encryptedBox!.keys;
       for(var secureKey in secureKeys) {
-        encryptedBox!.delete(secureKey);
+        _encryptedBox!.delete(secureKey);
       }
     }
   }
@@ -159,30 +159,30 @@ class LocalBox {
     bool exact = false,
   }) async {
     // check if key box is not null
-    if (keyBox != null) {
+    if (_keyBox != null) {
       if (exact) {
         // check if we can find the key on the key box or not?
-        if (keyBox!.containsKey(key)) {
+        if (_keyBox!.containsKey(key)) {
           // delete the ke
-          keyBox!.delete(key);
+          _keyBox!.delete(key);
         }
       }
       else {
         // it's not a case senstive search, so loop thru all the key
         // and see if the key is contain the key string or not?
-        Iterable<dynamic> keys = keyBox!.keys;
+        Iterable<dynamic> keys = _keyBox!.keys;
         for(var boxKey in keys) {
           // check if the key is on the box key
           String strKey = boxKey.toString();
           if(strKey.contains(key)) {
             // delete this record
-            keyBox!.delete(boxKey);
+            _keyBox!.delete(boxKey);
           }
         }
       }
 
       // compact the box once finished
-      await keyBox!.compact();
+      await _keyBox!.compact();
     }
   }
 }

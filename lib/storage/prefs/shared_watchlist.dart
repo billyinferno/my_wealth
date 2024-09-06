@@ -9,11 +9,6 @@ class WatchlistSharedPreferences {
     required String type,
     required List<WatchlistListModel> watchlistData
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> watchlistList = [];
     for (WatchlistListModel watchlist in watchlistData) {
@@ -23,11 +18,6 @@ class WatchlistSharedPreferences {
   }
 
   static List<WatchlistListModel> getWatchlist({required String type}) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> watchlistList = (
       LocalBox.getStringList(key: "${_watchlistKey}_$type") ?? []
@@ -55,11 +45,6 @@ class WatchlistSharedPreferences {
     required String type,
     required int id
   }) {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> watchlistList = (
       LocalBox.getStringList(key: "${_watchlistKey}_$type") ?? []
@@ -89,11 +74,6 @@ class WatchlistSharedPreferences {
   static Future<void> setWatchlistHistory({
     required List<WatchlistHistoryModel> watchlistData
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> watchlistList = [];
     for (WatchlistHistoryModel watchlist in watchlistData) {
@@ -103,11 +83,6 @@ class WatchlistSharedPreferences {
   }
 
   static List<WatchlistHistoryModel> getWatchlistHistory() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> watchlistList = (
       LocalBox.getStringList(key: _watchlistHistoryKey) ?? []

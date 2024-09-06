@@ -10,11 +10,6 @@ class BrokerSharedPreferences {
   static Future<void> setBrokerList({
     required List<BrokerModel> brokerList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> indexListResp = [];
     for (BrokerModel broker in brokerList) {
@@ -27,11 +22,6 @@ class BrokerSharedPreferences {
   }
 
   static List<BrokerModel> getBrokerList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> brokerList = (LocalBox.getStringList(key: _brokerKey) ?? []);
 
@@ -56,11 +46,6 @@ class BrokerSharedPreferences {
   static Future<void> setBroketTopList({
     required BrokerSummaryTopModel topList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     LocalBox.putString(
       key: _brokerTopKey,
@@ -69,11 +54,6 @@ class BrokerSharedPreferences {
   }
 
   static BrokerSummaryTopModel? getBrokerTopList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     String topList = (LocalBox.getString(key: _brokerTopKey) ?? '');
 
@@ -95,22 +75,12 @@ class BrokerSharedPreferences {
     required DateTime minDate,
     required DateTime maxDate
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // put the date on the shared preferences
     LocalBox.putString(key: _brokerMinDateKey, value: minDate.toString());
     LocalBox.putString(key: _brokerMaxDateKey, value: maxDate.toString());
   }
 
   static DateTime? getBrokerMinDate() {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      return null;
-    }
-
     // get the data from local box
     String strMinDate = (LocalBox.getString(key: _brokerMinDateKey) ?? '');
     if (strMinDate.isNotEmpty) {
@@ -121,11 +91,6 @@ class BrokerSharedPreferences {
   }
 
   static DateTime? getBrokerMaxDate() {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      return null;
-    }
-
     // get the data from local box
     String strMaxDate = (LocalBox.getString(key: _brokerMaxDateKey) ?? '');
     if (strMaxDate.isNotEmpty) {

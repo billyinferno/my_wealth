@@ -7,11 +7,6 @@ class CompanySharedPreferences {
   static Future<void> setSectorNameList({
     required List<SectorNameModel> sectorNameList
   }) async {
-    // stored the user info to box
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // convert the json to string so we can stored it on the local storage
     List<String> sectorNameListResp = [];
     for (SectorNameModel sectorName in sectorNameList) {
@@ -24,11 +19,6 @@ class CompanySharedPreferences {
   }
 
   static List<SectorNameModel> getSectorNameList() {
-    // check if the key box is null or not?
-    if(LocalBox.keyBox == null) {
-      LocalBox.init();
-    }
-
     // get the data from local box
     List<String> sectorNameListString = (
       LocalBox.getStringList(key: _sectorNameListKey) ?? []

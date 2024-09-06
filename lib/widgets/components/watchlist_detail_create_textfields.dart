@@ -116,6 +116,10 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
                 ),
                 focusColor: secondaryColor,
                 hintText: currHintText,
+                hintStyle: const TextStyle(
+                  color: primaryLight,
+                  fontStyle: FontStyle.italic,
+                )
               ),
               inputFormatters: formatter,
             ),

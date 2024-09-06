@@ -757,8 +757,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                 );
               }
               return CompanyDetailPriceList(
-                date: Globals.dfddMMyyyy.format(
-                  _companyDetail.companyPrices[index].priceDate.toLocal()
+                date: Globals.dfddMMyyyy.formatLocal(
+                  _companyDetail.companyPrices[index].priceDate
                 ),
                 price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
                 diff: formatCurrency(

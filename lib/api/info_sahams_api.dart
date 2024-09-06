@@ -36,7 +36,7 @@ class InfoSahamsAPI {
   }) async {
     // get saham information using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiInfoSaham}/code/$code/from/${Globals.dfyyyyMMdd.format(from.toLocal())}/to/${Globals.dfyyyyMMdd.format(to.toLocal())}'
+      url: '${Globals.apiInfoSaham}/code/$code/from/${Globals.dfyyyyMMdd.formatLocal(from)}/to/${Globals.dfyyyyMMdd.formatLocal(to)}'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getInfoSahamPriceDate',

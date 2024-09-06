@@ -129,7 +129,13 @@ class SeasonalityTable extends StatelessWidget {
             height: 50,
             child: Center(
               child: Text(
-                Globals.dfMMM.format(DateTime(DateTime.now().year, (index + 1), 1)),
+                Globals.dfMMM.formatLocal(
+                  DateTime(
+                    DateTime.now().year,
+                    (index + 1),
+                    1
+                  )
+                ),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),

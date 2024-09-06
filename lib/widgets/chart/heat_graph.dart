@@ -191,7 +191,7 @@ class HeatGraph extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Text(
-                "${Globals.dfddMM.format(startDate.toLocal())} - ${Globals.dfddMM.formatDateWithNull(endDate)}",
+                "${Globals.dfddMM.formatLocal(startDate)} - ${Globals.dfddMM.formatDateWithNull(endDate)}",
                 style: const TextStyle(
                   fontSize: 9,
                 ),

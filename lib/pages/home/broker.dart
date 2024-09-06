@@ -157,7 +157,7 @@ class _BrokerPageState extends State<BrokerPage> {
                                 _informationText(
                                   flex: 2,
                                   text: "Date",
-                                  value: Globals.dfddMMyyyy.format(
+                                  value: Globals.dfddMMyyyy.formatLocal(
                                     _filterBrokerList[index].brokerDate.toLocal()
                                   )
                                 ),

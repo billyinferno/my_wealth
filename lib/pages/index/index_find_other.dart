@@ -102,7 +102,7 @@ class _IndexFindOtherPageState extends State<IndexFindOtherPage> {
                     }),
                     child: SimpleListItem(
                       name: indexName,
-                      date: Globals.dfddMMyyyy.format(_filterList[index].indexLastUpdate.toLocal()),
+                      date: Globals.dfddMMyyyy.formatLocal(_filterList[index].indexLastUpdate),
                       price: _filterList[index].indexNetAssetValue,
                       percentChange: (_filterList[index].indexDailyReturn * 100),
                       priceChange: (_filterList[index].indexNetAssetValue - _filterList[index].indexPrevPrice),

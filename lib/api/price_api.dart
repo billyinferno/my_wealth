@@ -50,7 +50,7 @@ class PriceAPI {
   }) async {
     // get reksadana information using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiPriceGold}/from/${Globals.dfyyyyMMdd.format(from.toLocal())}/to/${Globals.dfyyyyMMdd.format(to.toLocal())}'
+      url: '${Globals.apiPriceGold}/from/${Globals.dfyyyyMMdd.formatLocal(from)}/to/${Globals.dfyyyyMMdd.formatLocal(to)}'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getGoldPrice',

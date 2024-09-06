@@ -7,4 +7,8 @@ extension CustomDateFormat on DateFormat {
     }
     return format(date.toLocal());
   }
+
+  String formatLocal(DateTime date) {
+    return format(date.toLocal());
+  }
 }

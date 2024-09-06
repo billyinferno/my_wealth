@@ -107,7 +107,7 @@ class IndexPageState extends State<IndexPage> {
                       }),
                       child: SimpleListItem(
                         name: indexName,
-                        date: Globals.dfddMMyyyy.format(_indexList[index].indexLastUpdate.toLocal()),
+                        date: Globals.dfddMMyyyy.formatLocal(_indexList[index].indexLastUpdate),
                         price: _indexList[index].indexNetAssetValue,
                         percentChange: (_indexList[index].indexDailyReturn * 100),
                         priceChange: (_indexList[index].indexNetAssetValue - _indexList[index].indexPrevPrice),

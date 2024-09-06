@@ -127,8 +127,8 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
                                   ),
                                   const SizedBox(height: 5,),
                                   Text(
-                                    Globals.dfddMMyyyy.format(
-                                      _filterList[index].brokerDate.toLocal()
+                                    Globals.dfddMMyyyy.formatLocal(
+                                      _filterList[index].brokerDate
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(

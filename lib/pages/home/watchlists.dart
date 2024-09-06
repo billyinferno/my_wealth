@@ -484,7 +484,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                 ),
                                 const TextSpan(text: " at "),
                                 TextSpan(
-                                  text: Globals.dfddMMyyyy.format(_watchlistHistory![index].watchlistDetailDate.toLocal()),
+                                  text: Globals.dfddMMyyyy.formatLocal(_watchlistHistory![index].watchlistDetailDate),
                                   style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],

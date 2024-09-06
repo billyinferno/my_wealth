@@ -299,7 +299,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Text(Globals.dfyyyyMM.format(_currentDate.toLocal())),
+            Text(Globals.dfyyyyMM.formatLocal(_currentDate)),
             const SizedBox(width: 5,),
             const Icon(
               Ionicons.caret_down_sharp,
@@ -407,7 +407,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "${Globals.dfMMMyyyy.format(_currentDate.toLocal())} P&L",
+                    "${Globals.dfMMMyyyy.formatLocal(_currentDate)} P&L",
                     style: const TextStyle(
                       color: textPrimary,
                       fontSize: 10,
@@ -1005,7 +1005,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     _yearCalendarPL.clear();
     _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
       return CalendarDatePL(
-        date: Globals.dfMMM.format(DateTime(useDate.year, (index+1), 1)),
+        date: Globals.dfMMM.formatLocal(DateTime(useDate.year, (index+1), 1)),
         pl: null,
         plRatio: null,
       );
@@ -1041,7 +1041,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
 
         // update the year calendar PL list for this month
         _yearCalendarPL[key.month-1] = CalendarDatePL(
-          date: Globals.dfMMM.format(priceDate.toLocal()),
+          date: Globals.dfMMM.formatLocal(priceDate),
           pl: (plCurrent - plBefore!),
           plRatio: (plCurrentRatio * 100),
         );

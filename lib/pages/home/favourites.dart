@@ -27,6 +27,7 @@ class FavouritesPageState extends State<FavouritesPage>
   @override
   void initState() {
     super.initState();
+    
     _tabController = TabController(length: 3, vsync: this);
     _userInfo = UserSharedPreferences.getUserInfo();
     _favouriteListReksadana = FavouritesSharedPreferences.getFavouritesList(
@@ -54,8 +55,7 @@ class FavouritesPageState extends State<FavouritesPage>
     return Consumer2<UserProvider, FavouritesProvider>(
       builder: ((context, userProvider, favouritesProvider, child) {
         _userInfo = userProvider.userInfo;
-        _favouriteListReksadana =
-            (favouritesProvider.favouriteListReksadana ?? []);
+        _favouriteListReksadana = (favouritesProvider.favouriteListReksadana ?? []);
         _favouriteListSaham = (favouritesProvider.favouriteListSaham ?? []);
         _favouriteListCrypto = (favouritesProvider.favouriteListCrypto ?? []);
 
@@ -96,18 +96,32 @@ class FavouritesPageState extends State<FavouritesPage>
                     child: TabBarView(
                       controller: _tabController,
                       children: <Widget>[
-                        (_favouriteListReksadana.isNotEmpty
-                            ? _createList(_scrollControllerMutual, "reksadana",
-                                _favouriteListReksadana)
-                            : const Center(child: Text("No favourites data"))),
-                        (_favouriteListSaham.isNotEmpty
-                            ? _createList(_scrollControllerStock, "saham",
-                                _favouriteListSaham)
-                            : const Center(child: Text("No favourites data"))),
-                        (_favouriteListCrypto.isNotEmpty
-                            ? _createList(_scrollControllerCrypto, "crypto",
-                                _favouriteListCrypto)
-                            : const Center(child: Text("No favourites data"))),
+                        (
+                          _favouriteListReksadana.isNotEmpty ?
+                          _createList(
+                            controller: _scrollControllerMutual,
+                            type: "reksadana",
+                            data: _favouriteListReksadana
+                          ) :
+                          const Center(child: Text("No favourites data"))),
+                        (
+                          _favouriteListSaham.isNotEmpty ?
+                          _createList(
+                            controller: _scrollControllerStock,
+                            type: "saham",
+                            data: _favouriteListSaham
+                          ) :
+                          const Center(child: Text("No favourites data"))
+                        ),
+                        (
+                          _favouriteListCrypto.isNotEmpty ?
+                          _createList(
+                            controller: _scrollControllerCrypto,
+                            type: "crypto",
+                            data: _favouriteListCrypto
+                          ) :
+                          const Center(child: Text("No favourites data"))
+                        ),
                       ],
                     ),
                   ),
@@ -120,8 +134,11 @@ class FavouritesPageState extends State<FavouritesPage>
     );
   }
 
-  Widget _createList(
-      ScrollController controller, String type, List<FavouritesModel> data) {
+  Widget _createList({
+    required ScrollController controller,
+    required String type,
+    required List<FavouritesModel> data
+  }) {
     return RefreshIndicator(
       onRefresh: (() async {
         Log.info(message: "🔃 Refresh favourites");
@@ -262,7 +279,7 @@ class FavouritesPageState extends State<FavouritesPage>
                   fca: fave.favouritesFCA,
                   name: _generateName(
                       type, fave.favouritesCompanyName, fave.favouritesSymbol),
-                  date: Globals.dfddMMyyyy.format(fave.favouritesLastUpdate.toLocal()),
+                  date: Globals.dfddMMyyyy.formatLocal(fave.favouritesLastUpdate),
                   price: fave.favouritesNetAssetValue,
                   percentChange: fave.favouritesCompanyDailyReturn,
                   priceChange: (fave.favouritesNetAssetValue -

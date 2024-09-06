@@ -1084,7 +1084,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             itemBuilder: (context, index) {
               // generate the company detail price list
               return CompanyDetailPriceList(
-                date: Globals.dfddMMyyyy.format(_infoReksadanaSort[index].date.toLocal()),
+                date: Globals.dfddMMyyyy.formatLocal(_infoReksadanaSort[index].date),
                 price: formatCurrency(_infoReksadanaSort[index].price),
                 diff: formatCurrency(_infoReksadanaSort[index].diff),
                 riskColor: _infoReksadanaSort[index].riskColor,
@@ -2052,10 +2052,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _assetData.add(GraphData(date: data.date.toLocal(), price: data.totalUnit * data.netAssetValue));
 
       // generate the movement chart data
-      daily[Globals.dfddMM.format(data.date)] = data.dailyReturn * 100;
-      weekly[Globals.dfddMM.format(data.date)] = data.weeklyReturn * 100;
-      monhtly[Globals.dfddMM.format(data.date)] = data.monthlyReturn * 100;
-      yearly[Globals.dfddMM.format(data.date)] = data.yearlyReturn * 100;
+      daily[Globals.dfddMM.formatLocal(data.date)] = data.dailyReturn * 100;
+      weekly[Globals.dfddMM.formatLocal(data.date)] = data.weeklyReturn * 100;
+      monhtly[Globals.dfddMM.formatLocal(data.date)] = data.monthlyReturn * 100;
+      yearly[Globals.dfddMM.formatLocal(data.date)] = data.yearlyReturn * 100;
     }
 
     // add the movement data

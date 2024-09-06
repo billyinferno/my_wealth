@@ -193,8 +193,8 @@ class InsightAPI {
     required DateTime toDate
   }) async {
     // convert date
-    final String dateFromString = Globals.dfyyyyMMdd.format(fromDate.toLocal());
-    final String dateToString = Globals.dfyyyyMMdd.format(toDate.toLocal());
+    final String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
+    final String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
 
     // get insight data using netutils
     final String body = await NetUtils.get(
@@ -415,8 +415,8 @@ class InsightAPI {
     // prepare all necessary data/information
     final DateTime currentDateFrom = (dateFrom ?? DateTime.now());
     final DateTime currentDateTo = (dateTo ?? DateTime.now());
-    final String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom.toLocal());
-    final String dateToString = Globals.dfyyyyMMdd.format(currentDateTo.toLocal());
+    final String dateFromString = Globals.dfyyyyMMdd.formatLocal(currentDateFrom);
+    final String dateToString = Globals.dfyyyyMMdd.formatLocal(currentDateTo);
     
     // get insight data using netutils
     final String body = await NetUtils.get(
@@ -449,8 +449,8 @@ class InsightAPI {
     // prepare all necessary data/information
     DateTime currentDateFrom = (dateFrom ?? DateTime.now());
     DateTime currentDateTo = (dateTo ?? DateTime.now());
-    String dateFromString = Globals.dfyyyyMMdd.format(currentDateFrom.toLocal());
-    String dateToString = Globals.dfyyyyMMdd.format(currentDateTo.toLocal());
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(currentDateFrom);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(currentDateTo);
 
     // get insight data using netutils
     final String body = await NetUtils.get(

@@ -529,7 +529,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 onTap: () async {
                                   await ShowMyDialog(
                                     title: "Delete Detail",
-                                    text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal())}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
+                                    text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.formatLocal(_watchlist.watchlistDetail[index].watchlistDetailDate)}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
                                     confirmLabel: "Delete",
                                     cancelLabel: "Cancel"
                                   ).show(context).then((resp) async {
@@ -587,7 +587,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      Globals.dfddMMyyyy.format(_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
+                                      Globals.dfddMMyyyy.formatLocal(_watchlist.watchlistDetail[index].watchlistDetailDate),
                                       style: const TextStyle(
                                         fontSize: 12,
                                       ),

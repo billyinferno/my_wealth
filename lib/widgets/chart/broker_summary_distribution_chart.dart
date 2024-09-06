@@ -346,7 +346,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                           width: 80,
                           padding: const EdgeInsets.all(2.5),
                           child: Text(
-                            Globals.dfddMMyyyy.format(widget.data[1].brokerSummaryData[index].brokerSummaryDate.toLocal()),
+                            Globals.dfddMMyyyy.formatLocal(widget.data[1].brokerSummaryData[index].brokerSummaryDate),
                             style: const TextStyle(
                               fontSize: 10,
                             ),

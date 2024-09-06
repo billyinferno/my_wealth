@@ -240,7 +240,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    '${Globals.dfyyyyMMdd.format(_transactionList.brokerSummaryFromDate.toLocal())} - ${Globals.dfyyyyMMdd.format(_transactionList.brokerSummaryToDate.toLocal())}',
+                    '${Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryFromDate)} - ${Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryToDate)}',
                     style: const TextStyle(
                       color: secondaryColor,
                       fontWeight: FontWeight.bold,
@@ -701,7 +701,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     // iterate thru data
     data.forEach((key, value) {
       result.add(_generateRow(
-        Globals.dfddMM.format(key.toLocal()),
+        Globals.dfddMM.formatLocal(key),
         formatIntWithNull(
           value.brokerSummaryBuyLot,
           showDecimal: false,

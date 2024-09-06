@@ -210,8 +210,8 @@ class CompanyAPI {
     int limit = 10,
   }) async {
     // get the initial query information for the API
-    String dateFromString = Globals.dfyyyyMMdd.format(fromDate.toLocal());
-    String dateToString = Globals.dfyyyyMMdd.format(toDate.toLocal());
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
 
     // get the company data using netutils
     final String body = await NetUtils.get(

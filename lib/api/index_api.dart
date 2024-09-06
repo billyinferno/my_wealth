@@ -55,7 +55,7 @@ class IndexAPI {
   }) async {
     // get the index data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiIndicePrice}/id/$indexID/from/${Globals.dfyyyyMMdd.format(from.toLocal())}/to/${Globals.dfyyyyMMdd.format(to.toLocal())}'
+      url: '${Globals.apiIndicePrice}/id/$indexID/from/${Globals.dfyyyyMMdd.formatLocal(from)}/to/${Globals.dfyyyyMMdd.formatLocal(to)}'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getIndexPriceDate',

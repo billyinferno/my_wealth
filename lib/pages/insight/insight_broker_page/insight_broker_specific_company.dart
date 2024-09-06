@@ -229,7 +229,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                       ),
                                       child: Center(
                                         child: Text(
-                                          Globals.dfddMMyyyy2.format(_dateFrom.toLocal()),
+                                          Globals.dfddMMyyyy2.formatLocal(_dateFrom),
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),
@@ -254,7 +254,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                       ),
                                       child: Center(
                                         child: Text(
-                                          Globals.dfddMMyyyy2.format(_dateTo.toLocal()),
+                                          Globals.dfddMMyyyy2.formatLocal(_dateTo),
                                           style: const TextStyle(
                                             fontSize: 12,
                                           ),

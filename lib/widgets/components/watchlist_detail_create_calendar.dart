@@ -62,7 +62,7 @@ class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCale
                 const SizedBox(width: 10,),
                 Expanded(
                   child: Text(
-                    Globals.dfddMMyyyy.format(_selectedDate.toLocal()),
+                    Globals.dfddMMyyyy.formatLocal(_selectedDate),
                     textAlign: TextAlign.right,
                   ),
                 ),

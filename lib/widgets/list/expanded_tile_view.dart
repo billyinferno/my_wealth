@@ -83,15 +83,15 @@ class ExpandedTileView extends StatelessWidget {
         textColor: textPrimary,
         children: List<Widget>.generate(watchlist.watchlistDetail.length, (index) {
           return ExpandedTileChildren(
-            date: Globals.dfddMMyy.format(watchlist.watchlistDetail[index].watchlistDetailDate.toLocal()),
+            date: Globals.dfddMMyy.formatLocal(watchlist.watchlistDetail[index].watchlistDetailDate),
             shares: watchlist.watchlistDetail[index].watchlistDetailShare,
             isInLot: isInLot,
             price: watchlist.watchlistDetail[index].watchlistDetailPrice,
             currentPrice: watchlist.watchlistCompanyNetAssetValue!,
             averagePrice: watchlistResult.averagePrice,
             risk: risk,
-            calculateLoss: watchlist.watchlistDetail[index].watchlistDetailDate.toLocal().isSameOrBefore(
-              date: checkDate.toLocal(),
+            calculateLoss: watchlist.watchlistDetail[index].watchlistDetailDate.isSameOrBefore(
+              date: checkDate,
             ),
           );
         }),

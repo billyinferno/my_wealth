@@ -122,7 +122,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                         ),
                         child: Center(
                           child: Text(
-                            Globals.dfyyyyMMdd.format(_fromDate.toLocal()),
+                            Globals.dfyyyyMMdd.formatLocal(_fromDate),
                             style: const TextStyle(
                               color: textPrimary,
                             ),
@@ -164,7 +164,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
                         ),
                         child: Center(
                           child: Text(
-                            Globals.dfyyyyMMdd.format(_toDate.toLocal()),
+                            Globals.dfyyyyMMdd.formatLocal(_toDate),
                             style: const TextStyle(
                               color: textPrimary,
                             ),

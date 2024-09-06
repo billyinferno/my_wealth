@@ -603,7 +603,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             itemCount: _priceGoldSort.length,
             itemBuilder: (context, index) {
               return CompanyDetailPriceList(
-                date: Globals.dfddMMyyyy.format(_priceGoldSort[index].date),
+                date: Globals.dfddMMyyyy.formatLocal(_priceGoldSort[index].date),
                 price: formatCurrency(_priceGoldSort[index].price, checkThousand: true),
                 diff: formatCurrency(_priceGoldSort[index].diff, checkThousand: true),
                 riskColor: _priceGoldSort[index].riskColor,

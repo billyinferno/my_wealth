@@ -144,8 +144,8 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 price: formatCurrency(
                   _companySearchResult![index].companyNetAssetValue!
                 ),
-                date: Globals.dfddMMyyyy.format(
-                  _companySearchResult![index].companyLastUpdate.toLocal()
+                date: Globals.dfddMMyyyy.formatLocal(
+                  _companySearchResult![index].companyLastUpdate
                 ),
                 riskColor: riskColor(
                   value: _companySearchResult![index].companyNetAssetValue!,

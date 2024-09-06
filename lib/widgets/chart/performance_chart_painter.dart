@@ -212,7 +212,7 @@ class PerformanceChartPainter extends CustomPainter {
             canvas: canvas,
             position: Offset(xLeft, graphRect.bottom),
             width: 60,
-            text: dateFormat.format(data[i].date),
+            text: dateFormat.formatLocal(data[i].date),
             left: left,
             top: 5,
             minHeight: 0,

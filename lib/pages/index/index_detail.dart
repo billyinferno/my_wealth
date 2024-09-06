@@ -201,7 +201,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                 ),
                                 const SizedBox(width: 10,),
                                 // ignore: unnecessary_null_comparison
-                                Text(Globals.dfddMMyyyy.format(_index.indexLastUpdate.toLocal())),
+                                Text(Globals.dfddMMyyyy.formatLocal(_index.indexLastUpdate)),
                               ],
                             ),
                             const SizedBox(height: 8,),
@@ -846,7 +846,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         Expanded(
                           flex: 2,
                           child: Text(
-                            Globals.dfddMMyyyy.format(_indexPriceData[180]![index].indexPriceDate.toLocal()),
+                            Globals.dfddMMyyyy.formatLocal(_indexPriceData[180]![index].indexPriceDate),
                             style: const TextStyle(
                               fontSize: 12,
                             ),

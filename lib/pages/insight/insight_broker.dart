@@ -321,7 +321,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                   const SizedBox(height: 5,),
                   Center(
                     child: Text(
-                      Globals.dfDDMMMyyyy.format(_brokerTopList!.brokerSummaryDate.toLocal()),
+                      Globals.dfDDMMMyyyy.formatLocal(_brokerTopList!.brokerSummaryDate),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -402,7 +402,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                   const SizedBox(height: 5,),
                   Center(
                     child: Text(
-                      Globals.dfDDMMMyyyy.format(_brokerTopTransaction.brokerSummaryDate.toLocal()),
+                      Globals.dfDDMMMyyyy.formatLocal(_brokerTopTransaction.brokerSummaryDate),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,

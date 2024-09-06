@@ -263,8 +263,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                                   ),
                                   const SizedBox(width: 5,),
                                   Text(
-                                    Globals.dfddMMyyyy.format(
-                                      _watchlistArgs.watchList.watchlistCompanyLastUpdate!.toLocal()
+                                    Globals.dfddMMyyyy.formatDateWithNull(
+                                      _watchlistArgs.watchList.watchlistCompanyLastUpdate
                                     ),
                                   ),
                                 ],

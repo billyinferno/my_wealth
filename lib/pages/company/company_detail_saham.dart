@@ -2132,9 +2132,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       // generate item dividend
       ret.add(_itemDividend(
         cumDate: Globals.dfddMMyy.formatDateWithNull(dividend.cumDividend),
-        exDate: Globals.dfddMMyy.format(dividend.exDividend.toLocal()),
-        recordDate: Globals.dfddMMyy.format(dividend.recordDate.toLocal()),
-        paymentDate: Globals.dfddMMyy.format(dividend.paymentDate.toLocal()),
+        exDate: Globals.dfddMMyy.formatLocal(dividend.exDividend),
+        recordDate: Globals.dfddMMyy.formatLocal(dividend.recordDate),
+        paymentDate: Globals.dfddMMyy.formatLocal(dividend.paymentDate.toLocal()),
         cashDividend: formatCurrency(dividend.cashDividend.toDouble()),
         price: formatCurrencyWithNull(dividend.price),
         priceDate: Globals.dfddMMyy.formatDateWithNull(dividend.priceDate),
@@ -2320,7 +2320,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           shorten: false,
           decimalNum: 2,
         ),
-        listingDate: Globals.dfddMMyyyy.format(split.listingDate),
+        listingDate: Globals.dfddMMyyyy.formatLocal(split.listingDate),
       ));
     }
 
@@ -2588,8 +2588,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           width: 20,
                         ),
                         Text(
-                          Globals.dfddMMyyyy.format(
-                            _brokerSummary.brokerSummaryFromDate.toLocal()
+                          Globals.dfddMMyyyy.formatLocal(
+                            _brokerSummary.brokerSummaryFromDate
                           ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -2604,8 +2604,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           ),
                         ),
                         Text(
-                          Globals.dfddMMyyyy.format(
-                            _brokerSummary.brokerSummaryToDate.toLocal()
+                          Globals.dfddMMyyyy.formatLocal(
+                            _brokerSummary.brokerSummaryToDate
                           ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -2913,10 +2913,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          Globals.dfddMMyyyy.format(
+                          Globals.dfddMMyyyy.formatLocal(
                             _topBroker.brokerMinDate == null ?
                             DateTime.now() :
-                            _topBroker.brokerMinDate!.toLocal()
+                            _topBroker.brokerMinDate!
                           ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -2931,10 +2931,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           ),
                         ),
                         Text(
-                          Globals.dfddMMyyyy.format(
+                          Globals.dfddMMyyyy.formatLocal(
                             _topBroker.brokerMaxDate == null ?
                             DateTime.now() :
-                            _topBroker.brokerMaxDate!.toLocal()
+                            _topBroker.brokerMaxDate!
                           ),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -3427,8 +3427,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                               MainAxisAlignment.start,
                                           children: [
                                             Text(
-                                              Globals.dfddMMyyyy.format(
-                                                _infoSahamPriceSort[index].date.toLocal()
+                                              Globals.dfddMMyyyy.formatLocal(
+                                                _infoSahamPriceSort[index].date
                                               ),
                                               style: const TextStyle(
                                                 fontSize: 12,

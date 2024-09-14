@@ -284,7 +284,7 @@ class SeasonalityTable extends StatelessWidget {
     double cost = 0;
     double range = 0;
     Color textColor = textPrimary;
-    List<int> colorValue = [];
+    List<int> colorValue = [700, 800, 900];
 
     // ensure all data is available
     if (minLastPrice != null && maxLastPrice != null && minDiffPrice != null && maxDiffPrice != null) {
@@ -307,8 +307,8 @@ class SeasonalityTable extends StatelessWidget {
         cost = cost / range;
 
         // if the user risk is < 30 then make it lighter color instead
-        colorValue.clear();
         if ((risk ?? 10) <= 15) {
+          colorValue.clear();
           colorValue.add(100);
           colorValue.add(300);
           colorValue.add(500);
@@ -576,11 +576,13 @@ class SeasonalityTable extends StatelessWidget {
       }
 
       // once finished divide all the average data with num
-      averageDiffPrice = averageDiffPrice / num;
-      averageMinDiffPrice = averageMinDiffPrice / num;
-      averageMaxDiffPrice = averageMaxDiffPrice / num;
-      averageMinLastPrice = averageMinLastPrice / num;
-      averageMaxLastPrice = averageMaxLastPrice / num;
+      if (num > 0) {
+        averageDiffPrice = averageDiffPrice / num;
+        averageMinDiffPrice = averageMinDiffPrice / num;
+        averageMaxDiffPrice = averageMaxDiffPrice / num;
+        averageMinLastPrice = averageMinLastPrice / num;
+        averageMaxLastPrice = averageMaxLastPrice / num;
+      }
 
       // put the result on the seasonality table result
       SeasonalityTableResult compResult = SeasonalityTableResult(

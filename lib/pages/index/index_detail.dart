@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -24,6 +25,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late Future<bool> _getData;
   
   final Map<int, List<IndexPriceModel>> _indexPriceData = {};
+  late List<IndexPriceModel> _indexPriceList;
   late int _currentIndexPrice;
   late List<GraphData> _graphData;
   late List<SeasonalityModel> _seasonality;
@@ -37,6 +39,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late double _minPrice;
   late double _maxPrice;
   late double _avgPrice;
+  late bool _sortAsc;
+  late int _userRisk;
 
   @override
   void initState() {
@@ -61,6 +65,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     _indexPriceData[180] = [];
     _indexPriceData[365] = [];
 
+    // initialize the index price list
+    _indexPriceList = [];
+
     _userInfo = UserSharedPreferences.getUserInfo();
 
     _priceDiff = _index.indexNetAssetValue - _index.indexPrevPrice;
@@ -70,6 +77,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       riskFactor: _userInfo!.risk
     );
 
+    // get the current user risk
+    _userRisk = (_userInfo!.risk);
+
     _bodyPage = 0;
     _numPrice = 0;
 
@@ -77,6 +87,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
     // initialize seasonility with empty list
     _seasonality = [];
+
+    // initialize sort as descending (latest date on top)
+    _sortAsc = false;
 
     _getData = _getAllData();
 
@@ -136,6 +149,24 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               ),
             ),
           ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: (() {
+                setState(() {
+                  _sortAsc = !_sortAsc;
+                  _indexPriceList = _indexPriceList.reversed.toList();
+                });
+              }),
+              icon: Icon(
+                (
+                  _sortAsc ?
+                  LucideIcons.arrow_up_a_z :
+                  LucideIcons.arrow_down_z_a
+                )
+              )
+            ),
+            const SizedBox(width: 10,),
+        ],
         ),
         body: MySafeArea(
           child: Column(
@@ -431,7 +462,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                 ],
               ),
               const SizedBox(height: 10,),
-              ..._detail(),
+              Expanded(child: _detail()),
             ],
           ),
         ),
@@ -507,6 +538,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
         _indexPriceData[365]!.add(resp[i]);
       }
 
+      // copy the _indexPriceData[180] and put it on the list as we will
+      // use this to display on the index price table
+      _indexPriceList = _indexPriceData[180]!.toList();
+
       // generate current graph data
       _generateGraphData();
 
@@ -576,7 +611,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     }
   }
 
-  List<Widget> _detail() {
+  Widget _detail() {
     switch(_bodyPage) {
       case 0:
         return _showTable();
@@ -591,343 +626,385 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     }
   }
 
-  List<Widget> _showSeasonality() {
-    return [Expanded(child: SeasonalityTable(data: _seasonality))];
-  }
-
-  List<Widget> _showGraph() {
-    List<Widget> graph = [];
-
-    graph.add(SingleChildScrollView(
-      controller: _graphScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            child: CupertinoSegmentedControl(
-              children: const {
-                30: Text("30D"),
-                60: Text("2M"),
-                90: Text("3M"),
-                180: Text("6M"),
-                365: Text("1Y"),
-              },
-              onValueChanged: ((value) {
-                setState(() {
-                  _currentIndexPrice = value;
-                  _generateGraphData();
-                });
-              }),
-              groupValue: _currentIndexPrice,
-              selectedColor: secondaryColor,
-              borderColor: secondaryDark,
-              pressedColor: primaryDark,
-            ),
-          ),
-          const SizedBox(height: 5,),
-          LineChart(
-            data: _graphData,
-            height: 250,
-            dateOffset: (_graphData.length ~/ 9),
-          ),
-        ],
-      ),
-    ));
-
-    return graph;
-  }
-
-  List<Widget> _showCalendar() {
-    List<Widget> calendar = [];
-
-    calendar.add(Expanded(
-      child: SingleChildScrollView(
-        controller: _calendarScrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: primaryLight,
-              width: 1.0,
-              style: BorderStyle.solid,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 5,),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text("Current Price Comparison"),
-                  const SizedBox(width: 10,),
-                  CupertinoSwitch(
-                    value: _showCurrentPriceComparison,
-                    activeTrackColor: accentColor,
-                    onChanged: ((val) {
-                      setState(() {
-                        _showCurrentPriceComparison = val;
-                      });
-                    })
-                  )
-                ],
-              ),
-              const SizedBox(height: 5,),
-              HeatGraph(
-                data: _heatMapGraphData,
-                userInfo: _userInfo!,
-                currentPrice: _index.indexNetAssetValue,
-                enableDailyComparison: _showCurrentPriceComparison,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
-
-    return calendar;
-  }
-
-  List<Widget> _showTable() {
-    List<Widget> table = [];
-
-    table.add(Row(
+  Widget _showSeasonality() {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(width: 3,),
-        Expanded(
-          child: Container(
-            color: primaryColor,
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Text(
-                      "Price",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.swap_vertical,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: 21,
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Ionicons.pulse_outline,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text("Risk Percentage"),
+            const SizedBox(width: 10,),
+            SizedBox(
+              width: 120,
+              child: NumberStepper(
+                initialRate: _userRisk,
+                maxRate: 75,
+                minRate: 5,
+                ratePrefix: "%",
+                bgColor: primaryColor,
+                borderColor: primaryLight,
+                textColor: Colors.white,
+                onTap: ((value) {
+                  setState(() {
+                    _userRisk = value;
+                  });
+                }),
+              ),
             ),
-          ),
+          ],
+        ),
+        const SizedBox(height: 10,),
+        Expanded(
+          child: SeasonalityTable(
+            data: _seasonality,
+            risk: _userRisk,
+          )
         ),
       ],
-    ));
+    );
+  }
 
-    table.add(Expanded(
-      child: ListView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: List<Widget>.generate(_indexPriceData[180]!.length, (index) {
-          double? dayDiff;
-          Color dayDiffColor = Colors.transparent;
-          if((index + 1) < _indexPriceData[180]!.length) {
-            double? currDayPrice = _indexPriceData[180]![index].indexPriceValue;
-            double? prevDayPrice = _indexPriceData[180]![index+1].indexPriceValue;
-            dayDiff = (currDayPrice - prevDayPrice);
-            dayDiffColor = riskColor(
-              value: currDayPrice,
-              cost: prevDayPrice,
-              riskFactor: _userInfo!.risk
-            );
-          }
-          return Container(
-            color: riskColor(
-              value: _index.indexNetAssetValue,
-              cost: _indexPriceData[180]![index].indexPriceValue,
-              riskFactor: _userInfo!.risk
+  Widget _showGraph() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SingleChildScrollView(
+          controller: _graphScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                width: double.infinity,
+                child: CupertinoSegmentedControl(
+                  children: const {
+                    30: Text("30D"),
+                    60: Text("2M"),
+                    90: Text("3M"),
+                    180: Text("6M"),
+                    365: Text("1Y"),
+                  },
+                  onValueChanged: ((value) {
+                    setState(() {
+                      _currentIndexPrice = value;
+                      _generateGraphData();
+                    });
+                  }),
+                  groupValue: _currentIndexPrice,
+                  selectedColor: secondaryColor,
+                  borderColor: secondaryDark,
+                  pressedColor: primaryDark,
+                ),
+              ),
+              const SizedBox(height: 5,),
+              LineChart(
+                data: _graphData,
+                height: 250,
+                dateOffset: (_graphData.length ~/ 9),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _showCalendar() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _calendarScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text("Current Price Comparison"),
+                      const SizedBox(width: 10,),
+                      CupertinoSwitch(
+                        value: _showCurrentPriceComparison,
+                        activeTrackColor: accentColor,
+                        onChanged: ((val) {
+                          setState(() {
+                            _showCurrentPriceComparison = val;
+                          });
+                        })
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  HeatGraph(
+                    data: _heatMapGraphData,
+                    userInfo: _userInfo!,
+                    currentPrice: _index.indexNetAssetValue,
+                    enableDailyComparison: _showCurrentPriceComparison,
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(width: 10,),
-                Expanded(
-                  child: Container(
-                    color: primaryColor,
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 2,
-                          child: Text(
-                            Globals.dfddMMyyyy.formatLocal(_indexPriceData[180]![index].indexPriceDate),
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _showTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(width: 3,),
+            Expanded(
+              child: Container(
+                color: primaryColor,
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
                           )
                         ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            formatCurrency(_indexPriceData[180]![index].indexPriceValue),
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
-                            textAlign: TextAlign.right,
+                        child: const Text(
+                          "Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 1,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    width: 2.0,
-                                    color: riskColor(
-                                      value: _index.indexNetAssetValue,
-                                      cost: _indexPriceData[180]![index].indexPriceValue,
-                                      riskFactor: _userInfo!.risk
-                                    ),
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: Text(
-                                formatCurrency(_index.indexNetAssetValue - _indexPriceData[180]![index].indexPriceValue),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          flex: 1,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    width: 2.0,
-                                    color: dayDiffColor,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: Text(
-                                formatCurrencyWithNull(dayDiff),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      )
                     ),
-                  ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Text(
+                          "Price",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.swap_vertical,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Ionicons.pulse_outline,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          );
-        }),
-      ),
-    ));
-    
-    return table;
+          ],
+        ),
+        Expanded(
+          child: ListView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: List<Widget>.generate(_indexPriceList.length, (index) {
+              double? dayDiff;
+              Color dayDiffColor = Colors.transparent;
+              if((index + 1) < _indexPriceList.length) {
+                double? currDayPrice = _indexPriceList[index].indexPriceValue;
+                double? prevDayPrice = _indexPriceList[index+1].indexPriceValue;
+                dayDiff = (currDayPrice - prevDayPrice);
+                dayDiffColor = riskColor(
+                  value: currDayPrice,
+                  cost: prevDayPrice,
+                  riskFactor: _userInfo!.risk
+                );
+              }
+              return Container(
+                color: riskColor(
+                  value: _index.indexNetAssetValue,
+                  cost: _indexPriceList[index].indexPriceValue,
+                  riskFactor: _userInfo!.risk
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      child: Container(
+                        color: primaryColor,
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                Globals.dfddMMyyyy.formatLocal(_indexPriceList[index].indexPriceDate),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              )
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                formatCurrency(_indexPriceList[index].indexPriceValue),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        width: 2.0,
+                                        color: riskColor(
+                                          value: _index.indexNetAssetValue,
+                                          cost: _indexPriceList[index].indexPriceValue,
+                                          riskFactor: _userInfo!.risk
+                                        ),
+                                        style: BorderStyle.solid,
+                                      )
+                                    )
+                                  ),
+                                  child: Text(
+                                    formatCurrency(_index.indexNetAssetValue - _indexPriceList[index].indexPriceValue),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        width: 2.0,
+                                        color: dayDiffColor,
+                                        style: BorderStyle.solid,
+                                      )
+                                    )
+                                  ),
+                                  child: Text(
+                                    formatCurrencyWithNull(dayDiff),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+        )
+      ],
+    );
   }
 }

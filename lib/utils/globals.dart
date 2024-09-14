@@ -57,7 +57,7 @@ class Globals {
       return ("WASM", Colors.green);
     }
     else if (kIsWeb) {
-      return ("JS (Web)", Colors.amber);
+      return ("JS", Colors.amber);
     }
     return ("Native", secondaryColor);
   }

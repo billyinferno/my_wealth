@@ -429,7 +429,10 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: _portofolioFiltered.length,
                 itemBuilder: (context, index) {
-                  int colorMap = _getColorMap(_portofolioFiltered[index].portofolioCompanyDescription, index);
+                  // replace portofolio description &amp; into &
+                  String portofolioDescription = _portofolioFiltered[index].portofolioCompanyDescription.replaceAll('&amp;', '&');
+                  
+                  int colorMap = _getColorMap(portofolioDescription, index);
                   
                   // check if _showZeroProduct is true, if true then verify if this
                   // item has product or not? if doesn't have then just return
@@ -450,7 +453,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                       if (numProd > 0) {
                         // got product means we can display the details here 
                         PortofolioListArgs args = PortofolioListArgs(
-                          title: _portofolioFiltered[index].portofolioCompanyDescription,
+                          title: portofolioDescription,
                           value: _portofolioFiltered[index].portofolioTotalValue,
                           cost: _portofolioFiltered[index].portofolioTotalCost,
                           realised: _portofolioFiltered[index].portofolioTotalRealised,
@@ -464,7 +467,7 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                       }
                     }),
                     bgColor: (_portofolioFiltered[index].portofolioTotalProduct > 0 ? Globals.colorList[colorMap] : Colors.grey[900]!),
-                    title: _portofolioFiltered[index].portofolioCompanyDescription,
+                    title: portofolioDescription,
                     subTitle: "${_portofolioFiltered[index].portofolioTotalProduct} product${_portofolioFiltered[index].portofolioTotalProduct > 1 ? "s" : ""}",
                     value: _portofolioFiltered[index].portofolioTotalValue,
                     cost: _portofolioFiltered[index].portofolioTotalCost,
@@ -560,9 +563,18 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
         }
 
         // generate the _barChartData based on response
-        for (PortofolioSummaryModel porto in resp) {          
+        String portofolioDescription;
+        for (PortofolioSummaryModel porto in resp) {
+          // replace &amp; into &
+          portofolioDescription = porto.portofolioCompanyDescription.replaceAll('&amp;', '&');
+          
           // add bar chart for this portotolio
-          _barChartData.add(BarChartData(title: porto.portofolioCompanyDescription, value: porto.portofolioTotalValue, total: _portofolioTotalValue, color: Globals.colorList[_getColorMap(porto.portofolioCompanyDescription, index)]));
+          _barChartData.add(BarChartData(
+            title: portofolioDescription,
+            value: porto.portofolioTotalValue,
+            total: _portofolioTotalValue,
+            color: Globals.colorList[_getColorMap(portofolioDescription, index)]
+          ));
           index = index + 1;
 
           // calculate total day gain

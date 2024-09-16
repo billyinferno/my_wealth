@@ -138,11 +138,9 @@ class HomePageState extends State<HomePage> {
         ],
         automaticallyImplyLeading: false,
       ),
-      body: MySafeArea(
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: _widgetList,
-        ),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgetList,
       ),
       bottomNavigationBar: MySafeArea(
         bottomPadding: 15,

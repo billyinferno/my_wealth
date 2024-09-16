@@ -235,6 +235,9 @@ class LoginPageState extends State<LoginPage> {
                         }),
                         decoration: InputDecoration(
                           hintText: "username",
+                          hintStyle: TextStyle(
+                            color: textPrimary.withValues(alpha: 0.3),
+                          ),
                           prefixIcon: Icon(
                             Ionicons.person,
                             color: (_usernameFocus.hasFocus ? secondaryColor : textPrimary),
@@ -284,6 +287,9 @@ class LoginPageState extends State<LoginPage> {
                         }),
                         decoration: InputDecoration(
                           hintText: "password",
+                          hintStyle: TextStyle(
+                            color: textPrimary.withValues(alpha: 0.3),
+                          ),
                           prefixIcon: Icon(
                             Ionicons.key,
                             color: (_passwordFocus.hasFocus ? secondaryColor : textPrimary),

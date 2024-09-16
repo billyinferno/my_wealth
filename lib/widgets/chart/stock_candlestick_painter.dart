@@ -46,7 +46,7 @@ class StockCandleStickPainter extends CustomPainter {
        _gainPaint = Paint()..color = Colors.green,
        _lossPaint = Paint()..color = Colors.red,
        _neutralPaint = Paint()..color = Colors.white,
-       _graphRectBorder = Paint()..color = primaryDark.withOpacity(0.5)..strokeWidth = 1.0..style = PaintingStyle.stroke;
+       _graphRectBorder = Paint()..color = primaryDark.withValues(alpha: 0.5)..strokeWidth = 1.0..style = PaintingStyle.stroke;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -229,7 +229,7 @@ class StockCandleStickPainter extends CustomPainter {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
-        color: Colors.white.withOpacity(0.5),
+        color: Colors.white.withValues(alpha: 0.5),
         fontSize: 10,
       ),
     );

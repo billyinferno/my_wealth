@@ -54,7 +54,7 @@ class PerformanceChartPainter extends CustomPainter {
     ..style = PaintingStyle.stroke;
 
   final Paint dpCompare = Paint()
-    ..color = accentDark.withOpacity(0.7)
+    ..color = accentDark.withValues(alpha: 0.7)
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
 
@@ -69,12 +69,12 @@ class PerformanceChartPainter extends CustomPainter {
     ..style = PaintingStyle.stroke;
 
   final Paint graphRectBorder = Paint()
-    ..color = primaryDark.withOpacity(0.5)
+    ..color = primaryDark.withValues(alpha: 0.5)
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
 
   final Paint graphRectBorderWhite = Paint()
-    ..color = primaryLight.withOpacity(0.5)
+    ..color = primaryLight.withValues(alpha: 0.5)
     ..strokeWidth = 1.0
     ..style = PaintingStyle.stroke;
 
@@ -393,7 +393,7 @@ class PerformanceChartPainter extends CustomPainter {
           maxHeight: graphRect.height,
           minWidth: 10,
           maxWidth: graphRect.width,
-          textColor: extendedLight.withOpacity(0.3)
+          textColor: extendedLight.withValues(alpha: 0.3)
         );
       }
 
@@ -409,7 +409,7 @@ class PerformanceChartPainter extends CustomPainter {
         maxHeight: graphRect.height,
         minWidth: 10,
         maxWidth: graphRect.width,
-        textColor: extendedLight.withOpacity(0.3)
+        textColor: extendedLight.withValues(alpha: 0.3)
       );
     }
 
@@ -531,7 +531,7 @@ class PerformanceChartPainter extends CustomPainter {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
-        color: (textColor ?? Colors.white.withOpacity(0.5)),
+        color: (textColor ?? Colors.white.withValues(alpha: 0.5)),
         fontSize: 10,
       ),
     );

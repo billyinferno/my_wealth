@@ -24,11 +24,11 @@ class HomePageState extends State<HomePage> {
   ];
 
   final List<Color> _activeColor = <Color>[
-    Colors.green[300]!.withOpacity(0.3),
-    Colors.purple[300]!.withOpacity(0.3),
-    accentColor.withOpacity(0.3),
-    secondaryLight.withOpacity(0.3),
-    extendedLight.withOpacity(0.3),
+    Colors.green[300]!.withValues(alpha: 0.3),
+    Colors.purple[300]!.withValues(alpha: 0.3),
+    accentColor.withValues(alpha: 0.3),
+    secondaryLight.withValues(alpha: 0.3),
+    extendedLight.withValues(alpha: 0.3),
     Colors.transparent,
   ];
 

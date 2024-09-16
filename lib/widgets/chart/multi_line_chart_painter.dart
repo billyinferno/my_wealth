@@ -66,7 +66,7 @@ class MultiLineChartPainter extends CustomPainter {
     required Offset center
   }) {
     Paint graphRectBorderWhite = Paint()
-      ..color = Colors.white.withOpacity(0.7)
+      ..color = Colors.white.withValues(alpha: 0.7)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -122,11 +122,11 @@ class MultiLineChartPainter extends CustomPainter {
     required Offset center
   }) {
     Paint graphRectBorderWhite = Paint()
-      ..color = primaryLight.withOpacity(0.5)
+      ..color = primaryLight.withValues(alpha: 0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     Paint graphRectBorder = Paint()
-      ..color = primaryDark.withOpacity(0.5)
+      ..color = primaryDark.withValues(alpha: 0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -271,7 +271,7 @@ class MultiLineChartPainter extends CustomPainter {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
-        color: (textColor ?? Colors.white.withOpacity(0.5)),
+        color: (textColor ?? Colors.white.withValues(alpha: 0.5)),
         fontSize: 10,
       ),
     );

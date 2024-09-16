@@ -102,25 +102,25 @@ class LineChartPainter extends CustomPainter {
     // create the rect that we will use as a guide for the graph
     Rect graphRect = Rect.fromLTRB(10, 10, size.width - 10, size.height - 30);
     Paint graphRectBorder = Paint()
-      ..color = primaryDark.withOpacity(0.5)
+      ..color = primaryDark.withValues(alpha: 0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     Paint graphRectBorderWhite = Paint()
-      ..color = primaryLight.withOpacity(0.5)
+      ..color = primaryLight.withValues(alpha: 0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     Paint graphRectDividend = Paint()
-      ..color = extendedLight.withOpacity(0.5)
+      ..color = extendedLight.withValues(alpha: 0.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
     Paint avgPricePaint = Paint()
-      ..color = Colors.orange.withOpacity(0.7);
+      ..color = Colors.orange.withValues(alpha: 0.7);
     Paint ma5PricePaint = Paint()
-      ..color = Colors.green.withOpacity(0.7);
+      ..color = Colors.green.withValues(alpha: 0.7);
     Paint ma8PricePaint = Paint()
-      ..color = Colors.pink.withOpacity(0.7);
+      ..color = Colors.pink.withValues(alpha: 0.7);
     Paint ma13PricePaint = Paint()
-      ..color = Colors.blue.withOpacity(0.7);
+      ..color = Colors.blue.withValues(alpha: 0.7);
 
     // draw the guides
     // draw vertical lines
@@ -276,7 +276,7 @@ class LineChartPainter extends CustomPainter {
         maxHeight: graphRect.height,
         minWidth: 10,
         maxWidth: graphRect.width + 8,
-        textColor: Colors.orange[300]!.withOpacity(0.5)
+        textColor: Colors.orange[300]!.withValues(alpha: 0.5)
       );
 
       // draw the ma5 price line
@@ -306,7 +306,7 @@ class LineChartPainter extends CustomPainter {
         maxHeight: graphRect.height,
         minWidth: 10,
         maxWidth: graphRect.width + 8,
-        textColor: Colors.green[300]!.withOpacity(0.5)
+        textColor: Colors.green[300]!.withValues(alpha: 0.5)
       );
 
       // draw the ma8 price line
@@ -336,7 +336,7 @@ class LineChartPainter extends CustomPainter {
         maxHeight: graphRect.height,
         minWidth: 10,
         maxWidth: graphRect.width + 8,
-        textColor: Colors.pink[300]!.withOpacity(0.5)
+        textColor: Colors.pink[300]!.withValues(alpha: 0.5)
       );
 
       // draw the ma13 price line
@@ -366,7 +366,7 @@ class LineChartPainter extends CustomPainter {
         maxHeight: graphRect.height,
         minWidth: 10,
         maxWidth: graphRect.width + 8,
-        textColor: Colors.blue[300]!.withOpacity(0.5)
+        textColor: Colors.blue[300]!.withValues(alpha: 0.5)
       );
     }
   }
@@ -640,7 +640,7 @@ class LineChartPainter extends CustomPainter {
     final TextSpan textSpan = TextSpan(
       text: text,
       style: TextStyle(
-        color: (textColor ?? Colors.white.withOpacity(0.5)),
+        color: (textColor ?? Colors.white.withValues(alpha: 0.5)),
         fontSize: (size ?? 10),
       ),
     );

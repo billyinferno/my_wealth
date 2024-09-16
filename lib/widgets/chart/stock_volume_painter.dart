@@ -21,9 +21,9 @@ class StockVolumePainter extends CustomPainter {
 
   StockVolumePainter(
     {required this.stockData, required this.maxVolume, this.padding}
-  ) : _gainPaint = Paint()..color = Colors.green.withOpacity(0.5),
-      _lossPaint = Paint()..color = Colors.red.withOpacity(0.5),
-      _neutralPaint = Paint()..color = Colors.white.withOpacity(0.5);
+  ) : _gainPaint = Paint()..color = Colors.green.withValues(alpha: 0.5),
+      _lossPaint = Paint()..color = Colors.red.withValues(alpha: 0.5),
+      _neutralPaint = Paint()..color = Colors.white.withValues(alpha: 0.5);
 
   @override
   void paint(Canvas canvas, Size size) {

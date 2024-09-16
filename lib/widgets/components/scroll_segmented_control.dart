@@ -75,7 +75,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
                 end: Alignment.centerRight,
                 colors: <Color>[
                   primaryColor,
-                  primaryColor.withOpacity(0),
+                  primaryColor.withValues(alpha: 0),
                 ]
               )
             ),
@@ -91,7 +91,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: <Color>[
-                  primaryColor.withOpacity(0),
+                  primaryColor.withValues(alpha: 0),
                   primaryColor
                 ]
               )

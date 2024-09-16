@@ -203,60 +203,109 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 10,),
-            InkWell(
-              onTap: (() async {
-                DateTimeRange? initialDateRange = DateTimeRange(start: _fromDateCurrent, end: _toDateCurrent);
-                DateTimeRange? result = await showDateRangePicker(
-                  context: context,
-                  firstDate: _fromDateMax,
-                  lastDate: _toDateMax,
-                  initialDateRange: initialDateRange,
-                  currentDate: DateTime.now().toLocal(),
-                  initialEntryMode: DatePickerEntryMode.calendarOnly,
-                );
-            
-                if (result != null) {
-                  // means we got the result, ensure it's not the same with from date and to date
-                  if ((result.start.compareTo(_fromDateCurrent) != 0) || (result.end.compareTo(_toDateCurrent) != 0)) {
-                    // set the broker from and to date
-                    _fromDateCurrent = result.start;
-                    _toDateCurrent = result.end;
-            
-                    // set the start back into 0
-                    _start = 0;
-            
-                    // get the broker summary
-                    await _refreshTransactionList().onError((error, stackTrace) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      }
-                    });
+            Container(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+              color: primaryDark,
+              child: InkWell(
+                onTap: (() async {
+                  DateTimeRange? initialDateRange = DateTimeRange(start: _fromDateCurrent, end: _toDateCurrent);
+                  DateTimeRange? result = await showDateRangePicker(
+                    context: context,
+                    firstDate: _fromDateMax,
+                    lastDate: _toDateMax,
+                    initialDateRange: initialDateRange,
+                    currentDate: DateTime.now().toLocal(),
+                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                  );
+              
+                  if (result != null) {
+                    // means we got the result, ensure it's not the same with from date and to date
+                    if ((result.start.compareTo(_fromDateCurrent) != 0) || (result.end.compareTo(_toDateCurrent) != 0)) {
+                      // set the broker from and to date
+                      _fromDateCurrent = result.start;
+                      _toDateCurrent = result.end;
+              
+                      // set the start back into 0
+                      _start = 0;
+              
+                      // get the broker summary
+                      await _refreshTransactionList().onError((error, stackTrace) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                        }
+                      });
+                    }
                   }
-                }
-              }),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '${Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryFromDate)} - ${Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryToDate)}',
-                    style: const TextStyle(
-                      color: secondaryColor,
-                      fontWeight: FontWeight.bold,
+                }),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text(
+                      "From",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 5,),
-                  const Icon(
-                    Ionicons.calendar_outline,
-                    color: secondaryColor,
-                  )
-                ],
+                    const SizedBox(width: 5,),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                        color: primaryDark,
+                      ),
+                      child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryFromDate))
+                    ),
+                    const SizedBox(width: 10,),
+                    const Text(
+                      "To",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: secondaryLight,
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: primaryLight,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                        color: primaryDark,
+                      ),
+                      child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryToDate))
+                    ),
+                    const SizedBox(width: 10,),
+                    const Icon(
+                      Ionicons.calendar_outline,
+                      color: secondaryLight,
+                      size: 15,
+                    )
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 5,),
             Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+              decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                  bottom: BorderSide(
+                    color: primaryLight,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  )
+                )
+              ),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
@@ -268,7 +317,6 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 5,),
             Expanded(
               child: LazyLoadScrollView(
                 onEndOfPage: (() async {

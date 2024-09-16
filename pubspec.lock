@@ -252,6 +252,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
+  la_icons:
+    dependency: "direct main"
+    description:
+      name: la_icons
+      sha256: "4da7682d3dcd3c4ad71854e4b6dfef3e016692db4481b0b3ca825e8b46ea120d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   lazy_load_scrollview:
     dependency: "direct main"
     description:
@@ -284,14 +292,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  line_icons:
-    dependency: "direct main"
-    description:
-      name: line_icons
-      sha256: "249d781d922f5437ac763d9c8f5a02cf5b499a6dc3f85e4b92e074cff0a932ab"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   lints:
     dependency: transitive
     description:
@@ -546,5 +546,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.4.3 <4.0.0"
+  dart: ">=3.5.1 <4.0.0"
   flutter: ">=3.22.0"

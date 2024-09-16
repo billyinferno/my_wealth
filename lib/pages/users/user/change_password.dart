@@ -165,7 +165,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
           }
         }
         else {
-          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "New and Confirmed password missmatch"));
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "New password missmatch"));
           return false;
         }
       }
@@ -175,7 +175,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
       }
     }
     else {
-      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Please fill all required fields"));
+      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Please fill all fields"));
       return false;
     }
   }

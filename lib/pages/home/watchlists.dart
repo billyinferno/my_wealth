@@ -535,7 +535,6 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(height: 10,),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,

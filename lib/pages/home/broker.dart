@@ -88,7 +88,6 @@ class _BrokerPageState extends State<BrokerPage> {
                 });
               }),
             ),
-            const SizedBox(height: 10,),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: (() async {

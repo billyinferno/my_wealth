@@ -14,9 +14,19 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
 
+  // list all the selectable item list as final
+  final List<SelectableItem> _selectableItemList = [
+    const SelectableItem(name: '1d', value: '1d'),
+    const SelectableItem(name: '1w', value: '1w'),
+    const SelectableItem(name: '1m', value: '1m'),
+    const SelectableItem(name: '3m', value: '3m'),
+    const SelectableItem(name: '6m', value: '6m'),
+    const SelectableItem(name: 'ytd', value: 'ytd'),
+    const SelectableItem(name: '1y', value: '1y'),
+  ];
+
   late Map<String, TopWorseCompanyListModel> _topReksadanaList;
   late Map<String, TopWorseCompanyListModel> _worseReksadanaList;
-  late List<SelectableItem> _selectableItemList;
 
   String _topSahamPeriodSelected = '1d';
   String _topCampuranPeriodSelected = '1d';
@@ -33,17 +43,6 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     // initialize top reksadana list with empty map
     _topReksadanaList = {};
     _worseReksadanaList = {};
-
-    // initialise the selectable item
-    _selectableItemList = [
-      const SelectableItem(name: '1d', value: '1d'),
-      const SelectableItem(name: '1w', value: '1w'),
-      const SelectableItem(name: '1m', value: '1m'),
-      const SelectableItem(name: '3m', value: '3m'),
-      const SelectableItem(name: '6m', value: '6m'),
-      const SelectableItem(name: 'ytd', value: 'ytd'),
-      const SelectableItem(name: '1y', value: '1y'),
-    ];
 
     // now get all the information from the shared preferences and put it on the topReksadanaList
     _topReksadanaList['saham'] = InsightSharedPreferences.getTopReksadanaList(type: 'saham');

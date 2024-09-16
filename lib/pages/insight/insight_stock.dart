@@ -16,12 +16,25 @@ class _InsightStockPageState extends State<InsightStockPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
   final DateTime _todayDate = DateTime.now();
 
+  // make selectable item list as final, since we will never change the list
+  final List<SelectableItem> _selectableItemList = [
+    const SelectableItem(name: '1d', value: '1d'),
+    const SelectableItem(name: '1w', value: '1w'),
+    const SelectableItem(name: 'mtd', value: 'mtd'),
+    const SelectableItem(name: '1m', value: '1m'),
+    const SelectableItem(name: '3m', value: '3m'),
+    const SelectableItem(name: '6m', value: '6m'),
+    const SelectableItem(name: 'ytd', value: 'ytd'),
+    const SelectableItem(name: '1y', value: '1y'),
+    const SelectableItem(name: '3y', value: '3y'),
+    const SelectableItem(name: '5y', value: '5y'),
+  ];
+
   late List<SectorSummaryModel> _sectorSummaryList;
   late TopWorseCompanyListModel _topCompanyList;
   late TopWorseCompanyListModel _worseCompanyList;
   late List<SectorNameModel> _sectorNameList;
   late UserLoginInfoModel? _userInfo;
-  late List<SelectableItem> _selectableItemList;
   late List<StockNewListedModel> _stockNewListedList;
   late List<StockDividendListModel> _stockDividendList;
   late List<StockSplitListModel> _stockSplitList;
@@ -42,19 +55,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
 
     _userInfo = UserSharedPreferences.getUserInfo();
 
-    // initialize the selectable item list
-    _selectableItemList = [
-      const SelectableItem(name: '1d', value: '1d'),
-      const SelectableItem(name: '1w', value: '1w'),
-      const SelectableItem(name: 'mtd', value: 'mtd'),
-      const SelectableItem(name: '1m', value: '1m'),
-      const SelectableItem(name: '3m', value: '3m'),
-      const SelectableItem(name: '6m', value: '6m'),
-      const SelectableItem(name: 'ytd', value: 'ytd'),
-      const SelectableItem(name: '1y', value: '1y'),
-      const SelectableItem(name: '3y', value: '3y'),
-      const SelectableItem(name: '5y', value: '5y'),
-    ];
     super.initState();
   }
 

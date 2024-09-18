@@ -431,7 +431,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Info",
                   bgColor: primaryDark,
                   icon: Ionicons.speedometer_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 0;
                     });
@@ -444,7 +444,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Table",
                   bgColor: primaryDark,
                   icon: Ionicons.list_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 1;
                     });
@@ -457,7 +457,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Map",
                   bgColor: primaryDark,
                   icon: Ionicons.calendar_clear_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 2;
                     });
@@ -470,7 +470,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Graph",
                   bgColor: primaryDark,
                   icon: Ionicons.stats_chart_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 3;
                     });
@@ -483,7 +483,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Calc",
                   bgColor: primaryDark,
                   icon: Ionicons.calculator_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 4;
                     });
@@ -1521,7 +1521,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Calculate",
                   bgColor: secondaryDark,
                   icon: Ionicons.calculator,
-                  callback: (() {
+                  onTap: (() {
                     _simulateReksadana();
                   })
                 ),

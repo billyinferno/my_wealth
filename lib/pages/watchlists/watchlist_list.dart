@@ -402,7 +402,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Buy",
                           bgColor: primaryDark,
                           icon: Ionicons.add,
-                          callback: (() {
+                          onTap: (() {
                             WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist);
                             Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: args);
                           })
@@ -412,8 +412,13 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Sell",
                           bgColor: primaryDark,
                           icon: Ionicons.remove,
-                          callback: (() {
-                            WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist, currentShare: _totalCurrentShares);
+                          enabled: (_totalCurrentShares > 0),
+                          onTap: (() {
+                            WatchlistListArgs args = WatchlistListArgs(
+                              type: _type,
+                              watchList: _watchlist,
+                              currentShare: _totalCurrentShares
+                            );
                             Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
                           })
                         ),
@@ -422,7 +427,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Delete",
                           bgColor: primaryDark,
                           icon: Ionicons.trash,
-                          callback: (() async {
+                          onTap: (() async {
                             await ShowMyDialog(
                               title: "Delete Watchlist",
                               text: "Are you sure to delete ${_watchlist.watchlistCompanyName}?",

@@ -411,7 +411,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Table",
                     bgColor: primaryDark,
                     icon: Ionicons.list_outline,
-                    callback: (() {
+                    onTap: (() {
                       setState(() {
                         _bodyPage = 0;
                       });
@@ -424,7 +424,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Season",
                     bgColor: primaryDark,
                     icon: Ionicons.rainy,
-                    callback: (() {
+                    onTap: (() {
                       setState(() {
                         _bodyPage = 3;
                       });
@@ -437,7 +437,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Map",
                     bgColor: primaryDark,
                     icon: Ionicons.calendar_clear_outline,
-                    callback: (() {
+                    onTap: (() {
                       setState(() {
                         _bodyPage = 1;
                       });
@@ -450,7 +450,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Graph",
                     bgColor: primaryDark,
                     icon: Ionicons.stats_chart_outline,
-                    callback: (() {
+                    onTap: (() {
                       setState(() {
                         _bodyPage = 2;
                       });

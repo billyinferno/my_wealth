@@ -321,7 +321,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Info",
                   bgColor: primaryDark,
                   icon: Ionicons.speedometer_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 0;
                     });
@@ -334,7 +334,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Table",
                   bgColor: primaryDark,
                   icon: Ionicons.list_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 1;
                     });
@@ -347,7 +347,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Map",
                   bgColor: primaryDark,
                   icon: Ionicons.calendar_clear_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 2;
                     });
@@ -360,7 +360,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Graph",
                   bgColor: primaryDark,
                   icon: Ionicons.stats_chart_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 3;
                     });

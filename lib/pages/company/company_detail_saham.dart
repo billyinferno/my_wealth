@@ -615,7 +615,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.speedometer_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 0;
                     });
@@ -629,7 +629,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.business_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 1;
                     });
@@ -643,7 +643,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.list_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 2;
                     });
@@ -657,7 +657,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.calendar_clear_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 3;
                     });
@@ -671,7 +671,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   bgColor: primaryDark,
                   textSize: 11,
                   icon: Ionicons.stats_chart_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 4;
                     });

@@ -277,7 +277,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                             borderColor: primaryLight,
                             text: "Broker\nAccumulation",
                             vertical: true,
-                            callback: (() {
+                            onTap: (() {
                               Navigator.pushNamed(context, '/insight/broker/specificbroker');
                             })
                           ),
@@ -289,7 +289,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                             borderColor: primaryLight,
                             text: "Broker and\nCode",
                             vertical: true,
-                            callback: (() {
+                            onTap: (() {
                               Navigator.pushNamed(context, '/insight/broker/specificquery');
                             })
                           ),
@@ -301,7 +301,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                             borderColor: primaryLight,
                             text: "Code\nOnly",
                             vertical: true,
-                            callback: (() {
+                            onTap: (() {
                               Navigator.pushNamed(context, '/insight/broker/specificcode');
                             })
                           ),

@@ -103,7 +103,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   text: "Cancel",
                   bgColor: secondaryDark,
                   icon: Ionicons.close,
-                  callback: (() async {
+                  onTap: (() async {
                     await _checkForm().then((value) {
                       if (context.mounted) {
                         if(value) {
@@ -118,7 +118,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   text: "Sell",
                   bgColor: primaryDark,
                   icon: Ionicons.bag_remove,
-                  callback: (() async {
+                  onTap: (() async {
                     await _addDetail().then((_) {
                       Log.success(
                         message: "💾 Sell the watchlist detail for ${_watchlist.watchlistId}"

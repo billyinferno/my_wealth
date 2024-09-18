@@ -125,7 +125,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   text: "Update ${_txn == "b" ? "Buy" : "Sell"}",
                   bgColor: primaryDark,
                   icon: Ionicons.save,
-                  callback: (() async {
+                  onTap: (() async {
                     await _updateDetail().then((resp) {
                       if(resp) {                      
                         Log.success(
@@ -150,7 +150,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   text: "Cancel",
                   bgColor: secondaryDark,
                   icon: Ionicons.close,
-                  callback: (() async {
+                  onTap: (() async {
                     await _checkForm().then((value) {
                       if(context.mounted && value) {
                         Navigator.pop(context);

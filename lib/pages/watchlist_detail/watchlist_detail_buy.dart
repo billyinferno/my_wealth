@@ -94,7 +94,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                   text: "Cancel",
                   bgColor: secondaryDark,
                   icon: Ionicons.close,
-                  callback: (() async {
+                  onTap: (() async {
                     await _checkForm().then((value) {
                       if(context.mounted && value) {
                         Navigator.pop(context);
@@ -107,7 +107,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                   text: "Buy",
                   bgColor: primaryDark,
                   icon: Ionicons.bag_add,
-                  callback: (() async {
+                  onTap: (() async {
                     await _addDetail().then((_) {
                       Log.success(message: "💾 Saved the watchlist detail for ${_watchlist.watchlistId}");
                       if (context.mounted) {

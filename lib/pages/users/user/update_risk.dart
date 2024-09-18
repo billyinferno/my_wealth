@@ -114,7 +114,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                     icon: Ionicons.save,
                     text: "Save",
                     bgColor: secondaryColor,
-                    callback: (() async {
+                    onTap: (() async {
                       // check if the current value and slide value for risk factor
                       // is the same or not?
                       if (_userInfo!.risk == _riskValue.toInt()) {

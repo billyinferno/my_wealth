@@ -7,14 +7,14 @@ class TransparentButton extends StatelessWidget {
   final Color textColor;
   final IconData icon;
   final double iconSize;
-  final VoidCallback callback;
+  final VoidCallback onTap;
   final bool active;
   final bool vertical;
   final Color activeColor;
   final Color bgColor;
   final Color borderColor;
-  // TODO: to add enabled handling on the transparent button
   final bool enabled;
+  final Color disabledColor;
   const TransparentButton({
     super.key,
     this.text = "",
@@ -22,13 +22,14 @@ class TransparentButton extends StatelessWidget {
     this.textColor = textPrimary,
     required this.icon,
     this.iconSize = 18,
-    required this.callback,
+    required this.onTap,
     this.active = false,
     this.vertical = false,
     this.activeColor = secondaryColor,
     this.bgColor = Colors.transparent,
     this.borderColor = primaryLight,
     this.enabled = true,
+    this.disabledColor = primaryLight,
   });
 
   @override
@@ -36,12 +37,16 @@ class TransparentButton extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: (() {
-          callback();
+          // check whether the button is enabled or not
+          if (enabled) {
+            // call the callback if enabled
+            onTap();
+          }
         }),
         child: Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           decoration: BoxDecoration(
-            color: (active ? activeColor : bgColor),
+            color: (enabled ? (active ? activeColor : bgColor) : disabledColor),
             border: Border.all(
               color: borderColor,
               style: BorderStyle.solid,

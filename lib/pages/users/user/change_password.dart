@@ -74,7 +74,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                   text: "Cancel",
                   bgColor: secondaryDark,
                   icon: Ionicons.close,
-                  callback: (() {
+                  onTap: (() {
                     // return back to the previous screen
                     Navigator.pop(context);
                   })
@@ -84,7 +84,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                   text: "Change",
                   bgColor: primaryDark,
                   icon: Ionicons.lock_open,
-                  callback: (() async {
+                  onTap: (() async {
                     if(_validateForm()) {
                       await _changePassword().then((resp) {
                         if(resp) {

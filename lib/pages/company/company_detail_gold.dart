@@ -320,7 +320,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   text: "Info",
                   bgColor: primaryDark,
                   icon: Ionicons.speedometer_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 0;
                     });
@@ -333,7 +333,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   text: "Table",
                   bgColor: primaryDark,
                   icon: Ionicons.list_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 1;
                     });
@@ -346,7 +346,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   text: "Map",
                   bgColor: primaryDark,
                   icon: Ionicons.calendar_clear_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 2;
                     });
@@ -359,7 +359,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   text: "Graph",
                   bgColor: primaryDark,
                   icon: Ionicons.stats_chart_outline,
-                  callback: (() {
+                  onTap: (() {
                     setState(() {
                       _bodyPage = 3;
                     });

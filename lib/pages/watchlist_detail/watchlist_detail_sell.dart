@@ -208,7 +208,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
         },);
       }
       else {
-        throw Exception("Invalid quantity or amount for share or price");
+        throw Exception("Invalid share/price value");
       }
     }
     else {

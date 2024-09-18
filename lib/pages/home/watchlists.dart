@@ -519,15 +519,14 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   }) {
     return RefreshIndicator(
       onRefresh: (() async {
-        await _refreshWatchlist().onError((error, stackTrace) {
+        await _refreshWatchlist().then((_) {  
+          // if success just rebuild the page
+          setState(() {
+          });
+        },).onError((error, stackTrace) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
           }
-        },).whenComplete(() {  
-          // once finished rebuild widget
-          setState(() {
-            // just rebuild
-          });
         },);
       }),
       color: accentColor,
@@ -615,7 +614,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         },
                       ),
                       SlideButton(
-                        icon: Ionicons.open_outline,
+                        icon: Ionicons.business_outline,
                         iconColor: Colors.green,
                         onTap: () {
                           Navigator.pushNamed(context, '/company/detail/$type', arguments: args);

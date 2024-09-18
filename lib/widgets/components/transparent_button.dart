@@ -13,6 +13,8 @@ class TransparentButton extends StatelessWidget {
   final Color activeColor;
   final Color bgColor;
   final Color borderColor;
+  // TODO: to add enabled handling on the transparent button
+  final bool enabled;
   const TransparentButton({
     super.key,
     this.text = "",
@@ -26,6 +28,7 @@ class TransparentButton extends StatelessWidget {
     this.activeColor = secondaryColor,
     this.bgColor = Colors.transparent,
     this.borderColor = primaryLight,
+    this.enabled = true,
   });
 
   @override

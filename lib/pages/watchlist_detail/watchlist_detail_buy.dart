@@ -188,7 +188,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
       },);
     }
     else {
-      throw Exception("Share and Price are zero");
+      throw Exception("Invalid share/price value");
     }
   }
 

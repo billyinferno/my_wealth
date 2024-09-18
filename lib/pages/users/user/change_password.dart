@@ -71,6 +71,16 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
               children: <Widget>[
                 const SizedBox(width: 10,),
                 TransparentButton(
+                  text: "Cancel",
+                  bgColor: secondaryDark,
+                  icon: Ionicons.close,
+                  callback: (() {
+                    // return back to the previous screen
+                    Navigator.pop(context);
+                  })
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
                   text: "Change",
                   bgColor: primaryDark,
                   icon: Ionicons.lock_open,
@@ -121,16 +131,6 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                         }
                       });
                     }
-                  })
-                ),
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  text: "Cancel",
-                  bgColor: secondaryDark,
-                  icon: Ionicons.close,
-                  callback: (() {
-                    // return back to the previous screen
-                    Navigator.pop(context);
                   })
                 ),
                 const SizedBox(width: 10,),

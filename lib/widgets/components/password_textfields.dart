@@ -5,13 +5,11 @@ import 'package:my_wealth/_index.g.dart';
 class PasswordTextFields extends StatefulWidget {
   final TextEditingController controller;
   final String title;
-  final String hintText;
   final bool masked;
   const PasswordTextFields({
     super.key,
     required this.controller,
     required this.title,
-    this.hintText = '',
     this.masked = true,
   });
 
@@ -32,74 +30,38 @@ class _PasswordTextFieldsState extends State<PasswordTextFields> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: primaryLight,
-            width: 1.0,
-            style: BorderStyle.solid,
+      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+      child: TextFormField(
+        controller: widget.controller,
+        cursorColor: primaryLight,
+        decoration: InputDecoration(
+          labelText: widget.title,
+          labelStyle: const TextStyle(
+            color: primaryLight
           ),
-        )
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(width: 10,),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: secondaryLight,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(width: 10,),
-          Expanded(
-            child: TextFormField(
-              controller: widget.controller,
-              showCursor: true,
-              cursorColor: secondaryColor,
-              keyboardAppearance: Brightness.dark,
-              textAlign: TextAlign.right,
-              obscureText: _masked,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                focusColor: secondaryColor,
-                hintText: widget.hintText,
-                hintStyle: TextStyle(
-                  color: textPrimary.withValues(alpha: 0.3),
-                  fontStyle: FontStyle.italic,
-                ),
-                suffix: IconButton(
-                  onPressed: (() {
-                    setState(() {
-                      _masked = !_masked;
-                    });
-                  }),
-                  icon: Icon(
-                    (_masked ? Ionicons.eye_outline : Ionicons.eye_off_outline),
-                    size: 15,
-                    color: primaryLight,
-                  )
-                )
-              ),
+          icon: const Icon(Ionicons.lock_closed_outline),
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: primaryLight,
+              width: 1.0
             ),
           ),
-        ],
+          suffixIcon: IconButton(
+            icon: Icon(
+              (_masked
+                ? Ionicons.eye_off_outline
+                : Ionicons.eye_off_outline
+              ),
+              color: secondaryLight,
+            ),
+            onPressed: (() {
+              setState(() {
+                _masked = !_masked;
+              });
+            }),
+          ),
+        ),
+        obscureText: _masked,
       ),
     );
   }

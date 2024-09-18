@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -20,11 +21,13 @@ class _BrokerPageState extends State<BrokerPage> {
   late List<BrokerModel> _filterBrokerList;
   late String _filterMode;
   late String _filterSort;
+  late DateTime _maxBrokerDate;
 
   @override
   void initState() {
     _brokerList = BrokerSharedPreferences.getBrokerList();
     _filterBrokerList = BrokerSharedPreferences.getBrokerList();
+    _maxBrokerDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? DateTime.now());
 
     // list all the filter that we want to put here
     _filterList["CD"] = "Code";
@@ -93,6 +96,9 @@ class _BrokerPageState extends State<BrokerPage> {
                 onRefresh: (() async {
                   await _refreshBroker().then((value) {
                     Log.success(message: "🔃 Refresh Index");
+                    // rebuild the state
+                    setState(() {
+                    });
                   }).onError((error, stackTrace) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
@@ -131,19 +137,35 @@ class _BrokerPageState extends State<BrokerPage> {
                               children: <Widget>[
                                 Text(
                                   _filterBrokerList[index].brokerFirmId,
-                                  style: const TextStyle(
-                                    color: accentColor,
+                                  style: TextStyle(
+                                    color: (
+                                      _filterBrokerList[index].brokerDate.isBeforeDate(date: _maxBrokerDate) ?
+                                      secondaryColor :
+                                      accentColor
+                                    ),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(width: 10,),
-                                Flexible(
+                                Expanded(
                                   child: Text(
                                     _filterBrokerList[index].brokerFirmName,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                     overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: (_filterBrokerList[index].brokerDate.isBeforeDate(date: _maxBrokerDate)),
+                                  child: const SizedBox(width: 10,),
+                                ),
+                                Visibility(
+                                  visible: (_filterBrokerList[index].brokerDate.isBeforeDate(date: _maxBrokerDate)),
+                                  child: const Icon(
+                                    Ionicons.warning,
+                                    color: secondaryColor,
+                                    size: 15,
                                   ),
                                 ),
                               ],
@@ -205,16 +227,19 @@ class _BrokerPageState extends State<BrokerPage> {
     await _brokerAPI.getBroker().then((resp) async {
       // set the shared preferences and provider for index
       await BrokerSharedPreferences.setBrokerList(brokerList: resp);
-      if (!mounted) return;
-      Provider.of<BrokerProvider>(
-        context,
-        listen: false
-      ).setBrokerList(brokerListData: resp);
+
+      // announce the broker in the provider
+      await _updateBrokerProvider(brokerList: resp);
     }).onError((error, stackTrace) {
       // hide loading screen when got error
       LoadingScreen.instance().hide();
 
       // throw exception
+      Log.error(
+        message: "Error when refresh broker",
+        error: error,
+        stackTrace: stackTrace,
+      );
       throw Exception(error.toString());
     });
 
@@ -222,7 +247,21 @@ class _BrokerPageState extends State<BrokerPage> {
     LoadingScreen.instance().hide();
   }
 
-  Widget _informationText({int? flex, required String text, required String value}) {
+  Future<void> _updateBrokerProvider({
+    required List<BrokerModel> brokerList
+  }) async {
+    Provider.of<BrokerProvider>(context, listen: false).setBrokerList(
+      brokerListData: brokerList
+    );
+  }
+
+  Widget _informationText({
+    int? flex,
+    required String text,
+    Color textColor = textPrimary,
+    required String value,
+    Color valueColor = textPrimary,
+  }) {
     int flexNum = (flex ?? 1);
 
     return Expanded(
@@ -233,14 +272,16 @@ class _BrokerPageState extends State<BrokerPage> {
         children: <Widget>[
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
+              color: textColor,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
+              color: valueColor,
             ),
           )
         ],

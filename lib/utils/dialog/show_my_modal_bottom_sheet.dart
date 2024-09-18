@@ -29,7 +29,7 @@ class ShowMyModalBottomSheet {
       isDismissible: true,
       builder: (context) {
         return Container(
-          height: (min((filterList.length * 40) + 50, maxHeight)),
+          height: (min((filterList.length * 40) + 60, maxHeight)),
           margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           decoration: BoxDecoration(

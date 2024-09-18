@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class IndexPage extends StatefulWidget {
@@ -46,81 +45,76 @@ class IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-      builder: ((context, userProvider, child) {
-        
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            SearchBox(
-              filterMode: _filterMode,
-              filterList: _filterList,
-              filterSort: _filterSort,
-              onFilterSelect: ((value) {
-                setState(() {
-                  _filterMode = value;
-                  _sortedIndexList();
-                });
-              }),
-              onSortSelect: ((value) {
-                setState(() {
-                  _filterSort = value;
-                  _sortedIndexList();
-                });
-              })
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: (() async {
-                  await _refreshIndex().then((value) {
-                    Log.success(message: "🔃 Refresh Index");
-                  }).onError((error, stackTrace) {
-                    Log.error(
-                      message: 'Error when refresh index',
-                      error: error,
-                      stackTrace: stackTrace,
-                    );
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                    }
-                  });
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SearchBox(
+          filterMode: _filterMode,
+          filterList: _filterList,
+          filterSort: _filterSort,
+          onFilterSelect: ((value) {
+            setState(() {
+              _filterMode = value;
+              _sortedIndexList();
+            });
+          }),
+          onSortSelect: ((value) {
+            setState(() {
+              _filterSort = value;
+              _sortedIndexList();
+            });
+          })
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: (() async {
+              await _refreshIndex().then((value) {
+                Log.success(message: "🔃 Refresh Index");
+              }).onError((error, stackTrace) {
+                Log.error(
+                  message: 'Error when refresh index',
+                  error: error,
+                  stackTrace: stackTrace,
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                }
+              });
 
-                  // once finished just rebuild the widget
-                  setState(() {
-                    // just rebuild
-                  });
-                }),
-                color: accentColor,
-                child: ListView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: List.generate(_indexList.length, (index) {
-                    String indexName = _indexList[index].indexName;
-                    if (Globals.indexName.containsKey(_indexList[index].indexName)) {
-                      indexName = "(${_indexList[index].indexName}) ${Globals.indexName[_indexList[index].indexName]}";
-                    }
+              // once finished just rebuild the widget
+              setState(() {
+                // just rebuild
+              });
+            }),
+            color: accentColor,
+            child: ListView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: List.generate(_indexList.length, (index) {
+                String indexName = _indexList[index].indexName;
+                if (Globals.indexName.containsKey(_indexList[index].indexName)) {
+                  indexName = "(${_indexList[index].indexName}) ${Globals.indexName[_indexList[index].indexName]}";
+                }
 
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.pushNamed(context, '/index/detail', arguments: _indexList[index]);
-                      }),
-                      child: SimpleListItem(
-                        name: indexName,
-                        date: Globals.dfddMMyyyy.formatLocal(_indexList[index].indexLastUpdate),
-                        price: _indexList[index].indexNetAssetValue,
-                        percentChange: (_indexList[index].indexDailyReturn * 100),
-                        priceChange: (_indexList[index].indexNetAssetValue - _indexList[index].indexPrevPrice),
-                        riskFactor: _userInfo.risk,
-                      ),
-                    );
+                return InkWell(
+                  onTap: (() {
+                    Navigator.pushNamed(context, '/index/detail', arguments: _indexList[index]);
                   }),
-                ),
-              ),
+                  child: SimpleListItem(
+                    name: indexName,
+                    date: Globals.dfddMMyyyy.formatLocal(_indexList[index].indexLastUpdate),
+                    price: _indexList[index].indexNetAssetValue,
+                    percentChange: (_indexList[index].indexDailyReturn * 100),
+                    priceChange: (_indexList[index].indexNetAssetValue - _indexList[index].indexPrevPrice),
+                    riskFactor: _userInfo.risk,
+                  ),
+                );
+              }),
             ),
-          ],
-        );
-      }),
+          ),
+        ),
+      ],
     );
   }
 

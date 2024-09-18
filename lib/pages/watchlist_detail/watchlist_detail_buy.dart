@@ -91,6 +91,19 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
               children: <Widget>[
                 const SizedBox(width: 10,),
                 TransparentButton(
+                  text: "Cancel",
+                  bgColor: secondaryDark,
+                  icon: Ionicons.close,
+                  callback: (() async {
+                    await _checkForm().then((value) {
+                      if(context.mounted && value) {
+                        Navigator.pop(context);
+                      }
+                    });
+                  })
+                ),
+                const SizedBox(width: 10,),
+                TransparentButton(
                   text: "Buy",
                   bgColor: primaryDark,
                   icon: Ionicons.bag_add,
@@ -105,19 +118,6 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                       if (context.mounted) {
                         // show error on snack bar
                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                      }
-                    });
-                  })
-                ),
-                const SizedBox(width: 10,),
-                TransparentButton(
-                  text: "Cancel",
-                  bgColor: secondaryDark,
-                  icon: Ionicons.close,
-                  callback: (() async {
-                    await _checkForm().then((value) {
-                      if(context.mounted && value) {
-                        Navigator.pop(context);
                       }
                     });
                   })

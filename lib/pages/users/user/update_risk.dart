@@ -106,52 +106,57 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                 ],
               ),
               const SizedBox(height: 10,),
-              MaterialButton(
-                minWidth: double.infinity,
-                color: secondaryColor,
-                textColor: textPrimary,
-                onPressed: (() async {
-                  // check if the current value and slide value for risk factor
-                  // is the same or not?
-                  if (_userInfo!.risk == _riskValue.toInt()) {
-                    // skip, and just go back
-                    Navigator.pop(context);
-                  }
-                  else {
-                    Log.success(message: "💾 Save the updated risk factor");
-                    // show loading screen
-                    LoadingScreen.instance().show(context: context);
-            
-                    // call API to update user risk
-                    await _userApi.updateRisk(
-                      risk: _riskValue.toInt()
-                    ).then((resp) async {
-                      // we will get updated user info here, so stored the updated
-                      // user info with new risk factor to the local storea
-                      await UserSharedPreferences.setUserInfo(userInfo: resp);
-          
-                      // update the provider to notify the user page
-                      if (context.mounted) {
-                        Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
-            
-                        // once finished, then pop out from this page
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  TransparentButton(
+                    icon: Ionicons.save,
+                    text: "Save",
+                    bgColor: secondaryColor,
+                    callback: (() async {
+                      // check if the current value and slide value for risk factor
+                      // is the same or not?
+                      if (_userInfo!.risk == _riskValue.toInt()) {
+                        // skip, and just go back
                         Navigator.pop(context);
-                      }    
-                    }).onError((error, stackTrace) {
-                      if (context.mounted) {                        
-                        // showed the snack bar
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          createSnackBar(
-                            message: "Unable to update risk factor",
-                          )
-                        );
                       }
-                    }).whenComplete(() {
-                      LoadingScreen.instance().hide();
-                    },);
-                  }
-                }),
-                child: const Text("Save")
+                      else {
+                        Log.success(message: "💾 Save the updated risk factor");
+                        // show loading screen
+                        LoadingScreen.instance().show(context: context);
+                              
+                        // call API to update user risk
+                        await _userApi.updateRisk(
+                          risk: _riskValue.toInt()
+                        ).then((resp) async {
+                          // we will get updated user info here, so stored the updated
+                          // user info with new risk factor to the local storea
+                          await UserSharedPreferences.setUserInfo(userInfo: resp);
+                            
+                          // update the provider to notify the user page
+                          if (context.mounted) {
+                            Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
+                              
+                            // once finished, then pop out from this page
+                            Navigator.pop(context);
+                          }    
+                        }).onError((error, stackTrace) {
+                          if (context.mounted) {                        
+                            // showed the snack bar
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              createSnackBar(
+                                message: "Unable to update risk factor",
+                              )
+                            );
+                          }
+                        }).whenComplete(() {
+                          LoadingScreen.instance().hide();
+                        },);
+                      }
+                    })
+                  ),
+                ],
               ),
             ],
           ),

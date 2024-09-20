@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class ScrollSegmentedControl extends StatefulWidget {
@@ -9,7 +10,16 @@ class ScrollSegmentedControl extends StatefulWidget {
   final Color? selectedBgColor;
   final Color? selectedTextColor;
   final Function(String) onPress;
-  const ScrollSegmentedControl({super.key, required this.data, this.borderColor, this.bgColor, this.textColor, this.selectedBgColor, this.selectedTextColor, required this.onPress});
+  const ScrollSegmentedControl({
+    super.key,
+    required this.data,
+    this.borderColor,
+    this.bgColor,
+    this.textColor,
+    this.selectedBgColor,
+    this.selectedTextColor,
+    required this.onPress
+  });
 
   @override
   State<ScrollSegmentedControl> createState() => ScrollSegmentedControlState();
@@ -58,7 +68,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const SizedBox(width: 30,),
+              const SizedBox(width: 35,),
               ..._generateSegment(),
               const SizedBox(width: 30,)
             ],
@@ -66,19 +76,38 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            width: 30,
-            height: 32,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  primaryColor,
-                  primaryColor.withValues(alpha: 0),
-                ]
-              )
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                width: 30,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: primaryColor,
+                  border: Border(
+                    right: BorderSide(
+                      color: secondaryColor,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    )
+                  ),
+                  // gradient: LinearGradient(
+                  //   begin: Alignment.centerLeft,
+                  //   end: Alignment.centerRight,
+                  //   colors: <Color>[
+                  //     primaryColor,
+                  //     primaryColor.withValues(alpha: 0),
+                  //   ]
+                  // )
+                ),
+                child: const Icon(
+                  Ionicons.code,
+                  size: 15,
+                  color: secondaryColor,
+                ),
+              ),
+            ],
           ),
         ),
         Align(

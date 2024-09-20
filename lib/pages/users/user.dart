@@ -201,6 +201,7 @@ class _UserPageState extends State<UserPage> {
                               const SizedBox(width: 10,),
                               CupertinoSwitch(
                                 value: _isVisible,
+                                activeTrackColor: secondaryColor,
                                 onChanged: ((value) async {
                                   _isVisible = !_isVisible;
                                   await _updateVisibilitySummary(_isVisible).then((resp) {
@@ -259,6 +260,7 @@ class _UserPageState extends State<UserPage> {
                               const SizedBox(width: 10,),
                               CupertinoSwitch(
                                 value: _showLots,
+                                activeTrackColor: secondaryColor,
                                 onChanged: ((value) async {
                                   _showLots = !_showLots;
                                   await _updateShowLots(_showLots).then((resp) {
@@ -317,6 +319,7 @@ class _UserPageState extends State<UserPage> {
                               const SizedBox(width: 10,),
                               CupertinoSwitch(
                                 value: _showEmptyWatchlist,
+                                activeTrackColor: secondaryColor,
                                 onChanged: ((value) async {
                                   _showEmptyWatchlist = !_showEmptyWatchlist;
                                   await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {

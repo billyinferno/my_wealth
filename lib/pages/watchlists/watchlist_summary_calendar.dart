@@ -1052,7 +1052,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     });
 
     // divide the pl ratio with the total data - 1
-    _plRatioYear = (_plRatioYear / (watchlistMapPerformance.length - 1)) * 100;
+    _plRatioYear = _plRatioYear * 100;
 
     // get the correct pl color
     if (_plTotalYear > 0) {

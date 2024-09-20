@@ -827,7 +827,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
       }
 
       // divide the pl ratio with the total data - 1
-      _plRatioYear = (_plRatioYear / (resp.length - 1)) * 100;
+      _plRatioYear = _plRatioYear * 100;
 
       // get the correct pl color
       if (_plTotalYear > 0) {

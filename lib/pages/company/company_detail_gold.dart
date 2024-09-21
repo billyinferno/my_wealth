@@ -318,7 +318,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Info",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
                     setState(() {
@@ -331,7 +332,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Table",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.list_outline,
                   onTap: (() {
                     setState(() {
@@ -344,7 +346,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Map",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
                     setState(() {
@@ -357,7 +360,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Graph",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {
                     setState(() {

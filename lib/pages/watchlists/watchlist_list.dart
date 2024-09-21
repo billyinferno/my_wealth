@@ -400,7 +400,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       children: <Widget>[
                         TransparentButton(
                           text: "Buy",
-                          bgColor: primaryDark,
+                          color: primaryDark,
+                          borderColor: primaryLight,
                           icon: Ionicons.add,
                           onTap: (() {
                             WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist);
@@ -410,7 +411,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                         const SizedBox(width: 10,),
                         TransparentButton(
                           text: "Sell",
-                          bgColor: primaryDark,
+                          color: primaryDark,
+                          borderColor: primaryLight,
                           icon: Ionicons.remove,
                           enabled: (_totalCurrentShares > 0),
                           onTap: (() {
@@ -425,7 +427,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                         const SizedBox(width: 10,),
                         TransparentButton(
                           text: "Delete",
-                          bgColor: primaryDark,
+                          color: primaryDark,
+                          borderColor: primaryLight,
                           icon: Ionicons.trash,
                           onTap: (() async {
                             await ShowMyDialog(

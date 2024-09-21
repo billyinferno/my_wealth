@@ -612,7 +612,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Info",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   textSize: 11,
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
@@ -626,7 +627,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Broker",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   textSize: 11,
                   icon: Ionicons.business_outline,
                   onTap: (() {
@@ -640,7 +642,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Table",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   textSize: 11,
                   icon: Ionicons.list_outline,
                   onTap: (() {
@@ -654,7 +657,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Map",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   textSize: 11,
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
@@ -668,7 +672,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Stat",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   textSize: 11,
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {

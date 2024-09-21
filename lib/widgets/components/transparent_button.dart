@@ -8,13 +8,13 @@ class TransparentButton extends StatelessWidget {
   final IconData icon;
   final double iconSize;
   final VoidCallback onTap;
+  final Color color;
+  final Color activeColor;
+  final Color? borderColor;
+  final Color disabledColor;
   final bool active;
   final bool vertical;
-  final Color activeColor;
-  final Color bgColor;
-  final Color borderColor;
   final bool enabled;
-  final Color disabledColor;
   const TransparentButton({
     super.key,
     this.text = "",
@@ -23,13 +23,13 @@ class TransparentButton extends StatelessWidget {
     required this.icon,
     this.iconSize = 18,
     required this.onTap,
+    this.color = Colors.transparent,
+    this.activeColor = secondaryColor,
+    this.borderColor,
+    this.disabledColor = primaryLight,
     this.active = false,
     this.vertical = false,
-    this.activeColor = secondaryColor,
-    this.bgColor = Colors.transparent,
-    this.borderColor = primaryLight,
     this.enabled = true,
-    this.disabledColor = primaryLight,
   });
 
   @override
@@ -43,12 +43,13 @@ class TransparentButton extends StatelessWidget {
             onTap();
           }
         }),
-        child: Container(
+        splashColor: activeColor,
+        child: Ink(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           decoration: BoxDecoration(
-            color: (enabled ? (active ? activeColor : bgColor) : disabledColor),
+            color: (enabled ? (active ? activeColor : color) : disabledColor),
             border: Border.all(
-              color: borderColor,
+              color: (borderColor ?? color),
               style: BorderStyle.solid,
               width: 1.0,
             ),

@@ -72,7 +72,8 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Cancel",
-                  bgColor: secondaryDark,
+                  color: secondaryDark,
+                  borderColor: secondaryLight,
                   icon: Ionicons.close,
                   onTap: (() {
                     // return back to the previous screen
@@ -82,7 +83,8 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Change",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.lock_open,
                   onTap: (() async {
                     if(_validateForm()) {

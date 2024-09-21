@@ -168,7 +168,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Symbol",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.add_outline,
                   onTap: (() {
                     showCupertinoModalPopup<void>(
@@ -235,7 +236,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "${_isShowedLots ? 'Show' : 'Hide'} Lots",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: (_isShowedLots ? Ionicons.eye_outline : Ionicons.eye_off_outline),
                   onTap: (() {
                     setState(() {
@@ -247,7 +249,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "${_isShowEmptyWatchlist ? 'Show' : 'Hide'} Empty",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: (_isShowEmptyWatchlist ? Ionicons.eye_outline : Ionicons.eye_off_outline),
                   onTap: (() {
                     setState(() {

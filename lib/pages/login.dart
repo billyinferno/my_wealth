@@ -309,34 +309,62 @@ class LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 15,),
-                      MaterialButton(
-                        height: 50,
-                        onPressed: (() async {
-                          if (_formKey.currentState!.validate()) {
-                            await _login(_usernameController.text, _passwordController.text).then((res) async {
-                              if (mounted) {
-                                // check whether user is able to login or not?
-                                if(res) {
-                                  Log.success(message: "🏠 Login success, redirect to home");
-                                  Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
-                                }
-                                else {
-                                  Log.error(message: "⛔ Wrong login information");
-                                }
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          TransparentButton(
+                            icon: Ionicons.key,
+                            text: "LOGIN",
+                            textSize: 15,
+                            color: secondaryDark,
+                            onTap: (() async {
+                              if (_formKey.currentState!.validate()) {
+                                await _login(_usernameController.text, _passwordController.text).then((res) async {
+                                  if (mounted) {
+                                    // check whether user is able to login or not?
+                                    if(res) {
+                                      Log.success(message: "🏠 Login success, redirect to home");
+                                      Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+                                    }
+                                    else {
+                                      Log.error(message: "⛔ Wrong login information");
+                                    }
+                                  }
+                                });
                               }
-                            });
-                          }
-                        }),
-                        color: secondaryDark,
-                        minWidth: double.infinity,
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                            })
                           ),
-                        ),
+                        ],
                       ),
+                      // MaterialButton(
+                      //   height: 50,
+                      //   onPressed: (() async {
+                      //     if (_formKey.currentState!.validate()) {
+                      //       await _login(_usernameController.text, _passwordController.text).then((res) async {
+                      //         if (mounted) {
+                      //           // check whether user is able to login or not?
+                      //           if(res) {
+                      //             Log.success(message: "🏠 Login success, redirect to home");
+                      //             Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
+                      //           }
+                      //           else {
+                      //             Log.error(message: "⛔ Wrong login information");
+                      //           }
+                      //         }
+                      //       });
+                      //     }
+                      //   }),
+                      //   color: secondaryDark,
+                      //   minWidth: double.infinity,
+                      //   child: const Text(
+                      //     "Login",
+                      //     style: TextStyle(
+                      //       fontSize: 15,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

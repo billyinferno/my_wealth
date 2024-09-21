@@ -273,7 +273,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           TransparentButton(
                             icon: Ionicons.funnel,
                             iconSize: 12,
-                            bgColor: primaryDark,
+                            color: primaryDark,
                             borderColor: primaryLight,
                             text: "Broker\nAccumulation",
                             vertical: true,
@@ -285,7 +285,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           TransparentButton(
                             icon: Ionicons.funnel,
                             iconSize: 12,
-                            bgColor: primaryDark,
+                            color: primaryDark,
                             borderColor: primaryLight,
                             text: "Broker and\nCode",
                             vertical: true,
@@ -297,7 +297,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           TransparentButton(
                             icon: Ionicons.funnel,
                             iconSize: 12,
-                            bgColor: primaryDark,
+                            color: primaryDark,
                             borderColor: primaryLight,
                             text: "Code\nOnly",
                             vertical: true,

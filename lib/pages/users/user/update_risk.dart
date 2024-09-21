@@ -113,7 +113,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                   TransparentButton(
                     icon: Ionicons.save,
                     text: "Save",
-                    bgColor: secondaryColor,
+                    color: secondaryColor,
                     onTap: (() async {
                       // check if the current value and slide value for risk factor
                       // is the same or not?

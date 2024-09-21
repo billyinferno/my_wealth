@@ -429,7 +429,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Info",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
                     setState(() {
@@ -442,7 +443,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Table",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.list_outline,
                   onTap: (() {
                     setState(() {
@@ -455,7 +457,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Map",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
                     setState(() {
@@ -468,7 +471,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Graph",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {
                     setState(() {
@@ -481,7 +485,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 const SizedBox(width: 5,),
                 TransparentButton(
                   text: "Calc",
-                  bgColor: primaryDark,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.calculator_outline,
                   onTap: (() {
                     setState(() {
@@ -1519,7 +1524,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               children: [
                 TransparentButton(
                   text: "Calculate",
-                  bgColor: secondaryDark,
+                  color: secondaryDark,
+                  borderColor: secondaryLight,
                   icon: Ionicons.calculator,
                   onTap: (() {
                     _simulateReksadana();

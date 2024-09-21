@@ -12,14 +12,14 @@ class ExpandedTileTitle extends StatelessWidget {
   final double? prevPrice;
   final double? gain;
   final String lastUpdate;
-  final Color? riskColor;
+  final Color riskColor;
   final bool? checkThousandOnPrice;
   final Color? subHeaderRiskColor;
   final double? totalDayGain;
   final double? totalValue;
   final double? totalCost;
   final double? averagePrice;
-  final bool? fca;
+  final bool fca;
   final bool? showDecimal;
 
   const ExpandedTileTitle({
@@ -33,22 +33,20 @@ class ExpandedTileTitle extends StatelessWidget {
     this.prevPrice,
     required this.gain,
     required this.lastUpdate,
-    this.riskColor,
+    this.riskColor = primaryLight,
     this.checkThousandOnPrice,
     this.subHeaderRiskColor,
     this.totalDayGain,
     this.totalValue,
     this.totalCost,
     this.averagePrice,
-    this.fca,
+    this.fca = false,
     this.showDecimal,
   });
 
   @override
   Widget build(BuildContext context) {
-    final rColor = (riskColor ?? primaryLight);
     final diffPrice = (price - (prevPrice ?? price));
-    final isFca = (fca ?? false);
     
     Color trendColor = Colors.white;
     IconData trendIcon = Ionicons.remove;
@@ -73,7 +71,7 @@ class ExpandedTileTitle extends StatelessWidget {
             Container(
               width: 5,
               height: 50,
-              color: rColor,
+              color: riskColor,
             ),
             Expanded(
               child: Column(
@@ -91,7 +89,7 @@ class ExpandedTileTitle extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Visibility(
-                              visible: isFca,
+                              visible: fca,
                               child: const Icon(
                                 Ionicons.warning,
                                 color: secondaryColor,
@@ -99,7 +97,7 @@ class ExpandedTileTitle extends StatelessWidget {
                               )
                             ),
                             Visibility(
-                              visible: isFca,
+                              visible: fca,
                               child: const SizedBox(width: 5,)
                             ),
                             Expanded(
@@ -116,7 +114,7 @@ class ExpandedTileTitle extends StatelessWidget {
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: rColor,
+                                    color: riskColor,
                                     width: 2.0,
                                     style: BorderStyle.solid,
                                   )

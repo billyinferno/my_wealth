@@ -45,8 +45,16 @@ class ExpandedTileView extends StatelessWidget {
       }
     }
 
-    Color headerRiskColor = (isVisible ? watchlistResult.headerRiskColor : Colors.white);
-    Color subHeaderRiskColor = (isVisible ? watchlistResult.subHeaderRiskColor : Colors.white);
+    // get the header and sub header  color
+    Color headerRiskColor = watchlistResult.headerRiskColor;
+    Color subHeaderRiskColor = watchlistResult.subHeaderRiskColor;
+
+    // check if the total share is 0
+    if (watchlistResult.totalShare <= 0) {
+      // override header risk color and sub header into primaryDark
+      headerRiskColor = primaryLight;
+      subHeaderRiskColor = primaryLight;
+    }
 
     return ListTileTheme(
       contentPadding: const EdgeInsets.all(0),
@@ -75,7 +83,7 @@ class ExpandedTileView extends StatelessWidget {
           totalValue: (isVisible ? watchlistResult.totalValue : null),
           totalCost: (isVisible ? watchlistResult.totalCost : null),
           averagePrice: (isVisible ? watchlistResult.averagePrice : null),
-          fca: watchlist.watchlistCompanyFCA,
+          fca: (watchlist.watchlistCompanyFCA ?? false),
           showDecimal: showPriceDecimal,
         ),
         initiallyExpanded: isShowedLots,

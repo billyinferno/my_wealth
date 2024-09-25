@@ -3,36 +3,36 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class NumberStepper extends StatefulWidget {
-  final double? height;
-  final Color? borderColor;
-  final Color? buttonColor;
-  final Color? bgColor;
-  final Color? iconColor;
-  final double? iconSize;
-  final Color? textColor;
+  final double height;
+  final Color borderColor;
+  final Color buttonColor;
+  final Color bgColor;
+  final Color iconColor;
+  final double iconSize;
+  final Color textColor;
   final int initialRate;
-  final String? ratePrefix;
-  final int? minRate;
-  final int? maxRate;
-  final int? stepper;
-  final int? stepperMultiply;
+  final String ratePrefix;
+  final int minRate;
+  final int maxRate;
+  final int stepper;
+  final int stepperMultiply;
   final Function(int) onTap;
   const NumberStepper({
     super.key,
-    this.height,
-    this.borderColor,
-    this.buttonColor,
-    this.bgColor,
-    this.iconColor,
-    this.iconSize,
-    this.textColor,
+    this.height = 30,
+    this.borderColor = secondaryColor,
+    this.buttonColor = secondaryColor,
+    this.bgColor = Colors.white,
+    this.iconColor = Colors.white,
+    this.iconSize = 20,
+    this.textColor = secondaryColor,
     required this.initialRate,
-    this.ratePrefix,
-    this.minRate,
-    this.maxRate,
+    this.ratePrefix = '%',
+    this.minRate = 1,
+    this.maxRate = 100,
+    this.stepper = 1,
+    this.stepperMultiply = 10,
     required this.onTap,
-    this.stepper,
-    this.stepperMultiply,
   });
 
   @override
@@ -40,35 +40,27 @@ class NumberStepper extends StatefulWidget {
 }
 
 class _NumberStepperState extends State<NumberStepper> {
-  late int _oneDayRate;
-  late int _minRate;
-  late int _maxRate;
-  late int _stepper;
-  late int _stepperMultiply;
+  late int _currentRate;
 
   @override
   void initState() {
-    // get the one day rate
-    _oneDayRate = widget.initialRate;
-    _minRate = (widget.minRate ?? 1);
-    _maxRate = (widget.maxRate ?? 100);
-    _stepper = (widget.stepper ?? 1);
-    _stepperMultiply = (widget.stepperMultiply ?? 10);
-
     super.initState();
+    
+    // get the current rate
+    _currentRate = widget.initialRate;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: (widget.height ?? 30),
+      height: widget.height,
       decoration: BoxDecoration(
         border: Border.all(
-          color: (widget.borderColor ?? secondaryColor),
+          color: widget.borderColor,
           width: 1.0,
           style: BorderStyle.solid
         ),
-        color: (widget.bgColor ?? Colors.white),
+        color: widget.bgColor,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Row(
@@ -78,27 +70,27 @@ class _NumberStepperState extends State<NumberStepper> {
           InkWell(
             onTap: (() {
               setState(() {
-                _oneDayRate = _oneDayRate - (_stepper);
-                if (_oneDayRate < _minRate) {
-                  _oneDayRate = _minRate;
+                _currentRate = _currentRate - (widget.stepper);
+                if (_currentRate < widget.minRate) {
+                  _currentRate = widget.minRate;
                 }
               });
-              widget.onTap(_oneDayRate);
+              widget.onTap(_currentRate);
             }),
             onDoubleTap: (() {
               setState(() {
-                _oneDayRate = _oneDayRate - (_stepper * _stepperMultiply);
-                if (_oneDayRate < _minRate) {
-                  _oneDayRate = _minRate;
+                _currentRate = _currentRate - (widget.stepper * widget.stepperMultiply);
+                if (_currentRate < widget.minRate) {
+                  _currentRate = widget.minRate;
                 }
               });
-              widget.onTap(_oneDayRate);
+              widget.onTap(_currentRate);
             }),
             child: Container(
-              width: (widget.height ?? 30),
-              height: (widget.height ?? 30),
+              width: widget.height,
+              height: widget.height,
               decoration: BoxDecoration(
-                color: (widget.buttonColor ?? secondaryColor),
+                color: widget.buttonColor,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(5),
                   bottomLeft: Radius.circular(5)
@@ -106,8 +98,8 @@ class _NumberStepperState extends State<NumberStepper> {
               ),
               child: Icon(
                 Ionicons.remove,
-                color: (widget.iconColor ?? Colors.white),
-                size: (widget.iconSize ?? 20),
+                color: widget.iconColor,
+                size: widget.iconSize,
               ),
             ),
           ),
@@ -116,10 +108,10 @@ class _NumberStepperState extends State<NumberStepper> {
               height: 30,
               child: Center(
                 child: Text(
-                  "$_oneDayRate${widget.ratePrefix ?? '%'}",
+                  "$_currentRate${widget.ratePrefix}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: (widget.textColor ?? secondaryColor),
+                    color: widget.textColor,
                   ),
                 ),
               ),
@@ -128,27 +120,27 @@ class _NumberStepperState extends State<NumberStepper> {
           InkWell(
             onTap: (() {
               setState(() {
-                _oneDayRate = _oneDayRate + 1;
-                if (_oneDayRate >= _maxRate) {
-                  _oneDayRate = _maxRate;
+                _currentRate = _currentRate + 1;
+                if (_currentRate >= widget.maxRate) {
+                  _currentRate = widget.maxRate;
                 }
               });
-              widget.onTap(_oneDayRate);
+              widget.onTap(_currentRate);
             }),
             onDoubleTap: (() {
               setState(() {
-                _oneDayRate = _oneDayRate + 10;
-                if (_oneDayRate >= _maxRate) {
-                  _oneDayRate = _maxRate;
+                _currentRate = _currentRate + (widget.stepper * widget.stepperMultiply);
+                if (_currentRate >= widget.maxRate) {
+                  _currentRate = widget.maxRate;
                 }
               });
-              widget.onTap(_oneDayRate);
+              widget.onTap(_currentRate);
             }),
             child: Container(
-              width: (widget.height ?? 30),
-              height: (widget.height ?? 30),
+              width: widget.height,
+              height: widget.height,
               decoration: BoxDecoration(
-                color: (widget.buttonColor ?? secondaryColor),
+                color: widget.buttonColor,
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(5),
                   bottomRight: Radius.circular(5)
@@ -156,8 +148,8 @@ class _NumberStepperState extends State<NumberStepper> {
               ),
               child: Icon(
                 Ionicons.add,
-                color: (widget.iconColor ?? Colors.white),
-                size: (widget.iconSize ?? 20),
+                color: widget.iconColor,
+                size: widget.iconSize,
               ),
             ),
           ),

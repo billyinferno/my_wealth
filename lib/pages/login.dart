@@ -30,6 +30,7 @@ class LoginPageState extends State<LoginPage> {
 
   late Future<bool> _getMe;
   late bool _isLogin;
+  late bool _isObscure;
   late String _type;
   
   bool _isInvalidToken = false;
@@ -41,6 +42,9 @@ class LoginPageState extends State<LoginPage> {
     // get the type of the application run, whether this is run as web or WASM
     var (type, _) = Globals.runAs();
     _type = type;
+
+    // default password obscure as true
+    _isObscure = true;
 
     // check if user already login
     _isLogin = false;
@@ -268,7 +272,7 @@ class LoginPageState extends State<LoginPage> {
                       TextFormField(
                         controller: _passwordController,
                         focusNode: _passwordFocus,
-                        obscureText: true,
+                        obscureText: _isObscure,
                         validator: ((val) {
                           if (val!.isNotEmpty) {
                             if (val.length < 6) {
@@ -306,6 +310,18 @@ class LoginPageState extends State<LoginPage> {
                               width: 1.0,
                             ),
                           ),
+                          suffix: GestureDetector(
+                            onTap: (() {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            }),
+                            child: Icon(
+                              (_isObscure ? Ionicons.eye : Ionicons.eye_off),
+                              size: 20,
+                              color: textPrimary,
+                            ),
+                          )
                         ),
                       ),
                       const SizedBox(height: 15,),
@@ -337,34 +353,6 @@ class LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      // MaterialButton(
-                      //   height: 50,
-                      //   onPressed: (() async {
-                      //     if (_formKey.currentState!.validate()) {
-                      //       await _login(_usernameController.text, _passwordController.text).then((res) async {
-                      //         if (mounted) {
-                      //           // check whether user is able to login or not?
-                      //           if(res) {
-                      //             Log.success(message: "🏠 Login success, redirect to home");
-                      //             Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (_) => false);
-                      //           }
-                      //           else {
-                      //             Log.error(message: "⛔ Wrong login information");
-                      //           }
-                      //         }
-                      //       });
-                      //     }
-                      //   }),
-                      //   color: secondaryDark,
-                      //   minWidth: double.infinity,
-                      //   child: const Text(
-                      //     "Login",
-                      //     style: TextStyle(
-                      //       fontSize: 15,
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

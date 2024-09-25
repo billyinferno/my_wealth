@@ -17,10 +17,10 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override

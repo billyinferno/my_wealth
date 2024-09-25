@@ -41,6 +41,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
 
   @override
   void initState() {
+    super.initState();
+
     // initialize the value
     _brokerCode = "";
     _companySahamCode = "";
@@ -68,9 +70,6 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     }
 
     _brokerSummaryData = null;
-
-    // get the company saham list
-    super.initState();
   }
 
   @override

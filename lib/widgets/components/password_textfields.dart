@@ -22,9 +22,9 @@ class _PasswordTextFieldsState extends State<PasswordTextFields> {
 
   @override
   void initState() {
-    _masked = widget.masked;
-
     super.initState();
+    
+    _masked = widget.masked;
   }
 
   @override

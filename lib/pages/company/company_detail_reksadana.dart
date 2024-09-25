@@ -77,6 +77,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   @override
   void initState() {
+    super.initState();
+
     // initialize tab
     _tabController = TabController(length: 2, vsync: this);
 
@@ -148,13 +150,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _indexData = [];
 
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _summaryController.dispose();
     _priceController.dispose();
     _graphScrollController.dispose();
@@ -165,6 +164,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _calcTableScrollController.dispose();
     _compareController.dispose();
     _tabController.dispose();
+    super.dispose();
   }
 
   @override

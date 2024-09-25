@@ -68,11 +68,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _summaryController.dispose();
     _priceController.dispose();
     _calendarScrollController.dispose();
     _graphScrollController.dispose();
+    super.dispose();
   }
   
   @override

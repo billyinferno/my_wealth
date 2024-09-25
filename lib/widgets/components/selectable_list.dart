@@ -25,6 +25,8 @@ class _SelectableListState extends State<SelectableList> {
   
   @override
   void initState() {
+    super.initState();
+
     // loop thru the items and put it into map
     for (SelectableItem item in widget.items) {
       _items[item.name] = item.value;
@@ -40,8 +42,6 @@ class _SelectableListState extends State<SelectableList> {
 
     // set the selected value as initial value
     _selectedValue = _initialValue;
-
-    super.initState();
   }
 
   @override

@@ -28,6 +28,8 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
   
   @override
   void initState() {
+    super.initState();
+
     _args = widget.args as InsightStockSubListArgs;
     _userInfo = UserSharedPreferences.getUserInfo();
 
@@ -43,8 +45,6 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
 
     // get the sector PER from API
     _getData = _getSectorPER();
-
-    super.initState();
   }
 
   @override

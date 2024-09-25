@@ -31,6 +31,8 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _brokerTopList = BrokerSharedPreferences.getBrokerTopList();
     _brokerTopTransaction = InsightSharedPreferences.getBrokerTopTxn();
     _marketToday = InsightSharedPreferences.getBrokerMarketToday();
@@ -42,8 +44,6 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
 
     _brokerTopTransactionSelected = 'a';
     _brokerTopTransactionBuySell = _brokerTopTransaction.all;
-
-    super.initState();
   }
 
   @override

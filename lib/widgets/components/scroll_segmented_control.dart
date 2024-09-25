@@ -37,6 +37,8 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
 
   @override
   void initState() {
+    super.initState();
+
     // set the color
     _borderColor = (widget.borderColor ?? secondaryColor);
     _bgColor = (widget.bgColor ?? Colors.white);
@@ -52,8 +54,6 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
 
     // get the first element
     _selectedValue = widget.data.keys.first;
-
-    super.initState();
   }
 
   @override

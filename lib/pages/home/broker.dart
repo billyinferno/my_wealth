@@ -25,6 +25,8 @@ class _BrokerPageState extends State<BrokerPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _brokerList = BrokerSharedPreferences.getBrokerList();
     _filterBrokerList = BrokerSharedPreferences.getBrokerList();
     _maxBrokerDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? DateTime.now());
@@ -38,15 +40,13 @@ class _BrokerPageState extends State<BrokerPage> {
     // default filter mode to Code and ASC
     _filterMode = "CD";
     _filterSort = "ASC";
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     _searchController.dispose();
+    super.dispose();
   }
 
   @override

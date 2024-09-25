@@ -228,7 +228,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
   @override
   void dispose() {
-    super.dispose();
     _priceController.dispose();
     _calendarScrollController.dispose();
     _graphScrollController.dispose();
@@ -240,6 +239,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _compareController.dispose();
     _dividendController.dispose();
     _splitController.dispose();
+    
+    super.dispose();
   }
 
   @override

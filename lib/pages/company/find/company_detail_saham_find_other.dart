@@ -26,6 +26,8 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
 
   @override
   void initState() {
+    super.initState();
+
     // initialize all the variable needed
     _currentCode = widget.args as String;
 
@@ -34,8 +36,6 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
 
     // get the data
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override

@@ -32,6 +32,8 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
 
   @override
   void initState() {
+    super.initState();
+
     _args = widget.args! as IndustrySummaryArgs;
 
     // get user info from shared preferences
@@ -39,8 +41,6 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
     
     // get initial data for stock sub sector
     _getData = _getIndustrySummary();
-
-    super.initState();
   }
 
   @override

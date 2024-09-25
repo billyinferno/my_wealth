@@ -23,6 +23,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
 
   @override
   void initState() {
+    super.initState();
+
     // get the minimum and maximum broker date
     _minBrokerDate = BrokerSharedPreferences.getBrokerMinDate();
     _maxBrokerDate = BrokerSharedPreferences.getBrokerMaxDate();
@@ -51,8 +53,6 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
 
     // get the stock collect list from shared preferences
     _getData = _initGetData();
-
-    super.initState();
   }
 
   @override

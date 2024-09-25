@@ -26,6 +26,8 @@ class _PortofolioPageState extends State<PortofolioPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _barChartData = [];
     _userInfo = UserSharedPreferences.getUserInfo();
     _watchlistReksadana = WatchlistSharedPreferences.getWatchlist(type: "reksadana");
@@ -42,8 +44,13 @@ class _PortofolioPageState extends State<PortofolioPage> {
     // check user visibility configuration
     _isSummaryVisible = _userInfo!.visibility;
     _currentIsSummaryVisible = _userInfo!.visibility;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
     
-    super.initState();
+    super.dispose();
   }
 
   @override

@@ -44,6 +44,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _index = widget.index as IndexModel;
     _indexName = _index.indexName;
     
@@ -92,16 +94,14 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     _sortAsc = false;
 
     _getData = _getAllData();
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     _graphScrollController.dispose();
     _calendarScrollController.dispose();
+    super.dispose();
   }
 
   @override

@@ -51,6 +51,8 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
   @override
   void initState() {
+    super.initState();
+
     // init list
     _barChartData = [];
     _portofolioList = [];
@@ -92,8 +94,6 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
 
     // default the show zero product into true
     _showZeroProduct = true;
-
-    super.initState();
   }
 
   @override

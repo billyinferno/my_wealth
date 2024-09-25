@@ -15,10 +15,10 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
 
   @override
   void initState() {
+    super.initState();
+    
     // get the data from shared preferences
     _bandarInterest = InsightSharedPreferences.getBandarInterestingList();
-
-    super.initState();
   }
 
   @override

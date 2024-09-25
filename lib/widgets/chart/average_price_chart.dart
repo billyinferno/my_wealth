@@ -51,6 +51,8 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
 
   @override
   void initState() {
+    super.initState();
+
     _min = double.maxFinite.toInt();
     _max = _min * (-1);
     _ma10 = 0;
@@ -63,8 +65,6 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
     _selectedValue = _avg;
     _selectedFlexLeft = _avgFlexLeft;
     _selectedFlexRight = _avgFlexRight;
-
-    super.initState();
   }
 
   @override

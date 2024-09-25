@@ -40,6 +40,8 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
 
   @override
   void initState() {
+    super.initState();
+
     // initialize top reksadana list with empty map
     _topReksadanaList = {};
     _worseReksadanaList = {};
@@ -55,8 +57,6 @@ class _InsightReksadanaPageState extends State<InsightReksadanaPage> {
     _worseReksadanaList['campuran'] = InsightSharedPreferences.getWorseReksadanaList(type: 'campuran');
     _worseReksadanaList['pasaruang'] = InsightSharedPreferences.getWorseReksadanaList(type: 'pasaruang');
     _worseReksadanaList['pendapatantetap'] = InsightSharedPreferences.getWorseReksadanaList(type: 'pendapatantetap');
-
-    super.initState();
   }
 
   @override

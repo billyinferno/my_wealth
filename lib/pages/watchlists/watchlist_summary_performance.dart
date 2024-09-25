@@ -99,6 +99,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
   @override
   void initState() {
+    super.initState();
+
     // init all the variables
     _totalDayGain = 0;
     _totalCost = 0;
@@ -153,8 +155,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _totalPotentialPL = _totalRealised + _totalUnrealised;
 
     _getData = _getPerformanceData();
-
-    super.initState();
   }
 
   @override

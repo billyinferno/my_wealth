@@ -30,6 +30,8 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
   @override
   void initState() {
+    super.initState();
+
     // list all the filter that we want to put here
     _filterList["nm"] = "Name";
     _filterList["pr"] = "Price";
@@ -52,8 +54,6 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
     // get the initial data either from API or from cache
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override

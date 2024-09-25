@@ -50,10 +50,10 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
 
   @override
   void dispose() {
-    super.dispose();
     // dispose all the controller
     _textController.dispose();
     _scrollController.dispose();
+    super.dispose();
   }
 
   @override

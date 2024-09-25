@@ -21,6 +21,8 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
 
   @override
   void initState() {
+    super.initState();
+
     // initialize all the variable needed for the widget
     _accumVersion = 1;
 
@@ -40,8 +42,6 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
       // calculate the _brokerAccumulationLeft and Right
       _calculateBrokerAccumulationRatio(data: widget.data[_accumVersion]);
     }
-
-    super.initState();
   }
 
   @override

@@ -47,8 +47,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
+    super.dispose();
   }
   
   @override

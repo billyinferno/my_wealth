@@ -45,6 +45,8 @@ class _InsightStockPageState extends State<InsightStockPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _sectorSummaryList = InsightSharedPreferences.getSectorSummaryList();
     _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList(type: 'top');
     _topCompanyList = InsightSharedPreferences.getTopWorseCompanyList(type: 'worse');
@@ -54,8 +56,6 @@ class _InsightStockPageState extends State<InsightStockPage> {
     _stockSplitList = InsightSharedPreferences.getStockSplitList();
 
     _userInfo = UserSharedPreferences.getUserInfo();
-
-    super.initState();
   }
 
   @override

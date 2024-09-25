@@ -43,11 +43,12 @@ class FavouritesPageState extends State<FavouritesPage>
 
   @override
   void dispose() {
-    super.dispose();
     _scrollControllerMutual.dispose();
     _scrollControllerStock.dispose();
     _scrollControllerCrypto.dispose();
     _tabController.dispose();
+    
+    super.dispose();
   }
 
   @override

@@ -49,6 +49,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
   @override
   void initState() {
+    super.initState();
+
     // initialize tab controller
     _tabController = TabController(length: 2, vsync: this);
 
@@ -85,8 +87,6 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       // _brokerMaxDate
       _dateTo = _brokerMaxDate;
     }
-
-    super.initState();
   }
 
   @override

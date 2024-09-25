@@ -22,14 +22,14 @@ class _InsightBandarEPSPageState extends State<InsightBandarEPSPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _minEpsRate = InsightSharedPreferences.getEpsMinRate();         // default to 0%
     _minEpsDiffRate = InsightSharedPreferences.getEpsMinDiffRate(); // default to 5%
     _epsList = InsightSharedPreferences.getEpsResult();             // default to empty list
 
     // get the data either from cache or from API
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override

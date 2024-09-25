@@ -95,11 +95,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _summaryController.dispose();
     _priceController.dispose();
     _graphScrollController.dispose();
     _calendarScrollController.dispose();
+    super.dispose();
   }
 
   @override

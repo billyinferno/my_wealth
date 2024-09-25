@@ -48,6 +48,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
 
   @override
   void initState() {
+    super.initState();
+    
     // init list
     _portofolioList = [];
     _portofolioFiltered = [];
@@ -82,8 +84,6 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
 
     // fetch the data from API
     _getData = _fetchData();
-
-    super.initState();
   }
 
   @override

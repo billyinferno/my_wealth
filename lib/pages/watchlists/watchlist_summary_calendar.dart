@@ -51,6 +51,8 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
 
   @override
   void initState() {
+    super.initState();
+
     // convert args to watchlist summary performance args
     _args = widget.args as WatchlistSummaryPerformanceArgs;
 
@@ -94,8 +96,6 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
       currentDate: _currentDate,
       firstRun: true
     );
-    
-    super.initState();
   }
 
   @override

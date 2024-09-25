@@ -31,6 +31,8 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
   @override
   void initState() {
+    super.initState();
+
     // initialize the data we will use for query the accumulation
     _oneDayRate = InsightSharedPreferences.getTopAccumulationRate(); // default 8%
     _toDate = InsightSharedPreferences.getTopAccumulationToDate(); // today date
@@ -51,8 +53,6 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
     // get the data either from server or cache
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override

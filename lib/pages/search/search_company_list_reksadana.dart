@@ -61,11 +61,11 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     _textController.dispose();
     _stepperControllerRisk.dispose();
     _stepperControllerRating.dispose();
+    super.dispose();
   }
 
   @override

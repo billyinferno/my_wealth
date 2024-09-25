@@ -26,6 +26,8 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
 
   @override
   void initState() {
+    super.initState();
+
     _args = widget.args as InsightStockSubListArgs;
     _userInfo = UserSharedPreferences.getUserInfo();
 
@@ -41,8 +43,6 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     _filterList["5y"] = "Five Year";
 
     _getData = _getInitData();
-
-    super.initState();
   }
 
   @override

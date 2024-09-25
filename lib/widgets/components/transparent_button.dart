@@ -34,74 +34,86 @@ class TransparentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color currentColor = color;
+    if (!enabled) {
+      currentColor = disabledColor;
+    }
+    else {
+      if (enabled && active) {
+        currentColor = activeColor;
+      }
+    }
+    
     return Expanded(
-      child: InkWell(
-        onTap: (() {
-          // check whether the button is enabled or not
-          if (enabled) {
-            // call the callback if enabled
-            onTap();
-          }
-        }),
-        splashColor: activeColor,
-        child: Ink(
-          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-          decoration: BoxDecoration(
-            color: (enabled ? (active ? activeColor : color) : disabledColor),
-            border: Border.all(
-              color: (borderColor ?? color),
-              style: BorderStyle.solid,
-              width: 1.0,
+      child: Material(
+        child: InkWell(
+          onTap: (() {
+            // check whether the button is enabled or not
+            if (enabled) {
+              // call the callback if enabled
+              onTap();
+            }
+          }),
+          splashColor: activeColor,
+          child: Ink(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            decoration: BoxDecoration(
+              color: currentColor,
+              border: Border.all(
+                color: (borderColor ?? currentColor),
+                style: BorderStyle.solid,
+                width: 1.0,
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    icon,
-                    size: iconSize,
-                    color: textColor,
-                  ),
-                  Visibility(
-                    visible: text.isNotEmpty && !vertical,
-                    child: const SizedBox(width: 10,)
-                  ),
-                  Visibility(
-                    visible: text.isNotEmpty && !vertical,
-                    child: Text(
-                      text,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: textSize,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      textAlign: TextAlign.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      icon,
+                      size: iconSize,
+                      color: textColor,
                     ),
-                  ),
-                ],
-              ),
-              Visibility(
-                visible: text.isNotEmpty && vertical,
-                child: const SizedBox(height: 5,),
-              ),
-              Visibility(
-                visible: text.isNotEmpty && vertical,
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: textSize,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  textAlign: TextAlign.center,
+                    Visibility(
+                      visible: text.isNotEmpty && !vertical,
+                      child: const SizedBox(width: 10,)
+                    ),
+                    Visibility(
+                      visible: text.isNotEmpty && !vertical,
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: textSize,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                Visibility(
+                  visible: text.isNotEmpty && vertical,
+                  child: const SizedBox(height: 5,),
+                ),
+                Visibility(
+                  visible: text.isNotEmpty && vertical,
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: textSize,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

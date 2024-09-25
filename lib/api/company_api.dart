@@ -78,6 +78,31 @@ class CompanyAPI {
     return ret;
   }
 
+  Future<List<CompanySearchModel>> getCompanyList({
+    required String type
+  }) async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/list/$type'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the company search result
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<CompanySearchModel> ret = [];
+    for (dynamic data in commonModel.data) {
+      CompanySearchModel company = CompanySearchModel.fromJson(data['attributes']);
+      ret.add(company);
+    }
+    return ret;
+  }
+
   Future<CompanyDetailModel> getCompanyByID({
     required int companyId,
     required String type

@@ -13,6 +13,8 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   final UserAPI _userApi = UserAPI();
+  final ScrollController _scrollController = ScrollController();
+  
   late UserLoginInfoModel? _userInfo;
   late String _type;
   bool _isVisible = false;
@@ -21,10 +23,16 @@ class _UserPageState extends State<UserPage> {
   
   @override
   void initState() {
+    super.initState();
+
     var (type, _) = Globals.runAs();
     _type = type;
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -76,518 +84,159 @@ class _UserPageState extends State<UserPage> {
                   ),
                   const SizedBox(height: 12,),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        InkWell(
-                          onTap: (() {
-                            Navigator.pushNamed(context, '/user/password');
-                          }),
-                          child: Container(
-                            width: double.infinity,
-                            height: 60,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                ),
-                              )
-                            ),
-                            child: const Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  Ionicons.lock_open,
-                                  color: secondaryColor,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 10,),
-                                Expanded(
-                                  child: Text(
-                                    "Change Password",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ),
-                              ],
-                            )
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          UserButton(
+                            icon: Ionicons.lock_open_outline,
+                            text: "Change Password",
+                            onTap: (() {
+                              Navigator.pushNamed(context, '/user/password');
+                            }),
                           ),
-                        ),
-                        InkWell(
-                          onTap: (() {
-                            Navigator.pushNamed(context, '/user/risk');
-                          }),
-                          child: Container(
-                            width: double.infinity,
-                            height: 60,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                ),
-                              )
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                const Icon(
-                                  Ionicons.warning_outline,
-                                  color: secondaryColor,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 10,),
-                                Expanded(
-                                  child: Text(
-                                    "Risk Factor (Current: ${_userInfo!.risk}%)",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ),
-                              ],
-                            )
+                          UserButton(
+                            icon: Ionicons.warning_outline,
+                            text: "Risk Factor (Current: ${_userInfo!.risk}%)",
+                            onTap: (() {
+                              Navigator.pushNamed(context, '/user/risk');
+                            }),
                           ),
-                        ),
-                        Container(
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Ionicons.eye_outline,
-                                          color: secondaryColor,
-                                          size: 20,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Visibility",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CupertinoSwitch(
-                                value: _isVisible,
-                                activeTrackColor: secondaryColor,
-                                onChanged: ((value) async {
-                                  _isVisible = !_isVisible;
-                                  await _updateVisibilitySummary(_isVisible).then((resp) {
-                                    Log.success(message: "🔃 Update Visibility to $_isVisible");
-                                    setSummaryVisible(_isVisible);
-                                  }).onError((error, stackTrace) {
-                                    _showScaffoldMessage(text: error.toString());
-                                  });
-                                }),
-                              ),
-                            ],
-                          )
-                        ),
-                        Container(
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Ionicons.list_outline,
-                                          color: secondaryColor,
-                                          size: 20,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Show Lots",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CupertinoSwitch(
-                                value: _showLots,
-                                activeTrackColor: secondaryColor,
-                                onChanged: ((value) async {
-                                  _showLots = !_showLots;
-                                  await _updateShowLots(_showLots).then((resp) {
-                                    Log.success(message: "🔃 Update Show Lots to $_showLots");
-                                    setShowLots(_showLots);
-                                  }).onError((error, stackTrace) {
-                                    _showScaffoldMessage(text: error.toString());
-                                  });
-                                }),
-                              ),
-                            ],
-                          )
-                        ),
-                        Container(
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Ionicons.list_outline,
-                                          color: secondaryColor,
-                                          size: 20,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Show Empty Watchlist",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              CupertinoSwitch(
-                                value: _showEmptyWatchlist,
-                                activeTrackColor: secondaryColor,
-                                onChanged: ((value) async {
-                                  _showEmptyWatchlist = !_showEmptyWatchlist;
-                                  await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
-                                    Log.success(message: "🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
-                                    setShowEmptywatchlist(_showEmptyWatchlist);
-                                  }).onError((error, stackTrace) {
-                                    _showScaffoldMessage(text: error.toString());
-                                  });
-                                }),
-                              ),
-                            ],
-                          )
-                        ),
-                        Container(
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Ionicons.information,
-                                          color: secondaryColor,
-                                          size: 20,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Application Version",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      Globals.appVersion,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: primaryLight,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                        Container(
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Ionicons.rocket,
-                                          color: secondaryColor,
-                                          size: 20,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Run As",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      _type,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: primaryLight,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                        Container(
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          ),
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Ionicons.information,
-                                          color: secondaryColor,
-                                          size: 20,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Flutter Version",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      Globals.flutterVersion,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: primaryLight,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                        // TODO: to enable once we already have telegram bot token for the price alert, or else
-                        // InkWell(
-                        //   onTap: (() {
-                        //     Navigator.pushNamed(context, '/user/bot');
-                        //   }),
-                        //   child: Container(
-                        //     width: double.infinity,
-                        //     height: 60,
-                        //     decoration: const BoxDecoration(
-                        //       border: Border(
-                        //         bottom: BorderSide(
-                        //           color: primaryLight,
-                        //           width: 1.0,
-                        //           style: BorderStyle.solid,
-                        //         ),
-                        //       )
-                        //     ),
-                        //     child: Row(
-                        //       crossAxisAlignment: CrossAxisAlignment.center,
-                        //       mainAxisAlignment: MainAxisAlignment.start,
-                        //       children: const <Widget>[
-                        //         Icon(
-                        //           Ionicons.notifications_outline,
-                        //           color: secondaryColor,
-                        //           size: 20,
-                        //         ),
-                        //         SizedBox(width: 10,),
-                        //         Expanded(
-                        //           child: Text(
-                        //             "Telegram Bot Token",
-                        //             style: TextStyle(
-                        //               fontWeight: FontWeight.bold,
-                        //             ),
-                        //           )
-                        //         ),
-                        //       ],
-                        //     )
-                        //   ),
-                        // ),
-                        InkWell(
-                          onTap: (() {
-                            Future<bool?> result = ShowMyDialog(
-                              title: "Logout",
-                              text: "Do you want to logout?",
-                            ).show(context);
-                  
-                            result.then((value) async {
-                              if(value == true) {
-                                await LocalBox.clear().then((_) {
-                                  Log.success(message: "🧹 Cleaning Local Storage");
-                                  // clear the JWT token from NetUtils
-                                  NetUtils.clearJWT();
-                                  
-                                  // navigate back to login
-                                  if (context.mounted) {
-                                    Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-                                  }
+                          UserButton(
+                            icon: Ionicons.eye_outline,
+                            text: "Visibility",
+                            trailing: CupertinoSwitch(
+                              value: _isVisible,
+                              activeTrackColor: secondaryColor,
+                              onChanged: ((value) async {
+                                _isVisible = !_isVisible;
+                                await _updateVisibilitySummary(_isVisible).then((resp) {
+                                  Log.success(message: "🔃 Update Visibility to $_isVisible");
+                                  setSummaryVisible(_isVisible);
+                                }).onError((error, stackTrace) {
+                                  _showScaffoldMessage(text: error.toString());
                                 });
-                              }
-                            });
-                          }),
-                          child: Container(
-                            width: double.infinity,
-                            height: 60,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                ),
-                              )
+                              }),
                             ),
-                            child: const Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  Ionicons.log_out_outline,
-                                  color: secondaryColor,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 10,),
-                                Expanded(
-                                  child: Text(
-                                    "Logout",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ),
-                              ],
-                            )
                           ),
-                        ),  
-                      ],
+                          UserButton(
+                            icon: Ionicons.list_outline,
+                            text: "Show Lots",
+                            trailing: CupertinoSwitch(
+                              value: _showLots,
+                              activeTrackColor: secondaryColor,
+                              onChanged: ((value) async {
+                                _showLots = !_showLots;
+                                await _updateShowLots(_showLots).then((resp) {
+                                  Log.success(message: "🔃 Update Show Lots to $_showLots");
+                                  setShowLots(_showLots);
+                                }).onError((error, stackTrace) {
+                                  _showScaffoldMessage(text: error.toString());
+                                });
+                              }),
+                            ),
+                          ),
+                          UserButton(
+                            icon: Ionicons.list_outline,
+                            text: "Show Empty Watchlist",
+                            trailing: CupertinoSwitch(
+                              value: _showEmptyWatchlist,
+                              activeTrackColor: secondaryColor,
+                              onChanged: ((value) async {
+                                _showEmptyWatchlist = !_showEmptyWatchlist;
+                                await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
+                                  Log.success(message: "🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
+                                  setShowEmptywatchlist(_showEmptyWatchlist);
+                                }).onError((error, stackTrace) {
+                                  _showScaffoldMessage(text: error.toString());
+                                });
+                              }),
+                            ),
+                          ),
+                          UserButton(
+                            icon: Ionicons.information_outline,
+                            text: "Application Version",
+                            subText: Globals.appVersion,
+                          ),
+                          UserButton(
+                            icon: Ionicons.rocket_outline,
+                            text: "Run As",
+                            subText: _type,
+                          ),
+                          UserButton(
+                            icon: Ionicons.information_outline,
+                            text: "Flutter Version",
+                            subText: Globals.flutterVersion,
+                          ),
+                          // TODO: to enable once we already have telegram bot token for the price alert, or else
+                          // InkWell(
+                          //   onTap: (() {
+                          //     Navigator.pushNamed(context, '/user/bot');
+                          //   }),
+                          //   child: Container(
+                          //     width: double.infinity,
+                          //     height: 60,
+                          //     decoration: const BoxDecoration(
+                          //       border: Border(
+                          //         bottom: BorderSide(
+                          //           color: primaryLight,
+                          //           width: 1.0,
+                          //           style: BorderStyle.solid,
+                          //         ),
+                          //       )
+                          //     ),
+                          //     child: Row(
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       mainAxisAlignment: MainAxisAlignment.start,
+                          //       children: const <Widget>[
+                          //         Icon(
+                          //           Ionicons.notifications_outline,
+                          //           color: secondaryColor,
+                          //           size: 20,
+                          //         ),
+                          //         SizedBox(width: 10,),
+                          //         Expanded(
+                          //           child: Text(
+                          //             "Telegram Bot Token",
+                          //             style: TextStyle(
+                          //               fontWeight: FontWeight.bold,
+                          //             ),
+                          //           )
+                          //         ),
+                          //       ],
+                          //     )
+                          //   ),
+                          // ),
+                          UserButton(
+                            icon: Ionicons.log_out_outline,
+                            text: "Logout",
+                            onTap: (() {
+                              Future<bool?> result = ShowMyDialog(
+                                title: "Logout",
+                                text: "Do you want to logout?",
+                              ).show(context);
+                                        
+                              result.then((value) async {
+                                if(value == true) {
+                                  await LocalBox.clear().then((_) {
+                                    Log.success(message: "🧹 Cleaning Local Storage");
+                                    // clear the JWT token from NetUtils
+                                    NetUtils.clearJWT();
+                                    
+                                    // navigate back to login
+                                    if (context.mounted) {
+                                      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                                    }
+                                  });
+                                }
+                              });
+                            }),
+                          ),  
+                        ],
+                      ),
                     ),
                   ),
                 ],

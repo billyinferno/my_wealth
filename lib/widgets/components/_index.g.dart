@@ -9,5 +9,6 @@ export './slide_button.dart';
 export './stepper_selector.dart';
 export './stepper_selector_controller.dart';
 export './transparent_button.dart';
+export './user_button.dart';
 export './watchlist_detail_create_calendar.dart';
 export './watchlist_detail_create_textfields.dart';

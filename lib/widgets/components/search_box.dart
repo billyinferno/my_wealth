@@ -8,8 +8,8 @@ class SearchBox extends StatefulWidget {
   final Function(String) onFilterSelect;
   final String filterSort;
   final Function(String) onSortSelect;
-  final Color? bgColor;
-  final Color? fgColor;
+  final Color bgColor;
+  final Color fgColor;
   const SearchBox({
     super.key,
     required this.filterMode,
@@ -17,8 +17,8 @@ class SearchBox extends StatefulWidget {
     required this.filterSort,
     required this.onFilterSelect,
     required this.onSortSelect,
-    this.bgColor,
-    this.fgColor,
+    this.bgColor = primaryDark,
+    this.fgColor = accentColor,
   });
 
   @override
@@ -31,24 +31,28 @@ class _SearchBoxState extends State<SearchBox> {
 
   @override
   void initState() {
+    super.initState();
+
     // move all the data from parent to this widget, as we will perform set state
     // here that will not affect the parent widget.
     _filterTypeSelected = TextStyle(
-        fontSize: 10,
-        color: (widget.fgColor ?? accentColor),
-        fontWeight: FontWeight.bold);
+      fontSize: 10,
+      color: widget.fgColor,
+      fontWeight: FontWeight.bold
+    );
     
     _filterTypeUnselected = const TextStyle(
-      fontSize: 10, color: primaryLight, fontWeight: FontWeight.normal);
-    
-    super.initState();
+      fontSize: 10,
+      color: primaryLight,
+      fontWeight: FontWeight.normal
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-      color: (widget.bgColor ?? primaryDark),
+      color: widget.bgColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,

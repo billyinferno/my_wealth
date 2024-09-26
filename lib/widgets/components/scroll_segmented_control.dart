@@ -57,6 +57,12 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[

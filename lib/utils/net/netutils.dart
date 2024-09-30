@@ -23,8 +23,11 @@ class NetUtils {
   /// This is to sending GET request to the API Server
   /// Parameter needed for this are:
   /// - required : url         : String
-  /// - optional : params      : Map<String, dynamic>
-  static Future get({required String url, Map<String, dynamic>? params}) async {
+  /// - optional : params      : Map\<String, dynamic\>
+  static Future get({
+    required String url,
+    Map<String, dynamic>? params
+  }) async {
     // check if bearer token is null? if null then get from UserSharedPreferences
     bearerToken ??= UserSharedPreferences.getUserJWT();
 
@@ -109,10 +112,15 @@ class NetUtils {
   /// This is to sending POST request to the API Server
   /// Parameter needed for this are:
   /// - required : url         : String
-  /// - optional : params      : Map<String, dynamic>
-  /// - required : body        : Map<String, dynamic>
+  /// - optional : params      : Map\<String, dynamic\>
+  /// - required : body        : Map\<String, dynamic\>
   /// - optional : requiredJWT : bool
-  static Future post({required String url, Map<String, dynamic>? params, required Map<String, dynamic> body, bool? requiredJWT}) async {
+  static Future post({
+    required String url,
+    Map<String, dynamic>? params,
+    required Map<String, dynamic> body,
+    bool? requiredJWT
+  }) async {
     // check the JWT requirement
     bool isRequiredJWT = (requiredJWT ?? true);
     
@@ -216,8 +224,11 @@ class NetUtils {
   /// This is to sending DELETE request to the API Server
   /// Parameter needed for this are:
   /// - required : url         : String
-  /// - optional : params      : Map<String, dynamic>
-  static Future delete({required String url, Map<String, dynamic>? params}) async {
+  /// - optional : params      : Map\<String, dynamic\>
+  static Future delete({
+    required String url,
+    Map<String, dynamic>? params
+  }) async {
     // check if bearer token is null? if null then get from UserSharedPreferences
     bearerToken ??= UserSharedPreferences.getUserJWT();
 
@@ -302,9 +313,13 @@ class NetUtils {
   /// This is to sending PATCH request to the API Server
   /// Parameter needed for this are:
   /// - required : url         : String
-  /// - optional : params      : Map<String, dynamic>
-  /// - required : body        : Map<String, dynamic>
-  static Future patch({required String url, Map<String, dynamic>? params, required Map<String, dynamic> body}) async {
+  /// - optional : params      : Map\<String, dynamic\>
+  /// - required : body        : Map\<String, dynamic\>
+  static Future patch({
+    required String url,
+    Map<String, dynamic>? params,
+    required Map<String, dynamic> body
+  }) async {
     // check if bearer token is null? if null then get from UserSharedPreferences
     bearerToken ??= UserSharedPreferences.getUserJWT();
 
@@ -390,9 +405,13 @@ class NetUtils {
   /// This is to sending PUT request to the API Server
   /// Parameter needed for this are:
   /// - required : url         : String
-  /// - optional : params      : Map<String, dynamic>
-  /// - required : body        : Map<String, dynamic>
-  static Future put({required String url, Map<String, dynamic>? params, required Map<String, dynamic> body}) async {
+  /// - optional : params      : Map\<String, dynamic\>
+  /// - required : body        : Map\<String, dynamic\>
+  static Future put({
+    required String url,
+    Map<String, dynamic>? params,
+    required Map<String, dynamic> body
+  }) async {
     // check if bearer token is null? if null then get from UserSharedPreferences
     bearerToken ??= UserSharedPreferences.getUserJWT();
 

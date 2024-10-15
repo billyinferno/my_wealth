@@ -15,6 +15,7 @@ class WatchlistPerformancePage extends StatefulWidget {
 class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
+  final IndexAPI _indexAPI = IndexAPI();
 
   late WatchlistListArgs _watchlistArgs;
   late UserLoginInfoModel _userInfo;
@@ -25,6 +26,16 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late List<WatchlistPerformanceModel> _watchlistPerformanceDaily;
   late List<WatchlistPerformanceModel> _watchlistPerformanceMonth;
   late List<WatchlistPerformanceModel> _watchlistPerformanceYear;
+
+  late IndexModel _indexCompare;
+  late String _indexCompareName;
+  late List<IndexPriceModel> _indexComparePrice;
+  late List<PerformanceData> _indexData;
+  late List<PerformanceData> _indexData90D;
+  late List<PerformanceData> _indexDataDaily;
+  late List<PerformanceData> _indexDataMonthly;
+  late List<PerformanceData> _indexDataYearly;
+
   late CompanyDetailArgs _companyArgs;
   late double _max;
   late double _min;
@@ -77,6 +88,16 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     _watchlistPerformanceMonth = [];
     _watchlistPerformanceYear = [];
     _gainDifference = 0;
+
+    // initialize the index compare data
+    _indexData = [];
+    _indexData90D = [];
+    _indexDataDaily = [];
+    _indexDataMonthly = [];
+    _indexDataYearly = [];
+
+    _indexCompareName = "";
+    _indexComparePrice = [];
     
     // get initial data
     _getData = _getInitData();
@@ -123,6 +144,35 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
           )
         ),
         actions: <Widget>[
+          IconButton(
+            onPressed: (() async {
+              // go to index list page
+              await Navigator.pushNamed(context, '/index/find').then((value) async {
+                if (value != null) {
+                  // convert value to company list model
+                  _indexCompare = value as IndexModel;
+                  _indexCompareName = _indexCompare.indexName;
+    
+                  await _getIndexData().onError((error, stackTrace) {
+                    // remove the index compare name and price since we will
+                    // not be able to perform comparison
+                    _indexCompareName = "";
+                    _indexComparePrice.clear();
+    
+                    _indexData.clear();
+                    _indexData90D.clear();
+                    _indexDataDaily.clear();
+                    _indexDataMonthly.clear();
+                    _indexDataYearly.clear();
+                  });
+                }
+              });
+            }),
+            icon: const Icon(
+              Ionicons.git_compare_outline,
+              color: textPrimary,
+            ),
+          ),
           IconButton(
             onPressed: (() {
               Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
@@ -342,18 +392,22 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     switch(_graphSelection) {
                       case "9":
                         _watchlistPerformance = _watchlistPerformance90Day.toList();
+                        _indexData = _indexData90D.toList();
                         _dateFormat = Globals.dfddMM;
                         break;
                       case "m":
                         _watchlistPerformance = _watchlistPerformanceMonth.toList();
+                        _indexData = _indexDataMonthly.toList();
                         _dateFormat = Globals.dfMMyy;
                         break;
                       case "y":
                         _watchlistPerformance = _watchlistPerformanceYear.toList();
+                        _indexData = _indexDataYearly.toList();
                         _dateFormat = Globals.dfMMyy;
                         break;
                       default:
                         _watchlistPerformance = _watchlistPerformanceDaily.toList();
+                        _indexData = _indexDataDaily.toList();
                         _dateFormat = Globals.dfddMM;
                         break;
                     }
@@ -368,34 +422,120 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 pressedColor: primaryDark,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
-                  decoration: BoxDecoration(
-                    color: (_gainDifference < 0 ? secondaryDark : Colors.green[900]),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    formatCurrency(
-                      _gainDifference,
-                      shorten: false,
-                      decimalNum: 2
-                    ),
-                    style: const TextStyle(
-                      fontSize: 10,
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(width: 10,),
+                Visibility(
+                  visible: (_indexCompareName.isNotEmpty),
+                  child: InkWell(
+                    onTap: (() {
+                      // clear the compare
+                      showCupertinoDialog(
+                        context: context,
+                        builder: ((BuildContext context) {
+                          return CupertinoAlertDialog(
+                            title: const Text("Clear Compare"),
+                            content: Text("Do you want to clear comparison with $_indexCompareName?"),
+                            actions: <CupertinoDialogAction>[
+                              CupertinoDialogAction(
+                                onPressed: (() {
+                                  // clear the _indexData
+                                  _indexCompareName = "";
+                                  _indexComparePrice.clear();
+          
+                                  _indexData.clear();
+                                  _indexData90D.clear();
+                                  _indexDataDaily.clear();
+                                  _indexDataMonthly.clear();
+                                  _indexDataYearly.clear();
+          
+                                  // remove the dialog
+                                  Navigator.pop(context);
+          
+                                  // set state to rebuild the widget
+                                  setState(() {
+                                  });
+                                }),
+                                child: const Text(
+                                  "Yes",
+                                  style: TextStyle(
+                                    color: textPrimary,
+                                  ),
+                                )
+                              ),
+                              CupertinoDialogAction(
+                                onPressed: (() {
+                                  // remove the dialog
+                                  Navigator.pop(context);
+                                }),
+                                child: const Text("No")
+                              ),
+                            ],
+                          );
+                        })
+                      );
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(10, 2, 5, 2),
+                      decoration: BoxDecoration(
+                        color: accentDark,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "Comparing with $_indexCompareName",
+                            style: const TextStyle(
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(width: 5,),
+                          const Icon(
+                            Ionicons.close,
+                            size: 10,
+                            color: textPrimary,
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 ),
-              ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                      decoration: BoxDecoration(
+                        color: (_gainDifference < 0 ? secondaryDark : Colors.green[900]),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Text(
+                        formatCurrency(
+                          _gainDifference,
+                          shorten: false,
+                          decimalNum: 2
+                        ),
+                        style: const TextStyle(
+                          fontSize: 10,
+                        ),
+                      )
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10,),
+              ],
             ),
             SizedBox(
               width: double.infinity,
               child: PerformanceChart(
                 watchlistPerfData: _watchlistPerformance,
                 watchlist: _watchlistArgs.watchList.watchlistDetail,
+                compare: _indexData,
                 height: 250,
                 dateOffset: (_watchlistPerformance.length > 10 ? null : 1),
                 dateFormat: _dateFormat,
@@ -701,6 +841,162 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     }
 
     return true;
+  }
+
+  Future<void> _getIndexData() async {
+    // ensure we have _perfDataDaily
+    if (_watchlistPerformance.isNotEmpty) {
+      // show loading screen
+      LoadingScreen.instance().show(context: context);
+
+      await _indexAPI.getIndexPriceDate(
+        indexID: _indexCompare.indexId,
+        from: _watchlistPerformance.first.buyDate,
+        to: _watchlistPerformance.last.buyDate
+      ).then((resp) async {
+        _indexComparePrice = resp;
+
+        // generate the index performance data
+        await _generateIndexPerformanceData();
+
+        // once finished just set state so we can rebuild the page
+        setState(() {
+        });
+      },).onError((error, stackTrace) {
+        Log.error(
+          message: 'Error getting index price',
+          error: error,
+          stackTrace: stackTrace,
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when get index price"));
+        }
+      },).whenComplete(() {
+        // remove the loading screen
+        LoadingScreen.instance().hide();
+      },);
+    }
+  }
+
+  Future<void> _generateIndexPerformanceData() async {
+    // here we will need to generate the index performance data that we will
+    // passed to performance data chart.
+
+    // first let's convert the index price model from list to map
+    Map<DateTime, double> indexPriceMap = {};
+
+    // since index price should be sorted already from API, we can just loop
+    // thru index price model, and add it to map
+    for(IndexPriceModel dt in _indexComparePrice) {
+      indexPriceMap[dt.indexPriceDate.toLocal()] = dt.indexPriceValue;
+    }
+
+    // once we generate the date, now we can create the index performance daily
+    // data based on loop on the performance daily data, and look for the same
+    // date on the index price map
+
+    // first clear the data
+    _indexDataDaily.clear();
+
+    double gain;
+    double total;
+    double? previousTotal;
+
+    // loop thru performance daily data to get the date
+    for(WatchlistPerformanceModel dt in _watchlistPerformance) {
+      // check if date is in the index price or not?
+      if (indexPriceMap.containsKey(dt.buyDate)) {
+        // create the performance data for this
+        gain = 0;
+        total = indexPriceMap[dt.buyDate]!;
+
+        // check if we can calculate the gain?
+        if (previousTotal != null) {
+          // calculate the gain
+          gain = total - previousTotal;
+        }
+
+        // set previous total as current total
+        previousTotal = total;
+
+        // create the performance data for this
+        PerformanceData pfData = PerformanceData(
+          date: dt.buyDate,
+          gain: gain,
+          total: total
+        );
+
+        // add this to the index data daily
+        _indexDataDaily.add(pfData);
+      }
+      else {
+        // in case we have value already, then just use the latest index data
+        // daily
+        if (_indexDataDaily.isNotEmpty) {
+          // get the last data
+          PerformanceData lastData = _indexDataDaily.last;
+          
+          // insert it again but with different date
+          PerformanceData mockupData = PerformanceData(
+            date: dt.buyDate,
+            gain: lastData.gain,
+            total: lastData.total,
+          );
+
+          // add mockup data to the _indexDataDaily
+          _indexDataDaily.add(mockupData);
+        }
+      }
+    }
+
+    // once we got the daily data, then we can do the 90d, monthly, and yearly
+    _indexData90D.clear();
+    _indexDataMonthly.clear();
+    _indexDataYearly.clear();
+
+    // temporary map for monthly and yearly
+    Map<DateTime, PerformanceData> monthly = {};
+    Map<DateTime, PerformanceData> yearly = {};
+    DateTime dateHelper;
+    
+    for(int i=0; i<_indexDataDaily.length; i++) {
+      if (i >= (_indexDataDaily.length - 90)) {
+        _indexData90D.add(_indexDataDaily[i]);
+      }
+
+      // get the date time for monthly
+      dateHelper = DateTime(_indexDataDaily[i].date.year, _indexDataDaily[i].date.month, 1);
+      // add this on the monhtly map
+      monthly[dateHelper] = _indexDataDaily[i];
+
+      // get the date time for yearly
+      dateHelper = DateTime(_indexDataDaily[i].date.year, 12, 31);
+      // add this on the yearly map
+      yearly[dateHelper] = _indexDataDaily[i];
+    }
+
+    // once finished when we can put this on the _indexDataMonthly and
+    // _indexDataYearly
+    _indexDataMonthly = monthly.values.toList();
+    _indexDataYearly = yearly.values.toList();
+
+    // now check which graph now is being showed, so we can set the correct
+    // index data
+    switch(_graphSelection) {
+      case "9":
+        _indexData = _indexData90D.toList();
+        break;
+      case "m":
+        _indexData = _indexDataMonthly.toList();
+        break;
+      case "y":
+        _indexData = _indexDataYearly.toList();
+        break;
+      default:
+        _indexData = _indexDataDaily.toList();
+        break;
+    }
   }
 
   void _calculateGainDifference() {

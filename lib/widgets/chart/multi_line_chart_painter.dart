@@ -7,9 +7,16 @@ class MultiLineChartPainter extends CustomPainter {
   final List<String> point;
   final List<Color> color;
   final List<Map<String, double>> data;
-  final int? dateOffset;
+  final int dateOffset;
   
-  const MultiLineChartPainter({required this.min, required this.max, required this.point, required this.color, required this.data, this.dateOffset});
+  const MultiLineChartPainter({
+    required this.min,
+    required this.max,
+    required this.point,
+    required this.color,
+    required this.data,
+    required this.dateOffset,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -135,7 +142,7 @@ class MultiLineChartPainter extends CustomPainter {
     double guideW = graphRect.size.width / point.length;
 
     // check for the date print offset
-    int datePrintOffset = (dateOffset ?? 3);
+    int datePrintOffset = dateOffset;
     if (point.length < datePrintOffset) {
       datePrintOffset = point.length - 1;
     }

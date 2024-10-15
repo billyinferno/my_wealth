@@ -2,25 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class MultiLineChart extends StatelessWidget {
-  final double? height;
+  final double height;
   final List<Map<String, double>> data;
   final List<Color> color;
-  final List<String>? legend;
-  final int? dateOffset;
+  final List<String> legend;
+  final int dateOffset;
   const MultiLineChart({
     super.key,
-    this.height,
+    this.height = 250,
     required this.data,
     required this.color,
-    this.legend,
-    this.dateOffset
+    this.legend = const [],
+    this.dateOffset = 3
   });
 
   @override
   Widget build(BuildContext context) {
-    double chartHeight = height ?? 250;
     List<String> point = _generatePoint();
-    List<String> legendData = legend ?? [];
     List<double> minMax = _getMinMax();
 
     return Column(
@@ -39,19 +37,19 @@ class MultiLineChart extends StatelessWidget {
               dateOffset: dateOffset,
             ),
             child: Container(
-              height: chartHeight,
+              height: height,
             ),
           ),
         ),
         Visibility(
-          visible: (legendData.isNotEmpty && color.isNotEmpty && legendData.length == color.length),
+          visible: (legend.isNotEmpty && color.isNotEmpty && legend.length == color.length),
           child: Container(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List<Widget>.generate(legendData.length, (index) {
-                return _legend(color: color[index], text: legendData[index]);
+              children: List<Widget>.generate(legend.length, (index) {
+                return _legend(color: color[index], text: legend[index]);
               }),
             ),
           ),

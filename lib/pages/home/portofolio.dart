@@ -14,11 +14,11 @@ class _PortofolioPageState extends State<PortofolioPage> {
   final ScrollController _scrollController = ScrollController();
 
   late UserLoginInfoModel? _userInfo;
-  late List<WatchlistListModel>? _watchlistReksadana;
-  late List<WatchlistListModel>? _watchlistSaham;
-  late List<WatchlistListModel>? _watchlistCrypto;
-  late List<WatchlistListModel>? _watchlistGold;
-  late ComputeWatchlistAllResult? _watchlistAll;
+  late List<WatchlistListModel> _watchlistReksadana;
+  late List<WatchlistListModel> _watchlistSaham;
+  late List<WatchlistListModel> _watchlistCrypto;
+  late List<WatchlistListModel> _watchlistGold;
+  late ComputeWatchlistAllResult _watchlistAll;
   late List<BarChartData> _barChartData;
 
   bool _isSummaryVisible = true;
@@ -30,16 +30,6 @@ class _PortofolioPageState extends State<PortofolioPage> {
 
     _barChartData = [];
     _userInfo = UserSharedPreferences.getUserInfo();
-    _watchlistReksadana = WatchlistSharedPreferences.getWatchlist(type: "reksadana");
-    _watchlistSaham = WatchlistSharedPreferences.getWatchlist(type: "saham");
-    _watchlistCrypto = WatchlistSharedPreferences.getWatchlist(type: "crypto");
-    _watchlistGold = WatchlistSharedPreferences.getWatchlist(type: "gold");
-
-    // initialize also in the initial state
-    _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
-
-    // put the value in bar chart data
-    _generateBarChartData();
 
     // check user visibility configuration
     _isSummaryVisible = _userInfo!.visibility;
@@ -71,13 +61,19 @@ class _PortofolioPageState extends State<PortofolioPage> {
           return _invisiblePage();
         }
 
-        _watchlistReksadana = watchlistProvider.watchlistReksadana;
-        _watchlistSaham = watchlistProvider.watchlistSaham;
-        _watchlistCrypto = watchlistProvider.watchlistCrypto;
-        _watchlistGold = watchlistProvider.watchlistGold;
+        _watchlistReksadana = (watchlistProvider.watchlistReksadana ?? []);
+        _watchlistSaham = (watchlistProvider.watchlistSaham ?? []);
+        _watchlistCrypto = (watchlistProvider.watchlistCrypto ?? []);
+        _watchlistGold = (watchlistProvider.watchlistGold ?? []);
 
         // compute all the watchlist first
-        _watchlistAll = computeWatchlistAll(_watchlistReksadana!, _watchlistSaham!, _watchlistCrypto!, _watchlistGold!);
+        _watchlistAll = computeWatchlistAll(
+          _watchlistReksadana,
+          _watchlistSaham,
+          _watchlistCrypto,
+          _watchlistGold
+        );
+
         _generateBarChartData();
 
         return Column(
@@ -86,15 +82,15 @@ class _PortofolioPageState extends State<PortofolioPage> {
           children: [
             _summaryBox(
               barColor: riskColor(
-                value: _watchlistAll!.totalValue,
-                cost: _watchlistAll!.totalCost,
+                value: _watchlistAll.totalValue,
+                cost: _watchlistAll.totalCost,
                 riskFactor: _userInfo!.risk
               ),
               backgroundColor: primaryDark,
-              value: _watchlistAll!.totalValue,
-              cost: _watchlistAll!.totalCost,
-              realised: _watchlistAll!.totalRealised,
-              dayGain: _watchlistAll!.totalDayGain,
+              value: _watchlistAll.totalValue,
+              cost: _watchlistAll.totalCost,
+              realised: _watchlistAll.totalRealised,
+              dayGain: _watchlistAll.totalDayGain,
             ),
             const SizedBox(height: 10,),
             BarChart(
@@ -112,18 +108,18 @@ class _PortofolioPageState extends State<PortofolioPage> {
                     ProductListItem(
                       bgColor: Colors.green,
                       title: "Reksadana",
-                      value: _watchlistAll!.totalValueReksadana,
-                      cost: _watchlistAll!.totalCostReksadana,
-                      total: _watchlistAll!.totalValue,
-                      realised: _watchlistAll!.totalRealisedReksadana,
-                      dayGain: _watchlistAll!.totalDayGainReksadana,
+                      value: _watchlistAll.totalValueReksadana,
+                      cost: _watchlistAll.totalCostReksadana,
+                      total: _watchlistAll.totalValue,
+                      realised: _watchlistAll.totalRealisedReksadana,
+                      dayGain: _watchlistAll.totalDayGainReksadana,
                       onTap: (() {
                         PortofolioListArgs args = PortofolioListArgs(
                           title: "Reksadana",
-                          value: _watchlistAll!.totalValueReksadana,
-                          cost: _watchlistAll!.totalCostReksadana,
-                          realised: _watchlistAll!.totalRealisedReksadana,
-                          unrealised: (_watchlistAll!.totalValueReksadana - _watchlistAll!.totalCostReksadana),
+                          value: _watchlistAll.totalValueReksadana,
+                          cost: _watchlistAll.totalCostReksadana,
+                          realised: _watchlistAll.totalRealisedReksadana,
+                          unrealised: (_watchlistAll.totalValueReksadana - _watchlistAll.totalCostReksadana),
                           type: "reksadana",
                           showSort: true,
                         );
@@ -133,18 +129,18 @@ class _PortofolioPageState extends State<PortofolioPage> {
                     ProductListItem(
                       bgColor: Colors.pink,
                       title: "Stock",
-                      value: _watchlistAll!.totalValueSaham,
-                      cost: _watchlistAll!.totalCostSaham,
-                      total: _watchlistAll!.totalValue,
-                      realised: _watchlistAll!.totalRealisedSaham,
-                      dayGain: _watchlistAll!.totalDayGainSaham,
+                      value: _watchlistAll.totalValueSaham,
+                      cost: _watchlistAll.totalCostSaham,
+                      total: _watchlistAll.totalValue,
+                      realised: _watchlistAll.totalRealisedSaham,
+                      dayGain: _watchlistAll.totalDayGainSaham,
                       onTap: (() {
                         PortofolioListArgs args = PortofolioListArgs(
                           title: "Stock",
-                          value: _watchlistAll!.totalValueSaham,
-                          cost: _watchlistAll!.totalCostSaham,
-                          realised: _watchlistAll!.totalRealisedSaham,
-                          unrealised: (_watchlistAll!.totalValueSaham - _watchlistAll!.totalCostSaham),
+                          value: _watchlistAll.totalValueSaham,
+                          cost: _watchlistAll.totalCostSaham,
+                          realised: _watchlistAll.totalRealisedSaham,
+                          unrealised: (_watchlistAll.totalValueSaham - _watchlistAll.totalCostSaham),
                           type: "saham"
                         );
                         Navigator.pushNamed(context, '/portofolio/list', arguments: args);
@@ -153,21 +149,21 @@ class _PortofolioPageState extends State<PortofolioPage> {
                     ProductListItem(
                       bgColor: Colors.purple,
                       title: "Crypto",
-                      value: _watchlistAll!.totalValueCrypto,
-                      cost: _watchlistAll!.totalCostCrypto,
-                      total: _watchlistAll!.totalValue,
-                      realised: _watchlistAll!.totalRealisedCrypto,
-                      dayGain: _watchlistAll!.totalDayGainCrypto,
+                      value: _watchlistAll.totalValueCrypto,
+                      cost: _watchlistAll.totalCostCrypto,
+                      total: _watchlistAll.totalValue,
+                      realised: _watchlistAll.totalRealisedCrypto,
+                      dayGain: _watchlistAll.totalDayGainCrypto,
                       onTap: (() {
                         // check whether we can navigate to detail page, or just do nothing
-                        if (_watchlistCrypto!.isNotEmpty) {
+                        if (_watchlistCrypto.isNotEmpty) {
                           // got product means we can display the details here 
                           PortofolioListArgs args = PortofolioListArgs(
                             title: 'Crypto',
-                            value: _watchlistAll!.totalValueCrypto,
-                            cost: _watchlistAll!.totalCostCrypto,
-                            realised: _watchlistAll!.totalRealisedCrypto,
-                            unrealised: (_watchlistAll!.totalValueCrypto - _watchlistAll!.totalCostCrypto),
+                            value: _watchlistAll.totalValueCrypto,
+                            cost: _watchlistAll.totalCostCrypto,
+                            realised: _watchlistAll.totalRealisedCrypto,
+                            unrealised: (_watchlistAll.totalValueCrypto - _watchlistAll.totalCostCrypto),
                             type: 'crypto',
                             subType: '-1'
                           );
@@ -179,11 +175,11 @@ class _PortofolioPageState extends State<PortofolioPage> {
                     ProductListItem(
                       bgColor: Colors.amber,
                       title: "Gold",
-                      value: _watchlistAll!.totalValueGold,
-                      cost: _watchlistAll!.totalCostGold,
-                      total: _watchlistAll!.totalValue,
-                      realised: _watchlistAll!.totalRealisedGold,
-                      dayGain: _watchlistAll!.totalDayGainGold,
+                      value: _watchlistAll.totalValueGold,
+                      cost: _watchlistAll.totalCostGold,
+                      total: _watchlistAll.totalValue,
+                      realised: _watchlistAll.totalRealisedGold,
+                      dayGain: _watchlistAll.totalDayGainGold,
                       onTap: (() {
                         // do nothing, we just want to showed the chevron icon here
                       })
@@ -240,15 +236,44 @@ class _PortofolioPageState extends State<PortofolioPage> {
 
   void _generateBarChartData() {
     _barChartData.clear();
-    _barChartData.add(BarChartData(title: "Reksadana", value: _watchlistAll!.totalValueReksadana, total: _watchlistAll!.totalValue, color: Colors.green));
-    _barChartData.add(BarChartData(title: "Stock", value: _watchlistAll!.totalValueSaham, total: _watchlistAll!.totalValue, color: Colors.pink));
-    _barChartData.add(BarChartData(title: "Crypto", value: _watchlistAll!.totalValueCrypto, total: _watchlistAll!.totalValue, color: Colors.purple));
-    _barChartData.add(BarChartData(title: "Gold", value: _watchlistAll!.totalValueGold, total: _watchlistAll!.totalValue, color: Colors.amber));
+    _barChartData.add(BarChartData(
+      title: "Reksadana",
+      value: _watchlistAll.totalValueReksadana,
+      total: _watchlistAll.totalValue,
+      color: Colors.green
+    ));
+
+    _barChartData.add(BarChartData(
+      title: "Stock",
+      value: _watchlistAll.totalValueSaham,
+      total: _watchlistAll.totalValue,
+      color: Colors.pink
+    ));
+
+    _barChartData.add(BarChartData(
+      title: "Crypto",
+      value: _watchlistAll.totalValueCrypto,
+      total: _watchlistAll.totalValue,
+      color: Colors.purple
+    ));
+    
+    _barChartData.add(BarChartData(
+      title: "Gold",
+      value: _watchlistAll.totalValueGold,
+      total: _watchlistAll.totalValue,
+      color: Colors.amber
+    ));
   }
 
-  Widget _summaryBox({required Color barColor, required double value, required double cost, required double dayGain, required double realised, Color? backgroundColor, double? fontSize}) {
-    Color bgColor = backgroundColor ?? primaryColor;
-    double summarySize = fontSize ?? 20;
+  Widget _summaryBox({
+    required Color barColor,
+    required double value,
+    required double cost,
+    required double dayGain,
+    required double realised,
+    Color backgroundColor = primaryColor,
+    double fontSize = 20
+  }) {
     double gain = value - cost;
     Color trendColor = Colors.white;
     Color realisedColor = Colors.white;
@@ -275,111 +300,91 @@ class _PortofolioPageState extends State<PortofolioPage> {
     }
 
     return Container(
-      color: barColor,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(width: 10,),
-          Expanded(
-            child: Container(
-              color: bgColor,
-              padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
+      color: backgroundColor,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 10,
+              color: barColor,
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 3,
-                              child: _smallText("Total Value"),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: _smallText("Total Unrealised")
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 3,
-                              child: _largeText(
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _smallText("Total Value"),
+                              _largeText(
                                 text: formatCurrency(
                                   value,
                                   showDecimal:  true,
                                   shorten: false,
                                 ),
-                                size: summarySize
+                                size: fontSize
                               ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    Icon(
-                                      trendIcon,
+                            ],
+                          )
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _smallText("Total Unrealised"),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Icon(
+                                    trendIcon,
+                                    color: trendColor,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    formatCurrency(
+                                      gain,
+                                      shorten: false,
+                                    ),
+                                    style: TextStyle(
                                       color: trendColor,
-                                      size: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    const SizedBox(width: 5,),
-                                    Text(
-                                      formatCurrency(
-                                        gain,
-                                        shorten: false,
-                                      ),
-                                      style: TextStyle(
-                                        color: trendColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 3,
-                              child: _smallText("Total Cost"),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: _smallText("Total Realised")
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 3,
-                              child: Text(
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _smallText("Total Cost"),
+                              Text(
                                 formatCurrency(
                                   cost,
                                   shorten: false,
@@ -388,64 +393,68 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    Icon(
-                                      Ionicons.wallet_outline,
+                            ],
+                          )
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              _smallText("Total Realised"),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Icon(
+                                    Ionicons.wallet_outline,
+                                    color: realisedColor,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  Text(
+                                    formatCurrency(
+                                      realised,
+                                      shorten: false,
+                                    ),
+                                    style: TextStyle(
                                       color: realisedColor,
-                                      size: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    const SizedBox(width: 5,),
-                                    Text(
-                                      formatCurrency(
-                                        realised,
-                                        shorten: false,
-                                      ),
-                                      style: TextStyle(
-                                        color: realisedColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 10,),
-                  InkWell(
-                    onTap: (() {
-                      setState(() {
-                        _isSummaryVisible = !_isSummaryVisible;
-                      });
-                    }),
-                    child: Container(
-                      width: 16,
-                      height: 16,
-                      color: Colors.transparent,
-                      child: Icon(
-                        (_isSummaryVisible ? Ionicons.eye_off_outline : Ionicons.eye_outline),
-                        color: primaryLight,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10,),
-                ],
+                  ],
+                ),
+              )
+            ),
+            const SizedBox(width: 10,),
+            InkWell(
+              onTap: (() {
+                setState(() {
+                  _isSummaryVisible = !_isSummaryVisible;
+                });
+              }),
+              child: Container(
+                width: 16,
+                height: 16,
+                color: Colors.transparent,
+                child: Icon(
+                  (_isSummaryVisible ? Ionicons.eye_off_outline : Ionicons.eye_outline),
+                  color: primaryLight,
+                  size: 16,
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10,),
+          ],
+        ),
       ),
     );
   }

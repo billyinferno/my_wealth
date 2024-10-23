@@ -92,7 +92,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late List<PerformanceData> _indexDataMonthly;
   late List<PerformanceData> _indexDataYearly;
 
-  late int _totalData;
   late String _graphSelection;
   late DateFormat _dateFormat;
   late double _gainDifference;
@@ -108,7 +107,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _totalRealised = 0;
     _totalUnrealised = 0;
     _totalPotentialPL = 0;
-    _totalData = 0;
 
     _perfData = [];
     _perfData90D = [];
@@ -253,77 +251,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              color: riskColor(
-                value: _totalValue,
-                cost: _totalCost,
-                riskFactor: _userInfo.risk
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          )
-                        )
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "COST", value: _totalCost),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "VALUE", value: _totalValue),
-                            ],
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
-                            ],
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "MIN (${_perfData.length})", value: _min, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "MAX (${_perfData.length})", value: _max, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "AVERAGE (${_perfData.length})", value: _avg, needColor: true),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _summaryBoxInfo(),
             const SizedBox(height: 10,),
             SizedBox(
               width: double.infinity,
@@ -607,6 +535,72 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     );
   }
 
+  Widget _summaryBoxInfo() {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 10,
+            color: riskColor(
+              value: _totalValue,
+              cost: _totalCost,
+              riskFactor: _userInfo.risk
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: primaryDark,
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "COST", value: _totalCost),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "VALUE", value: _totalValue),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _rowItem(text: "MIN (${_perfData.length})", value: _min, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "MAX (${_perfData.length})", value: _max, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "AVERAGE (${_perfData.length})", value: _avg, needColor: true),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _showChart() {
     // check if we have data or not?
     if (_perfData.isEmpty) {
@@ -703,9 +697,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
           perfData['crypto'] = resp;
         }),
       ]).then((_) {
-        // set the total data as 0
-        _totalData = 0;
-
         // temporaty performance data map
         Map<DateTime, SummaryPerformanceModel> tmpSummaryPerfData = {};
         Map<DateTime, bool> mapDates = {};
@@ -884,22 +875,6 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
     // set which max and min data
     _changeGraphSelection();
-
-    _totalData = _perfData.length;
-    if (_totalData > 0) {
-      _max = max;
-      _min = min;
-      _avg = avg / (_totalData - 1);
-      _maxPL = plDiffMax;
-      _minPL = plDiffMin;
-    }
-    else {
-      _max = 0;
-      _min = 0;
-      _avg = 0;
-      _maxPL = 0;
-      _minPL = 0;
-    }
 
     return true;
   }

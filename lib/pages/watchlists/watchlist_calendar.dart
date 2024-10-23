@@ -131,25 +131,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   }
 
   Widget _generatePage() {
-    Color color = textPrimary;
-    IconData iconToUsed = Ionicons.remove_outline;
-    double? avgPrice;
-
-    // get the icon and color that we will used on the page
-    if (_watchlistComputation.priceDiff > 0) {
-      color = Colors.green;
-      iconToUsed = Ionicons.caret_up;
-    }
-    else if (_watchlistComputation.priceDiff < 0) {
-      color = secondaryColor;
-      iconToUsed = Ionicons.caret_down;
-    }
-
-    // check whether we need to calculate the average price or not?
-    if (_watchlistComputation.totalCurrentShares > 0 ) {
-      avgPrice = _watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares;
-    }
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -183,143 +164,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              color: _watchlistComputation.riskColor,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      color: primaryDark,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            _watchlistArgs.watchList.watchlistCompanyName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    formatCurrencyWithNull(
-                                      _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
-                                      shorten: false,
-                                      decimalNum: 2
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  Icon(
-                                    iconToUsed,
-                                    color: color,
-                                    size: 15,
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: color,
-                                          width: 2.0,
-                                          style: BorderStyle.solid,
-                                        )
-                                      )
-                                    ),
-                                    child: Text(
-                                      formatCurrencyWithNull(
-                                        _watchlistComputation.priceDiff,
-                                        shorten: false,
-                                        decimalNum: 2
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const Expanded(child: SizedBox()),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  const Icon(
-                                    Ionicons.time_outline,
-                                    color: primaryLight,
-                                    size: 15,
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  Text(
-                                    Globals.dfddMMyyyy.formatDateWithNull(
-                                      _watchlistArgs.watchList.watchlistCompanyLastUpdate
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              RowChild(
-                                headerText: "AVG PRICE",
-                                value: avgPrice
-                              ),
-                              const SizedBox(width: 10,),
-                              RowChild(
-                                headerText: "COST",
-                                value: _watchlistComputation.totalCost
-                              ),
-                              const SizedBox(width: 10,),
-                              RowChild(
-                                headerText: "VALUE",
-                                value: _watchlistComputation.totalValue
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              RowChild(
-                                headerText: "SHARES",
-                                value: _watchlistComputation.totalCurrentShares,
-                              ),
-                              const SizedBox(width: 10,),
-                              RowChild(
-                                headerText: "UNREALISED",
-                                value: _watchlistComputation.totalUnrealisedGain,
-                                autoColor: true,
-                              ),
-                              const SizedBox(width: 10,),
-                              RowChild(
-                                headerText: "REALISED",
-                                value: _watchlistComputation.totalRealisedGain,
-                                autoColor: true,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _summaryBoxInfo(),
             const SizedBox(height: 15,),
             Expanded(
               child: SingleChildScrollView(
@@ -364,6 +209,166 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _summaryBoxInfo() {
+    Color color = textPrimary;
+    IconData iconToUsed = Ionicons.remove_outline;
+    double? avgPrice;
+
+    // get the icon and color that we will used on the page
+    if (_watchlistComputation.priceDiff > 0) {
+      color = Colors.green;
+      iconToUsed = Ionicons.caret_up;
+    }
+    else if (_watchlistComputation.priceDiff < 0) {
+      color = secondaryColor;
+      iconToUsed = Ionicons.caret_down;
+    }
+
+    // check whether we need to calculate the average price or not?
+    if (_watchlistComputation.totalCurrentShares > 0 ) {
+      avgPrice = _watchlistComputation.totalCost / _watchlistComputation.totalCurrentShares;
+    }
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 10,
+            color: _watchlistComputation.riskColor,
+          ),
+          Expanded(
+            child: Container(
+              color: primaryDark,
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _watchlistArgs.watchList.watchlistCompanyName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            formatCurrencyWithNull(
+                              _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                              shorten: false,
+                              decimalNum: 2
+                            ),
+                          ),
+                          const SizedBox(width: 5,),
+                          Icon(
+                            iconToUsed,
+                            color: color,
+                            size: 15,
+                          ),
+                          const SizedBox(width: 5,),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: color,
+                                  width: 2.0,
+                                  style: BorderStyle.solid,
+                                )
+                              )
+                            ),
+                            child: Text(
+                              formatCurrencyWithNull(
+                                _watchlistComputation.priceDiff,
+                                shorten: false,
+                                decimalNum: 2
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const Expanded(child: SizedBox()),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Icon(
+                            Ionicons.time_outline,
+                            color: primaryLight,
+                            size: 15,
+                          ),
+                          const SizedBox(width: 5,),
+                          Text(
+                            Globals.dfddMMyyyy.formatDateWithNull(
+                              _watchlistArgs.watchList.watchlistCompanyLastUpdate
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      RowChild(
+                        headerText: "AVG PRICE",
+                        value: avgPrice
+                      ),
+                      const SizedBox(width: 10,),
+                      RowChild(
+                        headerText: "COST",
+                        value: _watchlistComputation.totalCost
+                      ),
+                      const SizedBox(width: 10,),
+                      RowChild(
+                        headerText: "VALUE",
+                        value: _watchlistComputation.totalValue
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      RowChild(
+                        headerText: "SHARES",
+                        value: _watchlistComputation.totalCurrentShares,
+                      ),
+                      const SizedBox(width: 10,),
+                      RowChild(
+                        headerText: "UNREALISED",
+                        value: _watchlistComputation.totalUnrealisedGain,
+                        autoColor: true,
+                      ),
+                      const SizedBox(width: 10,),
+                      RowChild(
+                        headerText: "REALISED",
+                        value: _watchlistComputation.totalRealisedGain,
+                        autoColor: true,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

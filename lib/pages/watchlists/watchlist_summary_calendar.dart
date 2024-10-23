@@ -150,65 +150,7 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              color: riskColor(
-                value: _totalValue,
-                cost: _totalCost,
-                riskFactor: _userInfo!.risk
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          )
-                        )
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "COST", value: _totalCost),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "VALUE", value: _totalValue),
-                            ],
-                          ),
-                          const SizedBox(height: 5,),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
-                              const SizedBox(width: 10,),
-                              _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _summaryBoxInfo(),
             const SizedBox(height: 15,),
             Expanded(
               child: SingleChildScrollView(
@@ -253,6 +195,60 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _summaryBoxInfo() {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 10,
+            color: riskColor(
+              value: _totalValue,
+              cost: _totalCost,
+              riskFactor: _userInfo!.risk
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              color: primaryDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _rowItem(text: "DAY GAIN", value: _totalDayGain, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "COST", value: _totalCost),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "VALUE", value: _totalValue),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      _rowItem(text: "UNREALISED", value: _totalUnrealised, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "REALISED", value: _totalRealised, needColor: true),
+                      const SizedBox(width: 10,),
+                      _rowItem(text: "POTENTIAL PL", value: _totalPotentialPL, needColor: true),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

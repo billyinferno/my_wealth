@@ -415,7 +415,7 @@ class LoginPageState extends State<LoginPage> {
       }
       // if -2 it means that it's a generic error
       else if (error.code == -2) {
-        _showScaffoldMessage(text: "Error processing on applicatoin");
+        _showScaffoldMessage(text: "Error processing on application");
       }
       else {
         if(error.code != 200) {
@@ -449,7 +449,7 @@ class LoginPageState extends State<LoginPage> {
       );
 
       // show generic error on application
-      _showScaffoldMessage(text: "Error processing on applicatoin");
+      _showScaffoldMessage(text: "Error processing on application");
     }
 
     // return the result of the check login to the caller
@@ -521,7 +521,7 @@ class LoginPageState extends State<LoginPage> {
         _showScaffoldMessage(text: "Unable to connect to server");
       }
       else if (error.code == -2) {
-        _showScaffoldMessage(text: "Error processing on applicatoin");
+        _showScaffoldMessage(text: "Error processing on application");
       }
       else {
         // login failed
@@ -538,7 +538,7 @@ class LoginPageState extends State<LoginPage> {
       );
 
       // show generic error on application
-      _showScaffoldMessage(text: "Error processing on applicatoin");
+      _showScaffoldMessage(text: "Error processing on application");
     }
 
     // remove the loading screen

@@ -26,26 +26,7 @@ class WatchlistSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _summaryWidget();
-  }
-
-  String _totalGain() {
-    // calculate the total gain by subtract the value and cost
-    double gain = value - cost;
-    return formatCurrency(gain);
-  }
-
-  Widget _summaryWidget() {
-    if(visibility) {
-      return _summaryWidgetVisible();
-    }
-    else {
-      return _summaryWidgetHidden();
-    }
-  }
-
-  Widget _summaryWidgetVisible() {
-    return SingleChildScrollView(
+    return IntrinsicHeight(
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -71,186 +52,123 @@ class WatchlistSummary extends StatelessWidget {
             ),
           ],
         ),
-        child: Container(
-          color: riskColor(
-            value: value,
-            cost: cost,
-            riskFactor: riskFactor
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(
-                width: 10,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 10,
+              color: (visibility ? riskColor(
+                  value: value,
+                  cost: cost,
+                  riskFactor: riskFactor
+                ) : Colors.white
               ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  color: primaryDark,
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "TOTAL GAIN",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                ),
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    _totalGain(),
-                                    style: const TextStyle(
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.bold,
-                                      height: 0.9,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  Visibility(
-                                    visible: (cost > 0),
-                                    child: Text(
-                                      "(${formatDecimalWithNull(
-                                        (cost > 0 ? (value - cost) / cost : 0),
-                                        times: 100,
-                                        decimal: 2
-                                      )}%)",
-                                      style: TextStyle(
-                                        color: riskColor(
-                                          value: value,
-                                          cost: cost,
-                                          riskFactor: riskFactor
-                                        ),
-                                      ),
-                                    )
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 10,),
-                          IconButton(
-                            onPressed: (() {
-                              onVisibilityPress();
-                            }),
-                            icon: const Icon(
-                              Ionicons.eye_off_outline,
-                              size: 15,
-                              color: primaryLight,
-                            )
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 5,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          WatchlistSummaryInfo(text: "DAY GAIN", amount: dayGain),
-                          const SizedBox(width: 10,),
-                          WatchlistSummaryInfo(text: "VALUE", amount: value),
-                          const SizedBox(width: 10,),
-                          WatchlistSummaryInfo(text: "COST", amount: cost),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _summaryWidgetHidden() {
-    return Container(
-      color: Colors.white,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: primaryDark,
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      const Column(
+            ),
+            Expanded(
+              child: Container(
+                color: primaryDark,
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(
+                          const Text(
                             "TOTAL GAIN",
                             style: TextStyle(
                               fontSize: 10,
                             ),
                           ),
-                          Text(
-                            "****",
-                            style: TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.bold,
-                              height: 0.9,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                _totalGain(),
+                                style: const TextStyle(
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.bold,
+                                  height: 0.9,
+                                ),
+                              ),
+                              const SizedBox(width: 5,),
+                              Visibility(
+                                visible: (cost > 0 && visibility),
+                                child: Text(
+                                  "(${formatDecimalWithNull(
+                                    (cost > 0 ? (value - cost) / cost : 0),
+                                    times: 100,
+                                    decimal: 2
+                                  )}%)",
+                                  style: TextStyle(
+                                    color: riskColor(
+                                      value: value,
+                                      cost: cost,
+                                      riskFactor: riskFactor
+                                    ),
+                                  ),
+                                )
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              WatchlistSummaryInfo(
+                                text: "DAY GAIN",
+                                amount: dayGain,
+                                visibility: visibility,
+                              ),
+                              const SizedBox(width: 10,),
+                              WatchlistSummaryInfo(
+                                text: "VALUE",
+                                amount: value,
+                                visibility: visibility,
+                              ),
+                              const SizedBox(width: 10,),
+                              WatchlistSummaryInfo(
+                                text: "COST",
+                                amount: cost,
+                                visibility: visibility,
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(width: 10,),
-                      IconButton(
-                        onPressed: (() {
-                          onVisibilityPress();
-                        }),
-                        icon: const Icon(
-                          Ionicons.eye_outline,
-                          size: 15,
-                          color: primaryLight,
-                        )
+                    ),
+                    IconButton(
+                      onPressed: (() {
+                        onVisibilityPress();
+                      }),
+                      icon: const Icon(
+                        Ionicons.eye_off_outline,
+                        size: 15,
+                        color: primaryLight,
                       )
-                    ],
-                  ),
-                  const SizedBox(height: 10,),
-                  const Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      WatchlistSummaryInfo(text: "DAY GAIN", amount: null),
-                      SizedBox(width: 10,),
-                      WatchlistSummaryInfo(text: "VALUE", amount: null),
-                      SizedBox(width: 10,),
-                      WatchlistSummaryInfo(text: "COST", amount: null),
-                    ],
-                  )
-                ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  String _totalGain() {
+    if (visibility) {
+      // calculate the total gain by subtract the value and cost
+      double gain = value - cost;
+      return formatCurrency(gain);
+    }
+    return "****";
   }
 }

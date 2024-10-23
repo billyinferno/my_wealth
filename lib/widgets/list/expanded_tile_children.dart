@@ -10,6 +10,7 @@ class ExpandedTileChildren extends StatelessWidget {
   final double averagePrice;
   final int risk;
   final bool calculateLoss;
+  final bool visibility;
 
   const ExpandedTileChildren(
       {super.key,
@@ -21,6 +22,7 @@ class ExpandedTileChildren extends StatelessWidget {
       required this.averagePrice,
       required this.risk,
       required this.calculateLoss,
+      required this.visibility,
     });
 
   @override
@@ -35,76 +37,86 @@ class ExpandedTileChildren extends StatelessWidget {
       rColor = Colors.black;
     }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          width: 5,
-          height: 16,
-          color: (shares > 0 ? rColor : Colors.blue),
-        ),
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Text(
-            date,
-            style: const TextStyle(
-              fontSize: 10,
-            ),
-          )
-        ),
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Text(
-            formatDecimal(
-              (shares > 0 ? (isInLot ? shares / 100 : shares) : ((isInLot ? shares / 100 : shares) * -1)),
-              decimal: 2,
-            ),
-            style: const TextStyle(
-              fontSize: 10,
-            ),
-            overflow: TextOverflow.ellipsis,
-          )
-        ),
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              formatCurrency(price),
-              style: const TextStyle(
-                fontSize: 10,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          )
-        ),
-        const SizedBox(width: 10,),
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 5,
+            color: (visibility ? (shares > 0 ? rColor : Colors.blue) : Colors.white),
+          ),
+          Expanded(
             child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: (shares > 0 ? rColor : Colors.blue),
-                    width: 2.0,
-                    style: BorderStyle.solid,
-                  )
-                )
-              ),
-              child: Text(
-                (calculateLoss ? (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(averagePrice * (shares * -1))) : "-"),
-                style: const TextStyle(
-                  fontSize: 10,
-                ),
-                overflow: TextOverflow.ellipsis,
+              padding: const EdgeInsets.fromLTRB(10, 0, 35, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      date,
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    )
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Text(
+                      formatDecimal(
+                        (shares > 0 ? (isInLot ? shares / 100 : shares) : ((isInLot ? shares / 100 : shares) * -1)),
+                        decimal: 2,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        formatCurrency(price),
+                        style: const TextStyle(
+                          fontSize: 10,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: (shares > 0 ? rColor : Colors.blue),
+                              width: 2.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: Text(
+                          (calculateLoss ? (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(averagePrice * (shares * -1))) : "-"),
+                          style: const TextStyle(
+                            fontSize: 10,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    )
+                  ),
+                ],
               ),
             ),
-          )
-        ),
-        const SizedBox(width: 35,),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

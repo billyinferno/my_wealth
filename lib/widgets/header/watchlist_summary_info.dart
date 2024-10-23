@@ -3,8 +3,20 @@ import 'package:my_wealth/_index.g.dart';
 
 class WatchlistSummaryInfo extends StatelessWidget {
   final String text;
+  final double textSize;
   final double? amount;
-  const WatchlistSummaryInfo({ super.key, required this.text, this.amount });
+  final double amountSize;
+  final bool visibility;
+  final double topPadding;
+  const WatchlistSummaryInfo({
+    super.key,
+    required this.text,
+    this.textSize = 10,
+    this.amount,
+    this.amountSize = 12,
+    this.visibility = true,
+    this.topPadding = 10,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +35,19 @@ class WatchlistSummaryInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const SizedBox(height: 10,),
+            SizedBox(height: topPadding,),
             Text(
               text,
-              style: const TextStyle(
-                fontSize: 10,
+              style: TextStyle(
+                fontSize: textSize,
               ),
             ),
-            Text(formatCurrencyWithNull(amount)),
+            Text(
+              (visibility ? formatCurrencyWithNull(amount) : "-"),
+              style: TextStyle(
+                fontSize: amountSize,
+              ),
+            ),
           ],
         ),
       ),

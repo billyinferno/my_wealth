@@ -8,10 +8,10 @@ class ExpandedTileView extends StatelessWidget {
   final bool isVisible;
   final WatchlistListModel watchlist;
   final ComputeWatchlistResult watchlistResult;
-  final String? shareTitle;
-  final bool? checkThousandOnPrice;
+  final String shareTitle;
+  final bool checkThousandOnPrice;
   final bool showEmptyWatchlist;
-  final bool? showPriceDecimal;
+  final bool showPriceDecimal;
   const ExpandedTileView({
     super.key,
     this.showedLot,
@@ -20,10 +20,10 @@ class ExpandedTileView extends StatelessWidget {
     required this.isVisible,
     required this.watchlist,
     required this.watchlistResult,
-    this.shareTitle,
-    this.checkThousandOnPrice,
+    this.shareTitle = "Shares",
+    this.checkThousandOnPrice = false,
     required this.showEmptyWatchlist,
-    this.showPriceDecimal,
+    required this.showPriceDecimal,
   });
 
   @override
@@ -71,13 +71,13 @@ class ExpandedTileView extends StatelessWidget {
           buy: watchlistResult.totalBuy,
           sell: watchlistResult.totalSell,
           share: (isInLot ? watchlistResult.totalShare / 100 : watchlistResult.totalShare),
-          shareTitle: (isInLot ? "Lot" : (shareTitle ?? "Shares")),
+          shareTitle: (isInLot ? "Lot" : shareTitle),
           price: (watchlist.watchlistCompanyNetAssetValue ?? 0),
           prevPrice: watchlist.watchlistCompanyPrevPrice,
           gain: (isVisible ? watchlistResult.totalGain : null),
           lastUpdate: Globals.dfddMM.formatDateWithNull(watchlist.watchlistCompanyLastUpdate),
           riskColor: headerRiskColor,
-          checkThousandOnPrice: (checkThousandOnPrice ?? false),
+          checkThousandOnPrice: checkThousandOnPrice,
           subHeaderRiskColor: subHeaderRiskColor,
           totalDayGain: (isVisible ? watchlistResult.totalDayGain : null),
           totalValue: (isVisible ? watchlistResult.totalValue : null),
@@ -85,6 +85,8 @@ class ExpandedTileView extends StatelessWidget {
           averagePrice: (isVisible ? watchlistResult.averagePrice : null),
           fca: (watchlist.watchlistCompanyFCA ?? false),
           showDecimal: showPriceDecimal,
+          visibility: isVisible,
+          isLot: isInLot,
         ),
         initiallyExpanded: isShowedLots,
         collapsedTextColor: textPrimary,
@@ -101,6 +103,7 @@ class ExpandedTileView extends StatelessWidget {
             calculateLoss: watchlist.watchlistDetail[index].watchlistDetailDate.isSameOrBefore(
               date: checkDate,
             ),
+            visibility: isVisible,
           );
         }),
       ),

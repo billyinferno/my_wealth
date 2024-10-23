@@ -4,6 +4,14 @@ class WatchlistListArgs {
   final String type;
   final WatchlistListModel watchList;
   final double? currentShare;
+  final String shareName;
+  final bool isLot;
 
-  WatchlistListArgs({required this.type, required this.watchList, this.currentShare});
+  WatchlistListArgs({
+    required this.type,
+    required this.watchList,
+    this.currentShare,
+    this.shareName = "SHARE",
+    this.isLot = false,
+  });
 }

@@ -20,6 +20,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
   late WatchlistListArgs _watchlistArgs;
   late String _type;
   late WatchlistListModel _watchlist;
+  late double _currentShare;
   
   DateTime _selectedDate = DateTime.now();
 
@@ -29,6 +30,13 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
     _watchlistArgs = widget.watchlistArgs as WatchlistListArgs;
     _type = _watchlistArgs.type;
     _watchlist = _watchlistArgs.watchList;
+    _currentShare = (_watchlistArgs.currentShare ?? 0);
+    if (_currentShare > 0) {
+      // check whether this is in lot or not?
+      if (_watchlistArgs.isLot) {
+        _currentShare = _currentShare / 100;
+      }
+    }
   }
 
   @override
@@ -71,16 +79,16 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
             ),
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
-              title: "Shares",
+              title: _watchlistArgs.shareName.toCapitalized(),
               subTitle: formatDecimalWithNull(
-                _watchlistArgs.currentShare,
+                _currentShare,
                 decimal: 5
               ),
               hintText: formatDecimalWithNull(
-                _watchlistArgs.currentShare,
+                _currentShare,
                 decimal: 5
               ),
-              defaultPrice: _watchlistArgs.currentShare,
+              defaultPrice: _currentShare,
               decimal: 6,
             ),
             WatchlistDetailCreateTextFields(
@@ -150,6 +158,11 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
   Future<void> _addDetail() async {
     // since it sell we need to make it a negative
     double shares = (double.tryParse(_sharesController.text) ?? 0) * -1;
+    // check if shares is in lot or not?
+    if (_watchlistArgs.isLot) {
+      shares = shares * 100;
+    }
+    
     double price = (double.tryParse(_priceController.text) ?? 0);
     
     // first check if the total current shares we have is at least the same or lesser

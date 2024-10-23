@@ -71,7 +71,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
             ),
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
-              title: "Shares",
+              title: _watchlistArgs.shareName.toCapitalized(),
               decimal: 6,
             ),
             WatchlistDetailCreateTextFields(
@@ -135,6 +135,11 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
 
   Future<void> _addDetail() async {
     double shares = (double.tryParse(_sharesController.text) ?? 0);
+    // check if shares is in lot or not?
+    if (_watchlistArgs.isLot) {
+      shares = shares * 100;
+    }
+    
     double price = (double.tryParse(_priceController.text) ?? 0);
 
     if(shares > 0 && price >= 0) {

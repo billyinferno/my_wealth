@@ -319,14 +319,18 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     WatchlistDetailSummaryBox(
-                                      title: "BUY LOTS",
-                                      text: "$_totalBuy lots"
+                                      title: "BUY TIMES",
+                                      text: "$_totalBuy"
                                     ),
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(
-                                      title: "SHARES",
+                                      title: "BUY ${_watchlistArgs.shareName.toUpperCase()}",
                                       text: formatDecimal(
-                                        _totalSharesBuy,
+                                        (
+                                          _watchlistArgs.isLot ?
+                                          _totalSharesBuy / 100 :
+                                          _totalSharesBuy
+                                        ),
                                         decimal: 2
                                       )
                                     ),
@@ -343,14 +347,18 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     WatchlistDetailSummaryBox(
-                                      title: "SELL LOTS",
-                                      text: "$_totalSell lots"
+                                      title: "SELL TIMES",
+                                      text: "$_totalSell"
                                     ),
                                     const SizedBox(width: 10,),
                                     WatchlistDetailSummaryBox(
-                                      title: "SHARES",
+                                      title: "SELL ${_watchlistArgs.shareName.toUpperCase()}",
                                       text: formatDecimal(
-                                        _totalSharesSell,
+                                        (
+                                          _watchlistArgs.isLot ?
+                                          _totalSharesSell / 100 :
+                                          _totalSharesSell
+                                        ),
                                         decimal: 2
                                       )
                                     ),
@@ -404,8 +412,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           borderColor: primaryLight,
                           icon: Ionicons.add,
                           onTap: (() {
-                            WatchlistListArgs args = WatchlistListArgs(type: _type, watchList: _watchlist);
-                            Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: args);
+                            Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: _watchlistArgs);
                           })
                         ),
                         const SizedBox(width: 10,),
@@ -419,7 +426,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             WatchlistListArgs args = WatchlistListArgs(
                               type: _type,
                               watchList: _watchlist,
-                              currentShare: _totalCurrentShares
+                              currentShare: _totalCurrentShares,
+                              shareName: _watchlistArgs.shareName,
+                              isLot: _watchlistArgs.isLot,
                             );
                             Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
                           })
@@ -462,11 +471,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                         )
                       )
                     ),
-                    child: const Row(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
+                        const Expanded(
                           child: Text(
                             "Date",
                             style: TextStyle(
@@ -474,10 +483,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             ),
                           )
                         ),
-                        SizedBox(width: 10,),
+                        const SizedBox(width: 10,),
                         Expanded(
                           child: Text(
-                            "Shares",
+                            _watchlistArgs.shareName.toCapitalized(),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -485,8 +494,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             textAlign: TextAlign.right,
                           )
                         ),
-                        SizedBox(width: 10,),
-                        Expanded(
+                        const SizedBox(width: 10,),
+                        const Expanded(
                           child: Text(
                             "Price",
                             style: TextStyle(
@@ -604,7 +613,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   const SizedBox(width: 10,),
                                   Expanded(
                                     child: Text(
-                                      formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailShare),
+                                      formatCurrency(
+                                        _watchlistArgs.isLot ?
+                                        _watchlist.watchlistDetail[index].watchlistDetailShare / 100 :
+                                        _watchlist.watchlistDetail[index].watchlistDetailShare
+                                      ),
                                       style: const TextStyle(
                                         fontSize: 12,
                                       ),

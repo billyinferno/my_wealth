@@ -517,15 +517,36 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     return false;
   }
 
-  Future<void> _goFindSpecificAndGo({required String type, required int id}) async {
+  Future<void> _goFindSpecificAndGo({
+    required String type,
+    required int id
+  }) async {
     // show loading screen
     LoadingScreen.instance().show(context: context);
+
+    // get the share title, default share title will be shares
+    String shareTitle = "SHARES";
+    bool isLot = false;
+    switch (_args.type.toLowerCase()) {
+      case "crypto":
+        shareTitle = "COIN";
+        break;
+      case "gold":
+        shareTitle = "GRAM";
+        break;
+      case "saham":
+        shareTitle = "LOT";
+        isLot = true;
+        break;
+    }
 
     // get the watchlist detail data from API
     await _watchlistAPI.findSpecific(type: type, id: id).then((resp) {
       WatchlistListArgs watchlistArgs = WatchlistListArgs(
         type: _args.type,
-        watchList: resp
+        watchList: resp,
+        shareName: shareTitle,
+        isLot: isLot,
       );
 
       if (mounted) {

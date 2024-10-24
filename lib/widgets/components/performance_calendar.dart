@@ -35,8 +35,6 @@ class PerformanceCalendar extends StatelessWidget {
         return _monthYear();
       case PerformanceCalendarType.year:
         return _year();
-      default:
-        return _monthYear();
     }
   }
 

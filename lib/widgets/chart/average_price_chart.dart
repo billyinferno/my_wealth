@@ -113,11 +113,6 @@ class _AveragePriceChartState extends State<AveragePriceChart> {
                           _selectedFlexLeft = _ma30FlexLeft;
                           _selectedFlexRight = _ma30FlexRight;
                           break;
-                        default:
-                          _selectedValue = _avg;
-                          _selectedFlexLeft = _avgFlexLeft;
-                          _selectedFlexRight = _avgFlexRight;
-                          break;
                       }
                       _currentSegment = value;
                     });

@@ -172,6 +172,21 @@ class PerformanceChart extends StatelessWidget {
       }
     }
 
+    // check if data length is only 1
+    if (data.length == 1) {
+      // means we need to fake the 1st data with all 0
+      PerformanceData currData = data[0];
+      PerformanceData fakeData = PerformanceData(
+        date: currData.date.subtract(Duration(days: 1)),
+        gain: 0,
+        total: 0
+      );
+
+      data.clear();
+      data.add(fakeData);
+      data.add(currData);
+    }
+
     // check if we never set min before
     if (min == double.infinity) {
       min = 0;

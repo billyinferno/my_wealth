@@ -37,7 +37,6 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late List<PerformanceData> _indexDataYearly;
 
   late CompanyDetailArgs _companyArgs;
-  // TODO: to calculate min, max, avg for each date selection
   late double _max;
   late double _min;
   late double _avg;

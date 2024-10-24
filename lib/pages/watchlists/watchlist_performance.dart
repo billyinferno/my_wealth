@@ -43,7 +43,32 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late double _avg;
   late double _maxPL;
   late double _minPL;
-  late int _totalData;
+
+  late double _max90;
+  late double _min90;
+  late double _max90PL;
+  late double _min90PL;
+  late double _avg90;
+  late double _gainDiff90;
+  late double _maxDaily;
+  late double _minDaily;
+  late double _maxDailyPL;
+  late double _minDailyPL;
+  late double _avgDaily;
+  late double _gainDiffDaily;
+  late double _maxMonthly;
+  late double _minMonthly;
+  late double _maxMonthlyPL;
+  late double _minMonthlyPL;
+  late double _avgMonthly;
+  late double _gainDiffMonthly;
+  late double _maxYearly;
+  late double _minYearly;
+  late double _maxYearlyPL;
+  late double _minYearlyPL;
+  late double _avgYearly;
+  late double _gainDiffYearly;
+
   late String _graphSelection;
   late DateFormat _dateFormat;
   late double _gainDifference;
@@ -204,31 +229,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                   setState(() {
                     _graphSelection = selectedValue;
             
-                    switch(_graphSelection) {
-                      case "9":
-                        _watchlistPerformance = _watchlistPerformance90Day.toList();
-                        _indexData = _indexData90D.toList();
-                        _dateFormat = Globals.dfddMM;
-                        break;
-                      case "m":
-                        _watchlistPerformance = _watchlistPerformanceMonth.toList();
-                        _indexData = _indexDataMonthly.toList();
-                        _dateFormat = Globals.dfMMyy;
-                        break;
-                      case "y":
-                        _watchlistPerformance = _watchlistPerformanceYear.toList();
-                        _indexData = _indexDataYearly.toList();
-                        _dateFormat = Globals.dfMMyy;
-                        break;
-                      default:
-                        _watchlistPerformance = _watchlistPerformanceDaily.toList();
-                        _indexData = _indexDataDaily.toList();
-                        _dateFormat = Globals.dfddMM;
-                        break;
-                    }
-            
-                    // calculate the gain difference
-                    _calculateGainDifference();
+                    _changeGraphSelection();
                   });
                 }),
                 groupValue: _graphSelection,
@@ -646,19 +647,19 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       RowChild(
-                        headerText: "MAX",
+                        headerText: "MAX (${_watchlistPerformance.length})",
                         value: _max,
                         autoColor: true,
                       ),
                       const SizedBox(width: 10,),
                       RowChild(
-                        headerText: "MIN",
+                        headerText: "MIN (${_watchlistPerformance.length})",
                         value: _min,
                         autoColor: true,
                       ),
                       const SizedBox(width: 10,),
                       RowChild(
-                        headerText: "AVERAGE",
+                        headerText: "AVERAGE (${_watchlistPerformance.length})",
                         value: _avg,
                         autoColor: true,
                       ),
@@ -738,94 +739,12 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
         // now check which one is being selected by user
         _watchlistPerformance = [];
-        switch(_graphSelection) {
-          case "9":
-            if (_watchlistPerformance90Day.isNotEmpty) {
-              _watchlistPerformance = _watchlistPerformance90Day.toList();
-            }
-            break;
-          case "m":
-            if (_watchlistPerformanceMonth.isNotEmpty) {
-              _watchlistPerformance = _watchlistPerformanceMonth.toList();
-            }
-            break;
-          case "y":
-            if (_watchlistPerformanceYear.isNotEmpty) {
-              _watchlistPerformance = _watchlistPerformanceYear.toList();
-            }
-            break;
-          default:
-            _watchlistPerformance = [];
-            break;
-        }
-
-        // calculate the gain difference
-        _calculateGainDifference();
 
         // get the maximum and minimum
-        _totalData = 0;
-        
-        double max = double.infinity * (-1);
-        double min = double.infinity;
-        double avg = 0;
-        double pl = 0;
-        double plDiffMin = double.infinity;
-        double plDiffMax = double.infinity * (-1);
-        double? plBefore;
-        double? plDiff;
+        _calculateMinMax();
 
-        for(int i=0; i < _watchlistPerformance.length; i++) {
-          WatchlistPerformanceModel dt = _watchlistPerformance[i];
-
-          // check if we got the data or not?
-          if (dt.buyTotal > 0) {
-
-            // got data, so now check if this is max or not
-            _totalData++;
-
-            pl = (dt.buyTotal * dt.currentPrice) - (dt.buyTotal * dt.buyAvg);
-
-            // check if this is first PL or not?
-            if (plBefore == null) {
-              plBefore = pl;
-            }
-            else {
-              plDiff = pl - plBefore;
-
-              // check if this is plDiffMax or plDiffMin
-              if (plDiff > plDiffMax) {
-                plDiffMax = plDiff;
-              }
-
-              if (plDiff < plDiffMin) {
-                plDiffMin = plDiff;
-              }
-
-              // set plBefore to pl
-              plBefore = pl;
-            }
-
-            // check if this is min or max?
-            if (pl > max) {
-              max = pl;
-            }
-
-            if (pl < min) {
-              min = pl;
-            }
-
-            // add for the average
-            avg = avg + pl;
-          }
-        }
-
-        if (_totalData > 0) {
-          _max = max;
-          _min = min;
-          _avg = avg / _totalData;
-          _maxPL = plDiffMax;
-          _minPL = plDiffMin;
-        }
+        // change the graph selection
+        _changeGraphSelection();
       });
     }
     catch(error, stackTrace) {
@@ -901,7 +820,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     double? previousTotal;
 
     // loop thru performance daily data to get the date
-    for(WatchlistPerformanceModel dt in _watchlistPerformance) {
+    for(WatchlistPerformanceModel dt in _watchlistPerformanceDaily) {
       // check if date is in the index price or not?
       if (indexPriceMap.containsKey(dt.buyDate)) {
         // create the performance data for this
@@ -977,50 +896,175 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     // _indexDataYearly
     _indexDataMonthly = monthly.values.toList();
     _indexDataYearly = yearly.values.toList();
-
-    // now check which graph now is being showed, so we can set the correct
-    // index data
-    switch(_graphSelection) {
-      case "9":
-        _indexData = _indexData90D.toList();
-        break;
-      case "m":
-        _indexData = _indexDataMonthly.toList();
-        break;
-      case "y":
-        _indexData = _indexDataYearly.toList();
-        break;
-      default:
-        _indexData = _indexDataDaily.toList();
-        break;
-    }
   }
 
-  void _calculateGainDifference() {
+  (double, double, double, double, double, double) _calculateMinMaxData({
+    required List<WatchlistPerformanceModel> watchlistData
+  }) {
+    double min = double.infinity;
+    double max = double.negativeInfinity;
+    double minPL = double.infinity;
+    double maxPL = double.negativeInfinity;
+    double avg = 0;
+    double gainDifference = 0;
     double firstTotal = 0;
     double lastTotal = 0;
+    double prevVal = 0;
+    double currVal = 0;
+    double currentPL;
 
-    // calculate the gain difference by checking the first data of
-    // _watchlistPerfomance and the last.
-    // ensure that we have data first
-    if (_watchlistPerformance.isNotEmpty) {
-      // compute array 0 and length-1 to get the gain difference
+    for(int i=0; i < watchlistData.length; i++) {
+      currVal = (
+        watchlistData[i].currentPrice *
+        watchlistData[i].buyTotal
+      ) - watchlistData[i].buyAmount;
+
+      // check for data
+      if (min > currVal) {
+        min = currVal;
+      }
+
+      if (max < currVal) {
+        max = currVal;
+      }
+
+      // for PL gain only do after index 1 on wards
+      if (i > 0) {
+        prevVal = (
+          watchlistData[i-1].currentPrice *
+          watchlistData[i-1].buyTotal
+        ) - watchlistData[i-1].buyAmount;
+
+        currentPL = currVal - prevVal;
+
+        if (minPL > currentPL) {
+          minPL = currentPL;
+        }
+
+        if (maxPL < currentPL) {
+          maxPL = currentPL;
+        }
+      }
+    }
+
+    if (minPL == double.infinity) {
+      minPL = min;
+    }
+    if (maxPL == double.negativeInfinity) {
+      maxPL = max;
+    }
+
+    // at least have more than 1 data for the gain difference
+    if ((watchlistData.length - 1) > 0) {
       // get the first total
       firstTotal = (
-          _watchlistPerformance[0].currentPrice * _watchlistPerformance[0].buyTotal
-        ) - _watchlistPerformance[0].buyAmount;
+        watchlistData[0].currentPrice *
+        watchlistData[0].buyTotal
+      ) - watchlistData[0].buyAmount;
 
       // calculate the last total                      
       lastTotal = (
-          _watchlistPerformance[(_watchlistPerformance.length-1)].currentPrice *
-          _watchlistPerformance[_watchlistPerformance.length-1].buyTotal
-        ) - _watchlistPerformance[_watchlistPerformance.length-1].buyAmount;
+        watchlistData[(watchlistData.length-1)].currentPrice *
+        watchlistData[watchlistData.length-1].buyTotal
+      ) - watchlistData[watchlistData.length-1].buyAmount;
 
-      _gainDifference = lastTotal - firstTotal;
+      gainDifference = lastTotal - firstTotal;
+      avg = gainDifference / watchlistData.length;
     }
     else {
-      // if watchlist is empty, then defaulted to 0
-      _gainDifference = 0;
+      gainDifference = (
+        watchlistData[0].currentPrice *
+        watchlistData[0].buyTotal
+      ) - watchlistData[0].buyAmount;
+      avg = gainDifference;
+    }
+
+    return (min, max, minPL, maxPL, avg, gainDifference);
+  }
+
+  void _calculateMinMax() {
+    double min, max, minPL, maxPL, avg, gainDiff;
+
+    // initialize all the max and min PL
+    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformance90Day);
+    _min90 = min;
+    _max90 = max;
+    _min90PL = minPL;
+    _max90PL = maxPL;
+    _avg90 = avg;
+    _gainDiff90 = gainDiff;
+
+    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformanceDaily);
+    _minDaily = min;
+    _maxDaily = max;
+    _minDailyPL = minPL;
+    _maxDailyPL = maxPL;
+    _avgDaily = avg;
+    _gainDiffDaily = gainDiff;
+
+    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformanceMonth);
+    _minMonthly = min;
+    _maxMonthly = max;
+    _minMonthlyPL = minPL;
+    _maxMonthlyPL = maxPL;
+    _avgMonthly = avg;
+    _gainDiffMonthly = gainDiff;
+
+    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformanceYear);
+    _minYearly = min;
+    _maxYearly = max;
+    _minYearlyPL = minPL;
+    _maxYearlyPL = maxPL;
+    _avgYearly = avg;
+    _gainDiffYearly = gainDiff;
+  }
+
+  void _changeGraphSelection() {
+    switch(_graphSelection) {
+      case "9":
+        _max = _max90;
+        _min = _min90;
+        _avg = _avg90;
+        _maxPL = _max90PL;
+        _minPL = _min90PL;
+        _gainDifference = _gainDiff90;
+        _watchlistPerformance = _watchlistPerformance90Day.toList();
+        _indexData = _indexData90D.toList();
+        _dateFormat = Globals.dfddMM;
+        break;
+      case "m":
+        _max = _maxMonthly;
+        _min = _minMonthly;
+        _avg = _avgMonthly;
+        _maxPL = _maxMonthlyPL;
+        _minPL = _minMonthlyPL;
+        _gainDifference = _gainDiffMonthly;
+        _watchlistPerformance = _watchlistPerformanceMonth.toList();
+        _indexData = _indexDataMonthly.toList();
+        _dateFormat = Globals.dfMMyy;
+        break;
+      case "y":
+        _max = _maxYearly;
+        _min = _minYearly;
+        _avg = _avgYearly;
+        _maxPL = _maxYearlyPL;
+        _minPL = _minYearlyPL;
+        _gainDifference = _gainDiffYearly;
+        _watchlistPerformance = _watchlistPerformanceYear.toList();
+        _indexData = _indexDataYearly.toList();
+        _dateFormat = Globals.dfMMyy;
+        break;
+      default:
+        _max = _maxDaily;
+        _min = _minDaily;
+        _avg = _avgDaily;
+        _maxPL = _maxDailyPL;
+        _minPL = _minDailyPL;
+        _gainDifference = _gainDiffDaily;
+        _watchlistPerformance = _watchlistPerformanceDaily.toList();
+        _indexData = _indexDataDaily.toList();
+        _dateFormat = Globals.dfddMM;
+        break;
     }
   }
 }

@@ -45,67 +45,69 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
       ),
       body: MySafeArea(
         child: Container(
-          padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
+          padding: const EdgeInsets.fromLTRB(25, 10, 25, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text("Current risk factor is "),
-                  Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Colors.green,
-                          width: 2.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
+              UserButton(
+                icon: Ionicons.warning_outline,
+                text: "Risk Factor (Current: ${_userInfo!.risk}%)",
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
                     ),
-                    child: Text(
-                      "${_userInfo!.risk}%",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                  )
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text(
+                      "Change risk factor to:",
+                      style: TextStyle(
+                        fontSize: 10,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10,),
-              const Text("Change risk factor to:"),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Slider(
-                      value: _riskValue,
-                      onChanged: ((value) {
-                        setState(() {
-                          _riskValue = value.toInt().toDouble();
-                        });
-                      }),
-                      min: 5,
-                      max: 100,
-                      divisions: 95,
-                      label: _riskValue.toInt().toString(),
-                      activeColor: accentColor,
-                      inactiveColor: textPrimary,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            value: _riskValue,
+                            onChanged: ((value) {
+                              setState(() {
+                                _riskValue = value.toInt().toDouble();
+                              });
+                            }),
+                            min: 5,
+                            max: 100,
+                            divisions: 95,
+                            label: _riskValue.toInt().toString(),
+                            activeColor: secondaryColor,
+                            inactiveColor: textPrimary,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 45,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text("$_riskValue%")
+                          )
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    width: 45,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text("$_riskValue%")
-                    )
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 25,),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -114,6 +116,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                     icon: Ionicons.save,
                     text: "Save",
                     color: secondaryColor,
+                    activeColor: secondaryDark,
                     onTap: (() async {
                       // check if the current value and slide value for risk factor
                       // is the same or not?

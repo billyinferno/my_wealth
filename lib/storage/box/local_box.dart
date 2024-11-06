@@ -61,7 +61,7 @@ class LocalBox {
     }
 
     // put the key and string value to the keyBox
-    _keyBox!.put(key, value);
+    await _keyBox!.put(key, value);
   }
 
   static String? getString({required String key}) {
@@ -106,7 +106,7 @@ class LocalBox {
     }
 
     // put the key and string value to the keyBox
-    _encryptedBox!.put(key, value);
+    await _encryptedBox!.put(key, value);
   }
 
   static String? getSecuredString({
@@ -137,7 +137,7 @@ class LocalBox {
         // check if this is "key", if so don't delete this so we can still
         // open the encrypted box later on
         if(key.toString().toLowerCase() != "key") {
-          _keyBox!.delete(key);
+          await _keyBox!.delete(key);
         }
       }
 
@@ -149,7 +149,7 @@ class LocalBox {
     if (_encryptedBox != null) {
       Iterable<dynamic> secureKeys = _encryptedBox!.keys;
       for(var secureKey in secureKeys) {
-        _encryptedBox!.delete(secureKey);
+        await _encryptedBox!.delete(secureKey);
       }
     }
   }
@@ -164,7 +164,7 @@ class LocalBox {
         // check if we can find the key on the key box or not?
         if (_keyBox!.containsKey(key)) {
           // delete the ke
-          _keyBox!.delete(key);
+          await _keyBox!.delete(key);
         }
       }
       else {
@@ -176,7 +176,7 @@ class LocalBox {
           String strKey = boxKey.toString();
           if(strKey.contains(key)) {
             // delete this record
-            _keyBox!.delete(boxKey);
+            await _keyBox!.delete(boxKey);
           }
         }
       }

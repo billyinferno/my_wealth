@@ -495,7 +495,9 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
       case "saham":
         return 3;
       default:
-        return (index % Globals.colorList.length);
+        // check if we can find it on globals or not?
+        // if not showed random color based on index
+        return (Globals.sectorIndex[name] ?? (index % Globals.colorList.length));
     }
   }
 

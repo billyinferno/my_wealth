@@ -139,6 +139,21 @@ class Globals {
     "Transportasi & Logistik":LucideIcons.forklift,
   };
 
+  static Map<String, int> sectorIndex = {
+    "Barang Baku":0,
+    "Barang Konsumen Non-Primer":1,
+    "Barang Konsumen Primer":2,
+    "Energi":3,
+    "Infrastruktur":4,
+    "Kesehatan":5,
+    "Keuangan":6,
+    "Perindustrian":7,
+    "Properti & Real Estat":8,
+    "TRADE, SERVICES, & INVESTMENT":9,
+    "Teknologi":10,
+    "Transportasi & Logistik":11,
+  };
+
   static Map<String, String> sectorName = {
     "Barang Baku":"Barang Baku",
     "Barang Konsumen Non-Primer":"Barang Konsumen Non-Primer",

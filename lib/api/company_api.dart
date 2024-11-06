@@ -5,25 +5,33 @@ class CompanyAPI {
   Future<List<CompanyListModel>> findCompany({
     required String type
   }) async {
-    // get the company data using netutils
-    final String body = await NetUtils.get(
-      url: '${Globals.apiCompanies}/type/${type.toLowerCase()}'
-    ).onError((error, stackTrace) {
-      Log.error(
-        message: 'Error on findCompany',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      throw error as NetException;
-    });
+    // first check whether we already have this company on the cache or not?
+    List<CompanyListModel> ret = CompanySharedPreferences.getCompanyList(type: type);
 
-    // parse the response to get the data and process each one
-    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
-    List<CompanyListModel> ret = [];
-    for (dynamic data in commonModel.data) {
-      // convert the attributes data to company list model
-      CompanyListModel company = CompanyListModel.fromJson(data['attributes']);
-      ret.add(company);
+    // check if ret is empty or not?
+    if (ret.isEmpty) {
+      // get the company data using netutils
+      final String body = await NetUtils.get(
+        url: '${Globals.apiCompanies}/type/${type.toLowerCase()}'
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Error on findCompany',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        throw error as NetException;
+      });
+
+      // parse the response to get the data and process each one
+      CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+      for (dynamic data in commonModel.data) {
+        // convert the attributes data to company list model
+        CompanyListModel company = CompanyListModel.fromJson(data['attributes']);
+        ret.add(company);
+      }
+
+      // stored the company list on the cache
+      CompanySharedPreferences.setCompanyList(type: type, list: ret);
     }
 
     // return the company list

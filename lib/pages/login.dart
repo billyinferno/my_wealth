@@ -993,6 +993,7 @@ class LoginPageState extends State<LoginPage> {
         Log.success(message: '🔟🔟🔟6️⃣ Get Broker Min and Max Date');
       }),
       
+      CompanySharedPreferences.clearCompanyList(), // clear company list so we can re-fetch the latest data later
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen

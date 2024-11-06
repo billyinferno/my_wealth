@@ -3,6 +3,7 @@ import 'package:my_wealth/_index.g.dart';
 
 class CompanySharedPreferences {
   static const _sectorNameListKey = "sector_name_list";
+  static const _companyListKey = "company_list_";
 
   static Future<void> setSectorNameList({
     required List<SectorNameModel> sectorNameList
@@ -40,5 +41,46 @@ class CompanySharedPreferences {
       // no data
       return [];
     }
+  }
+
+  static Future<void> setCompanyList({
+    required String type,
+    required List<CompanyListModel> list
+  }) async {
+    List<String> companyList = [];
+    for (CompanyListModel company in list) {
+      companyList.add(jsonEncode(company.toJson()));
+    }
+    await LocalBox.putStringList(
+      key: "$_companyListKey$type",
+      value: companyList
+    );
+  }
+
+  static List<CompanyListModel> getCompanyList({required String type}) {
+    // get the company list from local box
+    List<String> companyListString = (
+      LocalBox.getStringList(key: "$_companyListKey$type") ?? []
+    );
+
+    // check if the company list is empty or not?
+    if (companyListString.isNotEmpty) {
+      // process the company list string to CompanyListModel
+      List<CompanyListModel> companyList = [];
+      for (String company in companyListString) {
+        companyList.add(CompanyListModel.fromJson(jsonDecode(company)));
+      }
+
+      return companyList;
+    }
+    else {
+      return [];
+    }
+  }
+
+  static Future<void> clearCompanyList() async {
+    // clear all the company list we stored so we can re-fetch it with the
+    // latest information.
+    LocalBox.delete(key: _companyListKey);
   }
 }

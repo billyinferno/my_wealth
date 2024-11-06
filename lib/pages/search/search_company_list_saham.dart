@@ -411,6 +411,12 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
           favouritesUserId: -1,
         );
 
+        // stored update favourites company in the cache 
+        FavouritesSharedPreferences.updateFavouriteCompanyList(
+          type: "saham",
+          update: resp
+        );
+
         // update the list and re-render the page
         _updateFaveList(index, resp);
       }).onError((error, stackTrace) {
@@ -447,6 +453,12 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
           favouritesLastUpdate: resp.favouritesLastUpdate,
           favouritesId: resp.favouritesId,
           favouritesUserId: resp.favouritesUserId,
+        );
+
+        // stored update favourites company in the cache 
+        FavouritesSharedPreferences.updateFavouriteCompanyList(
+          type: "saham",
+          update: ret
         );
 
         _updateFaveList(index, ret);

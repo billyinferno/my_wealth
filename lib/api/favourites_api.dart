@@ -28,26 +28,38 @@ class FavouritesAPI {
   Future<List<FavouritesListModel>> listFavouritesCompanies({
     required String type
   }) async {
-    // get the favourites data using netutils
-    final String body = await NetUtils.get(
-      url: '${Globals.apiFavourites}/list/$type'
-    ).onError((error, stackTrace) {
-      Log.error(
-        message: 'Error on listFavouritesCompanies',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      throw error as NetException;
-    });
+    // get the list favourites from cache
+    List<FavouritesListModel> listFavourites = FavouritesSharedPreferences.getFavouriteCompanyList(type: type);
+    
+    // check if favourites is empty or not?
+    if (listFavourites.isEmpty) {
+      // get the favourites data using netutils
+      final String body = await NetUtils.get(
+        url: '${Globals.apiFavourites}/list/$type'
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Error on listFavouritesCompanies',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        throw error as NetException;
+      });
 
-    // parse the response to get user favorit list
-    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
-    List<FavouritesListModel> listFavourites = [];
-    for (var data in commonModel.data) {
-      // print(_data['attributes'].toString());
-      FavouritesListModel fave = FavouritesListModel.fromJson(data['attributes']);
-      listFavourites.add(fave);
+      // parse the response to get user favorit list
+      CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+      for (var data in commonModel.data) {
+        // print(_data['attributes'].toString());
+        FavouritesListModel fave = FavouritesListModel.fromJson(data['attributes']);
+        listFavourites.add(fave);
+      }
+
+      // save the favourites list to the local box for cache
+      FavouritesSharedPreferences.setFavouriteCompanyList(
+        type: type,
+        list: listFavourites
+      );
     }
+
     return listFavourites;
   }
 

@@ -994,6 +994,7 @@ class LoginPageState extends State<LoginPage> {
       }),
       
       CompanySharedPreferences.clearCompanyList(), // clear company list so we can re-fetch the latest data later
+      FavouritesSharedPreferences.clearFavouriteCompanyList(), // clear favourites company list
       InsightSharedPreferences.clearTopAccumulation(), // clear the topAccumulation as we will inquiry when user visit the screen
       InsightSharedPreferences.clearEps(), // clear eps result as we will inquiry when user visit the screen
       InsightSharedPreferences.clearSideway(), // clear sideway result as we will inquiry when user visit the screen

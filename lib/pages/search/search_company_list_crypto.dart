@@ -70,7 +70,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
             // fetch the user favorites when we return back to the favorites screen
             // and notify the provider to we can update the favorites screen based
             // on the new favorites being add/remove from this page
-            await getUserFavourites().onError((error, stackTrace) {
+            await _getUserFavourites().onError((error, stackTrace) {
               // in case error showed it on debug
               Log.error(
                 message: 'Error getting user favourites',
@@ -105,13 +105,13 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
                   // for crypto we can search when it matched "2", as the code usually will be at least "3"
                   if (value.length >= 2) {
                     setState(() {
-                      searchList(value);
+                      _searchList(value);
                     });
                   }
                   else {
                     // if less than 3, then we will return the value of filter list
                     // with all the fave list.
-                    setFilterList(_faveList);
+                    _setFilterList(_faveList);
                   }
                 }),
                 suffixMode: OverlayVisibilityMode.editing,
@@ -165,7 +165,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
                       isFavourite: ((_filterList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_filterList[index].favouritesFCA ?? false),
                       onPress: (() async {
-                        await setFavourite(index);
+                        await _setFavourite(index);
                       }),
                     ),
                   );
@@ -178,7 +178,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     );
   }
 
-  void searchList(String find) {
+  void _searchList(String find) {
     // clear the filter list first
     _filterList.clear();
     // then loop thru _faveList and check if the company name and symbol contain the text we want to find
@@ -190,7 +190,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     }
   }
 
-  void updateFaveList(int index, FavouritesListModel resp) {
+  void _updateFaveList(int index, FavouritesListModel resp) {
     setState(() {
       _filterList[index] = resp;
       for (var i = 0; i < _faveList.length; i++) {
@@ -203,7 +203,7 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     });
   }
 
-  Future<void> setFavourite(int index) async {
+  Future<void> _setFavourite(int index) async {
     // check if this is already favourite or not?
     int faveUserId = _filterList[index].favouritesUserId ?? -1;
     int faveId = _filterList[index].favouritesId ?? -1;
@@ -220,11 +220,19 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
           favouritesSymbol: _filterList[index].favouritesSymbol,
           favouritesCompanyType: _filterList[index].favouritesCompanyType,
           favouritesNetAssetValue: _filterList[index].favouritesNetAssetValue,
-          favouritesLastUpdate: _filterList[index].favouritesLastUpdate
+          favouritesLastUpdate: _filterList[index].favouritesLastUpdate,
+          favouritesId: -1,
+          favouritesUserId: -1,
+        );
+
+        // stored update favourites company in the cache 
+        FavouritesSharedPreferences.updateFavouriteCompanyList(
+          type: "crypto",
+          update: resp
         );
 
         // update the list and re-render the page
-        updateFaveList(index, resp);
+        _updateFaveList(index, resp);
       }).onError((error, stackTrace) {
         Log.error(
           message: 'Error deleting favourites',
@@ -242,8 +250,28 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
         type: "crypto",
       ).then((resp) {
         Log.success(message: "➕ Add Crypto company ID: ${_filterList[index].favouritesCompanyId} for company ${_filterList[index].favouritesCompanyName}");
+        
+        // create the favourite list model that we want to use to replace the
+        // favourite list
+        FavouritesListModel ret = FavouritesListModel(
+          favouritesCompanyId: _filterList[index].favouritesCompanyId,
+          favouritesCompanyName: _filterList[index].favouritesCompanyName,
+          favouritesSymbol: _filterList[index].favouritesSymbol,
+          favouritesCompanyType: _filterList[index].favouritesCompanyType,
+          favouritesNetAssetValue: _filterList[index].favouritesNetAssetValue,
+          favouritesLastUpdate: _filterList[index].favouritesLastUpdate,
+          favouritesId: resp.favouritesId,
+          favouritesUserId: resp.favouritesUserId,
+        );
+
+        // stored update favourites company in the cache 
+        FavouritesSharedPreferences.updateFavouriteCompanyList(
+          type: "crypto",
+          update: ret
+        );
+
         // update the list with the updated response and re-render the page
-        updateFaveList(index, resp);
+        _updateFaveList(index, ret);
       }).onError((error, stackTrace) {
         Log.error(
           message: 'Error adding favourites',
@@ -257,26 +285,19 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
     }
   }
 
-  void setFavouriteList(List<FavouritesListModel> list) {
+  void _setFavouriteList(List<FavouritesListModel> list) {
     setState(() {
       _faveList = List<FavouritesListModel>.from(list);
     });
   }
 
-  void setFilterList(List<FavouritesListModel> list) {
+  void _setFilterList(List<FavouritesListModel> list) {
     setState(() {
       _filterList = List<FavouritesListModel>.from(list);
     });
   }
 
-  Future<void> getFavouriteCompanyList() async {
-    await _faveAPI.listFavouritesCompanies(type: "crypto").then((resp) {
-      setFavouriteList(resp);
-      setFilterList(resp);
-    });
-  }
-
-  Future<void> getUserFavourites() async {
+  Future<void> _getUserFavourites() async {
     // show the loading screen
     LoadingScreen.instance().show(context: context);
 
@@ -304,7 +325,10 @@ class _SearchCompanyListCryptoPageState extends State<SearchCompanyListCryptoPag
   }
 
   Future<bool> _getInitData() async {
-    await getFavouriteCompanyList().onError((error, stackTrace) {
+    await _faveAPI.listFavouritesCompanies(type: "crypto").then((resp) {
+      _setFavouriteList(resp);
+      _setFilterList(resp);
+    }).onError((error, stackTrace) {
       Log.error(
         message: 'Error getting crypto company list',
         error: error,

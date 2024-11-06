@@ -439,7 +439,10 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                   // a sizedbox shrink instead.
                   if (!_showZeroProduct) {
                     // check if the product is 0
-                    if (_portofolioFiltered[index].portofolioTotalProduct <= 0) {
+                    if (
+                      _portofolioFiltered[index].portofolioTotalProduct <= 0 ||
+                      _portofolioFiltered[index].portofolioTotalShare <= 0
+                    ) {
                       return const SizedBox.shrink();
                     }
                   }

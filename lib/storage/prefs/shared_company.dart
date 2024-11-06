@@ -53,14 +53,18 @@ class CompanySharedPreferences {
     }
     await LocalBox.putStringList(
       key: "$_companyListKey$type",
-      value: companyList
+      value: companyList,
+      cache: true,
     );
   }
 
   static List<CompanyListModel> getCompanyList({required String type}) {
     // get the company list from local box
     List<String> companyListString = (
-      LocalBox.getStringList(key: "$_companyListKey$type") ?? []
+      LocalBox.getStringList(
+        key: "$_companyListKey$type",
+        cache: true
+      ) ?? []
     );
 
     // check if the company list is empty or not?
@@ -81,6 +85,6 @@ class CompanySharedPreferences {
   static Future<void> clearCompanyList() async {
     // clear all the company list we stored so we can re-fetch it with the
     // latest information.
-    LocalBox.delete(key: _companyListKey);
+    LocalBox.delete(key: _companyListKey, cache: true);
   }
 }

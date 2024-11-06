@@ -5,6 +5,7 @@ import 'package:my_wealth/_index.g.dart';
 class LocalBox {
   static Box<dynamic>? _keyBox;
   static Box<dynamic>? _encryptedBox;
+  static String _cacheKey = '__cache__';
 
   static Future<void> init() async {
     if(_keyBox == null) {
@@ -36,11 +37,15 @@ class LocalBox {
         return deletedEntries > 10;
       },);
     }
+
+    // clear the cache
+    await clearCache();
   }
 
   static Future<void> putString({
     required String key,
-    required String value
+    required String value,
+    bool cache = false,
   }) async {
     // check if keyBox still null?
     if (_keyBox == null) {
@@ -48,12 +53,13 @@ class LocalBox {
     }
 
     // put the key and string value to the keyBox
-    _keyBox!.put(key, value);
+    _keyBox!.put((cache ? "$_cacheKey$key" : key), value);
   }
 
   static Future<void> putStringList({
     required String key,
-    required List<String> value
+    required List<String> value,
+    bool cache = false,
   }) async {
     // check if keyBox still null?
     if (_keyBox == null) {
@@ -61,18 +67,21 @@ class LocalBox {
     }
 
     // put the key and string value to the keyBox
-    await _keyBox!.put(key, value);
+    await _keyBox!.put((cache ? "$_cacheKey$key" : key), value);
   }
 
-  static String? getString({required String key}) {
+  static String? getString({
+    required String key,
+    bool cache = false,
+  }) {
     // if null then return null
     if (_keyBox == null) {
       return null;
     }
     else {
       // check if contains key or not?
-      if (_keyBox!.containsKey(key)) {
-        return _keyBox!.get(key).toString();
+      if (_keyBox!.containsKey((cache ? "$_cacheKey$key" : key))) {
+        return _keyBox!.get((cache ? "$_cacheKey$key" : key)).toString();
       }
       else {
         return null;
@@ -80,15 +89,18 @@ class LocalBox {
     }
   }
 
-  static List<String>? getStringList({required String key}) {
+  static List<String>? getStringList({
+    required String key,
+    bool cache = false,
+  }) {
     // if null then return null
     if (_keyBox == null) {
       return null;
     }
     else {
       // check if contains key for the string list or not?
-      if (_keyBox!.containsKey(key)) {
-        return List<String>.from(_keyBox!.get(key));
+      if (_keyBox!.containsKey((cache ? "$_cacheKey$key" : key))) {
+        return List<String>.from(_keyBox!.get((cache ? "$_cacheKey$key" : key)));
       }
       else {
         return [];
@@ -157,14 +169,15 @@ class LocalBox {
   static Future<void> delete({
     required String key,
     bool exact = false,
+    bool cache = false,
   }) async {
     // check if key box is not null
     if (_keyBox != null) {
       if (exact) {
         // check if we can find the key on the key box or not?
-        if (_keyBox!.containsKey(key)) {
+        if (_keyBox!.containsKey((cache ? "$_cacheKey$key" : key))) {
           // delete the ke
-          await _keyBox!.delete(key);
+          await _keyBox!.delete((cache ? "$_cacheKey$key" : key));
         }
       }
       else {
@@ -174,7 +187,7 @@ class LocalBox {
         for(var boxKey in keys) {
           // check if the key is on the box key
           String strKey = boxKey.toString();
-          if(strKey.contains(key)) {
+          if(strKey.contains((cache ? "$_cacheKey$key" : key))) {
             // delete this record
             await _keyBox!.delete(boxKey);
           }
@@ -184,5 +197,10 @@ class LocalBox {
       // compact the box once finished
       await _keyBox!.compact();
     }
+  }
+
+  static Future<void> clearCache() async {
+    Log.info(message: "📦 Clearing LocalBox cache");
+    await delete(key: _cacheKey);
   }
 }

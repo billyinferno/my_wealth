@@ -57,7 +57,8 @@ class FavouritesSharedPreferences {
     // store it on local box
     await LocalBox.putStringList(
       key: "$_favouriteCompanyListKey$type",
-      value: favouritesCompanyList
+      value: favouritesCompanyList,
+      cache: true,
     );
   }
 
@@ -66,7 +67,10 @@ class FavouritesSharedPreferences {
   }) {
     // get the favourite company list from local box
     List<String> favouriteCompanyStringList = (
-      LocalBox.getStringList(key: "$_favouriteCompanyListKey$type") ?? []
+      LocalBox.getStringList(
+        key: "$_favouriteCompanyListKey$type",
+        cache: true,
+      ) ?? []
     );
 
     // check if it's empty or not?
@@ -92,7 +96,10 @@ class FavouritesSharedPreferences {
   }) async {
     // get the favourite company list from local box
     List<String> favouriteCompanyStringList = (
-      LocalBox.getStringList(key: "$_favouriteCompanyListKey$type") ?? []
+      LocalBox.getStringList(
+        key: "$_favouriteCompanyListKey$type",
+        cache: true,
+      ) ?? []
     );
 
     // check if it's empty or not?
@@ -122,6 +129,6 @@ class FavouritesSharedPreferences {
 
   static Future<void> clearFavouriteCompanyList() async {
     // clear the favourite company list
-    await LocalBox.delete(key: _favouriteCompanyListKey);
+    await LocalBox.delete(key: _favouriteCompanyListKey, cache: true);
   }
 }

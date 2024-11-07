@@ -285,17 +285,20 @@ class InsightSharedPreferences {
     // store the from and to date
     LocalBox.putString(
       key: _topAccumFromDateKey,
-      value: fromDate.toString()
+      value: fromDate.toString(),
+      cache: true,
     );
     LocalBox.putString(
       key: _topAccumToDateKey,
-      value: toDate.toString()
+      value: toDate.toString(),
+      cache: true,
     );
 
     // store the rate
     LocalBox.putString(
       key: _topAccumRateKey,
-      value: rate.toString()
+      value: rate.toString(),
+      cache: true,
     );
 
     // store the accum list
@@ -305,14 +308,15 @@ class InsightSharedPreferences {
     }
     LocalBox.putStringList(
       key: _topAccumResultKey,
-      value: strAccum
+      value: strAccum,
+      cache: true,
     );
   }
 
   static DateTime getTopAccumulationFromDate() {
     // get the data from local box
     String fromDateString = (
-      LocalBox.getString(key: _topAccumFromDateKey) ?? ''
+      LocalBox.getString(key: _topAccumFromDateKey, cache: true) ?? ''
     );
     if (fromDateString.isNotEmpty) {
       return DateTime.parse(fromDateString);
@@ -324,7 +328,7 @@ class InsightSharedPreferences {
   static DateTime getTopAccumulationToDate() {
     // get the data from local box
     String toDateString = (
-      LocalBox.getString(key: _topAccumToDateKey) ?? ''
+      LocalBox.getString(key: _topAccumToDateKey, cache: true) ?? ''
     );
     if (toDateString.isNotEmpty) {
       return DateTime.parse(toDateString);
@@ -336,7 +340,7 @@ class InsightSharedPreferences {
   static int getTopAccumulationRate() {
     // get the data from local box
     String rateString = (
-      LocalBox.getString(key: _topAccumRateKey) ?? ''
+      LocalBox.getString(key: _topAccumRateKey, cache:  true) ?? ''
     );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
@@ -349,7 +353,7 @@ class InsightSharedPreferences {
   static List<InsightAccumulationModel> getTopAccumulationResult() {
     // get the data from local box
     List<String> accumString = (
-      LocalBox.getStringList(key: _topAccumResultKey) ?? []
+      LocalBox.getStringList(key: _topAccumResultKey, cache: true) ?? []
     );
     if (accumString.isNotEmpty) {
       // loop thru the stringList
@@ -380,20 +384,37 @@ class InsightSharedPreferences {
     required List<InsightEpsModel> epsList
   }) async {
     // store the from and to date
-    LocalBox.putString(key: _epsMinRateKey, value: minRate.toString());
-    LocalBox.putString(key: _epsMinDiffRateKey, value: diffRate.toString());
+    LocalBox.putString(
+      key: _epsMinRateKey,
+      value: "$minRate",
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _epsMinDiffRateKey,
+      value: "$diffRate",
+      cache: true,
+    );
 
     // store the accum list
     List<String> strEps = [];
     for (InsightEpsModel data in epsList) {
       strEps.add(jsonEncode(data.toJson()));
     }
-    LocalBox.putStringList(key: _epsResultKey, value: strEps);
+    LocalBox.putStringList(
+      key: _epsResultKey,
+      value: strEps,
+      cache: true,
+    );
   }
 
   static int getEpsMinRate() {
     // get the data from local box
-    String rateString = (LocalBox.getString(key: _epsMinRateKey) ?? '');
+    String rateString = (
+      LocalBox.getString(
+        key: _epsMinRateKey,
+        cache: true,
+      ) ?? ''
+    );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -404,7 +425,12 @@ class InsightSharedPreferences {
 
   static int getEpsMinDiffRate() {
     // get the data from local box
-    String rateString = (LocalBox.getString(key: _epsMinDiffRateKey) ?? '');
+    String rateString = (
+      LocalBox.getString(
+        key: _epsMinDiffRateKey,
+        cache: true,
+      ) ?? ''
+    );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -415,7 +441,14 @@ class InsightSharedPreferences {
 
   static List<InsightEpsModel> getEpsResult() {
     // get the data from local box
-    List<String> epsString = (LocalBox.getStringList(key: _epsResultKey) ?? []);
+    List<String> epsString = (
+      LocalBox.getStringList(
+        key: _epsResultKey,
+        cache: true,
+      ) ?? []
+    );
+
+    // check if the result is empty or not?
     if (epsString.isNotEmpty) {
       // loop thru the stringList
       List<InsightEpsModel> epsResult = [];
@@ -445,21 +478,37 @@ class InsightSharedPreferences {
     required List<InsightSidewayModel> sidewayList
   }) async {
     // store the from and to date
-    LocalBox.putString(key: _sidewayOneDayRateKey, value: oneDay.toString());
-    LocalBox.putString(key: _sidewayAvgOneDayKey, value: avgOneDay.toString());
-    LocalBox.putString(key: _sidewayAvgOneWeekKey, value: avgOneWeek.toString());
+    LocalBox.putString(
+      key: _sidewayOneDayRateKey,
+      value: oneDay.toString(),
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _sidewayAvgOneDayKey,
+      value: avgOneDay.toString(),
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _sidewayAvgOneWeekKey,
+      value: avgOneWeek.toString(),
+      cache: true,
+    );
 
     // store the accum list
     List<String> strSideway = [];
     for (InsightSidewayModel data in sidewayList) {
       strSideway.add(jsonEncode(data.toJson()));
     }
-    LocalBox.putStringList(key: _sidewayResultKey, value: strSideway);
+    LocalBox.putStringList(
+      key: _sidewayResultKey,
+      value: strSideway,
+      cache: true,
+    );
   }
 
   static int getSidewayOneDayRate() {
     // get the data from local box
-    String rateString = (LocalBox.getString(key: _sidewayOneDayRateKey) ?? '');
+    String rateString = (LocalBox.getString(key: _sidewayOneDayRateKey, cache: true) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -470,7 +519,7 @@ class InsightSharedPreferences {
 
   static int getSidewayAvgOneDay() {
     // get the data from local box
-    String rateString = (LocalBox.getString(key: _sidewayAvgOneDayKey) ?? '');
+    String rateString = (LocalBox.getString(key: _sidewayAvgOneDayKey, cache: true) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -481,7 +530,7 @@ class InsightSharedPreferences {
 
   static int getSidewayAvgOneWeek() {
     // get the data from local box
-    String rateString = (LocalBox.getString(key: _sidewayAvgOneWeekKey) ?? '');
+    String rateString = (LocalBox.getString(key: _sidewayAvgOneWeekKey, cache: true) ?? '');
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
     }
@@ -493,7 +542,7 @@ class InsightSharedPreferences {
   static List<InsightSidewayModel> getSidewayResult() {
     // get the data from local box
     List<String> sidewaysString = (
-      LocalBox.getStringList(key: _sidewayResultKey) ?? []
+      LocalBox.getStringList(key: _sidewayResultKey, cache: true) ?? []
     );
     if (sidewaysString.isNotEmpty) {
       // loop thru the stringList
@@ -605,13 +654,13 @@ class InsightSharedPreferences {
     for (IndexBeaterModel indexBeater in indexBeaterList) {
       indexBeaterListResp.add(jsonEncode(indexBeater.toJson()));
     }
-    LocalBox.putStringList(key: _indexBeaterKey, value: indexBeaterListResp);
+    LocalBox.putStringList(key: _indexBeaterKey, value: indexBeaterListResp, cache: true);
   }
 
   static List<IndexBeaterModel> getIndexBeater() {
     // get the data from local box
     List<String> indexBeaterList = (
-      LocalBox.getStringList(key: _indexBeaterKey) ?? []
+      LocalBox.getStringList(key: _indexBeaterKey, cache: true) ?? []
     );
 
     // check if the list is empty or not?
@@ -754,15 +803,21 @@ class InsightSharedPreferences {
     // store the from and to date
     LocalBox.putString(
       key: _stockCollectFromDateKey,
-      value: fromDate.toString()
+      value: fromDate.toString(),
+      cache: true,
     );
     LocalBox.putString(
       key: _stockCollectToDateKey,
-      value: toDate.toString()
+      value: toDate.toString(),
+      cache: true,
     );
 
     // store the rate
-    LocalBox.putString(key: _stockCollectAccumRateKey, value: rate.toString());
+    LocalBox.putString(
+      key: _stockCollectAccumRateKey,
+      value: rate.toString(),
+      cache: true,
+    );
 
     // convert the json to string so we can stored it on the local storage
     List<String> stockCollectResp = [];
@@ -772,13 +827,14 @@ class InsightSharedPreferences {
     LocalBox.putStringList(
       key: _stockCollectKey,
       value: stockCollectResp,
+      cache: true,
     );
   }
 
   static List<InsightStockCollectModel> getStockCollect() {
     // get the data from local box
     List<String> stockCollectList = (
-      LocalBox.getStringList(key: _stockCollectKey) ?? []
+      LocalBox.getStringList(key: _stockCollectKey, cache: true) ?? []
     );
 
     // check if the list is empty or not?
@@ -804,11 +860,11 @@ class InsightSharedPreferences {
     String dateString = '';
     switch(type.toLowerCase()) {
       case 'to':
-        dateString = (LocalBox.getString(key: _stockCollectToDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _stockCollectToDateKey, cache: true) ?? '');
         break;
       case 'from':
       default:
-        dateString = (LocalBox.getString(key: _stockCollectFromDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _stockCollectFromDateKey, cache: true) ?? '');
         break;
     }
     
@@ -822,7 +878,7 @@ class InsightSharedPreferences {
   static int getStockCollectAccumulationRate() {
     // get the data from local box
     String rateString = (
-      LocalBox.getString(key: _stockCollectAccumRateKey) ?? ''
+      LocalBox.getString(key: _stockCollectAccumRateKey, cache: true) ?? ''
     );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);
@@ -850,36 +906,41 @@ class InsightSharedPreferences {
     // store the broker id
     LocalBox.putString(
       key: _brokerCollectIDKey,
-      value: brokerId
+      value: brokerId,
+      cache: true,
     );
 
     // store the from and to date
     LocalBox.putString(
       key: _brokerCollectFromDateKey,
-      value: fromDate.toString()
+      value: fromDate.toString(),
+      cache: true,
     );
     LocalBox.putString(
       key: _brokerCollectToDateKey,
-      value: toDate.toString()
+      value: toDate.toString(),
+      cache: true,
     );
 
     // store the rate
     LocalBox.putString(
       key: _brokerCollectAccumRateKey,
-      value: rate.toString()
+      value: rate.toString(),
+      cache: true,
     );
 
     // convert the json to string so we can stored it on the local storage
     LocalBox.putString(
       key: _brokerCollectKey,
-      value: jsonEncode(brokerCollectList.toJson())
+      value: jsonEncode(brokerCollectList.toJson()),
+      cache: true,
     );
   }
 
   static InsightBrokerCollectModel? getBrokerCollect() {
     // get the data from local box
     String brokerCollectString = (
-      LocalBox.getString(key: _brokerCollectKey) ?? ''
+      LocalBox.getString(key: _brokerCollectKey, cache: true,) ?? ''
     );
 
     // check if the list is empty or not?
@@ -896,7 +957,7 @@ class InsightSharedPreferences {
 
   static String getBrokerCollectID() {
     // get the data from local box
-    String brokerId = (LocalBox.getString(key: _brokerCollectIDKey) ?? '');
+    String brokerId = (LocalBox.getString(key: _brokerCollectIDKey, cache: true,) ?? '');
     if (brokerId.isNotEmpty) {
       return brokerId;
     }
@@ -909,11 +970,11 @@ class InsightSharedPreferences {
     String dateString = '';
     switch(type.toLowerCase()) {
       case 'to':
-        dateString = (LocalBox.getString(key: _brokerCollectToDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _brokerCollectToDateKey, cache: true,) ?? '');
         break;
       case 'from':
       default:
-        dateString = (LocalBox.getString(key: _brokerCollectFromDateKey) ?? '');
+        dateString = (LocalBox.getString(key: _brokerCollectFromDateKey, cache: true,) ?? '');
         break;
     }
     
@@ -927,7 +988,7 @@ class InsightSharedPreferences {
   static int getBrokerCollectAccumulationRate() {
     // get the data from local box
     String rateString = (
-      LocalBox.getString(key: _brokerCollectAccumRateKey) ?? ''
+      LocalBox.getString(key: _brokerCollectAccumRateKey, cache: true,) ?? ''
     );
     if (rateString.isNotEmpty) {
       return int.parse(rateString);

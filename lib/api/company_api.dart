@@ -89,25 +89,34 @@ class CompanyAPI {
   Future<List<CompanySearchModel>> getCompanyList({
     required String type
   }) async {
-    // get the company data using netutils
-    final String body = await NetUtils.get(
-      url: '${Globals.apiCompanies}/list/$type'
-    ).onError((error, stackTrace) {
-      Log.error(
-        message: 'Error on getCompanyList',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      throw error as NetException;
-    });
+    // check if company search resul for this type is already in the cache or not?
+    List<CompanySearchModel> ret = CompanySharedPreferences.getCompanySearch(type: type);
 
-    // parse the response to get the company search result
-    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
-    List<CompanySearchModel> ret = [];
-    for (dynamic data in commonModel.data) {
-      CompanySearchModel company = CompanySearchModel.fromJson(data['attributes']);
-      ret.add(company);
+    // check whether the cache data is empty or not?
+    if (ret.isEmpty) {
+      // get the company data using netutils
+      final String body = await NetUtils.get(
+        url: '${Globals.apiCompanies}/list/$type'
+      ).onError((error, stackTrace) {
+        Log.error(
+          message: 'Error on getCompanyList',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        throw error as NetException;
+      });
+
+      // parse the response to get the company search result
+      CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+      for (dynamic data in commonModel.data) {
+        CompanySearchModel company = CompanySearchModel.fromJson(data['attributes']);
+        ret.add(company);
+      }
+
+      // stored the company search result data in the cache
+      CompanySharedPreferences.setCompanySearch(type: type, companies: ret);
     }
+
     return ret;
   }
 

@@ -15,6 +15,7 @@ class CompanySearchModel {
         this.companyNetAssetValue,
         this.companyPrevPrice,
         required this.companyFCA,
+        this.companyWatchlistID = -1,
         required this.companyLastUpdate,
         required this.companyCanAdd,
     });
@@ -24,6 +25,7 @@ class CompanySearchModel {
     final double? companyNetAssetValue;
     final double? companyPrevPrice;
     final bool? companyFCA;
+    final int? companyWatchlistID;
     final DateTime companyLastUpdate;
     final bool companyCanAdd;
 
@@ -33,6 +35,7 @@ class CompanySearchModel {
         companyNetAssetValue: (json["company_net_asset_value"] == null ? 0 : json["company_net_asset_value"].toDouble()),
         companyPrevPrice: (json["company_prev_price"] == null ? 0 : json["company_prev_price"].toDouble()),
         companyFCA: (json["company_fca"] ?? false),
+        companyWatchlistID: (json["company_watchlist_id"] ?? -1),
         companyLastUpdate: DateTime.parse(json["company_last_update"]),
         companyCanAdd: (json["company_watchlist_id"] > 0 ? false : true),
     );
@@ -43,6 +46,7 @@ class CompanySearchModel {
         "company_net_asset_value": companyNetAssetValue!,
         "company_prev_price": companyPrevPrice,
         "company_fca": companyFCA,
+        "company_watchlist_id": companyWatchlistID,
         "company_last_update": companyLastUpdate.toIso8601String(),
     };
 }

@@ -833,6 +833,12 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
           }
         }
 
+        // delete company watchlist ID from company search cache
+        await CompanySharedPreferences.deleteCompanySearch(
+          type: type,
+          watchlistID: watchlistId
+        );
+
         // update shared preferences and the provider
         await WatchlistSharedPreferences.setWatchlist(
           type: type,

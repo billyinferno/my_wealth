@@ -5,7 +5,7 @@ import 'package:my_wealth/_index.g.dart';
 class LocalBox {
   static Box<dynamic>? _keyBox;
   static Box<dynamic>? _encryptedBox;
-  static String _cacheKey = '__cache__';
+  static final String _cacheKey = '__cache__';
 
   static Future<void> init() async {
     if(_keyBox == null) {

@@ -247,15 +247,22 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
       await _watchlistAPI.add(
         type: _args.type,
         companyId: _companyFilterResult[index].companyId
-      ).then((_) async {
+      ).then((resp) async {
         CompanySearchModel ret = CompanySearchModel(
           companyId: _companyFilterResult[index].companyId,
           companyName: _companyFilterResult[index].companyName,
           companyNetAssetValue: _companyFilterResult[index].companyNetAssetValue!,
           companyPrevPrice: _companyFilterResult[index].companyPrevPrice!,
           companyFCA: _companyFilterResult[index].companyFCA,
+          companyWatchlistID: resp.watchlistId,
           companyLastUpdate: _companyFilterResult[index].companyLastUpdate,
           companyCanAdd: false
+        );
+
+        // refresh the cache data
+        await CompanySharedPreferences.updateCompanySearch(
+          type: _args.type,
+          update: ret
         );
 
         // change the current company filter result to the one that we just add

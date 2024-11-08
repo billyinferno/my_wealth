@@ -113,10 +113,21 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   TransparentButton(
+                    text: "Cancel",
+                    color: primaryDark,
+                    borderColor: primaryLight,
+                    icon: Ionicons.close,
+                    onTap: (() {
+                      // return back to the previous screen
+                      Navigator.pop(context);
+                    })
+                  ),
+                  const SizedBox(width: 10,),
+                  TransparentButton(
                     icon: Ionicons.save,
                     text: "Save",
-                    color: secondaryColor,
-                    activeColor: secondaryDark,
+                    color: secondaryDark,
+                    borderColor: secondaryLight,
                     onTap: (() async {
                       // check if the current value and slide value for risk factor
                       // is the same or not?

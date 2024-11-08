@@ -92,8 +92,8 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Cancel",
-                  color: secondaryDark,
-                  borderColor: secondaryLight,
+                  color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.close,
                   onTap: (() async {
                     await _checkForm().then((value) {
@@ -106,8 +106,8 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Buy",
-                  color: primaryDark,
-                  borderColor: primaryLight,
+                  color: secondaryDark,
+                  borderColor: secondaryLight,
                   icon: Ionicons.bag_add,
                   onTap: (() async {
                     await _addDetail().then((_) {

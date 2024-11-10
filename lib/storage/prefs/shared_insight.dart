@@ -1,39 +1,65 @@
 import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
+enum DateType {
+  from, to
+}
 class InsightSharedPreferences {
-  static const _sectorSummaryKey = "sector_summary";
-  static const _topWorseCompanyListKey = "insight_company_list_";
-  static const _topReksadanaListKey = "insight_reksadana_list_";
-  static const _worseReksadanaListKey = "insight_reksadana_worse_list_";
-  static const _brokerTopTransactionKey = "insight_broker_top_txn";
-  static const _brokerMarketToday = "insight_broker_market_today";
-  static const _bandarInterestingKey = "insight_bandar_interesting";
-  static const _topAccumFromDateKey = "insight_top_accum_from_date";
-  static const _topAccumToDateKey = "insight_top_accum_to_date";
-  static const _topAccumRateKey = "insight_top_accum_rate";
-  static const _topAccumResultKey = "insight_top_accum_result";
-  static const _epsMinRateKey = "insight_eps_min_rate";
-  static const _epsMinDiffRateKey = "insight_eps_min_diff_rate";
-  static const _epsResultKey = "insight_eps_result";
-  static const _sidewayOneDayRateKey = "insight_sideway_one_day_rate";
-  static const _sidewayAvgOneDayKey = "insight_sideway_avg_one_day";
-  static const _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
-  static const _sidewayResultKey = "insight_sideway_result";
-  static const _marketCapKey = "insight_market_cap";
-  static const _indexBeaterKey = "insight_index_beater";
-  static const _stockNewListedKey = "insight_stock_new_listed";
-  static const _stockDividendListKey = "insight_stock_dividend_list";
-  static const _stockSplitListKey = "insight_stock_split_list";
-  static const _stockCollectKey = "insight_stock_collect";
-  static const _stockCollectFromDateKey = "insight_stock_collect_from_date";
-  static const _stockCollectToDateKey = "insight_stock_collect_to_date";
-  static const _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
-  static const _brokerCollectKey = "insight_broker_collect";
-  static const _brokerCollectIDKey = "insight_broker_collect_id";
-  static const _brokerCollectFromDateKey = "insight_broker_collect_from_date";
-  static const _brokerCollectToDateKey = "insight_broker_collect_to_date";
-  static const _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
+  static const String _sectorSummaryKey = "sector_summary";
+  static const String _topWorseCompanyListKey = "insight_company_list_";
+  static const String _topReksadanaListKey = "insight_reksadana_list_";
+  static const String _worseReksadanaListKey = "insight_reksadana_worse_list_";
+  static const String _brokerTopTransactionKey = "insight_broker_top_txn";
+  static const String _brokerMarketToday = "insight_broker_market_today";
+  
+  static const String _bandarInterestingKey = "insight_bandar_interesting";
+  
+  static const  String _topAccumFromDateKey = "insight_top_accum_from_date";
+  static const  String _topAccumToDateKey = "insight_top_accum_to_date";
+  static const  String _topAccumRateKey = "insight_top_accum_rate";
+  static const  String _topAccumResultKey = "insight_top_accum_result";
+  
+  static const  String _epsMinRateKey = "insight_eps_min_rate";
+  static const  String _epsMinDiffRateKey = "insight_eps_min_diff_rate";
+  static const  String _epsResultKey = "insight_eps_result";
+  
+  static const  String _sidewayOneDayRateKey = "insight_sideway_one_day_rate";
+  static const  String _sidewayAvgOneDayKey = "insight_sideway_avg_one_day";
+  static const  String _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
+  static const  String _sidewayResultKey = "insight_sideway_result";
+  
+  static const  String _marketCapKey = "insight_market_cap";
+  static const  String _indexBeaterKey = "insight_index_beater";
+  static const  String _stockNewListedKey = "insight_stock_new_listed";
+  static const  String _stockDividendListKey = "insight_stock_dividend_list";
+  static const  String _stockSplitListKey = "insight_stock_split_list";
+  
+  static const  String _stockCollectKey = "insight_stock_collect";
+  static const  String _stockCollectFromDateKey = "insight_stock_collect_from_date";
+  static const  String _stockCollectToDateKey = "insight_stock_collect_to_date";
+  static const  String _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
+  
+  static const  String _brokerCollectKey = "insight_broker_collect";
+  static const  String _brokerCollectIDKey = "insight_broker_collect_id";
+  static const  String _brokerCollectFromDateKey = "insight_broker_collect_from_date";
+  static const  String _brokerCollectToDateKey = "insight_broker_collect_to_date";
+  static const  String _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
+
+  static const  String _brokerSpecificBrokerKey = "insight_broker_specific_broker_id";
+  static const  String _brokerSpecificStockCodeKey = "insight_broker_specific_stock_code";
+  static const  String _brokerSpecificStockPriceKey = "insight_broker_specific_stock_price";
+  static const  String _brokerSpecificFromDateKey = "insight_broker_specific_from_date";
+  static const  String _brokerSpecificToDateKey = "insight_broker_specific_to_date";
+  static const  String _brokerSpecificResultKey = "insight_broker_specific_result";
+
+  static const String _brokerCompanyStockCodeKey = "insight_broker_company_stock_code";
+  static const String _brokerCompanyFromDateKey = "insight_broker_company_from_date";
+  static const String _brokerCompanyToDateKey = "insight_broker_company_to_date";
+  static const String _brokerCompanyDetailKey = "insight_broker_company_detail";
+  static const String _brokerCompanyListKey = "insight_broker_company_list";
+  static const String _brokerCompanySummaryDataGrossKey = "insight_broker_company_summary_gross";
+  static const String _brokerCompanySummaryDataNetKey = "insight_broker_company_summary_net";
+  static const String _brokerCompanyTopBrokerKey = "insight_broker_company_top_broker";
 
   static Future<void> setSectorSummaryList({
     required List<SectorSummaryModel> sectorSummaryList
@@ -1005,5 +1031,302 @@ class InsightSharedPreferences {
     LocalBox.delete(key: _brokerCollectFromDateKey, exact: true);
     LocalBox.delete(key: _brokerCollectToDateKey, exact: true);
     LocalBox.delete(key: _brokerCollectAccumRateKey, exact: true);
+  }
+
+  static Future<void> setBrokerSpecific({
+    required BrokerSummaryTxnDetailModel brokerSummaryData,
+    required String brokerId,
+    required String stockCode,
+    required double stockPrice,
+    required DateTime fromDate,
+    required DateTime toDate,
+  }) async {
+    // store the broker id
+    LocalBox.putString(
+      key: _brokerSpecificBrokerKey,
+      value: brokerId,
+      cache: true,
+    );
+
+    // store the stock code
+    LocalBox.putString(
+      key: _brokerSpecificStockCodeKey,
+      value: stockCode,
+      cache: true,
+    );
+
+    // store the stock price
+    LocalBox.putString(
+      key: _brokerSpecificStockPriceKey,
+      value: stockPrice.toString(),
+      cache: true,
+    );
+
+    // store the from and to date
+    LocalBox.putString(
+      key: _brokerSpecificFromDateKey,
+      value: fromDate.toString(),
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _brokerSpecificToDateKey,
+      value: toDate.toString(),
+      cache: true,
+    );
+
+    // convert the json to string so we can stored it on the local storage
+    LocalBox.putString(
+      key: _brokerSpecificResultKey,
+      value: jsonEncode(brokerSummaryData.toJson()),
+      cache: true,
+    );
+  }
+
+  static String getBrokerSpecificBrokerKey() {
+    // get the data from local box
+    String brokerId = (LocalBox.getString(key: _brokerSpecificBrokerKey, cache: true,) ?? '');
+    if (brokerId.isNotEmpty) {
+      return brokerId;
+    }
+
+    return '';
+  }
+
+  static String getBrokerSpecificStockCodeKey() {
+    // get the data from local box
+    String stockCode = (LocalBox.getString(key: _brokerSpecificStockCodeKey, cache: true,) ?? '');
+    if (stockCode.isNotEmpty) {
+      return stockCode;
+    }
+
+    return '';
+  }
+
+  static double getBrokerSpecificStockPriceKey() {
+    // get the data from local box
+    String stockPrice = (LocalBox.getString(key: _brokerSpecificStockPriceKey, cache: true,) ?? '');
+    if (stockPrice.isNotEmpty) {
+      return -1;
+    }
+
+    return (double.tryParse(stockPrice) ?? -1);
+  }
+
+  static DateTime? getBrokerSpecificDate({required DateType type}) {
+    // get the data from local box
+    String dateString = '';
+    switch(type) {
+      case DateType.to:
+        dateString = (LocalBox.getString(key: _brokerSpecificToDateKey, cache: true,) ?? '');
+        break;
+      case DateType.from:
+        dateString = (LocalBox.getString(key: _brokerSpecificFromDateKey, cache: true,) ?? '');
+        break;
+    }
+    
+    if (dateString.isNotEmpty) {
+      return DateTime.parse(dateString);
+    }
+
+    return null;
+  }
+
+  static BrokerSummaryTxnDetailModel? getBrokerSpecificResult() {
+    // get the data from local box
+    String brokerSpecificResultString = (
+      LocalBox.getString(key: _brokerSpecificResultKey, cache: true,) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (brokerSpecificResultString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      BrokerSummaryTxnDetailModel brokerSpecificData = BrokerSummaryTxnDetailModel.fromJson(jsonDecode(brokerSpecificResultString));
+      return brokerSpecificData;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
+
+  static Future<void> setBrokerCompany({
+    required String stockCode,
+    required DateTime fromDate,
+    required DateTime toDate,
+    required CompanyDetailModel companyDetail,
+    required CompanyListModel companyList,
+    required BrokerSummaryModel summaryGross,
+    required BrokerSummaryModel summaryNet,
+    required CompanyTopBrokerModel topBroker,
+
+  }) async {
+    // store the stock code
+    LocalBox.putString(
+      key: _brokerCompanyStockCodeKey,
+      value: stockCode,
+      cache: true,
+    );
+
+    // store the from and to date
+    LocalBox.putString(
+      key: _brokerCompanyFromDateKey,
+      value: fromDate.toString(),
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _brokerCompanyToDateKey,
+      value: toDate.toString(),
+      cache: true,
+    );
+
+    // stored company detail information
+    LocalBox.putString(
+      key: _brokerCompanyDetailKey,
+      value: jsonEncode(companyDetail.toJson()),
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _brokerCompanyListKey,
+      value: jsonEncode(companyList.toJson()),
+      cache: true,
+    );
+
+    // stored broker summary gross and net
+    LocalBox.putString(
+      key: _brokerCompanySummaryDataGrossKey,
+      value: jsonEncode(summaryGross.toJson()),
+      cache: true,
+    );
+    LocalBox.putString(
+      key: _brokerCompanySummaryDataNetKey,
+      value: jsonEncode(summaryNet.toJson()),
+      cache: true,
+    );
+
+    // stored the top broker data
+    LocalBox.putString(
+      key: _brokerCompanyTopBrokerKey,
+      value: jsonEncode(topBroker.toJson()),
+      cache: true,
+    );
+  }
+
+  static String getBrokerCompanyStockCode() {
+    // get the data from local box
+    String stockCode = (LocalBox.getString(key: _brokerCompanyStockCodeKey, cache: true,) ?? '');
+    if (stockCode.isNotEmpty) {
+      return stockCode;
+    }
+
+    return '';
+  }
+
+  static DateTime? getBrokerCompanyDate({required DateType type}) {
+    // get the data from local box
+    String dateString = '';
+    switch(type) {
+      case DateType.to:
+        dateString = (LocalBox.getString(key: _brokerCompanyToDateKey, cache: true,) ?? '');
+        break;
+      case DateType.from:
+        dateString = (LocalBox.getString(key: _brokerCompanyFromDateKey, cache: true,) ?? '');
+        break;
+    }
+    
+    if (dateString.isNotEmpty) {
+      return DateTime.parse(dateString);
+    }
+
+    return null;
+  }
+
+  static CompanyDetailModel? getBrokerCompanyDetail() {
+    // get the data from local box
+    String companyDetailString = (
+      LocalBox.getString(key: _brokerCompanyDetailKey, cache: true,) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (companyDetailString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      CompanyDetailModel companyDetail = CompanyDetailModel.fromJson(jsonDecode(companyDetailString));
+      return companyDetail;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
+
+  static CompanyListModel? getBrokerCompanyList() {
+    // get the data from local box
+    String companyListString = (
+      LocalBox.getString(key: _brokerCompanyListKey, cache: true,) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (companyListString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      CompanyListModel companyList = CompanyListModel.fromJson(jsonDecode(companyListString));
+      return companyList;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
+
+  static BrokerSummaryModel? getBrokerCompanyGross() {
+    // get the data from local box
+    String brokerSummaryString = (
+      LocalBox.getString(key: _brokerCompanySummaryDataGrossKey, cache: true,) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (brokerSummaryString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(jsonDecode(brokerSummaryString));
+      return brokerSummary;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
+
+  static BrokerSummaryModel? getBrokerCompanyNet() {
+    // get the data from local box
+    String brokerSummaryString = (
+      LocalBox.getString(key: _brokerCompanySummaryDataNetKey, cache: true,) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (brokerSummaryString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      BrokerSummaryModel brokerSummary = BrokerSummaryModel.fromJson(jsonDecode(brokerSummaryString));
+      return brokerSummary;
+    }
+    else {
+      // no data
+      return null;
+    }
+  }
+
+  static CompanyTopBrokerModel? getBrokerCompanyTopBroker() {
+    // get the data from local box
+    String topBrokerString = (
+      LocalBox.getString(key: _brokerCompanyTopBrokerKey, cache: true,) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (topBrokerString.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      CompanyTopBrokerModel topbroker = CompanyTopBrokerModel.fromJson(jsonDecode(topBrokerString));
+      return topbroker;
+    }
+    else {
+      // no data
+      return null;
+    }
   }
 }

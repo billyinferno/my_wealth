@@ -55,22 +55,38 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     _tabController = TabController(length: 2, vsync: this);
 
     // initialize the value
-    _companySahamCode = "";
-    _brokerSummaryData = null;
-    _brokerSummaryDataGross = null;
-    _brokerSummaryDataNet = null;
+    _brokerSummaryDataGross = InsightSharedPreferences.getBrokerCompanyGross();
+    _brokerSummaryDataNet = InsightSharedPreferences.getBrokerCompanyNet();
 
-    _brokerTopData = null;
-    _companyData = null;
-    _companyDetail = null;
+    _companySahamCode = InsightSharedPreferences.getBrokerCompanyStockCode();
+    _brokerSummaryData = _brokerSummaryDataGross;
+    _brokerSummarySelected = "a";
     _showNet = false;
 
+    _brokerTopData = InsightSharedPreferences.getBrokerCompanyTopBroker();
+    _companyData = InsightSharedPreferences.getBrokerCompanyList();
+    _companyDetail = InsightSharedPreferences.getBrokerCompanyDetail();
+
+    // page result
     _pageItemsSummary = [];
     _pageItemsTop = [];
 
+    // check whether broker summary data is null or not?
+    // if not null, it means the cache result is still there so we can default
+    // the initial current data to the broker summary data in cache.
+    if (_brokerSummaryData != null) {
+      _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
+      _generateSummaryPage();
+    }
+
+    // if broker top data is not null then generate the top page
+    if (_brokerTopData != null) {
+      _generateTopPage();
+    }
+
     _dateCurrent = DateTime.now().toLocal();
-    _dateFrom = DateTime.now().subtract(const Duration(days: 30)).toLocal();
-    _dateTo = DateTime.now().subtract(const Duration(days: 1)).toLocal();
+    _dateFrom = (InsightSharedPreferences.getBrokerCompanyDate(type: DateType.from) ?? DateTime.now().subtract(const Duration(days: 30)).toLocal());
+    _dateTo = (InsightSharedPreferences.getBrokerCompanyDate(type: DateType.to) ?? DateTime.now().subtract(const Duration(days: 1)).toLocal());
     _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
     _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
 
@@ -1068,6 +1084,18 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
       _brokerSummarySelected = "a";
       _showNet = false;
+
+      // stored all the information to shared preferences
+      InsightSharedPreferences.setBrokerCompany(
+        stockCode: _companySahamCode,
+        fromDate: _dateFrom,
+        toDate: _dateTo,
+        companyDetail: _companyDetail!,
+        companyList: _companyData!,
+        summaryGross: _brokerSummaryDataGross!,
+        summaryNet: _brokerSummaryDataNet!,
+        topBroker: _brokerTopData!
+      );
     }).onError((error, stackTrace) {
       // print the stack trace
       Log.error(

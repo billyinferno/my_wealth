@@ -44,14 +44,14 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     super.initState();
 
     // initialize the value
-    _brokerCode = "";
-    _companySahamCode = "";
-    _companySahamCodePrice = -1;
-    _currentCompanySahamCodePrice = -1;
+    _brokerCode = InsightSharedPreferences.getBrokerSpecificBrokerKey();
+    _companySahamCode = InsightSharedPreferences.getBrokerSpecificStockCodeKey();
+    _companySahamCodePrice = InsightSharedPreferences.getBrokerSpecificStockPriceKey();
+    _currentCompanySahamCodePrice = _companySahamCodePrice;
     _pageItems = [];
     _dateCurrent = DateTime.now().toLocal();
-    _dateFrom = DateTime.now().subtract(const Duration(days: 30)).toLocal();
-    _dateTo = DateTime.now().subtract(const Duration(days: 1)).toLocal();
+    _dateFrom = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.from) ?? DateTime.now().subtract(const Duration(days: 30)).toLocal());
+    _dateTo = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.to) ?? DateTime.now().subtract(const Duration(days: 1)).toLocal());
     _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
     _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
     
@@ -69,7 +69,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       _dateTo = _brokerMaxDate;
     }
 
-    _brokerSummaryData = null;
+    _brokerSummaryData = InsightSharedPreferences.getBrokerSpecificResult();
   }
 
   @override
@@ -988,6 +988,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         dateTo: _dateTo
       ).then((resp) {
         _brokerSummaryData = resp;
+        
+        // stored the data in the cache so when we visit the same page the
+        // previous result already being showed.
+        InsightSharedPreferences.setBrokerSpecific(
+          brokerSummaryData: _brokerSummaryData!,
+          brokerId: _brokerCode,
+          stockCode: _companySahamCode,
+          stockPrice: _companySahamCodePrice,
+          fromDate: _dateFrom,
+          toDate: _dateTo,
+        );
       }).onError((error, stackTrace) {
         if (mounted) {
           // show the error

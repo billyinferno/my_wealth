@@ -68,7 +68,7 @@ class SimpleCompanyInfo extends StatelessWidget {
         // check if onTap is not null
         if (onTap != null) {
           onTap!();
-        };
+        }
       },
       child: Container(
         decoration: BoxDecoration(

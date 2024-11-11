@@ -16,7 +16,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   final ScrollController _scrollControllerBrokerSummary = ScrollController();
   final ScrollController _scrollControllerBrokerTop = ScrollController();
   final ScrollController _scrollControllerCompanySahamList = ScrollController();
+  final ScrollController _chipController = ScrollController();
   late TabController _tabController;
+
   final TextStyle _topBrokerHeader = const TextStyle(
     color: accentColor,
     fontWeight: FontWeight.bold,
@@ -46,6 +48,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   late CompanyTopBrokerModel? _brokerTopData;
   late String _brokerSummarySelected;
   late bool _showNet;
+  late UserLoginInfoModel? _userInfo;
 
   @override
   void initState() {
@@ -53,6 +56,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
 
     // initialize tab controller
     _tabController = TabController(length: 2, vsync: this);
+
+    // get user information
+    _userInfo = UserSharedPreferences.getUserInfo();
 
     // initialize the value
     _brokerSummaryDataGross = InsightSharedPreferences.getBrokerCompanyGross();
@@ -110,6 +116,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     _scrollControllerBrokerSummary.dispose();
     _scrollControllerBrokerTop.dispose();
     _scrollControllerCompanySahamList.dispose();
+    _chipController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -356,61 +364,13 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.all(10),
-                      padding: const EdgeInsets.all(10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  (_companyDetail == null ? '' : _companyDetail!.companyName),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 5,),
-                                Text(
-                                  "Current Price: ${(
-                                    _companyDetail == null ?
-                                    '' :
-                                    formatDecimalWithNull(
-                                      _companyDetail!.companyNetAssetValue,
-                                      decimal: 0
-                                    )
-                                  )}",
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          IconButton(
-                            onPressed: (() {
-                              _getCompanyAndGo(code: _companySahamCode);
-                            }),
-                            icon: const Icon(
-                              Ionicons.business_outline,
-                              size: 18,
-                              color: accentColor,
-                            ),
-                          )
-                        ],
-                      ),
+                    SimpleCompanyInfo(
+                      controller: _chipController,
+                      company: _companyDetail,
+                      risk: _userInfo!.risk,
+                      onTap: () async {
+                        await _getCompanyAndGo(code: _companySahamCode);
+                      },
                     ),
                     TabBar(
                       controller: _tabController,
@@ -674,74 +634,74 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            child: CupertinoSegmentedControl(
-              children: const {
-                "a": Text("All"),
-                "d": Text("Domestic"),
-                "f": Text("Foreign"),
-              },
-              onValueChanged: ((value) {
-                String selectedValue = value.toString();
-
-                setState(() {
-                  if (selectedValue == "a") {
-                    _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
-                    _brokerSummarySelected = "a";
-                  } else if (selectedValue == "d") {
-                    _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryDomestic;
-                    _brokerSummarySelected = "d";
-                  } else if (selectedValue == "f") {
-                    _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryForeign;
-                    _brokerSummarySelected = "f";
-                  }
-                  _generateSummaryPage();
-                });
-              }),
-              groupValue: _brokerSummarySelected,
-              selectedColor: secondaryColor,
-              borderColor: secondaryDark,
-              pressedColor: primaryDark,
-            ),
-          ),
-          const SizedBox(height: 10,),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const Expanded(child: SizedBox()),
-              const Text(
-                "Net",
-                style: TextStyle(
-                  color: textPrimary,
-                  fontSize: 12,
+            children: [
+              Expanded(
+                child: CupertinoSegmentedControl(
+                  children: const {
+                    "a": Text("All"),
+                    "d": Text("Domestic"),
+                    "f": Text("Foreign"),
+                  },
+                  onValueChanged: ((value) {
+                    String selectedValue = value.toString();
+                              
+                    setState(() {
+                      if (selectedValue == "a") {
+                        _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryAll;
+                        _brokerSummarySelected = "a";
+                      } else if (selectedValue == "d") {
+                        _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryDomestic;
+                        _brokerSummarySelected = "d";
+                      } else if (selectedValue == "f") {
+                        _brokerSummaryCurrent = _brokerSummaryData!.brokerSummaryForeign;
+                        _brokerSummarySelected = "f";
+                      }
+                      _generateSummaryPage();
+                    });
+                  }),
+                  groupValue: _brokerSummarySelected,
+                  selectedColor: secondaryColor,
+                  borderColor: secondaryDark,
+                  pressedColor: primaryDark,
                 ),
               ),
-              SizedBox(
-                width: 50,
-                height: 25,
-                child: FittedBox(
-                  child: CupertinoSwitch(
-                    value: _showNet,
-                    activeTrackColor: accentColor,
-                    onChanged: ((value) {
-                      _showNet = value;
-
-                      if (_showNet) {
-                        _setBrokerSummary(_brokerSummaryDataNet);
-                      } else {
-                        _setBrokerSummary(_brokerSummaryDataGross);
-                      }
-                    }),
+              const SizedBox(width: 5,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Net",
+                    style: TextStyle(
+                      color: textPrimary,
+                      fontSize: 12,
+                    ),
                   ),
-                ),
+                  SizedBox(
+                    width: 50,
+                    height: 25,
+                    child: FittedBox(
+                      child: CupertinoSwitch(
+                        value: _showNet,
+                        activeTrackColor: accentColor,
+                        onChanged: ((value) {
+                          _showNet = value;
+              
+                          if (_showNet) {
+                            _setBrokerSummary(_brokerSummaryDataNet);
+                          } else {
+                            _setBrokerSummary(_brokerSummaryDataGross);
+                          }
+                        }),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10,),
           Container(
             margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: _tableRow(

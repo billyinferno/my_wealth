@@ -4,6 +4,7 @@ export './performance_calendar.dart';
 export './scroll_segmented_control.dart';
 export './search_box.dart';
 export './selectable_button.dart';
+export './simple_company_info.dart';
 export './selectable_list.dart';
 export './slide_button.dart';
 export './stepper_selector.dart';

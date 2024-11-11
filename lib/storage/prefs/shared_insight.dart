@@ -1048,6 +1048,7 @@ class InsightSharedPreferences {
       cache: true,
     );
 
+    // TODO: to stored company detail model instead, so we can get the data from company detail
     // store the stock code
     LocalBox.putString(
       key: _brokerSpecificStockCodeKey,

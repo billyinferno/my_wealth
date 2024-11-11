@@ -373,6 +373,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: Text.rich(
+                  //TODO: to change design to align with insight_broker_specific_company
                   TextSpan(
                     children: <TextSpan>[
                       const TextSpan(
@@ -994,6 +995,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         InsightSharedPreferences.setBrokerSpecific(
           brokerSummaryData: _brokerSummaryData!,
           brokerId: _brokerCode,
+          //TODO: to stored company detail object instead
           stockCode: _companySahamCode,
           stockPrice: _companySahamCodePrice,
           fromDate: _dateFrom,

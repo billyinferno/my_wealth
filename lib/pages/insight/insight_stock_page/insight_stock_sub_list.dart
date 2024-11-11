@@ -134,115 +134,118 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
                     onTap: (() {
                       _getCompanyAndGo(code: _companyFilter[index].companySymbol!);
                     }),
-                    child: Container(
-                      color: color,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: const BoxDecoration(
-                                color: primaryColor,
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    style: BorderStyle.solid,
-                                    width: 1.0,
-                                  )
-                                )
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '(${_companyFilter[index].companySymbol})',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: accentColor,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5,),
-                                            Expanded(
-                                              child: SizedBox(
-                                                child: Text(
-                                                  _companyFilter[index].companyName,
-                                                  overflow: TextOverflow.ellipsis,
+                    child: IntrinsicHeight(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              color: color,
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '(${_companyFilter[index].companySymbol})',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: accentColor,
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        )
-                                      ),
-                                      const SizedBox(width: 5,),
-                                      Container(
-                                        padding: const EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: color,
-                                              style: BorderStyle.solid,
-                                              width: 2.0,
-                                            )
+                                              const SizedBox(width: 5,),
+                                              Expanded(
+                                                child: SizedBox(
+                                                  child: Text(
+                                                    _companyFilter[index].companyName,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           )
                                         ),
-                                        child: Text(
-                                          '${
-                                            formatCurrency(
-                                              currentPrice,
-                                              showDecimal: false,
-                                              shorten: false
+                                        const SizedBox(width: 5,),
+                                        Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: color,
+                                                style: BorderStyle.solid,
+                                                width: 2.0,
+                                              )
                                             )
-                                          } (${
-                                            formatCurrency(
-                                              (currentPrice-prevPrice),
-                                              showDecimal: false,
-                                              shorten: false
-                                            )
-                                          })',
-                                          style: const TextStyle(
-                                            fontSize: 10,
+                                          ),
+                                          child: Text(
+                                            '${
+                                              formatCurrency(
+                                                currentPrice,
+                                                showDecimal: false,
+                                                shorten: false
+                                              )
+                                            } (${
+                                              formatCurrency(
+                                                (currentPrice-prevPrice),
+                                                showDecimal: false,
+                                                shorten: false
+                                              )
+                                            })',
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10,),
-                                  Container(
-                                    color: primaryDark,
-                                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: <Widget>[
-                                        _periodBox(title: "1d", value: (_companyFilter[index].companyDailyReturn ?? 0)),
-                                        _periodBox(title: "1w", value: (_companyFilter[index].companyWeeklyReturn ?? 0)),
-                                        _periodBox(title: "1m", value: (_companyFilter[index].companyMonthlyReturn ?? 0)),
-                                        _periodBox(title: "3m", value: (_companyFilter[index].companyQuarterlyReturn ?? 0)),
-                                        _periodBox(title: "6m", value: (_companyFilter[index].companySemiAnnualReturn ?? 0)),
-                                        _periodBox(title: "1y", value: (_companyFilter[index].companyYearlyReturn ?? 0)),
-                                        _periodBox(title: "3y", value: (_companyFilter[index].companyThreeYear ?? 0)),
-                                        _periodBox(title: "5y", value: (_companyFilter[index].companyFiveYear ?? 0)),
                                       ],
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 10,),
+                                    Container(
+                                      color: primaryDark,
+                                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          _periodBox(title: "1d", value: (_companyFilter[index].companyDailyReturn ?? 0)),
+                                          _periodBox(title: "1w", value: (_companyFilter[index].companyWeeklyReturn ?? 0)),
+                                          _periodBox(title: "1m", value: (_companyFilter[index].companyMonthlyReturn ?? 0)),
+                                          _periodBox(title: "3m", value: (_companyFilter[index].companyQuarterlyReturn ?? 0)),
+                                          _periodBox(title: "6m", value: (_companyFilter[index].companySemiAnnualReturn ?? 0)),
+                                          _periodBox(title: "1y", value: (_companyFilter[index].companyYearlyReturn ?? 0)),
+                                          _periodBox(title: "3y", value: (_companyFilter[index].companyThreeYear ?? 0)),
+                                          _periodBox(title: "5y", value: (_companyFilter[index].companyFiveYear ?? 0)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );

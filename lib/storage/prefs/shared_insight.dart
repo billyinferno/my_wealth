@@ -46,8 +46,7 @@ class InsightSharedPreferences {
   static const  String _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
 
   static const  String _brokerSpecificBrokerKey = "insight_broker_specific_broker_id";
-  static const  String _brokerSpecificStockCodeKey = "insight_broker_specific_stock_code";
-  static const  String _brokerSpecificStockPriceKey = "insight_broker_specific_stock_price";
+  static const  String _brokerSpecificCompanyKey = "insight_broker_specific_company";
   static const  String _brokerSpecificFromDateKey = "insight_broker_specific_from_date";
   static const  String _brokerSpecificToDateKey = "insight_broker_specific_to_date";
   static const  String _brokerSpecificResultKey = "insight_broker_specific_result";
@@ -1036,8 +1035,7 @@ class InsightSharedPreferences {
   static Future<void> setBrokerSpecific({
     required BrokerSummaryTxnDetailModel brokerSummaryData,
     required String brokerId,
-    required String stockCode,
-    required double stockPrice,
+    required CompanyDetailModel company,
     required DateTime fromDate,
     required DateTime toDate,
   }) async {
@@ -1048,18 +1046,10 @@ class InsightSharedPreferences {
       cache: true,
     );
 
-    // TODO: to stored company detail model instead, so we can get the data from company detail
-    // store the stock code
+    // stored the company detail information
     LocalBox.putString(
-      key: _brokerSpecificStockCodeKey,
-      value: stockCode,
-      cache: true,
-    );
-
-    // store the stock price
-    LocalBox.putString(
-      key: _brokerSpecificStockPriceKey,
-      value: stockPrice.toString(),
+      key: _brokerSpecificCompanyKey,
+      value: jsonEncode(company.toJson()),
       cache: true,
     );
 
@@ -1083,7 +1073,7 @@ class InsightSharedPreferences {
     );
   }
 
-  static String getBrokerSpecificBrokerKey() {
+  static String getBrokerSpecificBroker() {
     // get the data from local box
     String brokerId = (LocalBox.getString(key: _brokerSpecificBrokerKey, cache: true,) ?? '');
     if (brokerId.isNotEmpty) {
@@ -1093,24 +1083,16 @@ class InsightSharedPreferences {
     return '';
   }
 
-  static String getBrokerSpecificStockCodeKey() {
+  static CompanyDetailModel? getBrokerSpecificCompany() {
     // get the data from local box
-    String stockCode = (LocalBox.getString(key: _brokerSpecificStockCodeKey, cache: true,) ?? '');
-    if (stockCode.isNotEmpty) {
-      return stockCode;
+    String companyDetailString = (LocalBox.getString(key: _brokerSpecificCompanyKey, cache: true,) ?? '');
+    if (companyDetailString.isNotEmpty) {
+      // company detail data is not empty, convert the string to company detail model
+      CompanyDetailModel companyDetail = CompanyDetailModel.fromJson(jsonDecode(companyDetailString));
+      return companyDetail;
     }
 
-    return '';
-  }
-
-  static double getBrokerSpecificStockPriceKey() {
-    // get the data from local box
-    String stockPrice = (LocalBox.getString(key: _brokerSpecificStockPriceKey, cache: true,) ?? '');
-    if (stockPrice.isNotEmpty) {
-      return -1;
-    }
-
-    return (double.tryParse(stockPrice) ?? -1);
+    return null;
   }
 
   static DateTime? getBrokerSpecificDate({required DateType type}) {

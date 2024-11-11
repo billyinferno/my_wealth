@@ -17,10 +17,12 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollControllerBrokerList = ScrollController();
   final ScrollController _scrollControllerCompanySahamList = ScrollController();
+  final ScrollController _chipController = ScrollController();
   final CompanyFindOtherArgs _companyFindOtherArgs = const CompanyFindOtherArgs(
     type: 'saham',
   );
 
+  late UserLoginInfoModel? _userInfo;
   late CompanyListModel? _companyData;
   late CompanyDetailModel? _companyDetail;
   late BrokerModel _brokerData;
@@ -43,11 +45,23 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
   void initState() {
     super.initState();
 
+    // get user information
+    _userInfo = UserSharedPreferences.getUserInfo();
+
     // initialize the value
-    _brokerCode = InsightSharedPreferences.getBrokerSpecificBrokerKey();
-    _companySahamCode = InsightSharedPreferences.getBrokerSpecificStockCodeKey();
-    _companySahamCodePrice = InsightSharedPreferences.getBrokerSpecificStockPriceKey();
+    _brokerCode = InsightSharedPreferences.getBrokerSpecificBroker();
+    
+    _companyDetail = InsightSharedPreferences.getBrokerSpecificCompany();
+    if (_companyDetail != null) {
+      _companySahamCode = _companyDetail!.companySymbol!;
+      _companySahamCodePrice = _companyDetail!.companyNetAssetValue!;
+    }
+    else {
+      _companySahamCode = '';
+      _companySahamCodePrice = -1;
+    }
     _currentCompanySahamCodePrice = _companySahamCodePrice;
+    
     _pageItems = [];
     _dateCurrent = DateTime.now().toLocal();
     _dateFrom = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.from) ?? DateTime.now().subtract(const Duration(days: 30)).toLocal());
@@ -77,6 +91,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     _scrollController.dispose();
     _scrollControllerBrokerList.dispose();
     _scrollControllerCompanySahamList.dispose();
+    _chipController.dispose();
     super.dispose();
   }
 
@@ -370,38 +385,10 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
             ),
             Visibility(
               visible: (_companySahamCodePrice > 0),
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: Text.rich(
-                  //TODO: to change design to align with insight_broker_specific_company
-                  TextSpan(
-                    children: <TextSpan>[
-                      const TextSpan(
-                        text: "Current Price of "
-                      ),
-                      TextSpan(
-                        text: _companySahamCode,
-                        style: const TextStyle(
-                          color: accentColor,
-                          fontWeight: FontWeight.bold,
-                        )
-                      ),
-                      const TextSpan(
-                        text: " is ",
-                      ),
-                      TextSpan(
-                        text: formatDecimalWithNull(
-                          _companySahamCodePrice,
-                          decimal: 0
-                        ),
-                        style: const TextStyle(
-                          color: accentColor,
-                          fontWeight: FontWeight.bold,
-                        )
-                      ),
-                    ]
-                  ),
-                ),
+              child: SimpleCompanyInfo(
+                controller: _chipController,
+                company: _companyDetail,
+                risk: _userInfo!.risk,
               ),
             ),
             _generateBrokerData(),
@@ -444,6 +431,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     _pageItems.clear();
 
     // generate for all
+    // TODO: to create sliver persistent header so when user scroll the header will be still visible
     _pageItems.add(const Text(
       "All",
       style: TextStyle(
@@ -544,11 +532,18 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     const SizedBox(
                       width: 85,
                       child: Text(
-                        "Share Left :",
+                        "Share Left",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
+                    Text(
+                      ":",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 5,),
@@ -568,11 +563,18 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     const SizedBox(
                       width: 85,
                       child: Text(
-                        "Share Value :",
+                        "Share Value",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
+                    Text(
+                      ":",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 5,),
@@ -597,11 +599,18 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     const SizedBox(
                       width: 85,
                       child: Text(
-                        "Share AVG :",
+                        "Share AVG",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
+                    Text(
+                      ":",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 5,),
@@ -633,11 +642,18 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                     const SizedBox(
                       width: 85,
                       child: Text(
-                        "Estimated PL :",
+                        "Estimated PL",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
+                    Text(
+                      ":",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 5,),
@@ -995,9 +1011,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
         InsightSharedPreferences.setBrokerSpecific(
           brokerSummaryData: _brokerSummaryData!,
           brokerId: _brokerCode,
-          //TODO: to stored company detail object instead
-          stockCode: _companySahamCode,
-          stockPrice: _companySahamCodePrice,
+          company: _companyDetail!,
           fromDate: _dateFrom,
           toDate: _dateTo,
         );

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class BrokerFindOtherPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
   final ScrollController _brokerListScrollController = ScrollController();
   late List<BrokerModel> _brokerList;
   late List<BrokerModel> _filterList;
+  late DateTime _brokerMaxDate;
 
   @override
   void initState() {
@@ -22,6 +24,9 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
     // get the broker list from shared preferences
     _brokerList = BrokerSharedPreferences.getBrokerList();
     _filterList = _brokerList.toList();
+
+    // get broker max date
+    _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? DateTime.now().toLocal());
   }
 
   @override
@@ -110,9 +115,13 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
                               width: 40,
                               child: Text(
                                 _filterList[index].brokerFirmId,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: accentColor,
+                                  color: (
+                                    _filterList[index].brokerDate.isSameOrAfter(date: _brokerMaxDate) ?
+                                    accentColor :
+                                    secondaryColor
+                                  ),
                                 ),
                               ),
                             ),
@@ -121,9 +130,28 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    _filterList[index].brokerFirmName,
-                                    overflow: TextOverflow.ellipsis,
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Text(
+                                          _filterList[index].brokerFirmName,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible: _filterList[index].brokerDate.isBeforeDate(date: _brokerMaxDate),
+                                        child: Icon(
+                                          Ionicons.warning,
+                                          size: 12,
+                                          color: secondaryColor,
+                                        )
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 5,),
                                   Text(

@@ -268,63 +268,63 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       ),
                     ],
                   ),
-                  const SizedBox(height: 5,),
-                  InkWell(
-                    onTap: (() async {
-                      // check that broker and code already filled
-                      if (_brokerCode.isEmpty) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CupertinoAlertDialog(
-                              title: const Text("Select Broker"),
-                              content: const Text("Please select broker from the list, before run the query."),
-                              actions: <CupertinoDialogAction>[
-                                CupertinoDialogAction(
-                                  onPressed: (() {
-                                    Navigator.pop(context);
-                                  }),
-                                  child: const Text("OK"),
-                                )
-                              ],
+                  const SizedBox(height: 10,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      TransparentButton(
+                        icon: Ionicons.search,
+                        onTap: () async {
+                          // check that broker and code already filled
+                          if (_brokerCode.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CupertinoAlertDialog(
+                                  title: const Text("Select Broker"),
+                                  content: const Text(
+                                    "Please select broker from the list, before run the query."
+                                  ),
+                                  actions: <CupertinoDialogAction>[
+                                    CupertinoDialogAction(
+                                      onPressed: (() {
+                                        Navigator.pop(context);
+                                      }),
+                                      child: const Text("OK"),
+                                    )
+                                  ],
+                                );
+                              }
                             );
                           }
-                        );
-                      }
-                      else {
-                        // get the broker collection
-                        await _getBrokerCollect().then((_) {  
-                          setState(() {
-                            // rebuild widget
-                          });
-                        }).onError((error, stackTrace) {
-                          if (context.mounted) {
-                            // show the error
-                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: "Error when trying to get the broker summary data", icon: const Icon(Ionicons.warning, size: 12,)));
+                          else {
+                            // get the broker collection
+                            await _getBrokerCollect().then((_) {  
+                              setState(() {
+                                // rebuild widget
+                              });
+                            }).onError((error, stackTrace) {
+                              if (context.mounted) {
+                                // show the error
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  createSnackBar(
+                                    message: "Error when trying to get the broker summary data",
+                                    icon: const Icon(
+                                      Ionicons.warning,
+                                      size: 12,
+                                    )
+                                  )
+                                );
+                              }
+                            },);
                           }
-                        },);
-                      }
-                    }),
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: primaryDark,
-                        border: Border.all(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "SEARCH",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                        },
+                        color: secondaryColor,
+                        borderColor: secondaryLight,
+                        text: "SEARCH",
+                      )
+                    ],
                   ),
                 ],
               ),

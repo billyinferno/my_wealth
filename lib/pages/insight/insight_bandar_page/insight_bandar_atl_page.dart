@@ -197,11 +197,7 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
                 ColumnInfo(
                   title: "1 Day",
                   titleColor: Colors.grey,
-                  value: formatDecimalWithNull(
-                    data.oneDay,
-                    times: 100,
-                    decimal: 2,
-                  ),
+                  value: "${formatDecimalWithNull(data.oneDay, times: 100, decimal: 2,)}%",
                   valueSize: 15,
                   valueColor: (data.oneDay < 0 ? secondaryColor : textPrimary),
                 ),
@@ -209,11 +205,7 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
                 ColumnInfo(
                   title: "1 Week",
                   titleColor: Colors.grey,
-                  value: formatDecimalWithNull(
-                    data.oneWeek,
-                    times: 100,
-                    decimal: 2,
-                  ),
+                  value: "${formatDecimalWithNull(data.oneWeek, times: 100, decimal: 2,)}%",
                   valueSize: 15,
                   valueColor: (data.oneWeek < 0 ? secondaryColor : textPrimary),
                 ),
@@ -221,11 +213,7 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
                 ColumnInfo(
                   title: "1 Month",
                   titleColor: Colors.grey,
-                  value: formatDecimalWithNull(
-                    data.oneMonth,
-                    times: 100,
-                    decimal: 2,
-                  ),
+                  value: "${formatDecimalWithNull(data.oneMonth, times: 100, decimal: 2,)}%",
                   valueSize: 15,
                   valueColor: (data.oneMonth < 0 ? secondaryColor : textPrimary),
                 ),
@@ -233,11 +221,7 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
                 ColumnInfo(
                   title: "YTD",
                   titleColor: Colors.grey,
-                  value: formatDecimalWithNull(
-                    data.ytd,
-                    times: 100,
-                    decimal: 2,
-                  ),
+                  value: "${formatDecimalWithNull(data.ytd, times: 100, decimal: 2,)}%",
                   valueSize: 15,
                   valueColor: (data.ytd < 0 ? secondaryColor : textPrimary),
                 ),

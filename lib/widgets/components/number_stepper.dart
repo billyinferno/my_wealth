@@ -17,6 +17,7 @@ class NumberStepper extends StatefulWidget {
   final int stepper;
   final int stepperMultiply;
   final Function(int) onTap;
+  final bool midTap;
   const NumberStepper({
     super.key,
     this.height = 30,
@@ -33,6 +34,7 @@ class NumberStepper extends StatefulWidget {
     this.stepper = 1,
     this.stepperMultiply = 10,
     required this.onTap,
+    this.midTap = false,
   });
 
   @override
@@ -104,14 +106,27 @@ class _NumberStepperState extends State<NumberStepper> {
             ),
           ),
           Expanded(
-            child: SizedBox(
-              height: 30,
-              child: Center(
-                child: Text(
-                  "$_currentRate${widget.ratePrefix}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: widget.textColor,
+            child: InkWell(
+              onTap: () {
+                if (widget.midTap) {
+                  setState(() {
+                    _currentRate = _currentRate + 1;
+                    if (_currentRate >= widget.maxRate) {
+                      _currentRate = widget.maxRate;
+                    }
+                  });
+                  widget.onTap(_currentRate);
+                }
+              },
+              child: SizedBox(
+                height: 30,
+                child: Center(
+                  child: Text(
+                    "$_currentRate${widget.ratePrefix}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: widget.textColor,
+                    ),
                   ),
                 ),
               ),

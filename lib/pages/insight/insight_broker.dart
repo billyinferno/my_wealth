@@ -99,156 +99,18 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          color: Colors.green[900],
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  color: primaryDark,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      const Text(
-                                        "Buy",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2,),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Expanded(
-                                            child: Text(
-                                              "Lot",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              formatIntWithNull(
-                                                _marketToday.buy.brokerSummaryTotalLot,
-                                              ),
-                                            )
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Expanded(
-                                            child: Text(
-                                              "Value",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              formatIntWithNull(
-                                                _marketToday.buy.brokerSummaryTotalValue,
-                                              ),
-                                            )
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _marketTodayBox(
+                        color: Colors.green[900]!,
+                        type: "Buy",
+                        totalLot: _marketToday.buy.brokerSummaryTotalLot,
+                        totalValue: _marketToday.buy.brokerSummaryTotalValue,
                       ),
                       const SizedBox(width: 10,),
-                      Expanded(
-                        child: Container(
-                          color: secondaryDark,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  color: primaryDark,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      const Text(
-                                        "Sell",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2,),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Expanded(
-                                            child: Text(
-                                              "Lot",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              formatIntWithNull(
-                                                _marketToday.sell.brokerSummaryTotalLot,
-                                              ),
-                                            )
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          const Expanded(
-                                            child: Text(
-                                              "Value",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              formatIntWithNull(
-                                                _marketToday.sell.brokerSummaryTotalValue,
-                                              ),
-                                            )
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      _marketTodayBox(
+                        color: secondaryDark,
+                        type: "Sell",
+                        totalLot: _marketToday.sell.brokerSummaryTotalLot,
+                        totalValue: _marketToday.sell.brokerSummaryTotalValue,
                       ),
                     ],
                   ),
@@ -1017,5 +879,88 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       // remove the loading screen
       LoadingScreen.instance().hide();
     });
+  }
+
+  Widget _marketTodayBox({
+    required Color color,
+    required String type,
+    required int totalLot,
+    required int totalValue,
+  }) {
+    return Expanded(
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 10,
+              color: color,
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                color: primaryDark,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      type,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2,),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Expanded(
+                          child: Text(
+                            "Lot",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            formatIntWithNull(
+                              totalLot,
+                            ),
+                          )
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Expanded(
+                          child: Text(
+                            "Value",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            formatIntWithNull(
+                              totalValue,
+                            ),
+                          )
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

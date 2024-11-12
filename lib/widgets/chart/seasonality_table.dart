@@ -288,37 +288,43 @@ class SeasonalityTable extends StatelessWidget {
 
     // ensure all data is available
     if (minLastPrice != null && maxLastPrice != null && minDiffPrice != null && maxDiffPrice != null) {
-      // get the total percentage diff
-      totalPercentageDiff = (maxDiffPrice - minDiffPrice) / ((minLastPrice + maxLastPrice) / 2);
-      // calculate the text color
-      if (diffPrice != 0) {
-        cost = (minDiffPrice + maxDiffPrice);
-        
-        range = (
-          minDiffPrice < 0 ?
-          minDiffPrice * (-1) :
-          minDiffPrice
-        ) + (
-          maxDiffPrice < 0 ?
-          maxDiffPrice * (-1) :
-          maxDiffPrice
-        );
+      double minMaxPrice = ((maxDiffPrice - minDiffPrice) + diffPrice) / (maxDiffPrice - minDiffPrice);
+      if (minMaxPrice < 0.7 && ((risk ?? 10) > 15)) {
+        textColor = textPrimary;
+      }
+      else {
+        // get the total percentage diff
+        totalPercentageDiff = (maxDiffPrice - minDiffPrice) / ((minLastPrice + maxLastPrice) / 2);
+        // calculate the text color
+        if (diffPrice != 0) {
+          cost = (minDiffPrice + maxDiffPrice);
+          
+          range = (
+            minDiffPrice < 0 ?
+            minDiffPrice * (-1) :
+            minDiffPrice
+          ) + (
+            maxDiffPrice < 0 ?
+            maxDiffPrice * (-1) :
+            maxDiffPrice
+          );
 
-        cost = cost / range;
+          cost = cost / range;
 
-        // if the user risk is < 30 then make it lighter color instead
-        if ((risk ?? 10) <= 15) {
-          colorValue.clear();
-          colorValue.add(100);
-          colorValue.add(300);
-          colorValue.add(500);
-        }
-        
-        textColor = riskColor2(
-          percentage: cost,
-          diff: diffPrice,
-          colorNumber: colorValue,
-        );
+          // if the user risk is < 30 then make it lighter color instead
+          if ((risk ?? 10) <= 15) {
+            colorValue.clear();
+            colorValue.add(100);
+            colorValue.add(300);
+            colorValue.add(500);
+          }
+          
+          textColor = riskColor2(
+            percentage: cost,
+            diff: diffPrice,
+            colorNumber: colorValue,
+          );
+      }
       }
     }
 

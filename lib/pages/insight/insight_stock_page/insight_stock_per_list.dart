@@ -69,7 +69,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
         }
         else {
           return const CommonLoadingPage(
-            isNeedScaffold: false,
+            isNeedScaffold: true,
           );
         }
       },
@@ -142,34 +142,28 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                 itemCount: _codeList.length,
                 itemBuilder: ((context, index) {
                   Color indicatorColor = Colors.white;
-                  if (_codeList[index].perDaily! < 0 || _codeList[index].perAnnualized! < 0 || _codeList[index].perPeriodatic! < 0) {
+                  if (
+                    _codeList[index].perDaily! < 0 &&
+                    _codeList[index].perAnnualized! < 0 &&
+                    _codeList[index].perPeriodatic! < 0
+                  ) {
                     indicatorColor = const Color.fromARGB(255, 51, 3, 0);
                   }
                   else {
-                    // compare with average
-                    double avgPer = _data.averagePerDaily;
-                    double avgPerAnnul = _data.averagePerAnnualized;
-                    double avgPerPeriod = _data.averagePerPeriodatic;
-                    double addAvgPer = 0;
-                    double addAvgPerAnnul = 0;
-                    double addAvgPerPeriod = 0;
-        
-                    if (avgPer < 0) {
-                      avgPer = (avgPer) * (-1);
-                      addAvgPer = avgPer;
-                    }
-                    if (avgPerAnnul < 0) {
-                      avgPerAnnul = (avgPerAnnul) * (-1);
-                      addAvgPerAnnul = avgPerAnnul;
-                    }
-                    if (avgPerPeriod < 0) {
-                      avgPerPeriod = (avgPerPeriod) * (-1);
-                      addAvgPerPeriod = avgPerPeriod;
-                    }
-        
+                    // calculate the average PER
+                    // the way we calculate will be using weight for the PER
+                    // daily - 1
+                    // period - 3
+                    // annual - 6
+                    // now let calculate increment/decrement for each per
+                    double periodWeight = ((_codeList[index].period ?? 0 * 30)/365);
+                    double dailyPer = ((_codeList[index].perDaily ?? 0) / _data.averagePerDaily.makePositive()) * 0.03; // (1/365)
+                    double periodPer = ((_codeList[index].perPeriodatic ?? 0) / _data.averagePerPeriodatic.makePositive()) * periodWeight;
+                    double annualPer = ((_codeList[index].perAnnualized ?? 0) / _data.averagePerAnnualized.makePositive()) * 1;
+
                     indicatorColor = riskColor(
-                      value: avgPer + avgPerAnnul + avgPerPeriod,
-                      cost: (_codeList[index].perDaily! + addAvgPer) + (_codeList[index].perAnnualized! + addAvgPerAnnul) + (_codeList[index].perPeriodatic! + addAvgPerPeriod),
+                      value: (dailyPer + periodPer + annualPer),
+                      cost: (1.03 + periodWeight),
                       riskFactor: _userInfo!.risk
                     );
                   }
@@ -229,25 +223,24 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
   }
 
   Widget _listItem({
-      required Color indicatorColor,
-      Color? bgColor,
-      required String code,
-      TextStyle? codeTextStyle,
-      required String title,
-      TextStyle? titleTextStyle,
-      required String per,
-      TextStyle? perTextStyle,
-      required String periodic,
-      int? period,
-      int? year,
-      TextStyle? periodicTextStyle,
-      required String annual,
-      TextStyle? annualTextStyle
-    }) {
+    required Color indicatorColor,
+    Color? bgColor,
+    required String code,
+    TextStyle? codeTextStyle,
+    required String title,
+    TextStyle? titleTextStyle,
+    required String per,
+    TextStyle? perTextStyle,
+    required String periodic,
+    int? period,
+    int? year,
+    TextStyle? periodicTextStyle,
+    required String annual,
+    TextStyle? annualTextStyle
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: indicatorColor,
-        border: const Border(
+        border: Border(
           bottom: BorderSide(
             color: primaryLight,
             width: 1.0,
@@ -255,132 +248,152 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
           )
         )
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox( width: 10,),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-              color: (bgColor ?? primaryColor),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Visibility(
-                          visible: (code.isNotEmpty),
-                          child: SizedBox(
-                            width: 50,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 10,
+              color: indicatorColor,
+            ),
+            Expanded(
+              child: Container(
+                color: bgColor,
+                padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Visibility(
+                            visible: (code.isNotEmpty),
+                            child: SizedBox(
+                              width: 50,
+                              child: Text(
+                                code,
+                                style: (codeTextStyle ?? const TextStyle(fontWeight: FontWeight.normal, color: accentColor)),
+                              ),
+                            ),
+                          ),
+                          Expanded(
                             child: Text(
-                              code,
-                              style: (codeTextStyle ?? const TextStyle(fontWeight: FontWeight.normal, color: accentColor)),
+                              title,
+                              style: (titleTextStyle ?? const TextStyle(fontWeight: FontWeight.normal, color: textPrimary)),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: (titleTextStyle ?? const TextStyle(fontWeight: FontWeight.normal, color: textPrimary)),
-                          ),
-                        )
-                      ], 
+                          )
+                        ], 
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10,),
-                  SizedBox(
-                    width: 135,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const SizedBox(
-                              width: 80,
-                              child: Text(
-                                "Daily",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: accentLight
+                    const SizedBox(width: 10,),
+                    SizedBox(
+                      width: 135,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const SizedBox(
+                                width: 80,
+                                child: Text(
+                                  "Daily",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                per,
-                                style: (perTextStyle ?? const TextStyle(fontSize: 10, color: textPrimary)),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 80,
-                              child: Text(
-                                (period != null && year != null ? "[${period}M/$year]" : "Periodic"),
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: accentLight
+                              Expanded(
+                                child: Text(
+                                  per,
+                                  style: (
+                                    perTextStyle ??
+                                    const TextStyle(
+                                      fontSize: 10,
+                                      color: textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    )
+                                  ),
+                                  textAlign: TextAlign.right,
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                periodic,
-                                style: (periodicTextStyle ?? const TextStyle(fontSize: 10, color: textPrimary)),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const SizedBox(
-                              width: 80,
-                              child: Text(
-                                "Annualized",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: accentLight
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              SizedBox(
+                                width: 80,
+                                child: Text(
+                                  (period != null && year != null ? "[${period}M/$year]" : "Periodic"),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                annual,
-                                style: (annualTextStyle ?? const TextStyle(fontSize: 10, color: textPrimary)),
-                                textAlign: TextAlign.right,
+                              Expanded(
+                                child: Text(
+                                  periodic,
+                                  style: (
+                                    periodicTextStyle ??
+                                    const TextStyle(
+                                      fontSize: 10,
+                                      color: textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    )
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const SizedBox(
+                                width: 80,
+                                child: Text(
+                                  "Annualized",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  annual,
+                                  style: (
+                                    annualTextStyle ??
+                                    const TextStyle(
+                                      fontSize: 10,
+                                      color: textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    )
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

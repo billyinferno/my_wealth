@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_wealth/_index.g.dart';
 
 class CompanyDetailList {
   final DateTime date;
@@ -26,20 +25,29 @@ class CompanyDetailPriceList extends StatelessWidget {
   final Color riskColor;
   final String dayDiff;
   final Color dayDiffColor;
-  const CompanyDetailPriceList({ super.key, required this.date, required this.price, required this.diff, required this.riskColor, required this.dayDiff, required this.dayDiffColor });
+  const CompanyDetailPriceList({
+    super.key,
+    required this.date,
+    required this.price,
+    required this.diff,
+    required this.riskColor,
+    required this.dayDiff,
+    required this.dayDiffColor
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: riskColor,
+    return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(width: 10,),
+          Container(
+            color: riskColor,
+            width: 10,
+          ),
           Expanded(
             child: Container(
-              color: primaryColor,
               padding: const EdgeInsets.all(10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -122,6 +122,11 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
+    Color priceColor = riskColor(
+      value: _companyDetail.companyNetAssetValue!,
+      cost: _companyDetail.companyPrevPrice!,
+      riskFactor: _userInfo!.risk
+    );
 
     if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
       currentIcon = Ionicons.caret_up;
@@ -178,21 +183,18 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              color: riskColor(
-                value: _companyDetail.companyNetAssetValue!,
-                cost: _companyDetail.companyPrevPrice!,
-                riskFactor: _userInfo!.risk
-              ),
+            IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const SizedBox(width: 10,),
+                  Container(
+                    color: priceColor,
+                    width: 10,
+                  ),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      color: primaryColor,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -233,11 +235,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                             children: <Widget>[
                               Icon(
                                 currentIcon,
-                                color: riskColor(
-                                  value: _companyDetail.companyNetAssetValue!,
-                                  cost: _companyDetail.companyPrevPrice!,
-                                  riskFactor: _userInfo!.risk
-                                ),
+                                color: priceColor,
                               ),
                               const SizedBox(width: 10,),
                               Container(
@@ -245,11 +243,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: riskColor(
-                                        value: _companyDetail.companyNetAssetValue!,
-                                        cost: _companyDetail.companyPrevPrice!,
-                                        riskFactor: _userInfo!.risk
-                                      ),
+                                      color: priceColor,
                                       width: 2.0,
                                       style: BorderStyle.solid,
                                     ),
@@ -306,7 +300,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

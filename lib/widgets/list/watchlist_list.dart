@@ -23,98 +23,110 @@ class WatchlistList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: riskColor,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(width: 5,),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              color: primaryColor,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Visibility(
-                              visible: fca,
-                              child: const Icon(
-                                Ionicons.warning,
-                                color: secondaryColor,
-                                size: 15,
+    return IntrinsicHeight(
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            ),
+          )
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              color: riskColor,
+              width: 5,
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Visibility(
+                                visible: fca,
+                                child: const Icon(
+                                  Ionicons.warning,
+                                  color: secondaryColor,
+                                  size: 15,
+                                )
+                              ),
+                              Visibility(
+                                visible: fca,
+                                child: const SizedBox(width: 5,)
+                              ),
+                              Expanded(
+                                child: Text(
+                                  name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Icon(
+                                Ionicons.logo_usd,
+                                size: 12,
+                                color: primaryLight,
+                              ),
+                              const SizedBox(width: 5,),
+                              Expanded(
+                                child: Text(
+                                  price,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              const Icon(
+                                Ionicons.time,
+                                size: 12,
+                                color: primaryLight,
+                              ),
+                              const SizedBox(width: 5,),
+                              Expanded(
+                                child: Text(
+                                  date,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
                               )
-                            ),
-                            Visibility(
-                              visible: fca,
-                              child: const SizedBox(width: 5,)
-                            ),
-                            Expanded(
-                              child: Text(
-                                name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            const Icon(
-                              Ionicons.logo_usd,
-                              size: 12,
-                              color: primaryLight,
-                            ),
-                            const SizedBox(width: 5,),
-                            Expanded(
-                              child: Text(
-                                price,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10,),
-                            const Icon(
-                              Ionicons.time,
-                              size: 12,
-                              color: primaryLight,
-                            ),
-                            const SizedBox(width: 5,),
-                            Expanded(
-                              child: Text(
-                                date,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  (canAdd ? _canPress() : _cannotPress()),
-                ],
+                    (canAdd ? _canPress() : _cannotPress()),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

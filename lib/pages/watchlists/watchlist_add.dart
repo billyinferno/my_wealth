@@ -169,45 +169,34 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: List<Widget>.generate(_companyFilterResult.length, (index) {
-          return Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: primaryLight,
-                  width: 1.0,
-                  style: BorderStyle.solid,
-                ),
-              )
+          return WatchlistList(
+            name: _companyFilterResult[index].companyName,
+            price: formatCurrency(
+              _companyFilterResult[index].companyNetAssetValue!
             ),
-            child: WatchlistList(
-              name: _companyFilterResult[index].companyName,
-              price: formatCurrency(
-                _companyFilterResult[index].companyNetAssetValue!
-              ),
-              date: Globals.dfddMMyyyy.formatLocal(
-                _companyFilterResult[index].companyLastUpdate
-              ),
-              riskColor: riskColor(
-                value: _companyFilterResult[index].companyNetAssetValue!,
-                cost: _companyFilterResult[index].companyPrevPrice!,
-                riskFactor: _userInfo!.risk
-              ),
-              canAdd: _companyFilterResult[index].companyCanAdd,
-              fca: (_companyFilterResult[index].companyFCA ?? false),
-              onPress: (() async {
-                await _addCompanyToWatchlist(index).then((_) async {
-                  Log.success(
-                    message: "🏁 Add Company ${_companyFilterResult[index].companyName} to watchlist"
+            date: Globals.dfddMMyyyy.formatLocal(
+              _companyFilterResult[index].companyLastUpdate
+            ),
+            riskColor: riskColor(
+              value: _companyFilterResult[index].companyNetAssetValue!,
+              cost: _companyFilterResult[index].companyPrevPrice!,
+              riskFactor: _userInfo!.risk
+            ),
+            canAdd: _companyFilterResult[index].companyCanAdd,
+            fca: (_companyFilterResult[index].companyFCA ?? false),
+            onPress: (() async {
+              await _addCompanyToWatchlist(index).then((_) async {
+                Log.success(
+                  message: "🏁 Add Company ${_companyFilterResult[index].companyName} to watchlist"
+                );
+              }).onError((error, stackTrace) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    createSnackBar(message: error.toString())
                   );
-                }).onError((error, stackTrace) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      createSnackBar(message: error.toString())
-                    );
-                  }
-                });
-              })
-            ),
+                }
+              });
+            })
           );
         }),
       ),

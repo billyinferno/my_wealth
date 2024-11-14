@@ -189,13 +189,15 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    color: _riskColor,
+                  IntrinsicHeight(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        const SizedBox(width: 10,),
+                        Container(
+                          color: _riskColor,
+                          width: 10,
+                        ),
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(10),
@@ -396,7 +398,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                               ],
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -509,11 +511,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                     ),
                   ),
                   Expanded(
-                    child: ListView(
+                    child: ListView.builder(
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: List<Widget>.generate(_watchlist.watchlistDetail.length, (index) {
-                        WatchlistDetailEditArgs args = WatchlistDetailEditArgs(type: _type, index: index, watchlist: _watchlist);
+                      itemCount: _watchlist.watchlistDetail.length,
+                      itemBuilder: (context, index) {
                         Color rColor = riskColor(
                           value: (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
                           cost: (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
@@ -578,70 +580,78 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             onDoubleTap: (() {
                               Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
                             }),
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                              decoration: BoxDecoration(
-                                color: _listColor(_watchlist.watchlistDetail[index].watchlistDetailShare),
-                                border: const Border(
-                                  bottom: BorderSide(
-                                    color: primaryLight,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    color: rColor,
-                                    width: 5,
-                                    height: 45,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      Globals.dfddMMyyyy.formatLocal(_watchlist.watchlistDetail[index].watchlistDetailDate),
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                      ),
+                            child: IntrinsicHeight(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: _listColor(_watchlist.watchlistDetail[index].watchlistDetailShare),
+                                  border: const Border(
+                                    bottom: BorderSide(
+                                      color: primaryLight,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
                                     )
                                   ),
-                                  const SizedBox(width: 10,),
-                                  Expanded(
-                                    child: Text(
-                                      formatCurrency(
-                                        _watchlistArgs.isLot ?
-                                        _watchlist.watchlistDetail[index].watchlistDetailShare / 100 :
-                                        _watchlist.watchlistDetail[index].watchlistDetailShare
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      color: (_watchlist.watchlistDetail[index].watchlistDetailShare > 0 ? rColor : extendedDark),
+                                      width: 5,
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.fromLTRB(5, 12, 10, 12),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: Text(
+                                                Globals.dfddMMyyyy.formatLocal(_watchlist.watchlistDetail[index].watchlistDetailDate),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                              )
+                                            ),
+                                            const SizedBox(width: 10,),
+                                            Expanded(
+                                              child: Text(
+                                                formatCurrency(
+                                                  _watchlistArgs.isLot ?
+                                                  _watchlist.watchlistDetail[index].watchlistDetailShare / 100 :
+                                                  _watchlist.watchlistDetail[index].watchlistDetailShare
+                                                ),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.right,
+                                              )
+                                            ),
+                                            const SizedBox(width: 10,),
+                                            Expanded(
+                                              child: Text(
+                                                formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.right,
+                                              )
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.right,
-                                    )
-                                  ),
-                                  const SizedBox(width: 10,),
-                                  Expanded(
-                                    child: Text(
-                                      formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.right,
-                                    )
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         );
-                      }),
+                      },
                     ),
                   ),
                 ],

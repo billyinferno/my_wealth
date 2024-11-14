@@ -173,16 +173,17 @@ class IndexDetailPageState extends State<IndexDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-                color: _riskColor,
+              IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    const SizedBox(width: 10,),
+                    Container(
+                      color: _riskColor,
+                      width: 10,
+                    ),
                     Expanded(
                       child: Container(
-                        color: primaryColor,
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

@@ -262,6 +262,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   Widget _generatePage() {
     IconData currentIcon = Ionicons.remove;
     double diffPrice = _companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!;
+    Color priceColor = riskColor(
+      value: _companyDetail.companyNetAssetValue!,
+      cost: _companyDetail.companyPrevPrice!,
+      riskFactor: _userInfo!.risk
+    );
 
     if (diffPrice > 0) {
       currentIcon = Ionicons.caret_up;
@@ -357,23 +362,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 ),
               ),
             ),
-            Container(
-              color: riskColor(
-                value: _companyDetail.companyNetAssetValue!,
-                cost: _companyDetail.companyPrevPrice!,
-                riskFactor: _userInfo!.risk
-              ),
+            IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const SizedBox(
+                  Container(
+                    color: priceColor,
                     width: 10,
                   ),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(10),
-                      color: primaryColor,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -468,11 +468,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                             children: <Widget>[
                               Icon(
                                 currentIcon,
-                                color: riskColor(
-                                  value: _companyDetail.companyNetAssetValue!,
-                                  cost: _companyDetail.companyPrevPrice!,
-                                  riskFactor: _userInfo!.risk
-                                ),
+                                color: priceColor,
                               ),
                               const SizedBox(
                                 width: 10,
@@ -482,11 +478,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 decoration: BoxDecoration(
                                     border: Border(
                                   bottom: BorderSide(
-                                    color: riskColor(
-                                      value: _companyDetail.companyNetAssetValue!,
-                                      cost: _companyDetail.companyPrevPrice!,
-                                      riskFactor: _userInfo!.risk
-                                    ),
+                                    color: priceColor,
                                     width: 2.0,
                                     style: BorderStyle.solid,
                                   ),
@@ -601,7 +593,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -3395,228 +3387,219 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             itemCount: _infoSahamPriceSort.length,
             physics: const AlwaysScrollableScrollPhysics(),
             itemBuilder: ((context, index) {
-              return Container(
-                width: double.infinity,
-                color: _infoSahamPriceSort[index].lastPriceColor,
+              return IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    const SizedBox(
+                    Container(
+                      color: _infoSahamPriceSort[index].lastPriceColor,
+                      width: 5,
+                    ),
+                    Container(
+                      color: _infoSahamPriceSort[index].dayDiffColor,
                       width: 5,
                     ),
                     Expanded(
                       child: Container(
-                        color: _infoSahamPriceSort[index].dayDiffColor,
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    Globals.dfddMMyyyy.formatLocal(
+                                      _infoSahamPriceSort[index].date
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(
+                                      _infoSahamPriceSort[index].volume,
+                                      checkThousand:false,
+                                      showDecimal:true
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
                             const SizedBox(
-                              width: 5,
+                              width: 10,
                             ),
                             Expanded(
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                color: primaryColor,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Expanded(
-                                        flex: 3,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              Globals.dfddMMyyyy.formatLocal(
-                                                _infoSahamPriceSort[index].date
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            Text(
-                                              formatIntWithNull(
-                                                _infoSahamPriceSort[index].volume,
-                                                checkThousand:false,
-                                                showDecimal:true
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                    const SizedBox(
-                                      width: 10,
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.end,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    formatCurrency(
+                                      _infoSahamPriceSort[index].lastPrice,
+                                      showDecimal: false
                                     ),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              formatCurrency(
-                                                _infoSahamPriceSort[index].lastPrice,
-                                                showDecimal: false
-                                              ),
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            Text(
-                                              formatCurrency(
-                                                _infoSahamPriceSort[index].adjustedLowPrice,
-                                                showDecimal: false
-                                              ),
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                            Text(
-                                              formatCurrency(
-                                                _infoSahamPriceSort[index].adjustedHighPrice,
-                                                showDecimal: false
-                                              ),
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                    const SizedBox(
-                                      width: 10,
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 12,
                                     ),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                    color: riskColor(
-                                                      value: _companyDetail.companyNetAssetValue!,
-                                                      cost: _infoSahamPriceSort[index].lastPrice,
-                                                      riskFactor: _userInfo!.risk
-                                                    ),
-                                                    width: 2.0,
-                                                    style: BorderStyle.solid,
-                                                  )
-                                                )
-                                              ),
-                                              child: Text(
-                                                formatCurrency(
-                                                  _companyDetail.companyNetAssetValue! - _infoSahamPriceSort[index].lastPrice,
-                                                  showDecimal: false
-                                                ),
-                                                textAlign: TextAlign.right,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              formatCurrency(
-                                                _infoSahamPriceSort[index].lowDiff,
-                                                showDecimal: false
-                                              ),
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                color: secondaryColor,
-                                              ),
-                                            ),
-                                            Text(
-                                              formatCurrency(
-                                                _infoSahamPriceSort[index].highDiff,
-                                                showDecimal: false
-                                              ),
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.green,
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                    const SizedBox(
-                                      width: 10,
+                                  ),
+                                  Text(
+                                    formatCurrency(
+                                      _infoSahamPriceSort[index].adjustedLowPrice,
+                                      showDecimal: false
                                     ),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                    color: _infoSahamPriceSort[index].dayDiffColor,
-                                                    width: 2.0,
-                                                    style: BorderStyle.solid,
-                                                  )
-                                                )
-                                              ),
-                                              child: Text(
-                                                formatCurrencyWithNull(
-                                                  _infoSahamPriceSort[index].dayDiff,
-                                                  showDecimal: false
-                                                ),
-                                                textAlign: TextAlign.right,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              '${formatDecimalWithNull(
-                                                _infoSahamPriceSort[index].lowDiff / _infoSahamPriceSort[index].lastPrice,
-                                                times: 100,
-                                                decimal: 2,
-                                              )}%',
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                color: secondaryColor,
-                                              ),
-                                            ),
-                                            Text(
-                                              '${formatDecimalWithNull(
-                                                _infoSahamPriceSort[index].highDiff / _infoSahamPriceSort[index].lastPrice,
-                                                times: 100,
-                                                decimal: 2,
-                                              )}%',
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.green,
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                  ],
-                                ),
-                              ),
-                            )
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(
+                                      _infoSahamPriceSort[index].adjustedHighPrice,
+                                      showDecimal: false
+                                    ),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: riskColor(
+                                            value: _companyDetail.companyNetAssetValue!,
+                                            cost: _infoSahamPriceSort[index].lastPrice,
+                                            riskFactor: _userInfo!.risk
+                                          ),
+                                          width: 2.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      formatCurrency(
+                                        _companyDetail.companyNetAssetValue! - _infoSahamPriceSort[index].lastPrice,
+                                        showDecimal: false
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(
+                                      _infoSahamPriceSort[index].lowDiff,
+                                      showDecimal: false
+                                    ),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(
+                                      _infoSahamPriceSort[index].highDiff,
+                                      showDecimal: false
+                                    ),
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: _infoSahamPriceSort[index].dayDiffColor,
+                                          width: 2.0,
+                                          style: BorderStyle.solid,
+                                        )
+                                      )
+                                    ),
+                                    child: Text(
+                                      formatCurrencyWithNull(
+                                        _infoSahamPriceSort[index].dayDiff,
+                                        showDecimal: false
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${formatDecimalWithNull(
+                                      _infoSahamPriceSort[index].lowDiff / _infoSahamPriceSort[index].lastPrice,
+                                      times: 100,
+                                      decimal: 2,
+                                    )}%',
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${formatDecimalWithNull(
+                                      _infoSahamPriceSort[index].highDiff / _infoSahamPriceSort[index].lastPrice,
+                                      times: 100,
+                                      decimal: 2,
+                                    )}%',
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               );

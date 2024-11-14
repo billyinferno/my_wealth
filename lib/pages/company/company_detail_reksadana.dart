@@ -189,6 +189,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     IconData currentIcon = Ionicons.remove;
     int companyRating;
     int companyRisk;
+    Color priceColor = riskColor(
+      value: _companyDetail.companyNetAssetValue!,
+      cost: _companyDetail.companyPrevPrice!,
+      riskFactor: _userInfo!.risk
+    );
     
     if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
       currentIcon = Ionicons.caret_up;
@@ -269,21 +274,18 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              color: riskColor(
-                value: _companyDetail.companyNetAssetValue!,
-                cost: _companyDetail.companyPrevPrice!,
-                riskFactor: _userInfo!.risk
-              ),
+            IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  const SizedBox(width: 10,),
+                  Container(
+                    color: priceColor,
+                    width: 10,
+                  ),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-                      color: primaryColor,
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -309,11 +311,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             children: <Widget>[
                               Icon(
                                 currentIcon,
-                                color: riskColor(
-                                  value: _companyDetail.companyNetAssetValue!,
-                                  cost: _companyDetail.companyPrevPrice!,
-                                  riskFactor: _userInfo!.risk
-                                ),
+                                color: priceColor,
                               ),
                               const SizedBox(width: 10,),
                               Container(
@@ -321,11 +319,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: riskColor(
-                                        value: _companyDetail.companyNetAssetValue!,
-                                        cost: _companyDetail.companyPrevPrice!,
-                                        riskFactor: _userInfo!.risk
-                                      ),
+                                      color: priceColor,
                                       width: 2.0,
                                       style: BorderStyle.solid,
                                     ),
@@ -417,7 +411,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

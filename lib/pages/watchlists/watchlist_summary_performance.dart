@@ -1302,23 +1302,30 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       plColor = (_perfData[index].gain == 0 ? textPrimary : (_perfData[index].gain < 0 ? secondaryColor : Colors.green));
 
       isPLMinMax = false;
-      if (_perfData[index].gain == _max || _perfData[index].gain == _min) {
-        // means for this we will need to put color on the container instead of the text
-        isPLMinMax = true;
-        plColor = textPrimary;
-        if (_perfData[index].gain == _max) {
-          plColor = Colors.green[900]!;
-        }
-        if (_perfData[index].gain == _min) {
-          plColor = secondaryDark;
+      plColor = textPrimary;
+      // only highlight if we still have total, otherwise it means that we already
+      // sold all the investment, so no need to highlight.
+      if (_perfData[index].total > 0) {
+        if (_perfData[index].gain == _max || _perfData[index].gain == _min) {
+          // means for this we will need to put color on the container instead of the text
+          isPLMinMax = true;
+          if (_perfData[index].gain == _max) {
+            plColor = Colors.green[900]!;
+          }
+          if (_perfData[index].gain == _min) {
+            plColor = secondaryDark;
+          }
         }
       }
 
       isDiffMinMax = false;
-      if (plDiff == _maxPL || plDiff == _minPL) {
-        // means for this we will need to put color on the container instead of the text
-        isDiffMinMax = true;
-        plDiffColor = (plDiff == 0 ? textPrimary : (plDiff! < 0 ? secondaryDark : Colors.green[900]!));
+      // only to highlight the pl diff if the pl diff min max is not 0
+      if (plDiff != 0) {
+        if (plDiff == _maxPL || plDiff == _minPL) {
+          // means for this we will need to put color on the container instead of the text
+          isDiffMinMax = true;
+          plDiffColor = (plDiff! < 0 ? secondaryDark : Colors.green[900]!);
+        }
       }
 
       percentGain = null;

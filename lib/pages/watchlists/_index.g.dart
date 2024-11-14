@@ -1,3 +1,4 @@
+export './detail/_index.g.dart';
 export './watchlist_add.dart';
 export './watchlist_calendar.dart';
 export './watchlist_list.dart';

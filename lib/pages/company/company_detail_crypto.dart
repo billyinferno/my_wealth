@@ -35,7 +35,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   late bool _isOwned;
   
   int _numPrice = 0;
-  int _bodyPage = 0;
+  BodyPage _bodyPage = BodyPage.summary;
 
   double? _minPrice;
   double? _maxPrice;
@@ -324,10 +324,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 0;
+                      _bodyPage = BodyPage.summary;
                     });
                   }),
-                  active: (_bodyPage == 0),
+                  active: (_bodyPage == BodyPage.summary),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -338,23 +338,24 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   icon: Ionicons.list_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 1;
+                      _bodyPage = BodyPage.table;
                     });
                   }),
-                  active: (_bodyPage == 1),
+                  active: (_bodyPage == BodyPage.table),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
                 TransparentButton(
                   text: "Map",
                   color: primaryDark,
+                  borderColor: primaryLight,
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 2;
+                      _bodyPage = BodyPage.map;
                     });
                   }),
-                  active: (_bodyPage == 2),
+                  active: (_bodyPage == BodyPage.map),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -365,10 +366,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 3;
+                      _bodyPage = BodyPage.graph;
                     });
                   }),
-                  active: (_bodyPage == 3),
+                  active: (_bodyPage == BodyPage.graph),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -384,13 +385,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
   Widget _detail() {
     switch(_bodyPage) {
-      case 0:
+      case BodyPage.summary:
         return _showSummary();
-      case 1:
+      case BodyPage.table:
         return _showTable();
-      case 2:
+      case BodyPage.map:
         return _showCalendar();
-      case 3:
+      case BodyPage.graph:
         return _showGraph();
       default:
         return _showSummary();

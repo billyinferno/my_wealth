@@ -62,10 +62,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late List<IndexPriceModel> _indexComparePrice;
   late Map<DateTime, double> _indexPriceMap;
   late List<GraphData> _indexData;
+  late BodyPage _bodyPage;
   
   bool _showCurrentPriceComparison = false;
   bool _recurring = true;
-  int _bodyPage = 0;
   int _numPrice = 0;
   double? _minPrice;
   double? _maxPrice;
@@ -87,7 +87,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _showCurrentPriceComparison = false;
     _otherCompanyDetail = null;
 
-    _bodyPage = 0;
+    _bodyPage = BodyPage.summary;
     _numPrice = 0;
 
     _movementData = [];
@@ -434,10 +434,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 0;
+                      _bodyPage = BodyPage.summary;
                     });
                   }),
-                  active: (_bodyPage == 0),
+                  active: (_bodyPage == BodyPage.summary),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -448,10 +448,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   icon: Ionicons.list_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 1;
+                      _bodyPage = BodyPage.table;
                     });
                   }),
-                  active: (_bodyPage == 1),
+                  active: (_bodyPage == BodyPage.table),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -462,10 +462,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 2;
+                      _bodyPage = BodyPage.map;
                     });
                   }),
-                  active: (_bodyPage == 2),
+                  active: (_bodyPage == BodyPage.map),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -476,10 +476,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 3;
+                      _bodyPage = BodyPage.graph;
                     });
                   }),
-                  active: (_bodyPage == 3),
+                  active: (_bodyPage == BodyPage.graph),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -490,10 +490,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   icon: Ionicons.calculator_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 4;
+                      _bodyPage = BodyPage.calc;
                     });
                   }),
-                  active: (_bodyPage == 4),
+                  active: (_bodyPage == BodyPage.calc),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -553,15 +553,15 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
   Widget _detail() {
     switch(_bodyPage) {
-      case 0:
+      case BodyPage.summary:
         return _showSummary();
-      case 1:
+      case BodyPage.table:
         return _showTable();
-      case 2:
+      case BodyPage.map:
         return _showCalendar();
-      case 3:
+      case BodyPage.graph:
         return _showGraph();
-      case 4:
+      case BodyPage.calc:
         return _showCalc();
       default:
         return _showTable();

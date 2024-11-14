@@ -41,7 +41,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   late String _currentPriceCcy;
   
   bool _showCurrentPriceComparison = false;
-  int _bodyPage = 0;
+  late BodyPage _bodyPage;
   late List<GraphData> _graphData;
   late Map<DateTime, GraphData> _heatMapGraphData;
   int _numPrice = 0;
@@ -54,7 +54,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     super.initState();
     _showCurrentPriceComparison = false;
 
-    _bodyPage = 0;
+    _bodyPage = BodyPage.summary;
     _numPrice = 0;
 
     _userInfo = UserSharedPreferences.getUserInfo();
@@ -323,10 +323,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 0;
+                      _bodyPage = BodyPage.summary;
                     });
                   }),
-                  active: (_bodyPage == 0),
+                  active: (_bodyPage == BodyPage.summary),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -337,10 +337,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   icon: Ionicons.list_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 1;
+                      _bodyPage = BodyPage.table;
                     });
                   }),
-                  active: (_bodyPage == 1),
+                  active: (_bodyPage == BodyPage.table),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -351,10 +351,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 2;
+                      _bodyPage = BodyPage.map;
                     });
                   }),
-                  active: (_bodyPage == 2),
+                  active: (_bodyPage == BodyPage.map),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -365,10 +365,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 3;
+                      _bodyPage = BodyPage.graph;
                     });
                   }),
-                  active: (_bodyPage == 3),
+                  active: (_bodyPage == BodyPage.graph),
                   vertical: true,
                 ),
                 const SizedBox(width: 10,),
@@ -386,13 +386,13 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
   Widget _detail() {
     switch(_bodyPage) {
-      case 0:
+      case BodyPage.summary:
         return _showSummary();
-      case 1:
+      case BodyPage.table:
         return _showTable();
-      case 2:
+      case BodyPage.map:
         return _showCalendar();
-      case 3:
+      case BodyPage.graph:
         return _showGraph();
       default:
         return _showTable();

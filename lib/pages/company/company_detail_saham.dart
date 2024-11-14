@@ -130,7 +130,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late bool _isOwned;
 
   int _numPrice = 0;
-  int _bodyPage = 0;
+  BodyPage _bodyPage = BodyPage.summary;
   int _quarterSelection = 5;
   String _quarterSelectionText = "Every Quarter";
   String _graphSelection = "s";
@@ -619,10 +619,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   icon: Ionicons.speedometer_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 0;
+                      _bodyPage = BodyPage.summary;
                     });
                   }),
-                  active: (_bodyPage == 0),
+                  active: (_bodyPage == BodyPage.summary),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -634,10 +634,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   icon: Ionicons.business_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 1;
+                      _bodyPage = BodyPage.broker;
                     });
                   }),
-                  active: (_bodyPage == 1),
+                  active: (_bodyPage == BodyPage.broker),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -649,10 +649,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   icon: Ionicons.list_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 2;
+                      _bodyPage = BodyPage.table;
                     });
                   }),
-                  active: (_bodyPage == 2),
+                  active: (_bodyPage == BodyPage.table),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -664,10 +664,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   icon: Ionicons.calendar_clear_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 3;
+                      _bodyPage = BodyPage.map;
                     });
                   }),
-                  active: (_bodyPage == 3),
+                  active: (_bodyPage == BodyPage.map),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -679,10 +679,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   icon: Ionicons.stats_chart_outline,
                   onTap: (() {
                     setState(() {
-                      _bodyPage = 4;
+                      _bodyPage = BodyPage.graph;
                     });
                   }),
-                  active: (_bodyPage == 4),
+                  active: (_bodyPage == BodyPage.graph),
                   vertical: true,
                 ),
                 const SizedBox(width: 5,),
@@ -698,15 +698,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
   Widget _detail() {
     switch (_bodyPage) {
-      case 0:
+      case BodyPage.summary:
         return _showSummary();
-      case 1:
+      case BodyPage.broker:
         return _showBroker();
-      case 2:
+      case BodyPage.table:
         return _showTable();
-      case 3:
+      case BodyPage.map:
         return _showCalendar();
-      case 4:
+      case BodyPage.graph:
         return _showGraph();
       default:
         return _showSummary();

@@ -697,7 +697,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       case BodyPage.table:
         return _showTable();
       case BodyPage.map:
-        return _showCalendar();
+        return _showMap();
       case BodyPage.graph:
         return _showGraph();
       default:
@@ -3610,7 +3610,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     );
   }
 
-  Widget _showCalendar() {
+  Widget _showMap() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -3619,51 +3619,59 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           child: SingleChildScrollView(
             controller: _calendarScrollController,
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: primaryLight,
-                  width: 1.0,
-                  style: BorderStyle.solid,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  height: 5,
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(
-                    height: 5,
+                Container(
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      const Text("Current Price Comparison"),
-                      const SizedBox(
-                        width: 10,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text("Current Price Comparison"),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          CupertinoSwitch(
+                              value: _showCurrentPriceComparison,
+                              activeTrackColor: accentColor,
+                              onChanged: ((val) {
+                                setState(() {
+                                  _showCurrentPriceComparison = val;
+                                });
+                              }))
+                        ],
                       ),
-                      CupertinoSwitch(
-                          value: _showCurrentPriceComparison,
-                          activeTrackColor: accentColor,
-                          onChanged: ((val) {
-                            setState(() {
-                              _showCurrentPriceComparison = val;
-                            });
-                          }))
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      HeatGraph(
+                        data: _heatMapGraphData,
+                        userInfo: _userInfo!,
+                        currentPrice: _companyDetail.companyNetAssetValue!,
+                        enableDailyComparison: _showCurrentPriceComparison,
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  HeatGraph(
-                    data: _heatMapGraphData,
-                    userInfo: _userInfo!,
-                    currentPrice: _companyDetail.companyNetAssetValue!,
-                    enableDailyComparison: _showCurrentPriceComparison,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 5,),
+                WeekdayPerformanceChart(),
+              ],
             ),
           ),
         )

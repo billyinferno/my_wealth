@@ -12,3 +12,4 @@ export './seasonality_table.dart';
 export './stock_candlestick_painter.dart';
 export './stock_chart.dart';
 export './stock_volume_painter.dart';
+export './weekday_performance_chart.dart';

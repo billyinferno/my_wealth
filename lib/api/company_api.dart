@@ -385,4 +385,31 @@ class CompanyAPI {
     CompanySahamSplitModel company = CompanySahamSplitModel.fromJson(commonModel.data['attributes']);
     return company;
   }
+
+  Future<CompanyWeekdayPerformanceModel> getCompanyWeekdayPerformance({
+    required String code,
+    required DateTime fromDate,
+    required DateTime toDate,
+  }) async {
+    // get the initial query information for the API
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
+
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/weekday/$code/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyWeekdayPerformance',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get top broker information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyWeekdayPerformanceModel weekdayPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
+    return weekdayPerformance;
+  }
 }

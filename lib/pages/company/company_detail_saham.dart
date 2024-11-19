@@ -88,6 +88,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late CompanySahamDividendModel _dividend;
   late List<DateTime> _dividendDate;
   late CompanySahamSplitModel _split;
+  late CompanyWeekdayPerformanceModel _weekdayPerformance;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -111,6 +112,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late DateTime _brokerSummaryDateTo;
   late DateTime _topBrokerDateFrom;
   late DateTime _topBrokerDateTo;
+  late DateTime _weekdayPerformanceDateFrom;
+  late DateTime _weekdayPerformanceDateTo;
 
   late Future<bool> _getData;
   late int _userRisk;
@@ -3670,7 +3673,25 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   ),
                 ),
                 const SizedBox(height: 5,),
-                WeekdayPerformanceChart(),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: primaryLight,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    )
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      WeekdayPerformanceChart(
+                        data: _weekdayPerformance,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -4817,24 +4838,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         _companyDetail = resp;
 
         // set the broker summary date based on the last update of the company
-        _brokerSummaryDateFrom =
-            (_companyDetail.companyLastUpdate ?? DateTime.now());
-        _brokerSummaryDateTo =
-            (_companyDetail.companyLastUpdate ?? DateTime.now());
+        _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());
+        _brokerSummaryDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());
 
         // got company detail, let's recalculate the from and to date that we
         // will use to get the shama price, since broker summary already cater
         // in case company last update is null, use brker summary date to
         // as base for the from and to date.
-        fromDate =
-            _brokerSummaryDateTo.subtract(const Duration(days: 365)).toLocal();
+        fromDate = _brokerSummaryDateTo.subtract(const Duration(days: 365)).toLocal();
         toDate = _brokerSummaryDateTo.toLocal();
 
         // we will try to get the broker data for 3 month of current date
-        _topBrokerDateTo = (_companyDetail.companyLastUpdate == null
-            ? DateTime.now().toLocal()
-            : _companyDetail.companyLastUpdate!.toLocal());
+        _topBrokerDateTo = (
+          _companyDetail.companyLastUpdate == null ?
+          DateTime.now().toLocal() :
+          _companyDetail.companyLastUpdate!.toLocal()
+        );
         _topBrokerDateFrom = _topBrokerDateTo.add(const Duration(days: -90));
+
+        // set the weekday performance date same as top broker date
+        _weekdayPerformanceDateFrom = _topBrokerDateFrom;
+        _weekdayPerformanceDateTo = _topBrokerDateTo;
       }).onError((error, stackTrace) {
         Log.error(
           message: 'Error getting company detail',
@@ -5182,6 +5206,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           code: _companyData.companyCode
         ).then((resp) {
           _split = resp;
+        }),
+
+        // get the weekday performance
+        _companyApi.getCompanyWeekdayPerformance(
+          code: _companyData.companyCode,
+          fromDate: _weekdayPerformanceDateFrom,
+          toDate: _weekdayPerformanceDateTo
+        ).then((resp) {
+          _weekdayPerformance = resp;
         }),
 
         // check if user owned this stock or not?

@@ -10,3 +10,4 @@ export './company_saham_split_model.dart';
 export './company_search_model.dart';
 export './company_seasonality_model.dart';
 export './company_top_broker_model.dart';
+export './company_weekday_performance_model.dart';

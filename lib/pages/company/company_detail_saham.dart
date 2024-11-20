@@ -89,6 +89,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late List<DateTime> _dividendDate;
   late CompanySahamSplitModel _split;
   late CompanyWeekdayPerformanceModel _weekdayPerformance;
+  late CompanyWeekdayPerformanceModel _monthlyPerformance;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -114,6 +115,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late DateTime _topBrokerDateTo;
   late DateTime _weekdayPerformanceDateFrom;
   late DateTime _weekdayPerformanceDateTo;
+  late int _monthlyPerformanceYear;
+  late DateTime _minPriceDate;
 
   late Future<bool> _getData;
   late int _userRisk;
@@ -137,6 +140,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   int _quarterSelection = 5;
   String _quarterSelectionText = "Every Quarter";
   String _graphSelection = "s";
+  String _mapSelection = "p";
 
   double? _minPrice;
   double? _maxPrice;
@@ -224,6 +228,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // get the current user risk
     _userRisk = (_userInfo!.risk);
+
+    // default the minimum price date to 2019-12-30 (as per DB info)
+    _minPriceDate = DateTime(2019, 12, 30);
+
+    // default the monthly year to current year
+    _monthlyPerformanceYear = DateTime.now().year;
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -2585,9 +2595,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        const SizedBox(
-                          width: 20,
-                        ),
+                        const SizedBox(width: 20,),
                         Text(
                           Globals.dfddMMyyyy.formatLocal(
                             _brokerSummary.brokerSummaryFromDate
@@ -2621,7 +2629,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           size: 15,
                           color: secondaryLight,
                         ),
-                        Expanded(child: Container()),
+                        Expanded(child: SizedBox()),
                         const Text(
                           "Net",
                           style: TextStyle(
@@ -2648,9 +2656,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5,),
                       ],
                     ),
                   ),
@@ -3618,6 +3624,29 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
+        const SizedBox(height: 10,),
+        SizedBox(
+          width: double.infinity,
+          child: CupertinoSegmentedControl<String>(
+            children: const {
+              "p": Text("Price"),
+              "w": Text("Weekday"),
+              "m": Text("Monhtly"),
+            },
+            onValueChanged: ((value) {
+              String selectedValue = value.toString();
+
+              setState(() {
+                _mapSelection = selectedValue;
+              });
+            }),
+            groupValue: _mapSelection,
+            selectedColor: secondaryColor,
+            borderColor: secondaryDark,
+            pressedColor: primaryDark,
+          ),
+        ),
+        const SizedBox(height: 10,),
         Expanded(
           child: SingleChildScrollView(
             controller: _calendarScrollController,
@@ -3626,78 +3655,183 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Text("Current Price Comparison"),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          CupertinoSwitch(
-                              value: _showCurrentPriceComparison,
-                              activeTrackColor: accentColor,
-                              onChanged: ((val) {
-                                setState(() {
-                                  _showCurrentPriceComparison = val;
-                                });
-                              }))
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      HeatGraph(
-                        data: _heatMapGraphData,
-                        userInfo: _userInfo!,
-                        currentPrice: _companyDetail.companyNetAssetValue!,
-                        enableDailyComparison: _showCurrentPriceComparison,
-                      ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 5,),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: primaryLight,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    )
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      WeekdayPerformanceChart(
-                        data: _weekdayPerformance,
-                      ),
-                    ],
-                  ),
-                ),
+                _selectedMap(),
               ],
             ),
           ),
         )
       ],
     );
+  }
+
+  Widget _selectedMap() {
+    switch (_mapSelection) {
+      case "w":
+        return Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            )
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 5,),
+              Center(child: Text("Weekday Performance")),
+              const SizedBox(height: 2,),
+              InkWell(
+                onTap: (() async {
+                  // check for the max date to avoid any assertion that the initial date range
+                  // is more than the lastDate
+                  DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
+                  if (maxDate.isBefore(_minPriceDate.toLocal())) {
+                    maxDate = _minPriceDate;
+                  }
+
+                  DateTimeRange? result = await showDateRangePicker(
+                    context: context,
+                    firstDate: _minPriceDate.toLocal(),
+                    lastDate: maxDate.toLocal(),
+                    initialDateRange: DateTimeRange(
+                      start: _weekdayPerformanceDateFrom.toLocal(),
+                      end: _weekdayPerformanceDateTo.toLocal()
+                    ),
+                    confirmText: 'Done',
+                    currentDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                  );
+
+                  // check if we got the result or not?
+                  if (result != null) {
+                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                    if ((result.start.compareTo(_weekdayPerformanceDateFrom) != 0) ||
+                        (result.end.compareTo(_weekdayPerformanceDateTo) != 0)) {
+                      // set the weekday performance from and to date
+                      _weekdayPerformanceDateFrom = result.start;
+                      _weekdayPerformanceDateTo = result.end;
+
+                      // get the broker summary
+                      await _getWeekdayPerformance().onError((error, stackTrace) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            createSnackBar(
+                              message: error.toString()
+                            )
+                          );
+                        }
+                      },);
+                    }
+                  }
+                }),
+                child: Container(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text(
+                      "${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateTo)}",
+                      style: TextStyle(
+                        color: secondaryLight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              WeekdayPerformanceChart(
+                data: _weekdayPerformance,
+              ),
+            ],
+          ),
+        );
+      case "m":
+        return Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            )
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 5,),
+              Center(child: Text("Monhtly Performance")),
+              const SizedBox(height: 2,),
+              InkWell(
+                onTap: (() async {
+                  //TODO: to select year
+                }),
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text(
+                      "$_monthlyPerformanceYear",
+                      style: TextStyle(
+                        color: secondaryLight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              WeekdayPerformanceChart(
+                type: WeekdayPerformanceType.monthly,
+                data: _monthlyPerformance,
+              ),
+            ],
+          ),
+        );
+      default:
+        return Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text("Current Price Comparison"),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  CupertinoSwitch(
+                      value: _showCurrentPriceComparison,
+                      activeTrackColor: accentColor,
+                      onChanged: ((val) {
+                        setState(() {
+                          _showCurrentPriceComparison = val;
+                        });
+                      }))
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              HeatGraph(
+                data: _heatMapGraphData,
+                userInfo: _userInfo!,
+                currentPrice: _companyDetail.companyNetAssetValue!,
+                enableDailyComparison: _showCurrentPriceComparison,
+              ),
+            ],
+          ),
+        );
+    }
   }
 
   Widget _selectedGraph() {
@@ -4082,7 +4216,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         const SizedBox(height: 10,),
         SizedBox(
           width: double.infinity,
-          child: CupertinoSegmentedControl(
+          child: CupertinoSegmentedControl<String>(
             children: const {
               "s": Text("Daily"),
               "c": Text("Candle"),
@@ -4818,6 +4952,34 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     });
   }
 
+  Future<void> _getWeekdayPerformance() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    await _companyApi.getCompanyWeekdayPerformance(
+      code: _companyData.companyCode,
+      fromDate: _weekdayPerformanceDateFrom,
+      toDate: _weekdayPerformanceDateTo
+    ).then((resp) {
+      setState(() {
+        _weekdayPerformance = resp;
+      });
+    }).onError((error, stackTrace) {
+      // print the error
+      Log.error(
+        message: 'Error when try to get weekeday performance data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show error
+      throw Exception('Error when try to get weekday performance from server');
+    },).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    },);
+  }
+
   Future<bool> _getInitData() async {
     DateTime fromDate = DateTime.now().subtract(
       const Duration(
@@ -5215,6 +5377,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           toDate: _weekdayPerformanceDateTo
         ).then((resp) {
           _weekdayPerformance = resp;
+        }),
+
+        // get the monthly performance
+        _companyApi.getCompanyMonthlyPerformance(
+          code: _companyData.companyCode,
+          year: _monthlyPerformanceYear,
+        ).then((resp) {
+          _monthlyPerformance = resp;
         }),
 
         // check if user owned this stock or not?

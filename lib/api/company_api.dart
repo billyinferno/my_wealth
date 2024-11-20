@@ -412,4 +412,34 @@ class CompanyAPI {
     CompanyWeekdayPerformanceModel weekdayPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
     return weekdayPerformance;
   }
+
+  Future<CompanyWeekdayPerformanceModel> getCompanyMonthlyPerformance({
+    required String code,
+    required int year,
+  }) async {
+    // create the start and end date
+    DateTime startDate = DateTime(year, 1, 1);
+    DateTime endDate = DateTime(year, 12, 31);
+    
+    // get the initial query information for the API
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(startDate);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(endDate);
+
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/monthly/$code/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyMonthlyPerformance',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get top broker information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyWeekdayPerformanceModel monthlyPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
+    return monthlyPerformance;
+  }
 }

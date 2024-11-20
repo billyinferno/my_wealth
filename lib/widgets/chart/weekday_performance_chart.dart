@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
+enum WeekdayPerformanceType {
+  weekly, monthly
+}
+
 class WeekdayPerformanceChart extends StatelessWidget {
   final CompanyWeekdayPerformanceModel data;
+  final WeekdayPerformanceType type;
   const WeekdayPerformanceChart({
     super.key,
     required this.data,
+    this.type = WeekdayPerformanceType.weekly,
   });
 
   @override
   Widget build(BuildContext context) {
-   return Container(
+    double totalAverage = 0;
+    double averageCount = 0;
+
+    if (type == WeekdayPerformanceType.weekly) {
+      // ensure the maximum data length is 5
+      assert(data.data.length <= 5, "Maximum data for weekly performance is 5");
+    }
+
+    if (type == WeekdayPerformanceType.monthly) {
+      // ensure the maximum data length is 12
+      assert(data.data.length <= 12, "Maximum data for monthly performance is 12");
+    }
+
+    return Container(
       padding: const EdgeInsets.all(10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -19,13 +38,9 @@ class WeekdayPerformanceChart extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              _dayBox(day: "Mon"),
-              _dayBox(day: "Tue"),
-              _dayBox(day: "Wed"),
-              _dayBox(day: "Thu"),
-              _dayBox(day: "Fri"),
-            ],
+            children: List<Widget>.generate(data.data.length, (index) {
+              return _dayBox(day: (type == WeekdayPerformanceType.weekly ? Globals.shortWeekdayName[index] : Globals.shortMonthName[index]));
+            }),
           ),
           const SizedBox(width: 5,),
           Expanded(
@@ -33,7 +48,7 @@ class WeekdayPerformanceChart extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                ...List<Widget>.generate(5, (weekday) {
+                ...List<Widget>.generate(data.data.length, (weekday) {
                   WeekdayData? weekdayData = data.data["${weekday + 1}"];
                   return Container(
                     margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
@@ -75,9 +90,18 @@ class WeekdayPerformanceChart extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
-              children: List<Widget>.generate(5, (weekday) {
-                return _avgBox(percentage: data.data["${weekday + 1}"]?.average); 
-              })
+              children: <Widget>[
+                ...List<Widget>.generate(data.data.length, (weekday) {
+                  if (data.data.containsKey("${weekday + 1}")) {
+                    if (data.data["${weekday + 1}"]!.list.isNotEmpty) {
+                      totalAverage += data.data["${weekday + 1}"]!.average;
+                      averageCount += 1;
+                    }
+                  }
+                  return _avgBox(percentage: data.data["${weekday + 1}"]?.average); 
+                }),
+                _avgBox(percentage: (totalAverage / averageCount)),
+              ]
             ),
           ),
         ],
@@ -93,10 +117,8 @@ class WeekdayPerformanceChart extends StatelessWidget {
     data.data.forEach((key, weekdayData) {
       // loop thru the weekdayData
       weekdayData.list.forEach((key, count) {
-        debugPrint("Key: $key, Count: $count");
         // calculate the total for this key
         total[key] = (total[key] ?? 0) + count;
-        debugPrint("Total[$key] = ${total[key]}");
       },);
     },);
 
@@ -104,7 +126,10 @@ class WeekdayPerformanceChart extends StatelessWidget {
     for(int i=-10; i<=10; i++) {
       // check if we have the data in the total map or not?
       if (total.containsKey("${i * 10}")) {
-        ret.add(_rotatedText(text: "${i * 10} - ${total["${i * -10}"]}"));
+        ret.add(_rotatedText(
+          text: "(${total["${i * 10}"]})",
+          color: Colors.grey.shade500,
+        ));
       }
       else {
         ret.add(_rotatedText(text: ""));
@@ -115,8 +140,8 @@ class WeekdayPerformanceChart extends StatelessWidget {
   }
 
   Widget _rotatedText({
+    required String text,
     Color color = textPrimary,
-    required String text
   }) {
     return RotatedBox(
       quarterTurns: 1,
@@ -138,7 +163,7 @@ class WeekdayPerformanceChart extends StatelessWidget {
     int barLocation;
     int colorShade;
     // add for the minus location
-    for(int i=1; i<=10; i++) {
+    for(int i=10; i>=1; i--) {
       barLocation = (i * -10);
       if (data != null) {
         // check if we got the data or not?

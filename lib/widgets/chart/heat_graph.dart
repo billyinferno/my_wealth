@@ -27,7 +27,6 @@ class HeatGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> weekDayName = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     bool isTitleShow = false;
     bool showWeekend = (weekend ?? false);
 
@@ -64,7 +63,7 @@ class HeatGraph extends StatelessWidget {
                       height: 10,
                       margin: const EdgeInsets.all(5),
                       child: Text(
-                        weekDayName[index],
+                        Globals.shortWeekdayName[index],
                         style: const TextStyle(
                           fontSize: 9,
                         ),

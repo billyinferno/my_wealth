@@ -52,6 +52,16 @@ class Globals {
   static DateFormat dfyyyyMMdd = DateFormat('yyyy-MM-dd');
   static DateFormat dfyyyyMM = DateFormat('yyyy/MM');
 
+  static DateFormat dfEEE = DateFormat('EEE');
+
+  static List<String> shortWeekdayName = [
+    'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
+  ];
+
+  static List<String> shortMonthName = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
   static (String, Color) runAs() {
     if (kIsWasm) {
       return ("WASM", Colors.green);

@@ -3715,7 +3715,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       _weekdayPerformanceDateFrom = result.start;
                       _weekdayPerformanceDateTo = result.end;
 
-                      // get the broker summary
+                      // get the weekday performance
                       await _getWeekdayPerformance().onError((error, stackTrace) {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -3765,7 +3765,61 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               const SizedBox(height: 2,),
               InkWell(
                 onTap: (() async {
-                  //TODO: to select year
+                  await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("Select Year"),
+                            IconButton(
+                            icon: Icon(
+                              Ionicons.close,
+                            ),
+                            onPressed: () {
+                              // remove the dialog
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ],
+                        ),
+                        contentPadding: const EdgeInsets.all(10),
+                        content: SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: YearPicker(
+                            firstDate: _minPriceDate.toLocal(),
+                            lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                            selectedDate: DateTime(_monthlyPerformanceYear, 1, 1),
+                            currentDate: DateTime.now().toLocal(),
+                            onChanged: (newDate) async {
+                              // remove the dialog
+                              Navigator.pop(context);
+
+                              // check the new date whether it's same year or not?
+                              if (newDate.toLocal().year != _monthlyPerformanceYear) {
+                                // not same year, set the current year to the monhtly performance year
+                                _monthlyPerformanceYear = newDate.toLocal().year;
+
+                                // get the monthly performance
+                                await _getMonhtlyPerformance().onError((error, stackTrace) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      createSnackBar(
+                                        message: error.toString()
+                                      )
+                                    );
+                                  }
+                                },);
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 }),
                 child: Container(
                   width: double.infinity,
@@ -4974,6 +5028,33 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
       // show error
       throw Exception('Error when try to get weekday performance from server');
+    },).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    },);
+  }
+
+  Future<void> _getMonhtlyPerformance() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    await _companyApi.getCompanyMonthlyPerformance(
+      code: _companyData.companyCode,
+      year: _monthlyPerformanceYear,
+    ).then((resp) {
+      setState(() {
+        _monthlyPerformance = resp;
+      });
+    }).onError((error, stackTrace) {
+      // print the error
+      Log.error(
+        message: 'Error when try to get monthly performance data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show error
+      throw Exception('Error when try to get monhtly performance from server');
     },).whenComplete(() {
       // remove the loading screen
       LoadingScreen.instance().hide();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <!--
+  <head>
+    <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
 
@@ -14,58 +14,147 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
+    <base href="$FLUTTER_BASE_HREF" />
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Your personal portofolio organizer">
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="Your personal portofolio organizer" />
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="myWealth">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <!-- iOS meta tags & icons -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="myWealth" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
 
-  <!-- PWA splash screen -->
-  <!--
-  <link rel="apple-touch-startup-image" href="splash/launch-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-  <link rel="apple-touch-startup-image" href="splash/launch-750x1294.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-  <link rel="apple-touch-startup-image" href="splash/launch-1242x2148.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-  <link rel="apple-touch-startup-image" href="splash/launch-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-  <link rel="apple-touch-startup-image" href="splash/launch-1536x2048.png" media="(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
-  <link rel="apple-touch-startup-image" href="splash/launch-1668x2224.png" media="(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
-  <link rel="apple-touch-startup-image" href="splash/launch-2048x2732.png" media="(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
-  -->
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+    <!-- PWA splash screen -->
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-640x1136.png"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-750x1294.png"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-1242x2148.png"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-1125x2436.png"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-1536x2048.png"
+      media="(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-1668x2224.png"
+      media="(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="splash/launch-2048x2732.png"
+      media="(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
 
-  <title>myWealth</title>
-  <link rel="manifest" href="manifest.json">
-</head>
-<style type="text/css">
-  body {
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <title>myWealth</title>
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <style type="text/css">
+    body {
       background-color: #212121;
-  }
-</style>
-<body>
-  <script>
-    {{flutter_js}}
-    {{flutter_build_config}}
+      color: #ffffff;
+    }
 
-    const loading = document.createElement('div');
-    document.body.appendChild(loading);
-    loading.textContent = "Loading Entrypoint...";
-    _flutter.loader.load({
-      onEntrypointLoaded: async function(engineInitializer) {
-        loading.textContent = "Initializing engine...";
-        const appRunner = await engineInitializer.initializeEngine();
+    .center-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+    }
 
-        loading.textContent = "Running app...";
-        await appRunner.runApp();
+    .loader {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: block;
+      margin:15px auto;
+      position: relative;
+      color: #ef5350;
+      box-sizing: border-box;
+      animation: animloader 2s linear infinite;
+    }
+
+    @keyframes animloader {
+      0% {
+        box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
       }
-    });
-  </script>
-</body>
+      25% {
+        box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 2px;
+      }
+      50% {
+        box-shadow: 14px 0 0 -2px,  38px 0 0 -2px,  -14px 0 0 2px,  -38px 0 0 -2px;
+      }
+      75% {
+        box-shadow: 14px 0 0 2px,  38px 0 0 -2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+      }
+      100% {
+        box-shadow: 14px 0 0 -2px,  38px 0 0 2px,  -14px 0 0 -2px,  -38px 0 0 -2px;
+      }
+    }
+  </style>
+  <body>
+    <div class="center-screen">
+      <span class="loader"></span>
+      <div id="loader_text"></div>
+    </div>
+    <script>
+      // https://www.reddit.com/r/FlutterDev/comments/127cwz8/this_piece_of_code_can_dramatically_improve_your/
+      if (
+        navigator.userAgent.indexOf("Safari") !== -1 &&
+        navigator.userAgent.indexOf("Chrome") === -1
+      ) {
+        var originalGetContext = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = function () {
+          var contextType = arguments[0];
+          if (contextType === "webgl2") {
+            return;
+          }
+          return originalGetContext.apply(
+            this,
+            [contextType].concat(Array.prototype.slice.call(arguments, 1)),
+          );
+        };
+      }
+
+      // load flutter script and config
+      {{flutter_js}}
+      {{flutter_build_config}}
+
+      // inject the loading text on the html
+      const loading = document.getElementById('loader_text');
+      document.body.appendChild(loading);
+      loading.textContent = "Loading Entrypoint...";
+      _flutter.loader.load({
+        onEntrypointLoaded: async function (engineInitializer) {
+          loading.textContent = "Initializing engine...";
+          const appRunner = await engineInitializer.initializeEngine();
+
+          loading.textContent = "Running app...";
+          await appRunner.runApp();
+        },
+      });
+    </script>
+  </body>
 </html>

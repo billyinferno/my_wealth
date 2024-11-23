@@ -530,6 +530,12 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                         )) {
                           rColor = Colors.black;
                         }
+
+                        WatchlistDetailEditArgs editArg = WatchlistDetailEditArgs(
+                          type: _type,
+                          watchlist: _watchlist,
+                          index: index
+                        ); 
               
                         return Slidable(
                           endActionPane: ActionPane(
@@ -539,7 +545,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 icon: Ionicons.pencil,
                                 iconColor: accentColor,
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
+                                  Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: editArg);
                                 },
                               ),
                               SlideButton(

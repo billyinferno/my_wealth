@@ -40,7 +40,7 @@ class FavouriteCompanyList extends StatelessWidget {
         ),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Expanded(
@@ -91,6 +91,7 @@ class FavouriteCompanyList extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         )
                       ),
+                      const SizedBox(width: 2,),
                       Expanded(
                         flex: 1,
                         child: Text(
@@ -100,6 +101,7 @@ class FavouriteCompanyList extends StatelessWidget {
                           ),
                         )
                       ),
+                      const SizedBox(width: 2,),
                       Expanded(
                         flex: 1,
                         child: Align(

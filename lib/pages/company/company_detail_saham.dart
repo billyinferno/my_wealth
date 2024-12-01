@@ -51,6 +51,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   final ScrollController _compareController = ScrollController();
   final ScrollController _dividendController = ScrollController();
   final ScrollController _splitController = ScrollController();
+  final ScrollController _analysisController = ScrollController();
   late TabController _tabController;
 
   late CompanyDetailArgs _companyData;
@@ -90,6 +91,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late CompanySahamSplitModel _split;
   late CompanyWeekdayPerformanceModel _weekdayPerformance;
   late CompanyWeekdayPerformanceModel _monthlyPerformance;
+  late CompanySahamAdditionalModel _additionalInfo;
+  late bool _additionalInfoAvailable;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -161,7 +164,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     super.initState();
 
     // initialize the tab controller for summary page
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
 
     // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
@@ -252,6 +255,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _compareController.dispose();
     _dividendController.dispose();
     _splitController.dispose();
+    _analysisController.dispose();
     
     super.dispose();
   }
@@ -415,52 +419,26 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Visibility(
-                                  visible:
-                                      (_companyDetail.companyType.isNotEmpty),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: secondaryLight,
-                                          style: BorderStyle.solid,
-                                          width: 1.0),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    padding: const EdgeInsets.all(2),
-                                    child: Text(
-                                      _companyDetail.companyType,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        color: secondaryLight,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                  visible: (_companyDetail.companyType.isNotEmpty),
+                                  child: _chip(
+                                    text: _companyDetail.companyType,
+                                    subText: _companyDetail.companySubType,
                                   ),
                                 ),
                                 const SizedBox(
                                   width: 5,
                                 ),
                                 Visibility(
-                                  visible: (_companyDetail.companyType
-                                          .toLowerCase() !=
-                                      _companyDetail.companyIndustry
-                                          .toLowerCase()),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: secondaryLight,
-                                          style: BorderStyle.solid,
-                                          width: 1.0),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    padding: const EdgeInsets.all(2),
-                                    child: Text(
-                                      _companyDetail.companyIndustry,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        color: secondaryLight,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                  visible: (
+                                    _companyDetail.companyIndustry.isNotEmpty &&
+                                    (
+                                      _companyDetail.companyType.toLowerCase() !=
+                                      _companyDetail.companyIndustry.toLowerCase()
+                                    )
+                                  ),
+                                  child: _chip(
+                                    text: _companyDetail.companyIndustry,
+                                    subText: _companyDetail.companySubIndustry,
                                   ),
                                 ),
                               ],
@@ -734,6 +712,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           dividerHeight: 0,
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
+            Tab(text: 'ANALYSIS',),
             Tab(text: 'FUNDAMENTAL',),
             Tab(text: 'COMPARE'),
             Tab(text: 'SEASONALITY'),
@@ -747,6 +726,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             controller: _tabController,
             children: <Widget>[
               _tabSummaryInfo(),
+              _tabAnalysis(),
               _tabFundamentalInfo(),
               _tabCompareInfo(),
               _tabSeasonality(),
@@ -760,11 +740,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   }
 
   Widget _tabSummaryInfo() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: SingleChildScrollView(
-        controller: _infoController,
-        physics: const AlwaysScrollableScrollPhysics(),
+    return SingleChildScrollView(
+      controller: _infoController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -1119,7 +1099,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 CompanyInfoBox(
-                  header: "PBR",
+                  header: "PBV/PBR",
                   headerAlign: MainAxisAlignment.end,
                   onTap: (() async {
                     await ShowInfoDialog(
@@ -1266,11 +1246,110 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     );
   }
 
+  Widget _tabAnalysis() {
+    if (!_additionalInfoAvailable) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            Ionicons.warning,
+            color: secondaryColor,
+          ),
+          const SizedBox(height: 5,),
+          Text(
+            "Analysis for ${_companyData.companyCode} not yet available",
+            style: TextStyle(
+              color: secondaryLight,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return SingleChildScrollView(
+      controller: _analysisController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Analysis from ${Globals.dfDDMMMyyyy.format(_additionalInfo.fromDate)} to ${Globals.dfDDMMMyyyy.format(_additionalInfo.toDate)}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10,),
+            AnalysisChart(
+              title: "Price Analysis",
+              pesimistic: _additionalInfo.pricePesimistic,
+              potentialPesimistic: _additionalInfo.pricePotentialPesimistic,
+              neutral: _additionalInfo.priceNeutral,
+              potentialNeutral: _additionalInfo.pricePotentialNeutral,
+              optimistic: _additionalInfo.priceOptimistic,
+              potentialOptimistic: _additionalInfo.pricePotentialOptimistic,
+              current: (_companyDetail.companyNetAssetValue ?? 0),
+            ),
+            const SizedBox(height: 10,),
+            AnalysisChart(
+              title: "Price Forecasting",
+              pesimistic: _additionalInfo.priceForecastingPesimistic,
+              neutral: _additionalInfo.priceForecastingNeutral,
+              optimistic: _additionalInfo.priceForecastingOptimistic,
+              current: (_companyDetail.companyNetAssetValue ?? 0),
+            ),
+            const SizedBox(height: 10,),
+            AnalysisChart(
+              title: "PER Valuation",
+              pesimistic: _additionalInfo.perPesimistic,
+              potentialPesimistic: _additionalInfo.perPotentialPesimistic,
+              neutral: _additionalInfo.perNeutral,
+              potentialNeutral: _additionalInfo.perPotentialNeutral,
+              optimistic: _additionalInfo.perOptimistic,
+              potentialOptimistic: _additionalInfo.perPotentialOptimistic,
+              current: (_companyDetail.companyPer ?? 0),
+            ),
+            const SizedBox(height: 10,),
+            AnalysisChart(
+              title: "PER Forecasting Price",
+              pesimistic: _additionalInfo.perForecastingPesimistic,
+              neutral: _additionalInfo.perForecastingNeutral,
+              optimistic: _additionalInfo.perForecastingOptimistic,
+              current: (_companyDetail.companyNetAssetValue ?? 0),
+            ),
+            const SizedBox(height: 10,),
+            AnalysisChart(
+              title: "PBV/R Valuation",
+              pesimistic: _additionalInfo.pbvPesimistic,
+              potentialPesimistic: _additionalInfo.pbvPotentialPesimistic,
+              neutral: _additionalInfo.pbvNeutral,
+              potentialNeutral: _additionalInfo.pbvPotentialNeutral,
+              optimistic: _additionalInfo.pbvOptimistic,
+              potentialOptimistic: _additionalInfo.pbvPotentialOptimistic,
+              current: (_companyDetail.companyPbr ?? 0),
+            ),
+            const SizedBox(height: 10,),
+            AnalysisChart(
+              title: "PBV/R Forecasting Price",
+              pesimistic: _additionalInfo.pbvForecastingPesimistic,
+              neutral: _additionalInfo.pbvForecastingNeutral,
+              optimistic: _additionalInfo.pbvForecastingOptimistic,
+              current: (_companyDetail.companyNetAssetValue ?? 0),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _tabFundamentalInfo() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: SingleChildScrollView(
-        controller: _fundamentalController,
+    return SingleChildScrollView(
+      controller: _fundamentalController,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -1361,7 +1440,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       );
                     }),
                   );
-
+            
                   // check if quarter is null or not?
                   if (quarter != null) {
                     // set the quarter selection
@@ -1387,7 +1466,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         _quarterSelectionText = "Every Quarter";
                         break;
                     }
-
+            
                     // get the new data from api
                     await _getFundamental();
                   }
@@ -1555,42 +1634,49 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const Expanded(
-                  child: CompareFields(
-                      color: primaryDark,
-                      borderColor: primaryLight,
-                      text: "Code")),
+                child: CompareFields(
+                  color: primaryDark,
+                  borderColor: primaryLight,
+                  text: "Code",
+                )
+              ),
               Expanded(
-                  child: CompareFields(
-                      color: primaryDark,
-                      borderColor: accentColor,
-                      text: _companyDetail.companySymbol!,
-                      textAlign: TextAlign.center)),
+                child: CompareFields(
+                  color: primaryDark,
+                  borderColor: accentColor,
+                  text: _companyDetail.companySymbol!,
+                  textAlign: TextAlign.center,
+                )
+              ),
               Expanded(
                 child: InkWell(
-                    onTap: (() async {
-                      await Navigator.pushNamed(
-                              context, '/company/detail/saham/find',
-                              arguments: _companyDetail.companySymbol!)
-                          .then((value) async {
-                        // check if value is not null?
-                        if (value != null) {
-                          // means we already got our other company code, we can call API to find the company
-                          _otherCompanyCode = value as String;
-
-                          // get the company detail information
-                          await _getCompanyDetail();
-
-                          setState(() {
-                            // set state to rebuild the widget
-                          });
-                        }
-                      });
-                    }),
-                    child: CompareFields(
-                        color: primaryDark,
-                        borderColor: extendedLight,
-                        text: (_otherCompanyCode ?? '+'),
-                        textAlign: TextAlign.center)),
+                  onTap: (() async {
+                    await Navigator.pushNamed(
+                      context, '/company/detail/saham/find',
+                      arguments: _companyDetail.companySymbol!
+                    )
+                    .then((value) async {
+                      // check if value is not null?
+                      if (value != null) {
+                        // means we already got our other company code, we can call API to find the company
+                        _otherCompanyCode = value as String;
+            
+                        // get the company detail information
+                        await _getCompanyDetail();
+            
+                        setState(() {
+                          // set state to rebuild the widget
+                        });
+                      }
+                    });
+                  }),
+                  child: CompareFields(
+                    color: primaryDark,
+                    borderColor: extendedLight,
+                    text: (_otherCompanyCode ?? '+'),
+                    textAlign: TextAlign.center,
+                  )
+                ),
               ),
             ],
           ),
@@ -1600,24 +1686,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             children: <Widget>[
               Expanded(
                 child: CompareFields(
-                    color: Colors.transparent,
-                    borderColor: Colors.transparent,
-                    text: "Info",
-                    fontWeight: FontWeight.bold),
+                  color: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  text: "Info",
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Expanded(
                 child: CompareFields(
-                    color: Colors.transparent,
-                    borderColor: Colors.transparent,
-                    text: "",
-                    fontWeight: FontWeight.bold),
+                  color: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  text: "",
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Expanded(
                 child: CompareFields(
-                    color: Colors.transparent,
-                    borderColor: Colors.transparent,
-                    text: "",
-                    fontWeight: FontWeight.bold),
+                  color: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  text: "",
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -1638,211 +1727,211 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Last Price",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "One Year",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Three Year",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Five Year",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Ten Year",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Period",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: Colors.transparent,
                           borderColor: Colors.transparent,
                           text: "Balance Sheet",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Cash",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Total Asset",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "S.T.Borrow",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "L.T.Borrow",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Total Equity",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: Colors.transparent,
                           borderColor: Colors.transparent,
                           text: "Income Stmt",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Revenue",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Gross Profit",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Opr Profit",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Net Profit",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "EBITDA",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Int Expense",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: Colors.transparent,
                           borderColor: Colors.transparent,
                           text: "Ratio",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "EPS",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "PER",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "PER Annual",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Beta 1Y",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "BVPS",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "PBV",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "PSR Annual",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "PCFR Annual",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "ROA",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "ROE",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "EV/EBITDA",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Debt/Equity",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Debt/Total Cap",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "Debt/EBITDA",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         CompareFields(
                           color: primaryDark,
                           borderColor: primaryLight,
                           text: "EBITDA/IntExp",
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                       ],
                     ),
@@ -1908,13 +1997,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: SingleChildScrollView(
               controller: _dividendController,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -1927,19 +2016,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Center(
-            child: Text(
-              "Dividend data provide by IDX",
-              style: TextStyle(
-                fontSize: 9,
-              ),
+        ),
+        const SizedBox(height: 10,),
+        const Center(
+          child: Text(
+            "Dividend data provide by IDX",
+            style: TextStyle(
+              fontSize: 9,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -2531,7 +2618,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                     height: 20,
                   ),
                   BrokerSummaryDistributionChart(
-                      data: _brokerSummaryAccumulation),
+                    data: _brokerSummaryAccumulation,
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -4715,6 +4803,43 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     return returnWidget;
   }
 
+  Widget _chip({
+    required String? text,
+    String? subText,
+  }) {
+    String chipText = (text ?? '').toUpperCase();
+    
+    // if chiptext is not empty, then we can check sub text
+    if (chipText.isNotEmpty) {      
+      if ((subText ?? '').isNotEmpty) {
+        // check if subText different to text or not?
+        if (subText!.toLowerCase() != text!.toLowerCase()) {
+          chipText += ' | ${subText.toUpperCase()}';
+        }
+      }
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: secondaryLight,
+          style: BorderStyle.solid,
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      padding: const EdgeInsets.all(2),
+      child: Text(
+        chipText,
+        style: const TextStyle(
+          fontSize: 10,
+          color: secondaryLight,
+        ),
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
   void _generateGraphData(
     List<InfoSahamPriceModel> prices,
     CompanyDetailModel company
@@ -5466,6 +5591,24 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           year: _monthlyPerformanceYear,
         ).then((resp) {
           _monthlyPerformance = resp;
+        }),
+
+        // get stock additional information
+        _companyApi.getCompanySahamAdditional(
+          code: _companyData.companyCode,
+        ).then((resp) {
+          if (resp != null) {
+            _additionalInfoAvailable = true;
+            _additionalInfo = resp;
+          }
+          else {
+            _additionalInfoAvailable = false;
+            _additionalInfo = CompanySahamAdditionalModel(
+              code: _companyData.companyCode,
+              fromDate: fromDate,
+              toDate: toDate
+            );
+          }
         }),
 
         // check if user owned this stock or not?

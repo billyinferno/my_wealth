@@ -1,3 +1,4 @@
+export './analysis_chart.dart';
 export './average_price_chart.dart';
 export './bar_chart.dart';
 export './broker_summary_distribution_chart.dart';

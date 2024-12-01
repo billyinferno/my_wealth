@@ -442,4 +442,36 @@ class CompanyAPI {
     CompanyWeekdayPerformanceModel monthlyPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
     return monthlyPerformance;
   }
+
+  Future<CompanySahamAdditionalModel?> getCompanySahamAdditional({
+    required String code,
+  }) async {
+    // get the company data using netutils
+    try {
+      final String body = await NetUtils.get(
+        url: '${Globals.apiCompanies}/stock/additional/$code'
+      );
+
+      // parse the response to get top broker information
+      CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+      CompanySahamAdditionalModel stockAdditional = CompanySahamAdditionalModel.fromJson(commonModel.data['attributes']);
+      return stockAdditional;
+    }
+    on NetException catch (netError, _) {
+      if (netError.code == 404) {
+        return null;
+      }
+    }
+    catch (error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanySahamAdditional',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    }
+
+    // in case reaching here
+    return null;
+  }
 }

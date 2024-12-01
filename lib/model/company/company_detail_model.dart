@@ -16,7 +16,9 @@ class CompanyDetailModel {
         required this.companyId,
         required this.companyName,
         required this.companyType,
+        this.companySubType = '',
         required this.companyIndustry,
+        this.companySubIndustry = '',
         required this.companySharia,
         this.companyNetAssetValue,
         this.companyPrevPrice,
@@ -79,7 +81,9 @@ class CompanyDetailModel {
     final int companyId;
     final String companyName;
     final String companyType;
+    final String companySubType;
     final String companyIndustry;
+    final String companySubIndustry;
     final bool companySharia;
     final double? companyNetAssetValue;
     final double? companyPrevPrice;
@@ -143,7 +147,9 @@ class CompanyDetailModel {
         companyId: json["company_id"],
         companyName: json["company_name"],
         companyType: json["company_type"],
+        companySubType: (json["company_sub_type"] ?? ''),
         companyIndustry: json["company_industry"],
+        companySubIndustry: (json["company_sub_industry"] ?? ''),
         companySharia: json["company_sharia"],
         companyNetAssetValue: (json["company_net_asset_value"] == null ? 0 : json["company_net_asset_value"].toDouble()),
         companyPrevPrice: (json["company_prev_price"] == null ? 0 : json["company_prev_price"].toDouble()),
@@ -208,7 +214,9 @@ class CompanyDetailModel {
         "company_id": companyId,
         "company_name": companyName,
         "company_type": companyType,
+        "company_sub_type": companySubType,
         "company_industry": companyIndustry,
+        "company_sub_industry": companySubIndustry,
         "company_sharia": companySharia,
         "company_net_asset_value": companyNetAssetValue,
         "company_prev_price": companyPrevPrice,

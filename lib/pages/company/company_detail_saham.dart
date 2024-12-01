@@ -2002,27 +2002,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Expanded(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: SingleChildScrollView(
-              controller: _dividendController,
-              physics: const AlwaysScrollableScrollPhysics(),
+          child: SingleChildScrollView(
+            controller: _dividendController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  ..._generateDividend(),
-                ],
+                children: _generateDividend(),
               ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10,),
-        const Center(
-          child: Text(
-            "Dividend data provide by IDX",
-            style: TextStyle(
-              fontSize: 9,
             ),
           ),
         ),
@@ -2230,7 +2219,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       // generate item dividend
       ret.add(_itemDividend(
         cumDate: Globals.dfddMMyy.formatDateWithNull(dividend.cumDividend),
-        exDate: Globals.dfddMMyy.formatLocal(dividend.exDividend),
+        exDate: Globals.dfddMMyy.formatDateWithNull(dividend.exDividend),
         recordDate: Globals.dfddMMyy.formatLocal(dividend.recordDate),
         paymentDate: Globals.dfddMMyy.formatLocal(dividend.paymentDate.toLocal()),
         cashDividend: formatCurrency(dividend.cashDividend.toDouble()),

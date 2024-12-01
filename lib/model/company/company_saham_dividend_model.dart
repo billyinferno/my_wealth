@@ -36,7 +36,7 @@ class Dividend {
   final DateTime? priceDate;
   final double cashDividend;
   final DateTime? cumDividend;
-  final DateTime exDividend;
+  final DateTime? exDividend;
   final DateTime recordDate;
   final DateTime paymentDate;
   final String note;
@@ -57,7 +57,7 @@ class Dividend {
     priceDate: (json["price_date"] == null ? null : DateTime.parse(json["price_date"])),
     cashDividend: json["cash_dividend"]?.toDouble(),
     cumDividend: (json["cum_dividend"] == null ? null : DateTime.parse(json["cum_dividend"])),
-    exDividend: DateTime.parse(json["ex_dividend"]),
+    exDividend: (json["ex_dividend"] == null ? null : DateTime.parse(json["ex_dividend"])),
     recordDate: DateTime.parse(json["record_date"]),
     paymentDate: DateTime.parse(json["payment_date"]),
     note: json["note"],
@@ -68,7 +68,7 @@ class Dividend {
     "price_date": (priceDate == null ? null : "${priceDate!.year.toString().padLeft(4, '0')}-${priceDate!.month.toString().padLeft(2, '0')}-${priceDate!.day.toString().padLeft(2, '0')}"),
     "cash_dividend": cashDividend,
     "cum_dividend": (cumDividend == null ? null : "${cumDividend!.year.toString().padLeft(4, '0')}-${cumDividend!.month.toString().padLeft(2, '0')}-${cumDividend!.day.toString().padLeft(2, '0')}"),
-    "ex_dividend": "${exDividend.year.toString().padLeft(4, '0')}-${exDividend.month.toString().padLeft(2, '0')}-${exDividend.day.toString().padLeft(2, '0')}",
+    "ex_dividend": (exDividend == null ? null : "${exDividend!.year.toString().padLeft(4, '0')}-${exDividend!.month.toString().padLeft(2, '0')}-${exDividend!.day.toString().padLeft(2, '0')}"),
     "record_date": "${recordDate.year.toString().padLeft(4, '0')}-${recordDate.month.toString().padLeft(2, '0')}-${recordDate.day.toString().padLeft(2, '0')}",
     "payment_date": "${paymentDate.year.toString().padLeft(4, '0')}-${paymentDate.month.toString().padLeft(2, '0')}-${paymentDate.day.toString().padLeft(2, '0')}",
     "note": note,

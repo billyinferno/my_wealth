@@ -26,6 +26,10 @@ class AnalysisChart extends StatelessWidget {
   Widget build(BuildContext context) {
     double range = (optimistic - pesimistic);
     int flexPER = (((current  - pesimistic) / range) * 100).toInt();
+    Color pointerColor = textPrimary;
+    if (current < pesimistic) {
+      pointerColor = secondaryDark;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,9 +105,12 @@ class AnalysisChart extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Expanded(
-                        flex: flexPER,
-                        child: SizedBox(),
+                      Visibility(
+                        visible: (current > pesimistic),
+                        child: Expanded(
+                          flex: flexPER,
+                          child: SizedBox(),
+                        ),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -114,19 +121,22 @@ class AnalysisChart extends StatelessWidget {
                             height: 10,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: textPrimary,
+                              color: pointerColor,
                             ),
                           ),
                           Container(
                             height: 25,
                             width: 1,
-                            color: textPrimary,
+                            color: pointerColor,
                           ),
                         ],
                       ),
-                      Expanded(
-                        flex: (100 - flexPER),
-                        child: SizedBox(),
+                      Visibility(
+                        visible: (current < optimistic),
+                        child: Expanded(
+                          flex: (100 - flexPER),
+                          child: SizedBox(),
+                        ),
                       ),
                     ],
                   ),
@@ -143,7 +153,7 @@ class AnalysisChart extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 10,
-                          color: textPrimary,
+                          color: pointerColor,
                         ),
                       ),
                       Expanded(

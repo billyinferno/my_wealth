@@ -1311,63 +1311,363 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               ],
             ),
             const SizedBox(height: 10,),
-            AnalysisChart(
-              title: "Price Analysis",
-              pesimistic: _additionalInfo.pricePesimistic,
-              potentialPesimistic: _additionalInfo.pricePotentialPesimistic,
-              neutral: _additionalInfo.priceNeutral,
-              potentialNeutral: _additionalInfo.pricePotentialNeutral,
-              optimistic: _additionalInfo.priceOptimistic,
-              potentialOptimistic: _additionalInfo.pricePotentialOptimistic,
-              current: (_companyDetail.companyNetAssetValue ?? 0),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1,
+                  style: BorderStyle.solid,
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  AnalysisChart(
+                    title: "Price Analysis",
+                    pesimistic: _additionalInfo.pricePesimistic,
+                    potentialPesimistic: _additionalInfo.pricePotentialPesimistic,
+                    neutral: _additionalInfo.priceNeutral,
+                    potentialNeutral: _additionalInfo.pricePotentialNeutral,
+                    optimistic: _additionalInfo.priceOptimistic,
+                    potentialOptimistic: _additionalInfo.pricePotentialOptimistic,
+                    current: (_companyDetail.companyNetAssetValue ?? 0),
+                  ),
+                  const SizedBox(height: 10,),
+                  AnalysisChart(
+                    title: "Price Forecasting",
+                    pesimistic: _additionalInfo.priceForecastingPesimistic,
+                    neutral: _additionalInfo.priceForecastingNeutral,
+                    optimistic: _additionalInfo.priceForecastingOptimistic,
+                    current: (_companyDetail.companyNetAssetValue ?? 0),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10,),
-            AnalysisChart(
-              title: "Price Forecasting",
-              pesimistic: _additionalInfo.priceForecastingPesimistic,
-              neutral: _additionalInfo.priceForecastingNeutral,
-              optimistic: _additionalInfo.priceForecastingOptimistic,
-              current: (_companyDetail.companyNetAssetValue ?? 0),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1,
+                  style: BorderStyle.solid,
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Table(
+                    border: TableBorder.all(
+                      color: primaryLight,
+                    ),
+                    children: <TableRow>[
+                      TableRow(
+                        decoration: BoxDecoration(
+                          color: primaryDark,
+                        ),
+                        children: <Widget>[
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Sector",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Sub Sector",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Industry",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Sub Industry",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePER.data.avgSector, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePER.data.avgSubSector, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePER.data.avgIndustry, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePER.data.avgSubIndustry, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10,),
+                  AnalysisChart(
+                    title: "PER Valuation",
+                    pesimistic: _additionalInfo.perPesimistic,
+                    potentialPesimistic: _additionalInfo.perPotentialPesimistic,
+                    neutral: _additionalInfo.perNeutral,
+                    potentialNeutral: _additionalInfo.perPotentialNeutral,
+                    optimistic: _additionalInfo.perOptimistic,
+                    potentialOptimistic: _additionalInfo.perPotentialOptimistic,
+                    current: (_companyDetail.companyPer ?? 0),
+                  ),
+                  const SizedBox(height: 10,),
+                  AnalysisChart(
+                    title: "PER Forecasting Price",
+                    pesimistic: _additionalInfo.perForecastingPesimistic,
+                    neutral: _additionalInfo.perForecastingNeutral,
+                    optimistic: _additionalInfo.perForecastingOptimistic,
+                    current: (_companyDetail.companyNetAssetValue ?? 0),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10,),
-            //TODO: to add PER comparison with industry average
-            AnalysisChart(
-              title: "PER Valuation",
-              pesimistic: _additionalInfo.perPesimistic,
-              potentialPesimistic: _additionalInfo.perPotentialPesimistic,
-              neutral: _additionalInfo.perNeutral,
-              potentialNeutral: _additionalInfo.perPotentialNeutral,
-              optimistic: _additionalInfo.perOptimistic,
-              potentialOptimistic: _additionalInfo.perPotentialOptimistic,
-              current: (_companyDetail.companyPer ?? 0),
-            ),
-            const SizedBox(height: 10,),
-            AnalysisChart(
-              title: "PER Forecasting Price",
-              pesimistic: _additionalInfo.perForecastingPesimistic,
-              neutral: _additionalInfo.perForecastingNeutral,
-              optimistic: _additionalInfo.perForecastingOptimistic,
-              current: (_companyDetail.companyNetAssetValue ?? 0),
-            ),
-            const SizedBox(height: 10,),
-            //TODO: to add PBV comparison with industry average
-            AnalysisChart(
-              title: "PBV/R Valuation",
-              pesimistic: _additionalInfo.pbvPesimistic,
-              potentialPesimistic: _additionalInfo.pbvPotentialPesimistic,
-              neutral: _additionalInfo.pbvNeutral,
-              potentialNeutral: _additionalInfo.pbvPotentialNeutral,
-              optimistic: _additionalInfo.pbvOptimistic,
-              potentialOptimistic: _additionalInfo.pbvPotentialOptimistic,
-              current: (_companyDetail.companyPbr ?? 0),
-            ),
-            const SizedBox(height: 10,),
-            AnalysisChart(
-              title: "PBV/R Forecasting Price",
-              pesimistic: _additionalInfo.pbvForecastingPesimistic,
-              neutral: _additionalInfo.pbvForecastingNeutral,
-              optimistic: _additionalInfo.pbvForecastingOptimistic,
-              current: (_companyDetail.companyNetAssetValue ?? 0),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: primaryLight,
+                  width: 1,
+                  style: BorderStyle.solid,
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[      
+                  Table(
+                    border: TableBorder.all(
+                      color: primaryLight,
+                    ),
+                    children: <TableRow>[
+                      TableRow(
+                        decoration: BoxDecoration(
+                          color: primaryDark,
+                        ),
+                        children: <Widget>[
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Sector",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Sub Sector",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Industry",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                "Average Sub Industry",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePBV.data.avgSector, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePBV.data.avgSubSector, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePBV.data.avgIndustry, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            verticalAlignment: TableCellVerticalAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              child: Text(
+                                formatDecimal(_sectorIndustryAveragePBV.data.avgSubIndustry, decimal: 4),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10,),
+                  AnalysisChart(
+                    title: "PBV/R Valuation",
+                    pesimistic: _additionalInfo.pbvPesimistic,
+                    potentialPesimistic: _additionalInfo.pbvPotentialPesimistic,
+                    neutral: _additionalInfo.pbvNeutral,
+                    potentialNeutral: _additionalInfo.pbvPotentialNeutral,
+                    optimistic: _additionalInfo.pbvOptimistic,
+                    potentialOptimistic: _additionalInfo.pbvPotentialOptimistic,
+                    current: (_companyDetail.companyPbr ?? 0),
+                  ),
+                  const SizedBox(height: 10,),
+                  AnalysisChart(
+                    title: "PBV/R Forecasting Price",
+                    pesimistic: _additionalInfo.pbvForecastingPesimistic,
+                    neutral: _additionalInfo.pbvForecastingNeutral,
+                    optimistic: _additionalInfo.pbvForecastingOptimistic,
+                    current: (_companyDetail.companyNetAssetValue ?? 0),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

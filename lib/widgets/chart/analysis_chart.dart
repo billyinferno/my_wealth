@@ -31,6 +31,7 @@ class AnalysisChart extends StatelessWidget {
       pointerColor = secondaryDark;
     }
 
+    //TODO: to represent the pointer correctly when the current price is off the chart
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,

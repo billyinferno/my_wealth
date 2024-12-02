@@ -474,4 +474,31 @@ class CompanyAPI {
     // in case reaching here
     return null;
   }
+
+  Future<CompanySahamSectorIndustryAverageModel> getCompanySahamAverageSectorIndustry({
+    required String code,
+    required String type,
+  }) async {
+    assert(type.toLowerCase() == 'per' || type.toLowerCase() == 'pbv', "Wrong type");
+
+    // get the company data using netutils
+    try {
+      final String body = await NetUtils.get(
+        url: '${Globals.apiCompanySaham}/avg/$type/$code'
+      );
+
+      // parse the response to get top broker information
+      CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+      CompanySahamSectorIndustryAverageModel stockAverage = CompanySahamSectorIndustryAverageModel.fromJson(commonModel.data['attributes']);
+      return stockAverage;
+    }
+    catch (error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanySahamAverageSectorIndustry',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    }
+  }
 }

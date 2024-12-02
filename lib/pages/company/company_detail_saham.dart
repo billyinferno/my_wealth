@@ -93,6 +93,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late CompanyWeekdayPerformanceModel _monthlyPerformance;
   late CompanySahamAdditionalModel _additionalInfo;
   late bool _additionalInfoAvailable;
+  late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePER;
+  late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePBV;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -1276,11 +1278,37 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
-              "Analysis from ${Globals.dfDDMMMyyyy.format(_additionalInfo.fromDate)} to ${Globals.dfDDMMMyyyy.format(_additionalInfo.toDate)}",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Analysis from ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  Globals.dfDDMMMyyyy.format(_additionalInfo.fromDate),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: secondaryLight,
+                  ),
+                ),
+                Text(
+                  " to ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  Globals.dfDDMMMyyyy.format(_additionalInfo.toDate),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: secondaryLight,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10,),
             AnalysisChart(
@@ -1302,6 +1330,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               current: (_companyDetail.companyNetAssetValue ?? 0),
             ),
             const SizedBox(height: 10,),
+            //TODO: to add PER comparison with industry average
             AnalysisChart(
               title: "PER Valuation",
               pesimistic: _additionalInfo.perPesimistic,
@@ -1321,6 +1350,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               current: (_companyDetail.companyNetAssetValue ?? 0),
             ),
             const SizedBox(height: 10,),
+            //TODO: to add PBV comparison with industry average
             AnalysisChart(
               title: "PBV/R Valuation",
               pesimistic: _additionalInfo.pbvPesimistic,
@@ -5598,6 +5628,20 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               toDate: toDate
             );
           }
+        }),
+
+        // get stock average PER and PBV
+        _companyApi.getCompanySahamAverageSectorIndustry(
+          code: _companyData.companyCode,
+          type: 'per',
+        ).then((resp) {
+          _sectorIndustryAveragePER = resp;
+        }),
+        _companyApi.getCompanySahamAverageSectorIndustry(
+          code: _companyData.companyCode,
+          type: 'pbv',
+        ).then((resp) {
+          _sectorIndustryAveragePBV = resp;
         }),
 
         // check if user owned this stock or not?

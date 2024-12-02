@@ -7,6 +7,7 @@ export './company_saham_additional_model.dart';
 export './company_saham_dividend_model.dart';
 export './company_saham_find_other_model.dart';
 export './company_saham_list_model.dart';
+export './company_saham_sector_industry_average_model.dart';
 export './company_saham_split_model.dart';
 export './company_search_model.dart';
 export './company_seasonality_model.dart';

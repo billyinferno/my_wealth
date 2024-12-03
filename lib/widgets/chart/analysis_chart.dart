@@ -24,14 +24,48 @@ class AnalysisChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double range = (optimistic - pesimistic);
-    int flexPER = (((current  - pesimistic) / range) * 100).toInt();
-    Color pointerColor = textPrimary;
-    if (current < pesimistic) {
-      pointerColor = secondaryDark;
+    // calculate for the left and right padding
+    double minData = pesimistic;
+    double maxData = optimistic;
+    
+    // check if current data is below pesimistic or current data is above
+    // optimistic value. if so, set apropriate min and max data.
+    if (current < minData) {
+      minData = current;
+    }
+    if (current > maxData) {
+      maxData = current;
     }
 
-    //TODO: to represent the pointer correctly when the current price is off the chart
+    // calculate the range
+    double range = (maxData - minData);
+
+    // calculate the bar flex
+    int leftBarFlex = 0;
+    int rightBarFlex = 0;
+
+    // only calculate left bar flex if current is less than pesimistic
+    if (current < pesimistic) {
+      leftBarFlex = (((pesimistic - current) / range) * 100).toInt();
+    }
+
+    // only calculateright bar flex if current is more than optimistic
+    if (current > optimistic) {
+      rightBarFlex = (((current - optimistic) / range) * 100).toInt();
+    }
+
+    // calculate the flex needed for the pointer
+    int pointerFlex = (((current  - minData) / range) * 100).toInt();
+    
+    // check what color should we put for the pointer
+    Color pointerColor = textPrimary;
+    if (current < pesimistic) {
+      pointerColor = secondaryLight;
+    }
+    if (current > optimistic) {
+      pointerColor = Colors.lightGreenAccent;
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -43,130 +77,169 @@ class AnalysisChart extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 5,),
-        SizedBox(
-          width: double.infinity,
-          child: Stack(
-            alignment: Alignment.topLeft,
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(height: 2.5,),
-                  Container(
-                    width: double.infinity,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Colors.red,
-                          Colors.green,
-                        ]
-                      )
-                    ),
+        Stack(
+          alignment: Alignment.topLeft,
+          children: <Widget>[
+            Visibility(
+              visible: (current < pesimistic || current > optimistic),
+              child: Container(
+                height: 10,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: primaryDark,
+                  border: Border.all(
+                    color: primaryLight,
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Pesimistic\n${formatCurrency(pesimistic)}${(potentialPesimistic != null ? " (${formatDecimalWithNull(potentialPesimistic, times: 100, decimal: 2)}%)" : '')}",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: secondaryColor,
-                        ),
-                      ),
-                      Text(
-                        "Neutral\n${formatCurrency(neutral)}${(potentialNeutral != null ? " (${formatDecimalWithNull(potentialNeutral, times: 100, decimal: 2)}%)" : '')}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        "Optimistic\n${formatCurrency(optimistic)}${(potentialOptimistic != null ? " (${formatDecimalWithNull(potentialOptimistic, times: 100, decimal: 2)}%)" : '')}",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Row(
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Visibility(
+                  visible: (leftBarFlex > 0),
+                  child: Expanded(
+                    flex: leftBarFlex,
+                    child: const SizedBox(),
+                  ),
+                ),
+                Expanded(
+                  flex: (100 - (leftBarFlex + rightBarFlex)),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Visibility(
-                        visible: (current > pesimistic),
-                        child: Expanded(
-                          flex: flexPER,
-                          child: SizedBox(),
+                      Container(
+                        height: 10,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: <Color>[
+                              Colors.red,
+                              Colors.green,
+                            ]
+                          ),
+                          border: Border.all(
+                            color: primaryLight,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: pointerColor,
+                          Text(
+                            "Pesimistic\n${formatCurrency(pesimistic)}${(potentialPesimistic != null ? " (${formatDecimalWithNull(potentialPesimistic, times: 100, decimal: 2)}%)" : '')}",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: secondaryColor,
                             ),
                           ),
-                          Container(
-                            height: 25,
-                            width: 1,
-                            color: pointerColor,
+                          Text(
+                            "Neutral\n${formatCurrency(neutral)}${(potentialNeutral != null ? " (${formatDecimalWithNull(potentialNeutral, times: 100, decimal: 2)}%)" : '')}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            "Optimistic\n${formatCurrency(optimistic)}${(potentialOptimistic != null ? " (${formatDecimalWithNull(potentialOptimistic, times: 100, decimal: 2)}%)" : '')}",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.green,
+                            ),
                           ),
                         ],
                       ),
-                      Visibility(
-                        visible: (current < optimistic),
-                        child: Expanded(
-                          flex: (100 - flexPER),
-                          child: SizedBox(),
-                        ),
-                      ),
                     ],
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        flex: flexPER,
-                        child: SizedBox(),
-                      ),
-                      Text(
-                        "Current\n${formatCurrency(current)}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: pointerColor,
-                        ),
-                      ),
-                      Expanded(
-                        flex: (100 - flexPER),
-                        child: SizedBox(),
-                      ),
-                    ],
+                ),
+                Visibility(
+                  visible: (rightBarFlex > 0),
+                  child: Expanded(
+                    flex: rightBarFlex,
+                    child: const SizedBox(),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Visibility(
+                      visible: (pointerFlex > 0),
+                      child: Expanded(
+                        flex: pointerFlex,
+                        child: const SizedBox(),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: pointerColor,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: pointerColor,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      flex: (100 - pointerFlex),
+                      child: const SizedBox(),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Visibility(
+                      visible: (pointerFlex > 0),
+                      child: Expanded(
+                        flex: pointerFlex,
+                        child: const SizedBox(),
+                      ),
+                    ),
+                    Text(
+                      "Current\n${formatCurrency(current)}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: pointerColor,
+                      ),
+                    ),
+                    Expanded(
+                      flex: (100 - pointerFlex),
+                      child: const SizedBox(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );

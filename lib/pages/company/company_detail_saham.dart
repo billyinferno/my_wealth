@@ -6016,9 +6016,31 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       if (price.adjustedHighPrice > _maxHigh!) {
         _maxHigh = price.adjustedHighPrice;
       }
+      if (price.adjustedHighPrice < _minLow!) {
+        _minLow = price.adjustedHighPrice;
+      }
+
+      if (price.adjustedLowPrice > _maxHigh!) {
+        _maxHigh = price.adjustedLowPrice;
+      }
       if (price.adjustedLowPrice < _minLow!) {
         _minLow = price.adjustedLowPrice;
       }
+
+      if (price.adjustedOpenPrice > _maxHigh!) {
+        _maxHigh = price.adjustedOpenPrice;
+      }
+      if (price.adjustedOpenPrice < _minLow!) {
+        _minLow = price.adjustedOpenPrice;
+      }
+
+      if (price.adjustedClosingPrice > _maxHigh!) {
+        _maxHigh = price.adjustedOpenPrice;
+      }
+      if (price.adjustedClosingPrice < _minLow!) {
+        _minLow = price.adjustedOpenPrice;
+      }
+
       if (price.lastPrice > _maxHigh!) {
         _maxHigh = price.lastPrice;
       }

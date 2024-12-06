@@ -219,7 +219,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 children: const {
                   "9": Text("90 Days"),
                   "d": Text("Daily"),
-                  "m": Text("Monhtly"),
+                  "m": Text("Monthly"),
                   "y": Text("Yearly"),
                 },
                 onValueChanged: ((value) {
@@ -882,7 +882,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
       // get the date time for monthly
       dateHelper = DateTime(_indexDataDaily[i].date.year, _indexDataDaily[i].date.month, 1);
-      // add this on the monhtly map
+      // add this on the monthly map
       monthly[dateHelper] = _indexDataDaily[i];
 
       // get the date time for yearly

@@ -49,7 +49,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
   late List<PerformanceData> _perfData;
   late List<PerformanceData> _perfData90D;
   late List<PerformanceData> _perfDataDaily;
-  late List<PerformanceData> _perfDataMonhtly;
+  late List<PerformanceData> _perfDataMonthly;
   late List<PerformanceData> _perfDataYearly;
   late double _totalDayGain;
   late double _totalCost;
@@ -111,7 +111,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     _perfData = [];
     _perfData90D = [];
     _perfDataDaily = [];
-    _perfDataMonhtly = [];
+    _perfDataMonthly = [];
     _perfDataYearly = [];
     _gainDifference = 0;
 
@@ -259,7 +259,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 children: const {
                   "9": Text("90 Days"),
                   "d": Text("Daily"),
-                  "m": Text("Monhtly"),
+                  "m": Text("Monthly"),
                   "y": Text("Yearly"),
                 },
                 onValueChanged: ((value) {
@@ -865,9 +865,9 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       avg = avg + (plDiff ?? 0);
     }
 
-    // now put all the entried on the monhtly and yearly to the performance
+    // now put all the entried on the monthly and yearly to the performance
     // data list for monthly and yearly.
-    _perfDataMonhtly = monthly.values.toList();
+    _perfDataMonthly = monthly.values.toList();
     _perfDataYearly = yearly.values.toList();
 
     // calculate the min max for each graph
@@ -981,7 +981,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
     // set previous data into null before we start next data
     prevData = null;
-    for (PerformanceData data in _perfDataMonhtly) {
+    for (PerformanceData data in _perfDataMonthly) {
       if (data.gain >= _maxMonthly) {
         _maxMonthly = data.gain;
       }
@@ -1010,8 +1010,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     }
 
     // calculate avg monthly
-    if (_perfDataMonhtly.length > 1) {
-      _avgMonthly = (_avgMonthly / (_perfDataMonhtly.length - 1));
+    if (_perfDataMonthly.length > 1) {
+      _avgMonthly = (_avgMonthly / (_perfDataMonthly.length - 1));
     }
 
     // set previous data into null before we start next data
@@ -1239,7 +1239,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
 
       // get the date time for monthly
       dateHelper = DateTime(_indexDataDaily[i].date.year, _indexDataDaily[i].date.month, 1);
-      // add this on the monhtly map
+      // add this on the monthly map
       monthly[dateHelper] = _indexDataDaily[i];
 
       // get the date time for yearly
@@ -1362,7 +1362,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         _avg = _avg90;
         break;
       case "m":
-        _perfData = _perfDataMonhtly.toList();
+        _perfData = _perfDataMonthly.toList();
         _indexData = _indexDataMonthly.toList();
         _dateFormat = Globals.dfMMyy;
         _max = _maxMonthly;

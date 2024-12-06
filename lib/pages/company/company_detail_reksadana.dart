@@ -2014,7 +2014,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     // create variable helper for movement chart data
     Map<String, double> daily = {};
     Map<String, double> weekly = {};
-    Map<String, double> monhtly = {};
+    Map<String, double> monthly = {};
     Map<String, double> yearly = {};
 
     // calculate the date offset for the movement data based on the info
@@ -2054,14 +2054,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       // generate the movement chart data
       daily[Globals.dfddMM.formatLocal(data.date)] = data.dailyReturn * 100;
       weekly[Globals.dfddMM.formatLocal(data.date)] = data.weeklyReturn * 100;
-      monhtly[Globals.dfddMM.formatLocal(data.date)] = data.monthlyReturn * 100;
+      monthly[Globals.dfddMM.formatLocal(data.date)] = data.monthlyReturn * 100;
       yearly[Globals.dfddMM.formatLocal(data.date)] = data.yearlyReturn * 100;
     }
 
     // add the movement data
     _movementData.add(daily);
     _movementData.add(weekly);
-    _movementData.add(monhtly);
+    _movementData.add(monthly);
     _movementData.add(yearly);
 
     // compute average, assume the average is current price in case the

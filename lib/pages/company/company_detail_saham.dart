@@ -85,7 +85,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late List<Map<String, double>> _brokerSummaryMonthlyData;
   late String _brokerSummaryDailyMonthlyDataSelected;
   late String _brokerSummaryDailyMonthlyTypeSelected;
-  late String _brokerSummaryDailyMonhtlyValueSelected;
+  late String _brokerSummaryDailyMonthlyValueSelected;
   late CompanySahamDividendModel _dividend;
   late List<DateTime> _dividendDate;
   late CompanySahamSplitModel _split;
@@ -4038,7 +4038,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             children: const {
               "p": Text("Price"),
               "w": Text("Weekday"),
-              "m": Text("Monhtly"),
+              "m": Text("Monthly"),
             },
             onValueChanged: ((value) {
               String selectedValue = value.toString();
@@ -4168,7 +4168,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 5,),
-              Center(child: Text("Monhtly Performance")),
+              Center(child: Text("Monthly Performance")),
               const SizedBox(height: 2,),
               InkWell(
                 onTap: (() async {
@@ -4207,11 +4207,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
                               // check the new date whether it's same year or not?
                               if (newDate.toLocal().year != _monthlyPerformanceYear) {
-                                // not same year, set the current year to the monhtly performance year
+                                // not same year, set the current year to the monthly performance year
                                 _monthlyPerformanceYear = newDate.toLocal().year;
 
                                 // get the monthly performance
-                                await _getMonhtlyPerformance().onError((error, stackTrace) {
+                                await _getMonthlyPerformance().onError((error, stackTrace) {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       createSnackBar(
@@ -4426,11 +4426,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       String selectedValue = value.toString();
 
                       setState(() {
-                        _brokerSummaryDailyMonhtlyValueSelected = selectedValue;
+                        _brokerSummaryDailyMonthlyValueSelected = selectedValue;
                         _setBrokerSummaryDailyMonthlyData();
                       });
                     }),
-                    groupValue: _brokerSummaryDailyMonhtlyValueSelected,
+                    groupValue: _brokerSummaryDailyMonthlyValueSelected,
                     selectedColor: const Color(0xff007ba7),
                     borderColor: const Color.fromARGB(255, 0, 56, 77),
                     pressedColor: const Color.fromARGB(255, 0, 56, 77),
@@ -5314,7 +5314,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     // loop thru all the _brokerSummaryDailyStat.all
     Map<String, double> buyData = {};
     for (BrokerSummaryDailyStatBuySell data in currentItem.buy) {
-      if (_brokerSummaryDailyMonhtlyValueSelected == "v") {
+      if (_brokerSummaryDailyMonthlyValueSelected == "v") {
         buyData[data.date] = data.totalValue.toDouble();
       } else {
         buyData[data.date] = data.totalLot.toDouble();
@@ -5323,7 +5323,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     Map<String, double> sellData = {};
     for (BrokerSummaryDailyStatBuySell data in currentItem.sell) {
-      if (_brokerSummaryDailyMonhtlyValueSelected == "v") {
+      if (_brokerSummaryDailyMonthlyValueSelected == "v") {
         sellData[data.date] = data.totalValue.toDouble();
       } else {
         sellData[data.date] = data.totalLot.toDouble();
@@ -5478,7 +5478,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     },);
   }
 
-  Future<void> _getMonhtlyPerformance() async {
+  Future<void> _getMonthlyPerformance() async {
     // show loading screen
     LoadingScreen.instance().show(context: context);
 
@@ -5498,7 +5498,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       );
 
       // show error
-      throw Exception('Error when try to get monhtly performance from server');
+      throw Exception('Error when try to get monthly performance from server');
     },).whenComplete(() {
       // remove the loading screen
       LoadingScreen.instance().hide();
@@ -5566,7 +5566,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         // assuming that we will get the all lot data
         _brokerSummaryDailyMonthlyDataSelected = "d";
         _brokerSummaryDailyMonthlyTypeSelected = "a";
-        _brokerSummaryDailyMonhtlyValueSelected = "l";
+        _brokerSummaryDailyMonthlyValueSelected = "l";
 
         // loop thru all the _brokerSummaryDailyStat.all
         Map<String, double> buyData = {};

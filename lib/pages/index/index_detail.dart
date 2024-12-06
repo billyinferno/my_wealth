@@ -1129,20 +1129,21 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                   riskFactor: _userInfo!.risk
                 );
               }
-              return Container(
-                color: riskColor(
-                  value: _index.indexNetAssetValue,
-                  cost: _indexPriceList[index].indexPriceValue,
-                  riskFactor: _userInfo!.risk
-                ),
+              return IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    const SizedBox(width: 10,),
+                    Container(
+                      width: 10,
+                      color: riskColor(
+                        value: _index.indexNetAssetValue,
+                        cost: _indexPriceList[index].indexPriceValue,
+                        riskFactor: _userInfo!.risk
+                      ),
+                    ),
                     Expanded(
                       child: Container(
-                        color: primaryColor,
                         padding: const EdgeInsets.all(10),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,

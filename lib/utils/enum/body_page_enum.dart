@@ -1,3 +1,3 @@
 enum BodyPage {
-  summary, broker, table, map, graph, calc
+  summary, broker, table, map, graph, calc, season
 }

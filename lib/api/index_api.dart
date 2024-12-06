@@ -97,4 +97,58 @@ class IndexAPI {
     }
     return ret;
   }
+
+  Future<CompanyWeekdayPerformanceModel> getIndexWeekdayPerformance({
+    required int id,
+    required DateTime fromDate,
+    required DateTime toDate,
+  }) async {
+    // get the initial query information for the API
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
+
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiIndices}/weekday/$id/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getIndexWeekdayPerformance',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get top broker information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyWeekdayPerformanceModel weekdayPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
+    return weekdayPerformance;
+  }
+
+  Future<CompanyWeekdayPerformanceModel> getIndexMonthlyPerformance({
+    required int id,
+    required DateTime fromDate,
+    required DateTime toDate,
+  }) async {
+    // get the initial query information for the API
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
+
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiIndices}/monthly/$id/from/$dateFromString/to/$dateToString'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getIndexMonthlyPerformance',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get top broker information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyWeekdayPerformanceModel weekdayPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
+    return weekdayPerformance;
+  }
 }

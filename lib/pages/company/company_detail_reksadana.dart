@@ -40,6 +40,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final Map<int, List<InfoReksadanaModel>> _infoReksadanaData = {};
   late List<InfoReksadanaModel> _infoReksadana;
   late List<CompanyDetailList> _infoReksadanaSort;
+  //TODO: to add reksadana weekday and monthly performance, API is ready!
 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;

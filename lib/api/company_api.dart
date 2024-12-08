@@ -387,17 +387,20 @@ class CompanyAPI {
   }
 
   Future<CompanyWeekdayPerformanceModel> getCompanyWeekdayPerformance({
+    String type = 'saham',
     required String code,
     required DateTime fromDate,
     required DateTime toDate,
   }) async {
+    assert(type == 'saham' || type == 'reksadana', "Wrong type");
+
     // get the initial query information for the API
     String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
     String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
 
     // get the company data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiCompanies}/weekday/$code/from/$dateFromString/to/$dateToString'
+      url: '${Globals.apiCompanies}/$type/weekday/$code/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getCompanyWeekdayPerformance',
@@ -414,9 +417,12 @@ class CompanyAPI {
   }
 
   Future<CompanyWeekdayPerformanceModel> getCompanyMonthlyPerformance({
+    String type = 'saham',
     required String code,
     required int year,
   }) async {
+    assert(type == 'saham' || type == 'reksadana', "Wrong type");
+
     // create the start and end date
     DateTime startDate = DateTime(year, 1, 1);
     DateTime endDate = DateTime(year, 12, 31);
@@ -427,7 +433,7 @@ class CompanyAPI {
 
     // get the company data using netutils
     final String body = await NetUtils.get(
-      url: '${Globals.apiCompanies}/monthly/$code/from/$dateFromString/to/$dateToString'
+      url: '${Globals.apiCompanies}/$type/monthly/$code/from/$dateFromString/to/$dateToString'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getCompanyMonthlyPerformance',

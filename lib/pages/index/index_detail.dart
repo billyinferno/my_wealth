@@ -47,8 +47,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late DateTime _weekdayPerformanceStartDate;
   late DateTime _weekdayPerformanceEndDate;
   late CompanyWeekdayPerformanceModel _monthlyPerformance;
-  late DateTime _monthlyPerformanceStartDate;
-  late DateTime _monthlyPerformanceEndDate;
+  late int _monthlyPerformanceYear;
   late DateTime _minPriceDate;
 
   @override
@@ -61,8 +60,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     // set the weekday performance start and end date as 180 days (around 6 month)
     _weekdayPerformanceEndDate = _index.indexLastUpdate;
     _weekdayPerformanceStartDate = _weekdayPerformanceEndDate.subtract(Duration(days: 180));
-    _monthlyPerformanceStartDate = _weekdayPerformanceStartDate;
-    _monthlyPerformanceEndDate = _weekdayPerformanceEndDate;
+    _monthlyPerformanceYear = DateTime.now().year;
 
     // default minimum price date as 2021/05/31 as per DB
     _minPriceDate = DateTime(2021, 5, 31);
@@ -516,8 +514,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
       _indexApi.getIndexMonthlyPerformance(
         id: _index.indexId,
-        fromDate: _monthlyPerformanceStartDate,
-        toDate: _monthlyPerformanceEndDate,
+        year: _monthlyPerformanceYear,
       ).then((resp) {
         _monthlyPerformance = resp;
       }),
@@ -892,47 +889,61 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               const SizedBox(height: 2,),
               InkWell(
                 onTap: (() async {
-                  // check for the max date to avoid any assertion that the initial date range
-                  // is more than the lastDate
-                  DateTime maxDate = (_index.indexLastUpdate).toLocal();
-                  if (maxDate.isBefore(_monthlyPerformanceStartDate.toLocal())) {
-                    maxDate = _monthlyPerformanceStartDate;
-                  }
-
-                  DateTimeRange? result = await showDateRangePicker(
+                  await showDialog(
                     context: context,
-                    firstDate: _minPriceDate.toLocal(),
-                    lastDate: maxDate.toLocal(),
-                    initialDateRange: DateTimeRange(
-                      start: _monthlyPerformanceStartDate.toLocal(),
-                      end: _monthlyPerformanceEndDate.toLocal()
-                    ),
-                    confirmText: 'Done',
-                    currentDate: _index.indexLastUpdate.toLocal(),
-                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("Select Year"),
+                            IconButton(
+                            icon: Icon(
+                              Ionicons.close,
+                            ),
+                            onPressed: () {
+                              // remove the dialog
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ],
+                        ),
+                        contentPadding: const EdgeInsets.all(10),
+                        content: SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: YearPicker(
+                            firstDate: _minPriceDate.toLocal(),
+                            lastDate: _index.indexLastUpdate.toLocal(),
+                            selectedDate: DateTime(_monthlyPerformanceYear, 1, 1),
+                            currentDate: DateTime.now().toLocal(),
+                            onChanged: (newDate) async {
+                              // remove the dialog
+                              Navigator.pop(context);
+
+                              // check the new date whether it's same year or not?
+                              if (newDate.toLocal().year != _monthlyPerformanceYear) {
+                                // not same year, set the current year to the monthly performance year
+                                _monthlyPerformanceYear = newDate.toLocal().year;
+
+                                // get the monthly performance
+                                await _getMonthlyPerformance().onError((error, stackTrace) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      createSnackBar(
+                                        message: error.toString()
+                                      )
+                                    );
+                                  }
+                                },);
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   );
-
-                  // check if we got the result or not?
-                  if (result != null) {
-                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                    if ((result.start.compareTo(_monthlyPerformanceStartDate) != 0) ||
-                        (result.end.compareTo(_monthlyPerformanceEndDate) != 0)) {
-                      // set the weekday performance from and to date
-                      _monthlyPerformanceStartDate = result.start;
-                      _monthlyPerformanceEndDate = result.end;
-
-                      // get the weekday performance
-                      await _getMonthlyPerformance().onError((error, stackTrace) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            createSnackBar(
-                              message: error.toString()
-                            )
-                          );
-                        }
-                      },);
-                    }
-                  }
                 }),
                 child: Container(
                   color: Colors.transparent,
@@ -1271,8 +1282,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
     await _indexApi.getIndexMonthlyPerformance(
       id: _index.indexId,
-      fromDate: _monthlyPerformanceStartDate,
-      toDate: _monthlyPerformanceEndDate,
+      year: _monthlyPerformanceYear,
     ).then((resp) {
       setState(() {
         _monthlyPerformance = resp;

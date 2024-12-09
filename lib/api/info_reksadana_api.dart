@@ -54,4 +54,25 @@ class InfoReksadanaAPI {
     }
     return listInfoReksadana;
   }
+
+  Future<MinMaxDateModel> getInfoReksadanaMinMaxDate({
+    required int companyId
+  }) async {
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInfoReksadana}/minmax/date/$companyId'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getInfoReksadanaMinMaxDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get broker summary data based on the stock code
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    MinMaxDateModel minMaxDate = MinMaxDateModel.fromJson(commonModel.data['attributes']);
+    return minMaxDate;
+  }
 }

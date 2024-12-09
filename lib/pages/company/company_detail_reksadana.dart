@@ -20,6 +20,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late Future<bool> _getData;
   late CompanyListModel _otherCompany;
   late CompanyDetailModel? _otherCompanyDetail;
+  late MinMaxDateModel _minMaxDate;
   
   final ScrollController _summaryController = ScrollController();
   final ScrollController _priceController = ScrollController();
@@ -49,7 +50,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late DateTime _monthlyPerformanceDateFrom;
   late DateTime _monthlyPerformanceDateTo;
   late bool _monthlyIsRange;
-  late DateTime _minPriceDate;
 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;
@@ -161,10 +161,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     // initialize the map selection for price
     _mapSelection = "p";
-
-    // set the minimum price date to 2018-02-20 as per DB
-    // TODO: to set the min price date based on the actual minimum date of the reksadana instead put it as static
-    _minPriceDate = DateTime(2018, 2, 20);
 
     // default the monthly selection to not range
     _monthlyIsRange = false;
@@ -1184,15 +1180,15 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                 onTap: (() async {
                   // check for the max date to avoid any assertion that the initial date range
                   // is more than the lastDate
-                  DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
-                  if (maxDate.isBefore(_minPriceDate.toLocal())) {
-                    maxDate = _minPriceDate;
+                  DateTime maxDate = (_minMaxDate.maxDate).toLocal();
+                  if (maxDate.isBefore(_minMaxDate.minDate.toLocal())) {
+                    maxDate = _minMaxDate.minDate.toLocal();
                   }
 
                   DateTimeRange? result = await showDateRangePicker(
                     context: context,
-                    firstDate: _minPriceDate.toLocal(),
-                    lastDate: maxDate.toLocal(),
+                    firstDate: _minMaxDate.minDate.toLocal(),
+                    lastDate: maxDate,
                     initialDateRange: DateTimeRange(
                       start: _weekdayPerformanceDateFrom.toLocal(),
                       end: _weekdayPerformanceDateTo.toLocal()
@@ -1269,15 +1265,15 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         if (_monthlyIsRange) {
                           // check for the max date to avoid any assertion that the initial date range
                           // is more than the lastDate
-                          DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
-                          if (maxDate.isBefore(_minPriceDate.toLocal())) {
-                            maxDate = _minPriceDate;
+                          DateTime maxDate = _minMaxDate.maxDate.toLocal();
+                          if (maxDate.isBefore(_minMaxDate.minDate.toLocal())) {
+                            maxDate = _minMaxDate.minDate.toLocal();
                           }
 
                           DateTimeRange? result = await showDateRangePicker(
                             context: context,
-                            firstDate: _minPriceDate.toLocal(),
-                            lastDate: maxDate.toLocal(),
+                            firstDate: _minMaxDate.minDate.toLocal(),
+                            lastDate: maxDate,
                             initialDateRange: DateTimeRange(
                               start: _monthlyPerformanceDateFrom.toLocal(),
                               end: _monthlyPerformanceDateTo.toLocal()
@@ -1335,8 +1331,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                   width: 300,
                                   height: 300,
                                   child: YearPicker(
-                                    firstDate: _minPriceDate.toLocal(),
-                                    lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                                    firstDate: _minMaxDate.minDate.toLocal(),
+                                    lastDate: _minMaxDate.maxDate.toLocal(),
                                     selectedDate: _monthlyPerformanceDateTo,
                                     currentDate: DateTime.now().toLocal(),
                                     onChanged: (newDate) async {
@@ -2191,6 +2187,21 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         );
         throw Exception ("Error when get company information");  
       });
+
+      // get the minimum and maximum date that we can use as barrier when
+      // we want to select some data
+      await _infoReksadanaAPI.getInfoReksadanaMinMaxDate(
+        companyId: _companyData.companyId,
+      ).then((resp) {
+        _minMaxDate = resp;
+      },).onError((error, stackTrace) {
+        Log.error(
+          message: "Error when get info reksadana min max date",
+          error: error,
+          stackTrace: stackTrace,
+        );
+        throw Exception ("Error when get min and max date");  
+      },);
 
       await Future.wait([
         _infoReksadanaAPI.getInfoReksadanaDate(

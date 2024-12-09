@@ -63,7 +63,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late BrokerSummaryModel _brokerSummaryNet;
   late CompanyTopBrokerModel _topBroker;
   late BrokerSummaryBuySellModel _brokerSummaryBuySell;
-  late BrokerSummaryDateModel _brokerSummaryDate;
+  late MinMaxDateModel _brokerSummaryDate;
   late List<BrokerSummaryAccumulationModel> _brokerSummaryAccumulation;
   late PriceSahamMovingAverageModel _priceMA;
   late PriceSahamMovementModel _priceMovement;
@@ -2961,14 +2961,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       // check for the max date to avoid any assertion that the initial date range
                       // is more than the lastDate
                       DateTime maxDate =
-                          _brokerSummaryDate.brokerMaxDate.toLocal();
+                          _brokerSummaryDate.maxDate.toLocal();
                       if (maxDate.isBefore(_brokerSummaryDateTo.toLocal())) {
                         maxDate = _brokerSummaryDateTo;
                       }
 
                       DateTimeRange? result = await showDateRangePicker(
                         context: context,
-                        firstDate: _brokerSummaryDate.brokerMinDate.toLocal(),
+                        firstDate: _brokerSummaryDate.minDate.toLocal(),
                         lastDate: maxDate.toLocal(),
                         initialDateRange: DateTimeRange(
                             start: _brokerSummaryDateFrom.toLocal(),
@@ -3288,9 +3288,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       // check for the max date to avoid any assertion that the initial date range
                       // is more than the lastDate
                       DateTime maxDate =
-                          _brokerSummaryDate.brokerMaxDate.toLocal();
+                          _brokerSummaryDate.maxDate.toLocal();
                       DateTime minDate =
-                          _brokerSummaryDate.brokerMinDate.toLocal();
+                          _brokerSummaryDate.minDate.toLocal();
                       if (maxDate.isBefore(_topBrokerDateTo.toLocal())) {
                         maxDate = _topBrokerDateTo;
                       }

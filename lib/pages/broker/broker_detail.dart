@@ -1023,8 +1023,8 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       await _brokerSummaryAPI.getBrokerSummaryBrokerDate(
         brokerID: _args.brokerFirmID
       ).then((resp) {
-        _fromDateMax = resp.brokerMinDate;
-        _toDateMax = resp.brokerMaxDate;
+        _fromDateMax = resp.minDate;
+        _toDateMax = resp.maxDate;
         _fromDateCurrent = _toDateMax;
         _toDateCurrent = _toDateMax;
       });

@@ -153,7 +153,7 @@ class BrokerSummaryAPI {
     return brokerTopResult;
   }
 
-  Future<BrokerSummaryDateModel> getBrokerSummaryCodeDate({
+  Future<MinMaxDateModel> getBrokerSummaryCodeDate({
     required String stockCode
   }) async {
     // get the API response
@@ -170,11 +170,11 @@ class BrokerSummaryAPI {
 
     // parse the response to get broker summary data based on the stock code
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
-    BrokerSummaryDateModel brokerSummarryCode = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
+    MinMaxDateModel brokerSummarryCode = MinMaxDateModel.fromJson(commonModel.data['attributes']);
     return brokerSummarryCode;
   }
 
-  Future<BrokerSummaryDateModel> getBrokerSummaryBrokerDate({
+  Future<MinMaxDateModel> getBrokerSummaryBrokerDate({
     required String brokerID
   }) async {
     // get the API response
@@ -191,11 +191,11 @@ class BrokerSummaryAPI {
 
     // parse the response to get broker summary date
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
-    BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
+    MinMaxDateModel brokerSummaryDate = MinMaxDateModel.fromJson(commonModel.data['attributes']);
     return brokerSummaryDate;
   }
 
-  Future<BrokerSummaryDateModel> getBrokerSummaryDate() async {
+  Future<MinMaxDateModel> getBrokerSummaryDate() async {
     // get the API response
     final String body = await NetUtils.get(
       url: '${Globals.apiBrokerSummary}/date/all'
@@ -210,7 +210,7 @@ class BrokerSummaryAPI {
 
     // parse the response to get the broker summary date for all
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
-    BrokerSummaryDateModel brokerSummaryDate = BrokerSummaryDateModel.fromJson(commonModel.data['attributes']);
+    MinMaxDateModel brokerSummaryDate = MinMaxDateModel.fromJson(commonModel.data['attributes']);
     return brokerSummaryDate;
   }
 

@@ -25,7 +25,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
   late DateTime _toDate;
   late DateTime _currentDate;
   late List<InsightAccumulationModel> _listAccumulation;
-  late BrokerSummaryDateModel _brokerSummaryDate;
+  late MinMaxDateModel _brokerSummaryDate;
 
   late Future<bool> _getData;
 
@@ -426,8 +426,8 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
   Future<void> _showCalendar() async {
     DateTimeRange? result = await showDateRangePicker(
       context: context,
-      firstDate: _brokerSummaryDate.brokerMinDate.toLocal(),
-      lastDate: _brokerSummaryDate.brokerMaxDate.toLocal(),
+      firstDate: _brokerSummaryDate.minDate.toLocal(),
+      lastDate: _brokerSummaryDate.maxDate.toLocal(),
       initialDateRange: DateTimeRange(start: _fromDate.toLocal(), end: _toDate.toLocal()),
       confirmText: 'Done',
       currentDate: _currentDate.toLocal(),
@@ -499,8 +499,8 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
           _brokerSummaryDate = resp;
 
           // check whether the toDate is more than maxDate, and whether fromDate is lesser than minDate
-          if (_brokerSummaryDate.brokerMaxDate.isBefore(_toDate)) {
-            _toDate = _brokerSummaryDate.brokerMaxDate.toLocal();
+          if (_brokerSummaryDate.maxDate.isBefore(_toDate)) {
+            _toDate = _brokerSummaryDate.maxDate.toLocal();
             // here todate should be current date, but since maxdate is lesser than today date
             // we will assume that current date is same as todate
             _currentDate = _toDate;
@@ -514,13 +514,13 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
           // check if the broker minimum date is after the from date, if so, then change the from date to
           // broker minimum date.
-          if (_brokerSummaryDate.brokerMinDate.isAfter(_fromDate)) {
-            _fromDate = _brokerSummaryDate.brokerMinDate.toLocal();
+          if (_brokerSummaryDate.minDate.isAfter(_fromDate)) {
+            _fromDate = _brokerSummaryDate.minDate.toLocal();
           }
 
           await BrokerSharedPreferences.setBrokerMinMaxDate(
-            minDate: _brokerSummaryDate.brokerMinDate,
-            maxDate: _brokerSummaryDate.brokerMaxDate
+            minDate: _brokerSummaryDate.minDate,
+            maxDate: _brokerSummaryDate.maxDate
           );
         }).onError((error, stackTrace) {
           Log.error(
@@ -563,7 +563,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
       DateTime brokerMinDate = BrokerSharedPreferences.getBrokerMinDate()!;
       DateTime brokerMaxDate = BrokerSharedPreferences.getBrokerMaxDate()!;
 
-      _brokerSummaryDate = BrokerSummaryDateModel(brokerMinDate: brokerMinDate, brokerMaxDate: brokerMaxDate);
+      _brokerSummaryDate = MinMaxDateModel(minDate: brokerMinDate, maxDate: brokerMaxDate);
     }
 
     return true;

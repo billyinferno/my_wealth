@@ -987,8 +987,8 @@ class LoginPageState extends State<LoginPage> {
       _brokerSummaryApi.getBrokerSummaryDate().then((resp) async {
         if (!mounted) return;
         await BrokerSharedPreferences.setBrokerMinMaxDate(
-          minDate: resp.brokerMinDate,
-          maxDate: resp.brokerMaxDate
+          minDate: resp.minDate,
+          maxDate: resp.maxDate
         );
         Log.success(message: '🔟🔟🔟6️⃣ Get Broker Min and Max Date');
       }),

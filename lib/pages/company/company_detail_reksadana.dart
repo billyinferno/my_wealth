@@ -40,7 +40,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   final Map<int, List<InfoReksadanaModel>> _infoReksadanaData = {};
   late List<InfoReksadanaModel> _infoReksadana;
   late List<CompanyDetailList> _infoReksadanaSort;
-  //TODO: to add reksadana weekday and monthly performance, API is ready!
+
+  late String _mapSelection;
+  late CompanyWeekdayPerformanceModel _weekdayPerformance;
+  late DateTime _weekdayPerformanceDateFrom;
+  late DateTime _weekdayPerformanceDateTo;
+  late CompanyWeekdayPerformanceModel _monthlyPerformance;
+  late int _monthlyPerformanceYear;
+  late DateTime _minPriceDate;
 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;
@@ -149,6 +156,12 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     _indexComparePrice = [];
     _indexPriceMap = {};
     _indexData = [];
+
+    // initialize the map selection for price
+    _mapSelection = "p";
+
+    // set the minimum price date to 2018-02-20 as per DB
+    _minPriceDate = DateTime(2018, 2, 20);
 
     _getData = _getInitData();
   }
@@ -1099,51 +1112,269 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   }
 
   Widget _showCalendar() {
-    return SingleChildScrollView(
-      controller: _calendarScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: primaryLight,
-            width: 1.0,
-            style: BorderStyle.solid,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 10,),
+        SizedBox(
+          width: double.infinity,
+          child: CupertinoSegmentedControl<String>(
+            children: const <String, Widget>{
+              "p": Text("Price"),
+              "w": Text("Weekday"),
+              "m": Text("Monthly"),
+            },
+            onValueChanged: (<String>(value) {
+              setState(() {
+                _mapSelection = value;
+              });
+            }),
+            groupValue: _mapSelection,
+            selectedColor: secondaryColor,
+            borderColor: secondaryDark,
+            pressedColor: primaryDark,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 5,),
-            Row(
+        const SizedBox(height: 10,),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: _calendarScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const Text("Current Price Comparison"),
-                const SizedBox(width: 10,),
-                CupertinoSwitch(
-                  value: _showCurrentPriceComparison,
-                  activeTrackColor: accentColor,
-                  onChanged: ((val) {
-                    setState(() {
-                      _showCurrentPriceComparison = val;
-                    });
-                  })
-                )
+                const SizedBox(height: 5,),
+                _selectedMap(),
               ],
             ),
-            const SizedBox(height: 5,),
-            HeatGraph(
-              data: _heatMapGraphData,
-              userInfo: _userInfo!,
-              currentPrice: _companyDetail.companyNetAssetValue!,
-              enableDailyComparison: _showCurrentPriceComparison,
-            ),
-          ],
-        ),
-      ),
+          ),
+        )
+      ],
     );
+  }
+
+  Widget _selectedMap() {
+    switch(_mapSelection) {
+      case "w":
+        return Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            )
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 5,),
+              Center(child: Text("Weekday Performance")),
+              const SizedBox(height: 2,),
+              InkWell(
+                onTap: (() async {
+                  // check for the max date to avoid any assertion that the initial date range
+                  // is more than the lastDate
+                  DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
+                  if (maxDate.isBefore(_minPriceDate.toLocal())) {
+                    maxDate = _minPriceDate;
+                  }
+
+                  DateTimeRange? result = await showDateRangePicker(
+                    context: context,
+                    firstDate: _minPriceDate.toLocal(),
+                    lastDate: maxDate.toLocal(),
+                    initialDateRange: DateTimeRange(
+                      start: _weekdayPerformanceDateFrom.toLocal(),
+                      end: _weekdayPerformanceDateTo.toLocal()
+                    ),
+                    confirmText: 'Done',
+                    currentDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                  );
+
+                  // check if we got the result or not?
+                  if (result != null) {
+                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                    if ((result.start.compareTo(_weekdayPerformanceDateFrom) != 0) ||
+                        (result.end.compareTo(_weekdayPerformanceDateTo) != 0)) {
+                      // set the weekday performance from and to date
+                      _weekdayPerformanceDateFrom = result.start;
+                      _weekdayPerformanceDateTo = result.end;
+
+                      // get the weekday performance
+                      await _getWeekdayPerformance().onError((error, stackTrace) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            createSnackBar(
+                              message: error.toString()
+                            )
+                          );
+                        }
+                      },);
+                    }
+                  }
+                }),
+                child: Container(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text(
+                      "${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateTo)}",
+                      style: TextStyle(
+                        color: secondaryLight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              WeekdayPerformanceChart(
+                data: _weekdayPerformance,
+              ),
+            ],
+          ),
+        );
+      case "m":
+        return Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            )
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              //TODO: to give user selection whether they want to select year or range
+              const SizedBox(height: 5,),
+              Center(child: Text("Monthly Performance")),
+              const SizedBox(height: 2,),
+              InkWell(
+                onTap: (() async {
+                  await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("Select Year"),
+                            IconButton(
+                            icon: Icon(
+                              Ionicons.close,
+                            ),
+                            onPressed: () {
+                              // remove the dialog
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ],
+                        ),
+                        contentPadding: const EdgeInsets.all(10),
+                        content: SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: YearPicker(
+                            firstDate: _minPriceDate.toLocal(),
+                            lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                            selectedDate: DateTime(_monthlyPerformanceYear, 1, 1),
+                            currentDate: DateTime.now().toLocal(),
+                            onChanged: (newDate) async {
+                              // remove the dialog
+                              Navigator.pop(context);
+
+                              // check the new date whether it's same year or not?
+                              if (newDate.toLocal().year != _monthlyPerformanceYear) {
+                                // not same year, set the current year to the monthly performance year
+                                _monthlyPerformanceYear = newDate.toLocal().year;
+
+                                // get the monthly performance
+                                await _getMonthlyPerformance().onError((error, stackTrace) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      createSnackBar(
+                                        message: error.toString()
+                                      )
+                                    );
+                                  }
+                                },);
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }),
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Text(
+                      "$_monthlyPerformanceYear",
+                      style: TextStyle(
+                        color: secondaryLight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              WeekdayPerformanceChart(
+                type: WeekdayPerformanceType.monthly,
+                data: _monthlyPerformance,
+              ),
+            ],
+          ),
+        );
+      default:
+        return Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: primaryLight,
+              width: 1.0,
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 5,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text("Current Price Comparison"),
+                  const SizedBox(width: 10,),
+                  CupertinoSwitch(
+                    value: _showCurrentPriceComparison,
+                    activeTrackColor: accentColor,
+                    onChanged: ((val) {
+                      setState(() {
+                        _showCurrentPriceComparison = val;
+                      });
+                    })
+                  )
+                ],
+              ),
+              const SizedBox(height: 5,),
+              HeatGraph(
+                data: _heatMapGraphData,
+                userInfo: _userInfo!,
+                currentPrice: _companyDetail.companyNetAssetValue!,
+                enableDailyComparison: _showCurrentPriceComparison,
+              ),
+            ],
+          ),
+        );
+    }
   }
 
   Widget _selectedGraph() {
@@ -1851,6 +2082,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         // calculate again the from and to date based on the company last update
         _to = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
         _from = _to.subtract(const Duration(days: 365));
+
+        // initialize weekday and monthly performance data
+        // we will use 3 month data for the weekday performance date
+        _weekdayPerformanceDateTo = (_companyDetail.companyLastUpdate ?? DateTime.now());
+        _weekdayPerformanceDateFrom = _weekdayPerformanceDateTo.subtract(Duration(days: 90));
+
+        // initialize the monthly performance date year to same as weekday performance date
+        _monthlyPerformanceYear = _weekdayPerformanceDateTo.year;
       }).onError((error, stackTrace) {
         Log.error(
           message: "Error when get company information",
@@ -1955,6 +2194,24 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               }
             }
           }
+        }),
+
+        // get the weekday and monthly analysis
+        _companyApi.getCompanyWeekdayPerformance(
+          type: 'reksadana',
+          code: _companyData.companyId.toString(),
+          fromDate: _weekdayPerformanceDateFrom,
+          toDate: _weekdayPerformanceDateTo
+        ).then((resp) {
+          _weekdayPerformance = resp;
+        }),
+
+        _companyApi.getCompanyMonthlyPerformance(
+          type: 'reksadana',
+          code: _companyData.companyId.toString(),
+          year: _monthlyPerformanceYear
+        ).then((resp) {
+          _monthlyPerformance = resp;
         }),
 
         // check if this company owned by user or not?
@@ -2170,6 +2427,63 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _indexData.clear();
       _indexData = tempGraph.toList();
     }
+  }
+
+  Future<void> _getWeekdayPerformance() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    await _companyApi.getCompanyWeekdayPerformance(
+      type: 'reksadana',
+      code: _companyData.companyId.toString(),
+      fromDate: _weekdayPerformanceDateFrom,
+      toDate: _weekdayPerformanceDateTo
+    ).then((resp) {
+      setState(() {
+        _weekdayPerformance = resp;
+      });
+    }).onError((error, stackTrace) {
+      // print the error
+      Log.error(
+        message: 'Error when try to get weekeday performance data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show error
+      throw Exception('Error when try to get weekday performance from server');
+    },).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    },);
+  }
+
+  Future<void> _getMonthlyPerformance() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    await _companyApi.getCompanyMonthlyPerformance(
+      type: 'reksadana',
+      code: _companyData.companyId.toString(),
+      year: _monthlyPerformanceYear,
+    ).then((resp) {
+      setState(() {
+        _monthlyPerformance = resp;
+      });
+    }).onError((error, stackTrace) {
+      // print the error
+      Log.error(
+        message: 'Error when try to get monthly performance data from server',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      // show error
+      throw Exception('Error when try to get monthly performance from server');
+    },).whenComplete(() {
+      // remove the loading screen
+      LoadingScreen.instance().hide();
+    },);
   }
 
   void _generateInfoSort() {

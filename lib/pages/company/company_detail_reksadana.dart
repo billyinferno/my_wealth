@@ -1178,6 +1178,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               const SizedBox(height: 2,),
               InkWell(
                 onTap: (() async {
+                  // stored current from and to date
+                  DateTime prevDateFrom = _weekdayPerformanceDateFrom;
+                  DateTime prevDateTo = _weekdayPerformanceDateTo;
+
                   // check for the max date to avoid any assertion that the initial date range
                   // is more than the lastDate
                   DateTime maxDate = (_minMaxDate.maxDate).toLocal();
@@ -1209,6 +1213,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
                       // get the weekday performance
                       await _getWeekdayPerformance().onError((error, stackTrace) {
+                        // if error then revert back the date
+                        _weekdayPerformanceDateFrom = prevDateFrom;
+                        _weekdayPerformanceDateTo = prevDateTo;
+
+                        // show error
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             createSnackBar(
@@ -1262,6 +1271,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   Expanded(
                     child: InkWell(
                       onTap: (() async {
+                        // stored current from and to date
+                        DateTime prevDateFrom = _monthlyPerformanceDateFrom;
+                        DateTime prevDateTo = _monthlyPerformanceDateTo;
+
+                        // check if user enable range on monthly analysis
                         if (_monthlyIsRange) {
                           // check for the max date to avoid any assertion that the initial date range
                           // is more than the lastDate
@@ -1294,6 +1308,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
                               // get the weekday performance
                               await _getMonthlyPerformance().onError((error, stackTrace) {
+                                // if error then revert back the date
+                                _monthlyPerformanceDateFrom = prevDateFrom;
+                                _monthlyPerformanceDateTo = prevDateTo;
+
+                                // show error
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     createSnackBar(
@@ -1347,6 +1366,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                       
                                         // get the monthly performance
                                         await _getMonthlyPerformance().onError((error, stackTrace) {
+                                          // if error then revert back the date
+                                          _monthlyPerformanceDateFrom = prevDateFrom;
+                                          _monthlyPerformanceDateTo = prevDateTo;
+
+                                          // show error
                                           if (context.mounted) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               createSnackBar(

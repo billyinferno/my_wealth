@@ -419,17 +419,14 @@ class CompanyAPI {
   Future<CompanyWeekdayPerformanceModel> getCompanyMonthlyPerformance({
     String type = 'saham',
     required String code,
-    required int year,
+    required DateTime fromDate,
+    required DateTime toDate,
   }) async {
     assert(type == 'saham' || type == 'reksadana', "Wrong type");
-
-    // create the start and end date
-    DateTime startDate = DateTime(year, 1, 1);
-    DateTime endDate = DateTime(year, 12, 31);
     
     // get the initial query information for the API
-    String dateFromString = Globals.dfyyyyMMdd.formatLocal(startDate);
-    String dateToString = Globals.dfyyyyMMdd.formatLocal(endDate);
+    String dateFromString = Globals.dfyyyyMMdd.formatLocal(fromDate);
+    String dateToString = Globals.dfyyyyMMdd.formatLocal(toDate);
 
     // get the company data using netutils
     final String body = await NetUtils.get(

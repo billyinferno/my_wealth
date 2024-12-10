@@ -21,6 +21,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late IndexModel _index;
   late UserLoginInfoModel? _userInfo;
   late String _indexName;
+  late MinMaxDateModel _minMaxDate;
 
   late Future<bool> _getData;
   
@@ -66,10 +67,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     // set the monthly analysis date
     _monthlyPerformanceDateFrom = DateTime(_weekdayPerformanceDateTo.year, 1, 1);
     _monthlyPerformanceDateTo = DateTime(_weekdayPerformanceDateTo.year, 12, 31);
-
-    // default minimum price date as 2021/05/31 as per DB
-    // TODO: to get the min price date from API instead make it static
-    _minPriceDate = DateTime(2021, 5, 31);
 
     // set the monthly analysis selection not in range
     _monthlyIsRange = false;
@@ -503,13 +500,16 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
   Future<bool> _getAllData() async {
     await Future.wait([
-      _getIndexPriceDate().then((_) {
-        Log.success(message: "🏁 Get index price detail");
+      _indexApi.getIndexPriceMinMaxDate(
+        companyId: _index.indexId
+      ).then((resp) {
+        _minMaxDate = resp;
+        _minPriceDate = _minMaxDate.minDate;
       }),
 
-      _indexApi.getSeasonality(id: _index.indexId).then((resp) {
-        Log.success(message: "🏁 Get index seasonility");
+      _getIndexPriceDate(),
 
+      _indexApi.getSeasonality(id: _index.indexId).then((resp) {
         _seasonality = resp;
       }),
 
@@ -651,8 +651,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
     // loop thru price data and generate the graph data
     for(int i=0; i < tempData.length; i++) {
-      _heatMapGraphData[tempData[i].indexPriceDate] = GraphData(
-        date: tempData[i].indexPriceDate,
+      _heatMapGraphData[tempData[i].indexPriceDate.toLocal()] = GraphData(
+        date: tempData[i].indexPriceDate.toLocal(),
         price: tempData[i].indexPriceValue,
       );
     }
@@ -826,7 +826,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
                   // check for the max date to avoid any assertion that the initial date range
                   // is more than the lastDate
-                  DateTime maxDate = (_index.indexLastUpdate).toLocal();
+                  DateTime maxDate = _minMaxDate.maxDate.toLocal();
                   if (maxDate.isBefore(_weekdayPerformanceDateFrom.toLocal())) {
                     maxDate = _weekdayPerformanceDateFrom;
                   }
@@ -920,9 +920,9 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         if (_monthlyIsRange) {
                           // check for the max date to avoid any assertion that the initial date range
                           // is more than the lastDate
-                          DateTime maxDate = _index.indexLastUpdate.toLocal();
-                          if (maxDate.isBefore(_minPriceDate.toLocal())) {
-                            maxDate = _minPriceDate;
+                          DateTime maxDate = _minMaxDate.maxDate.toLocal();
+                          if (maxDate.isBefore(_index.indexLastUpdate.toLocal())) {
+                            maxDate = _index.indexLastUpdate;
                           }
 
                           DateTimeRange? result = await showDateRangePicker(
@@ -991,8 +991,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   width: 300,
                                   height: 300,
                                   child: YearPicker(
-                                    firstDate: _minPriceDate.toLocal(),
-                                    lastDate: _index.indexLastUpdate.toLocal(),
+                                    firstDate: _minMaxDate.minDate.toLocal(),
+                                    lastDate: _minMaxDate.maxDate.toLocal(),
                                     selectedDate: _monthlyPerformanceDateTo,
                                     currentDate: DateTime.now().toLocal(),
                                     onChanged: (newDate) async {

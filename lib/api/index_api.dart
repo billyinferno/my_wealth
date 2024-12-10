@@ -151,4 +151,25 @@ class IndexAPI {
     CompanyWeekdayPerformanceModel weekdayPerformance = CompanyWeekdayPerformanceModel.fromJson(commonModel.data['attributes']);
     return weekdayPerformance;
   }
+
+  Future<MinMaxDateModel> getIndexPriceMinMaxDate({
+    required int companyId
+  }) async {
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiIndicePrice}/minmax/date/$companyId'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getIndexPriceMinMaxDate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get broker summary data based on the stock code
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    MinMaxDateModel minMaxDate = MinMaxDateModel.fromJson(commonModel.data['attributes']);
+    return minMaxDate;
+  }
 }

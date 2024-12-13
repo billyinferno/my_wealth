@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
@@ -671,7 +672,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     double plDiffMax = double.infinity * (-1);
     double? plBefore;
     double? plDiff;
-
+    
     // check whether the arguments is all, if all then we will need to get all the data, and combine it later
     if (_args.type == 'all') {
       Map<String, List<SummaryPerformanceModel>> perfData = {};
@@ -699,7 +700,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       ]).then((_) {
         // temporaty performance data map
         Map<DateTime, SummaryPerformanceModel> tmpSummaryPerfData = {};
-        Map<DateTime, bool> mapDates = {};
+        List<DateTime> listAllDates = [];
         List<DateTime> listDates = [];
         SummaryPerformanceModel tmpCurrentSummaryPerfModel;
         SummaryPerformanceModel tmpNextSummaryPerfModel;
@@ -707,16 +708,19 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
         // loop thru all the perf data to get the dates
         perfData.forEach((key, data) {
           for(int i=0; i < data.length; i++) {
-            mapDates[data[i].plDate] = true;
+            listAllDates.add(data[i].plDate);
           }
         });
         // sort the dates so we can use it later when we want to generate the performance data
-        listDates = mapDates.keys.toList()..sort();
+        listDates = LinkedHashSet<DateTime>.from(listAllDates).toList()..sort();
+
+        // convert the performance data to map, so we can check whether the date is available or not?
+        Map<DateTime, SummaryPerformanceModel> tmpPerfData = {};
 
         // loop thru all the perfData
         perfData.forEach((key, data) {
-          // convert the performance data to map, so we can check whether the date is available or not?
-          Map<DateTime, SummaryPerformanceModel> tmpPerfData = {};
+          // clear the map first before we add
+          tmpPerfData.clear();
 
           // loop thru all the performance model
           for(int i=0; i < data.length; i++) {

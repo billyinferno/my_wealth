@@ -120,7 +120,7 @@ class PerformanceChart extends StatelessWidget {
       // loop thru all the performance model data
       for (WatchlistPerformanceModel perf in watchlistData) {
         // calculate the gain
-        gain = (perf.buyTotal * perf.currentPrice) - (perf.buyTotal * perf.buyAvg);
+        gain = (perf.buyTotal * perf.currentPrice) - (perf.buyTotal * perf.buyAvg) + perf.realizedPL;
 
         // check the gain with _min and _max
         if (gain < min) {

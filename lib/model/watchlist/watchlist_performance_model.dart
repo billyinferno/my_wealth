@@ -14,6 +14,7 @@ class WatchlistPerformanceModel {
         required this.buyTotal,
         required this.buyAmount,
         required this.buyAvg,
+        this.realizedPL = 0,
         required this.currentPrice,
     });
 
@@ -21,6 +22,7 @@ class WatchlistPerformanceModel {
     double buyTotal;
     double buyAmount;
     double buyAvg;
+    double realizedPL;
     double currentPrice;
 
     factory WatchlistPerformanceModel.fromJson(Map<String, dynamic> json) => WatchlistPerformanceModel(
@@ -28,6 +30,7 @@ class WatchlistPerformanceModel {
         buyTotal: json["buy_total"].toDouble(),
         buyAmount: json["buy_amount"].toDouble(),
         buyAvg: json["buy_avg"].toDouble(),
+        realizedPL: (json["realized_pl"] != null ? json["realized_pl"].toDouble() : 0),
         currentPrice: json["current_price"].toDouble(),
     );
 
@@ -36,6 +39,7 @@ class WatchlistPerformanceModel {
         "buy_total": buyTotal,
         "buy_amount": buyAmount,
         "buy_avg": buyAvg,
+        "realized_pl": realizedPL,
         "current_price": currentPrice,
     };
 }

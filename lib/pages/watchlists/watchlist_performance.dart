@@ -959,13 +959,14 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       firstTotal = (
         watchlistData[0].currentPrice *
         watchlistData[0].buyTotal
-      ) - watchlistData[0].buyAmount;
+      ) - watchlistData[0].buyAmount + watchlistData[0].realizedPL;
 
       // calculate the last total                      
       lastTotal = (
         watchlistData[(watchlistData.length-1)].currentPrice *
         watchlistData[watchlistData.length-1].buyTotal
-      ) - watchlistData[watchlistData.length-1].buyAmount;
+      ) - watchlistData[watchlistData.length-1].buyAmount +
+      watchlistData[watchlistData.length-1].realizedPL;
 
       gainDifference = lastTotal - firstTotal;
       avg = gainDifference / watchlistData.length;
@@ -974,7 +975,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       gainDifference = (
         watchlistData[0].currentPrice *
         watchlistData[0].buyTotal
-      ) - watchlistData[0].buyAmount;
+      ) - watchlistData[0].buyAmount + watchlistData[0].realizedPL;
       avg = gainDifference;
     }
 

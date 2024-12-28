@@ -39,6 +39,32 @@ class PerformanceCalendar extends StatelessWidget {
   }
 
   Widget _monthYear() {
+    // generate all the data needed
+    List<CalendarDatePL> generatedData = List<CalendarDatePL>.generate(42, (index) {
+      return CalendarDatePL(
+        date: "",
+      );
+    },);
+
+    // generate the actual date
+    int startWeekday = DateTime(year, month, 1).weekday - 1;
+    int maxDate = DateTime(year, month + 1, 1).subtract(Duration(days: 1)).day;
+
+    // replace the generated data with correct date to be showed
+    for (int i=0; i<maxDate; i++) {
+      generatedData[startWeekday + i] = CalendarDatePL(
+        date: (i+1).toString(),
+      );
+    }
+
+    // loop thru the data and replace the generatedData with data
+    int currentDay;
+    for(int i=0; i<data.length; i++) {
+      // convert the current date
+      currentDay = (int.tryParse(data[i].date) ?? 0);
+      generatedData[startWeekday + currentDay - 1] = data[i];
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
@@ -71,26 +97,48 @@ class PerformanceCalendar extends StatelessWidget {
               ],
             ),
           ),
-          _dateRow(dateList: data, start: 0),
-          _dateRow(dateList: data, start: 7),
-          _dateRow(dateList: data, start: 14),
-          _dateRow(dateList: data, start: 21),
-          _dateRow(dateList: data, start: 28),
-          _dateRow(dateList: data, start: 35),
+          _dateRow(dateList: generatedData, start: 0),
+          _dateRow(dateList: generatedData, start: 7),
+          _dateRow(dateList: generatedData, start: 14),
+          _dateRow(dateList: generatedData, start: 21),
+          _dateRow(dateList: generatedData, start: 28),
+          _dateRow(dateList: generatedData, start: 35),
         ],
       ),
     );
   }
 
   Widget _year() {
+    // generate all the data needed
+    List<CalendarDatePL> generatedData = List<CalendarDatePL>.generate(12, (index) {
+      return CalendarDatePL(
+        date: Globals.dfMMM.formatLocal(
+          DateTime(
+            year,
+            (index + 1),
+            1
+          )
+        ),
+      );
+    },);
+
+    // for year we will need to knew the length of the data given, so we knew
+    // that we should start from which month?
+    int startIndex = 12 - data.length;
+
+    // loop thru the data and replace the generatedData with data
+    for(int i=0; i<data.length; i++) {
+      generatedData[startIndex + i] = data[i];
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          _monthRow(dateList: data, start: 0),
-          _monthRow(dateList: data, start: 6),
+          _monthRow(dateList: generatedData, start: 0),
+          _monthRow(dateList: generatedData, start: 6),
         ],
       ),
     );

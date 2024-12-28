@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -19,6 +21,9 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
 
   late WatchlistSummaryPerformanceArgs _args;
+  late List<SummaryPerformanceModel> _summaryPerfData;
+  late Map<DateTime, List<CalendarDatePL>> _monthYearCalendarPLMap;
+  late Map<DateTime, List<CalendarDatePL>> _yearCalendarPLMap;
   late List<CalendarDatePL> _monthYearCalendarPL;
   late List<CalendarDatePL> _yearCalendarPL;
 
@@ -79,6 +84,11 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     _plRatioYearColor = primaryLight;
 
     // initialize the map for generating performance and calendar
+    _summaryPerfData = [];
+
+    // initialize the month and year calendar PL data
+    _monthYearCalendarPLMap = {};
+    _yearCalendarPLMap = {};
     _monthYearCalendarPL = [];
     _yearCalendarPL = [];
 
@@ -276,18 +286,29 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
             lastDate: _endDate,
           ).then((newDate) {
             if (newDate != null) {
-              setState(() {
-                // get the data
-                _getData = _getPerformanceData(
-                  type: _args.type,
-                  currentDate: _currentDate,
-                  newDate: newDate
-                );
+              // check if newDate is same as current date or not?
+              if (newDate != _currentDate) {                
+                setState(() {
+                  // get the data from map
+                  _monthYearCalendarPL = (_monthYearCalendarPLMap[DateTime(newDate.year, newDate.month, 1)] ?? []);
 
-                // set new date as current date, in case the same it will not
-                // matter also.
-                _currentDate = newDate;
-              });
+                  // re-calculate the pl ratio for month
+                  _calculateMonthYearPLTotal();
+
+                  // check if we need to refresh the year also or not?
+                  if (newDate.year != _currentDate.year) {
+                    // different year, get the new data
+                    _yearCalendarPL = (_yearCalendarPLMap[DateTime(newDate.year, 1, 1)] ?? []);
+
+                    // re-calculate the pl ratio for year
+                    _calculateYearPLTotal();
+                  }
+
+                  // set new date as current date, in case the same it will not
+                  // matter also.
+                  _currentDate = newDate;
+                });
+              }
             }
           });
         }),
@@ -337,11 +358,13 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                         // set state and get the data if the selected year is
                         // different with current year.
                         setState(() {
-                          // get the data
-                          _getData = _getPerformanceData(
-                            type: _args.type,
-                            currentDate: _currentDate,
-                            newDate: newDate);
+                          // get the year and month data as this is new year
+                          _monthYearCalendarPL = (_monthYearCalendarPLMap[DateTime(newDate.year, newDate.month, 1)] ?? []);
+                          _yearCalendarPL = (_yearCalendarPLMap[DateTime(newDate.year, 1, 1)] ?? []);
+
+                          // re-calculate the pl total
+                          _calculateMonthYearPLTotal();
+                          _calculateYearPLTotal();
 
                           // set the current date with the selected
                           // year.
@@ -568,528 +591,64 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     );
   }
 
-  Future<void> _getPerformanceDataMonthYear({
-    required String type,
-    required DateTime currentDate,
-    DateTime? newDate
-  }) async {
-    DateTime useDate = currentDate;
-    // check if new date is not null
-    if (newDate != null) {
-      // check and ensure that this is not the same as the current date
-      if (currentDate.month == newDate.month && currentDate.year == newDate.month) {
-        // just return
-        return;
-      }
-      else {
-        useDate = newDate;
-      }
-    }
-
-    // create the map that we will use for computation later on once we got
-    // all the data
-    Map<String, List<SummaryPerformanceModel>> perfData = {};
-
-    // if not then we can get the data
-    if (type.toLowerCase() == 'all') {
-      await Future.wait([
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
-          type: 'reksadana',
-          month: useDate.month,
-          year: useDate.year,
-        ).then((resp) {
-          perfData['reksadana'] = resp;
-        }),
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
-          type: 'saham',
-          month: useDate.month,
-          year: useDate.year,
-        ).then((resp) {
-          perfData['saham'] = resp;
-        }),
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
-          type: 'gold',
-          month: useDate.month,
-          year: useDate.year,
-        ).then((resp) {
-          perfData['gold'] = resp;
-        }),
-        _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
-          type: 'crypto',
-          month: useDate.month,
-          year: useDate.year,
-        ).then((resp) {
-          perfData['crypto'] = resp;
-        }),
-      ]);
-    }
-    else {
-      await _watchlistAPI.getWatchlistPerformanceSummaryMonthYear(
-        type: type.toLowerCase(),
-        month: useDate.month,
-        year: useDate.year,
-      ).then((resp) {
-        perfData[type.toLowerCase()] = resp;
-      });
-    }
-
-    Map<DateTime, SummaryPerformanceModel> watchlistMapPerformance = {};
-
-    // for type all, we need to fill the gap, because gold have price on saturday
-    // but other doesn't have, so it will not counting the pl that we got
-    // for other during saturday, which causing odd issue when calculating the
-    // calendar PL.
-    if (type == 'all') {
-      DateTime firstDate = DateTime(_currentDate.year, _currentDate.month, 1).subtract(const Duration(days: 1)).toLocal();
-      DateTime endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1).toLocal();
-      
-      // check end date, whether end date is more than end date that we got
-      // from API or not? This is to avoid we put the data until end of month,
-      // where we don't reach that date yet.
-      if (endDate.isAfter(_endDate.toLocal())) {
-        // set end date as today date + 1
-        endDate = _endDate.toLocal();
-      }
-
-      Map<String, Map<DateTime, SummaryPerformanceModel>> combPerf = {};
-      Map<DateTime, SummaryPerformanceModel> tmpPerf = {};
-      
-      // first generate all the date from first to end date
-      while(firstDate.isSameOrBefore(date: endDate)) {
-        tmpPerf[firstDate] = SummaryPerformanceModel(
-          plDate: firstDate,
-          plValue: double.negativeInfinity,
-          totalAmount: double.negativeInfinity
-        );
-        firstDate = firstDate.add(const Duration(days: 1));
-      }
-
-      // loop thru all the performance data we have and generate the combination
-      perfData.forEach((key, perfList) {
-        Map<DateTime, SummaryPerformanceModel> newCombPerf = Map<DateTime, SummaryPerformanceModel>.from(tmpPerf);
-
-        // check if we got perf list, in case no data, it means we need to
-        // default it to all 0
-        if (perfList.isNotEmpty) {
-          // loop thru perf list
-          for (int i=0; i<perfList.length; i++) {
-            newCombPerf[perfList[i].plDate] = perfList[i];
-          }
-
-          // once filled the newCombPerf, loop thru newCombPerf to fill all
-          // the voids when the date is not yet filled
-          
-          // default the previousPerf as 0
-          SummaryPerformanceModel prevPerf = perfList[0];
-          
-          newCombPerf.forEach((date, perf) {
-            // check if current perf plValue and totalAmount is negative
-            // infinity
-            if (
-              perf.plValue == double.negativeInfinity &&
-              perf.totalAmount == double.negativeInfinity
-            ) {
-              // means that we don't have data for this date, copy the data
-              // from the previous perf
-              newCombPerf[date] = prevPerf;
-            }
-
-            // set  the prev data as current perf
-            prevPerf = newCombPerf[date]!;
-          },);
-        }
-        else {
-          newCombPerf.forEach((key, value) {
-            newCombPerf.update(key, (_) {
-              return SummaryPerformanceModel(
-                plDate: key,
-                plValue: 0,
-                totalAmount: 0
-              );
-            });
-          });
-        }
-
-        // set the comb perf
-        combPerf[key] = newCombPerf;
-      });
-
-      // now combine all the data in the comb perf to the watchlistMapPerformance
-      watchlistMapPerformance.clear();
-      combPerf.forEach((type, list) {
-        list.forEach((date, data) {
-          // check whether we got this date on the watchlist performance or not?
-          if(watchlistMapPerformance.containsKey(date)) {
-            // extract the data and update it
-            SummaryPerformanceModel before = watchlistMapPerformance[date]!;
-
-            // update the watchlist map performance
-            watchlistMapPerformance.update(date, (_) {
-              return SummaryPerformanceModel(
-                plDate: date,
-                plValue: before.plValue + data.plValue,
-                totalAmount: before.totalAmount + data.totalAmount
-              );
-            });
-          }
-          else {
-            // first data, yay
-            watchlistMapPerformance[date] = data;
-          }
-        });
-      });
-    }
-    else {
-      // loop thru all the keys and generate the watchlist performance map
-      perfData.forEach((key, perfList) {
-        // loop thru perfList
-        for (int i=0; i<perfList.length; i++) {
-          // check if we got this date already or not?
-          if (watchlistMapPerformance.containsKey(perfList[i].plDate)) {
-            // exists already, extract the performance data, and combine it
-            SummaryPerformanceModel tmp = watchlistMapPerformance[perfList[i].plDate]!;
-            SummaryPerformanceModel newData = SummaryPerformanceModel(
-              plDate: perfList[i].plDate,
-              plValue: tmp.plValue + perfList[i].plValue,
-              totalAmount: tmp.totalAmount + perfList[i].totalAmount
-            );
-
-            // put the new data in the map
-            watchlistMapPerformance[perfList[i].plDate] = newData;
-          }
-          else {
-            // not exists, we can create new data here
-            watchlistMapPerformance[perfList[i].plDate] = perfList[i];
-          }
-        }
-      });
-    }
-    
-
-    // sort the map based on the keys
-    watchlistMapPerformance = sortedMap<DateTime, SummaryPerformanceModel>(data: watchlistMapPerformance);
-
-    // once sorted we can calculate the pl total and pl ratio
+  void _calculateMonthYearPLTotal() {
     // initialize pl total and pl ratio
-    double? plBefore;
     _plTotal = 0;
     _plRatio = 0;
     _plTotalColor = primaryLight;
     _plRatioColor = primaryLight;
 
-    // loop thru the sorted watchlist performance
-    watchlistMapPerformance.forEach((key, value) {
-      // check if pl before is null, if null, then this is means that this
-      // is the first date so ignore this.
-      if (plBefore == null) {
-        plBefore = value.plValue;
-      }
-      else {
-        _plTotal += value.plValue - plBefore!;
-        if (value.totalAmount > 0) {
-          _plRatio += (value.plValue - plBefore!) / value.totalAmount;
-        }
-      }
-
-      // set the pl before as current pl value
-      plBefore = value.plValue;
-    });
-
-    // divide the pl ratio with the total data - 1
-    _plRatio = (_plRatio / (watchlistMapPerformance.length - 1)) * 100;
+    // loop thru current month data
+    for(int i=0; i<_monthYearCalendarPL.length; i++) {
+      _plTotal += (_monthYearCalendarPL[i].pl ?? 0);
+      _plRatio += (_monthYearCalendarPL[i].plRatio ?? 0);
+    }
 
     // get the correct pl color
     if (_plTotal > 0) {
       _plTotalColor = Colors.green;
-    }
-    else if (_plTotal < 0) {
+    } else if (_plTotal < 0) {
       _plTotalColor = secondaryColor;
     }
 
     if (_plRatio > 0) {
       _plRatioColor = Colors.green;
-    }
-    else if (_plRatio < 0) {
+    } else if (_plRatio < 0) {
       _plRatioColor = secondaryColor;
     }
-
-    // generate the calendar PL
-    _monthYearCalendarPL.clear();
-    _monthYearCalendarPL = _generateDateMonthYear(data: watchlistMapPerformance);
   }
 
-  List<CalendarDatePL> _generateDateMonthYear({required Map<DateTime, SummaryPerformanceModel> data}) {
-    // generate 42 string of list
-    List<CalendarDatePL> dateList = List<CalendarDatePL>.generate(42, (index) {
-      return const CalendarDatePL(
-        date: "",
-        pl: null,
-        plRatio: null,
-      );
-    });
-
-    // generate the first and last date
-    DateTime firstDate = DateTime(_currentDate.year, _currentDate.month, 1);
-    DateTime beforeDate;
-    DateTime endDate = DateTime(_currentDate.year, _currentDate.month + 1, 1);
-
-    // first row
-    int row = 0;
-    double? pl;
-    double? plRatio;
-    double? plBefore;
-    double plCurrent;
-
-    // loop from 1st date to end date
-    while (firstDate.isBefore(endDate)) {
-      // initialize default pl and plRatio
-      pl = null;
-      plRatio = null;
-
-      // get the pl and pl ratio for this by checking if this date is exists
-      // in the watchlist map performance.
-      beforeDate = firstDate.subtract(const Duration(days: 1));
-      if (data.containsKey(beforeDate)) {
-        plBefore = data[beforeDate]!.plValue;
-      }
-
-      if (data.containsKey(firstDate) && plBefore != null) {
-        plCurrent = data[firstDate]!.plValue;
-
-        // calculate pl and pl ratio
-        pl = plCurrent - plBefore;
-        if (data[firstDate]!.totalAmount > 0) {
-          plRatio = (pl / data[firstDate]!.totalAmount);
-        }
-        else {
-          plRatio = 0;
-        }
-
-        // set pl current as pl before
-        plBefore = plCurrent;
-      }
-
-      // calculate this and add to the according date array
-      dateList[(row + (firstDate.weekday - 1))] = CalendarDatePL(
-        date: firstDate.day.toString(),
-        pl: pl,
-        plRatio: plRatio,
-      );
-      
-      // check if this is sunday
-      if (firstDate.weekday == 7) {
-        // add row + 7, since we will need go to the next row in calendar
-        row += 7;
-      }
-      
-      // move to the next day
-      firstDate = firstDate.add(const Duration(days: 1));
-    }
-
-    return dateList;
-  }
-
-  Future<void> _getPerformanceDataYear({
-    required String type,
-    required DateTime currentDate,
-    DateTime? newDate
-  }) async {
-    DateTime useDate = currentDate;
-    // check if new date is not null
-    if (newDate != null) {
-      // check and ensure that this is not the same as the current date
-      if (currentDate.year == newDate.year) {
-        // just return
-        return;
-      }
-      else {
-        useDate = newDate;
-      }
-    }
-
-    // create the map that we will use for computation later on once we got
-    // all the data
-    Map<String, List<SummaryPerformanceModel>> perfData = {};
-
-    // if not then we can get the data
-    if (type.toLowerCase() == 'all') {
-      await Future.wait([
-        _watchlistAPI.getWatchlistPerformanceSummaryYear(
-          type: 'reksadana',
-          year: useDate.year,
-        ).then((resp) {
-          perfData['reksadana'] = resp;
-        }),
-        _watchlistAPI.getWatchlistPerformanceSummaryYear(
-          type: 'saham',
-          year: useDate.year,
-        ).then((resp) {
-          perfData['saham'] = resp;
-        }),
-        _watchlistAPI.getWatchlistPerformanceSummaryYear(
-          type: 'gold',
-          year: useDate.year,
-        ).then((resp) {
-          perfData['gold'] = resp;
-        }),
-        _watchlistAPI.getWatchlistPerformanceSummaryYear(
-          type: 'crypto',
-          year: useDate.year,
-        ).then((resp) {
-          perfData['crypto'] = resp;
-        }),
-      ]);
-    }
-    else {
-      await _watchlistAPI.getWatchlistPerformanceSummaryYear(
-        type: type.toLowerCase(),
-        year: useDate.year,
-      ).then((resp) {
-        perfData[type.toLowerCase()] = resp;
-      });
-    }
-
-    // create variable to combine all the performance data
-    Map<DateTime, SummaryPerformanceModel> watchlistMapPerformance = {};
-
-    // loop thru all the keys and generate teh watchlist performance map
-    perfData.forEach((key, perfList) {
-      // loop thru perfList
-      for (int i=0; i<perfList.length; i++) {
-        // create the performance date, as each reksadna, saham, etc.
-        // will have different end day based on their price. 
-        DateTime perfDate = DateTime(perfList[i].plDate.year, perfList[i].plDate.month, 1);
-        
-        // check if we got this date already or not?
-        if (watchlistMapPerformance.containsKey(perfDate)) {
-          // exists already, extract the performance data, and combine it
-          SummaryPerformanceModel tmp = watchlistMapPerformance[perfDate]!;
-          SummaryPerformanceModel newData = SummaryPerformanceModel(
-            plDate: perfDate,
-            plValue: tmp.plValue + perfList[i].plValue,
-            totalAmount: tmp.totalAmount + perfList[i].totalAmount
-          );
-
-          // put the new data in the map
-          watchlistMapPerformance[perfDate] = newData;
-        }
-        else {
-          // not exists, we can create new data here
-          watchlistMapPerformance[perfDate] = perfList[i];
-        }
-      }
-    });
-
-    // sort the map based on the keys
-    watchlistMapPerformance = sortedMap<DateTime, SummaryPerformanceModel>(data: watchlistMapPerformance);
-
-    // pl calculation helper
-    double plCurrent;
-    double plCurrentRatio;
-    double? plBefore;
-    DateTime priceDate;
-
+  void _calculateYearPLTotal() {
     // initialize pl total and pl ratio
     _plTotalYear = 0;
     _plRatioYear = 0;
     _plTotalYearColor = primaryLight;
     _plRatioYearColor = primaryLight;
 
-    // generate the year performance PL calendar list, as we will pass this
-    // to the performance calendar so it can generate the correct P/L in
-    // the performance calendar widget
-    _yearCalendarPL.clear();
-    _yearCalendarPL = List<CalendarDatePL>.generate(12, (index) {
-      return CalendarDatePL(
-        date: Globals.dfMMM.formatLocal(DateTime(useDate.year, (index+1), 1)),
-        pl: null,
-        plRatio: null,
-      );
-    });
-
-    // loop thru all the response data, as this response data should have
-    // all the 12 month + 1 last year one
-    watchlistMapPerformance.forEach((key, value) {
-      // check if we already have pl before?
-      // if don't have, it means that it was the 1st data which we will
-      // ignore as this will be used as base to calculate the rest.
-      if (plBefore == null) {
-        // calculate the plBefore
-        plBefore = value.plValue;
-      }
-      else {
-        // we already have pl before, so we can perform the calculation
-        // for the current pl and pl ratio.
-
-        // generate the price date
-        priceDate = DateTime(key.year, key.month, 1);
-
-        // no need to perform sophisticated calculation for this as
-        // we can just perform normal pl calculation
-        plCurrent = value.plValue;
-        _plTotalYear += (plCurrent - plBefore!);
-
-        plCurrentRatio = 0;
-        if (value.totalAmount > 0) {
-          plCurrentRatio = (plCurrent - plBefore!) / value.totalAmount;
-        }
-        _plRatioYear += plCurrentRatio;
-
-        // update the year calendar PL list for this month
-        _yearCalendarPL[key.month-1] = CalendarDatePL(
-          date: Globals.dfMMM.formatLocal(priceDate),
-          pl: (plCurrent - plBefore!),
-          plRatio: (plCurrentRatio * 100),
-        );
-
-        // set pl before as pl current
-        plBefore = plCurrent;
-      }
-    });
-
-    // divide the pl ratio with the total data - 1
-    _plRatioYear = _plRatioYear * 100;
+    // loop thru current year data
+    for(int i=0; i<_yearCalendarPL.length; i++) {
+      _plTotalYear += (_yearCalendarPL[i].pl ?? 0);
+      _plRatioYear += (_yearCalendarPL[i].plRatio ?? 0);
+    }
 
     // get the correct pl color
-    if (_plTotalYear > 0) {
-      _plTotalYearColor = Colors.green;
-    }
-    else if (_plTotalYear < 0) {
-      _plTotalYearColor = secondaryColor;
-    }
+      if (_plTotalYear > 0) {
+        _plTotalYearColor = Colors.green;
+      } else if (_plTotalYear < 0) {
+        _plTotalYearColor = secondaryColor;
+      }
 
-    if (_plRatioYear > 0) {
-      _plRatioYearColor = Colors.green;
-    }
-    else if (_plRatioYear < 0) {
-      _plRatioYearColor = secondaryColor;
-    }
-  }
-
-  Future<void> _getFirstAndLastDate(bool firstRun) async {
-    if (firstRun) {
-      // get first and last date
-      await _watchlistAPI.findFirstLastDate(
-        type: _args.type, 
-        id: (_args.type != 'all' ? -1 : null)
-      ).then((resp) {
-        // set the first and end date
-        _firstDate = resp.firstdate;
-        _endDate = resp.enddate;
-
-        // check if _endDate is lesser than end date
-        // if so, then set current date as end date
-        if (_currentDate.isAfter(_endDate)) {
-          _currentDate = _endDate;
-        }
-      });
-    }
+      if (_plRatioYear > 0) {
+        _plRatioYearColor = Colors.green;
+      } else if (_plRatioYear < 0) {
+        _plRatioYearColor = secondaryColor;
+      }
   }
 
   Future<bool> _getPerformanceData({
     required String type,
     required DateTime currentDate,
-    DateTime? newDate,
+
     bool? firstRun
   }) async {
     // check if this is first run or not?
@@ -1099,23 +658,236 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
     }
 
     // get the data
-    await Future.wait([
-      _getPerformanceDataMonthYear(type: type, currentDate: currentDate, newDate: newDate),
-      _getPerformanceDataYear(type: type, currentDate: currentDate, newDate: newDate),
-      _getFirstAndLastDate((firstRun ?? false)),
-    ]).onError((error, stackTrace) {
-      Log.error(
-        message: 'Error getting data from server',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      throw Exception('Error when try to get the data from server');
-    }).whenComplete(() {
-      // if not first run, remove the loading screen
-      if ((firstRun ?? false) == false) {
-        LoadingScreen.instance().hide();
+    Map<String, List<SummaryPerformanceModel>> perfData = {};
+    if (type.toLowerCase() == 'all') {
+
+      await Future.wait([
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'reksadana'
+        ).then((resp) {
+          perfData['reksadana'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'saham'
+        ).then((resp) {
+          perfData['saham'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'gold'
+        ).then((resp) {
+          perfData['gold'] = resp;
+        }),
+        _watchlistAPI.getWatchlistPerformanceSummary(
+          type: 'crypto'
+        ).then((resp) {
+          perfData['crypto'] = resp;
+        }),
+      ]).onError((error, stackTrace) {
+        Log.error(
+          message: 'Error getting data from server',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        throw Exception('Error when try to get the data from server');
+      },).whenComplete(() {
+        // if not first run, remove the loading screen
+        if ((firstRun ?? false) == false) {
+          LoadingScreen.instance().hide();
+        }
+      },);
+    }
+    else {
+      await _watchlistAPI.getWatchlistPerformanceSummary(
+        type: type.toLowerCase(),
+      ).then((resp) {
+        perfData[type.toLowerCase()] = resp;
+      });
+    }
+
+    // generate the calendar PL data for all the data
+    // first get all the list dates from all the performance data
+    List<DateTime> listAllDates = [];
+    List<DateTime> listDates = [];
+
+    // loop thru all the perf data to get the dates
+    perfData.forEach((key, data) {
+      for(int i=0; i < data.length; i++) {
+        listAllDates.add(data[i].plDate);
       }
+    });
+    
+    // sort the dates so we can use it later when we want to generate the performance data
+    listDates = LinkedHashSet<DateTime>.from(listAllDates).toList()..sort();
+
+    // set the first and last date
+    _firstDate = listDates.first;
+    _endDate = listDates.last;
+
+    // convert the performance data to map, so we can check whether the date is available or not?
+    Map<DateTime, SummaryPerformanceModel> tmpSummaryPerfData = {};
+    Map<DateTime, SummaryPerformanceModel> tmpPerfData = {};
+    SummaryPerformanceModel tmpCurrentSummaryPerfModel;
+    SummaryPerformanceModel tmpNextSummaryPerfModel;
+
+    // loop thru all the perfData
+    perfData.forEach((key, data) {
+      // clear the map first before we add
+      tmpPerfData.clear();
+
+      // loop thru all the performance model
+      for(int i=0; i < data.length; i++) {
+        tmpPerfData[data[i].plDate] = data[i];
+      }
+
+      // loop thru the list of dates
+      double prevValue = 0;
+      double prevAmount = 0;
+      for(int i=0; i < listDates.length; i++) {
+        // check if this date is available or not on the tmpPerfData
+        if (tmpPerfData.containsKey(listDates[i])) {
+          // just add the data
+          prevValue = tmpPerfData[listDates[i]]!.plValue;
+          prevAmount = tmpPerfData[listDates[i]]!.totalAmount;
+        }
+
+        // add this prevValue and totalAmount to the tmpSummaryPerfData
+        // first check if exists or not on the tmpSummaryPerfData
+        if (tmpSummaryPerfData.containsKey(listDates[i])) {
+          // get the current value
+          tmpCurrentSummaryPerfModel = tmpSummaryPerfData[listDates[i]]!;
+          // create the next data
+          tmpNextSummaryPerfModel = SummaryPerformanceModel(
+            plDate: listDates[i],
+            plValue: tmpCurrentSummaryPerfModel.plValue + prevValue,
+            totalAmount: tmpCurrentSummaryPerfModel.totalAmount + prevAmount,
+          );
+          // add to the tmpSummaryPerfData
+          tmpSummaryPerfData[listDates[i]] = tmpNextSummaryPerfModel;
+        }
+        else {
+          tmpSummaryPerfData[listDates[i]] = SummaryPerformanceModel(
+            plDate: listDates[i],
+            plValue: prevValue,
+            totalAmount: prevAmount,
+          );
+        }
+      }
+    });
+
+    // once finished loop all the performance data, and combine it
+    // extract the data from map to list of _summaryPerfData and _perfData
+    _summaryPerfData.clear();
+    tmpSummaryPerfData.forEach((key, data) {          
+      // add this data to the summary perf data
+      _summaryPerfData.add(data);
+    });
+
+    // once we got the summary performance data, then we can generate the
+    // calendar PL that we can use to showed the calendar performance
+    _monthYearCalendarPLMap.clear();
+    _yearCalendarPLMap.clear();
+
+    // loop thru summary performance data
+    DateTime currentMonthYear;
+    DateTime currentYear;
+    double? pl;
+    double? plRatio;
+    double plBefore = 0;
+    Map<DateTime, Map<DateTime, CalendarDatePL>> tmpYearCalendarPLMap = {};
+    CalendarDatePL tmpYearCalendarPL;
+
+    for(int i=0; i<_summaryPerfData.length; i++) {
+      // default the current month year into first date of month
+      currentMonthYear = DateTime(
+        _summaryPerfData[i].plDate.year,
+        _summaryPerfData[i].plDate.month,
+        1
+      );
+      
+      // default the current year into 1st jan
+      currentYear = DateTime(_summaryPerfData[i].plDate.year, 1, 1);
+
+      // check if the month year PL map already exists or not for this month
+      // year date?
+      if (!_monthYearCalendarPLMap.containsKey(currentMonthYear)) {
+        // create the list for this map
+        _monthYearCalendarPLMap[currentMonthYear] = [];
+      }
+
+      // check if the year PL map already exists or not for this year date
+      if (!tmpYearCalendarPLMap.containsKey(currentYear)) {
+        // create the map for this temp map data
+        tmpYearCalendarPLMap[currentYear] = {};
+      }
+
+      // calculate the pl only if we already pass the first record
+      if (i > 0) {
+        pl = _summaryPerfData[i].plValue - plBefore;
+        plRatio = (pl / _summaryPerfData[i].totalAmount);
+      }
+      
+      // create the CalendarPL data for month year
+      _monthYearCalendarPLMap[currentMonthYear]!.add(CalendarDatePL(
+        date: _summaryPerfData[i].plDate.day.toString(),
+        pl: pl,
+        plRatio: plRatio,
+      ));
+
+      // check if this month and year already in the temp map for year
+      // calendar PL
+      if (!tmpYearCalendarPLMap[currentYear]!.containsKey(currentMonthYear)) {
+        // just add the data to this map
+        tmpYearCalendarPLMap[currentYear]![currentMonthYear] = CalendarDatePL(
+          date: Globals.dfMMM.formatLocal(
+            DateTime(
+              _summaryPerfData[i].plDate.year,
+              _summaryPerfData[i].plDate.month,
+              1
+            )
+          ),
+          pl: pl,
+          plRatio: plRatio,
+        );
+      }
+      else {
+        tmpYearCalendarPL = tmpYearCalendarPLMap[currentYear]![currentMonthYear]!;
+        tmpYearCalendarPLMap[currentYear]![currentMonthYear] = CalendarDatePL(
+          date: Globals.dfMMM.formatLocal(
+            DateTime(
+              _summaryPerfData[i].plDate.year,
+              _summaryPerfData[i].plDate.month,
+              1
+            )
+          ),
+          pl: (pl ?? 0) + (tmpYearCalendarPL.pl ?? 0),
+          plRatio: (plRatio ?? 0) + (tmpYearCalendarPL.plRatio ?? 0),
+        );
+      }
+
+      // store the PL before
+      plBefore = _summaryPerfData[i].plValue;
+    }
+
+    // convert the temp year calendar PL map into map that we can use
+    tmpYearCalendarPLMap.forEach((year, value) {
+      // create new data for year calendar PL map
+      _yearCalendarPLMap[year] = [];
+
+      // loop on the value to add to map
+      value.forEach((key, calendarPL) {
+        _yearCalendarPLMap[year]!.add(calendarPL);
+      },);
     },);
+
+    // set the month year calendar data based on the current date
+    _monthYearCalendarPL = (_monthYearCalendarPLMap[DateTime(_currentDate.year, _currentDate.month, 1)] ?? []);
+
+    // set the year calendar data based on the current date
+    _yearCalendarPL = (_yearCalendarPLMap[DateTime(_currentDate.year, 1, 1)] ?? []);
+
+    // re-calculate the pl total for both month and year
+    _calculateMonthYearPLTotal();
+    _calculateYearPLTotal();
 
     return true;
   }

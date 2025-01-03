@@ -208,11 +208,15 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
               color: primaryDark,
               child: InkWell(
                 onTap: (() async {
-                  DateTimeRange? initialDateRange = DateTimeRange(start: _fromDateCurrent, end: _toDateCurrent);
+                  DateTimeRange? initialDateRange = DateTimeRange(
+                    start: _fromDateCurrent.toLocal(),
+                    end: _toDateCurrent.toLocal()
+                  );
+                  
                   DateTimeRange? result = await showDateRangePicker(
                     context: context,
-                    firstDate: _fromDateMax,
-                    lastDate: _toDateMax,
+                    firstDate: _fromDateMax.toLocal(),
+                    lastDate: _toDateMax.toLocal(),
                     initialDateRange: initialDateRange,
                     currentDate: DateTime.now().toLocal(),
                     initialEntryMode: DatePickerEntryMode.calendarOnly,
@@ -220,10 +224,12 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
               
                   if (result != null) {
                     // means we got the result, ensure it's not the same with from date and to date
-                    if ((result.start.compareTo(_fromDateCurrent) != 0) || (result.end.compareTo(_toDateCurrent) != 0)) {
+                    if (
+                      (result.start.toLocal().compareTo(_fromDateCurrent.toLocal()) != 0) ||
+                      (result.end.toLocal().compareTo(_toDateCurrent.toLocal()) != 0)) {
                       // set the broker from and to date
-                      _fromDateCurrent = result.start;
-                      _toDateCurrent = result.end;
+                      _fromDateCurrent = result.start.toLocal();
+                      _toDateCurrent = result.end.toLocal();
               
                       // set the start back into 0
                       _start = 0;
@@ -596,23 +602,31 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     );
   }
 
-  Widget _generateRow(String date, String buyLot, String buyValue, String buyAverage, String sellLot, String sellValue, String sellAverage, [bool? isBold, bool? isBackground, Color? dateColor, Color? buyColor, Color? sellColor]) {
-    bool isBoldUse = (isBold ?? false);
-    bool isBackgroundUse = (isBackground ?? false);
+  Widget _generateRow({
+    required String date,
+    required String buyLot,
+    required String buyValue,
+    required String buyAverage,
+    required String sellLot,
+    required String sellValue,
+    required String sellAverage,
+    bool isBold = false,
+    bool isBackground = false,
+    Color? dateColor,
+    Color buyColor = Colors.green,
+    Color sellColor = secondaryColor }) {
     Color dateColorUse = (dateColor ?? Colors.amber[700]!);
-    Color buyColorUse = (buyColor ?? Colors.green);
-    Color sellColorUse = (sellColor ?? secondaryColor);
 
     TextStyle textStyleBuy = TextStyle(
       fontSize: 10,
-      fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-      color: (isBackgroundUse ? Colors.white : buyColorUse),
+      fontWeight: (isBold ? FontWeight.bold : FontWeight.normal),
+      color: (isBackground ? Colors.white : buyColor),
     );
 
     TextStyle textStyleSell = TextStyle(
       fontSize: 10,
-      fontWeight: (isBoldUse ? FontWeight.bold : FontWeight.normal),
-      color: (isBackgroundUse ? Colors.white : sellColorUse),
+      fontWeight: (isBold ? FontWeight.bold : FontWeight.normal),
+      color: (isBackground ? Colors.white : sellColor),
     );
 
     return Row(
@@ -621,18 +635,18 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       children: <Widget>[
         Container(
           width: 40,
-          color: (isBackgroundUse ? accentDark : Colors.transparent),
+          color: (isBackground ? accentDark : Colors.transparent),
           child: Text(
             date,
             style: TextStyle(
               fontSize: 10,
-              color: (isBackgroundUse ? Colors.white : dateColorUse)
+              color: (isBackground ? Colors.white : dateColorUse)
             ),
           ),
         ),
         Expanded(
           child: Container(
-            color: (isBackgroundUse ? buyColorUse : Colors.transparent),
+            color: (isBackground ? buyColor : Colors.transparent),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -661,7 +675,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         ),
         Expanded(
           child: Container(
-            color: (isBackgroundUse ? sellColorUse : Colors.transparent),
+            color: (isBackground ? sellColor : Colors.transparent),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -749,28 +763,28 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     // iterate thru data
     data.forEach((key, value) {
       result.add(_generateRow(
-        Globals.dfddMM.formatLocal(key),
-        formatIntWithNull(
+        date: Globals.dfddMM.formatLocal(key),
+        buyLot: formatIntWithNull(
           value.brokerSummaryBuyLot,
           showDecimal: false,
         ),
-        formatCurrencyWithNull(
+        buyValue: formatCurrencyWithNull(
           value.brokerSummaryBuyValue,
           checkThousand: true,
         ),
-        formatCurrencyWithNull(
+        buyAverage: formatCurrencyWithNull(
           value.brokerSummaryBuyAverage,
           showDecimal: false
         ),
-        formatIntWithNull(
+        sellLot: formatIntWithNull(
           value.brokerSummarySellLot,
           showDecimal: false
         ),
-        formatCurrencyWithNull(
+        sellValue: formatCurrencyWithNull(
           value.brokerSummarySellValue,
           checkThousand: true,
         ),
-        formatCurrencyWithNull(
+        sellAverage: formatCurrencyWithNull(
           value.brokerSummarySellAverage,
           showDecimal: false,
         )
@@ -779,7 +793,15 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
 
     // ensure that we have at least 1 result, if not then generate a dummy result with all '-'
     if (result.isEmpty) {
-      result.add(_generateRow('-', '-', '-', '-', '-', '-', '-'));
+      result.add(_generateRow(
+        date: '-',
+        buyLot: '-',
+        buyValue: '-',
+        buyAverage: '-',
+        sellLot: '-',
+        sellValue: '-',
+        sellAverage: '-'
+      ));
     }
 
     return result;
@@ -814,36 +836,36 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       }
 
       return _generateRow(
-        "Total",
-        formatIntWithNull(
+        date: "Total",
+        buyLot: formatIntWithNull(
           totalBuyLot,
           showDecimal: false,
         ),
-        formatCurrencyWithNull(
+        buyValue: formatCurrencyWithNull(
           totalBuyValue,
           checkThousand: true,
         ),
-        formatCurrencyWithNull(
+        buyAverage: formatCurrencyWithNull(
           totalBuyAverage,
           showDecimal: false,
         ),
-        formatIntWithNull(
+        sellLot: formatIntWithNull(
           totalSellLot,
           showDecimal: false,
         ),
-        formatCurrencyWithNull(
+        sellValue: formatCurrencyWithNull(
           totalSellValue,
           checkThousand: true,
         ),
-        formatCurrencyWithNull(
+        sellAverage: formatCurrencyWithNull(
           totalSellAverage,
           showDecimal: false,
         ),
-        false,
-        true,
-        Colors.amber[900]!,
-        Colors.green[900],
-        secondaryDark,
+        isBold: false,
+        isBackground: true,
+        dateColor:  Colors.amber[900]!,
+        buyColor: Colors.green[900]!,
+        sellColor: secondaryDark,
       );
     }
   }
@@ -872,7 +894,17 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                   fontWeight: FontWeight.bold
                 ),
               ),
-              _generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true),
+              _generateRow(
+                date: "Date",
+                buyLot: "B.lot",
+                buyValue: "B.val",
+                buyAverage: "B.avg",
+                sellLot: "S.lot",
+                sellValue: "S.val",
+                sellAverage: "S.avg",
+                isBold: true,
+                isBackground: true,
+              ),
               ..._generateCombineRows(combineAll),
               _generateAverage(combineAll),
               const SizedBox(height: 10,),
@@ -883,7 +915,17 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                   fontWeight: FontWeight.bold
                 ),
               ),
-              _generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true),
+              _generateRow(
+                date: "Date",
+                buyLot: "B.lot",
+                buyValue: "B.val",
+                buyAverage: "B.avg",
+                sellLot: "S.lot",
+                sellValue: "S.val",
+                sellAverage: "S.avg",
+                isBold: true,
+                isBackground: true,
+              ),
               ..._generateCombineRows(combineDomestic),
               _generateAverage(combineDomestic),
               const SizedBox(height: 10,),
@@ -894,7 +936,17 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                   fontWeight: FontWeight.bold
                 ),
               ),
-              _generateRow("Date", "B.lot", "B.val", "B.avg", "S.lot", "S.val", "S.avg", true, true),
+              _generateRow(
+                date: "Date",
+                buyLot: "B.lot",
+                buyValue: "B.val",
+                buyAverage: "B.avg",
+                sellLot: "S.lot",
+                sellValue: "S.val",
+                sellAverage: "S.avg",
+                isBold: true,
+                isBackground: true
+              ),
               ..._generateCombineRows(combineForeign),
               _generateAverage(combineForeign),
             ],
@@ -986,8 +1038,8 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       brokerCode: _args.brokerFirmID,
       start: _start,
       limit: _limit,
-      dateFrom: _fromDateCurrent,
-      dateTo: _toDateCurrent
+      dateFrom: _fromDateCurrent.toLocal(),
+      dateTo: _toDateCurrent.toLocal(),
     ).then((resp) {
       _updateTransactionList(resp);
     }).onError((error, stackTrace) {
@@ -1023,10 +1075,10 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
       await _brokerSummaryAPI.getBrokerSummaryBrokerDate(
         brokerID: _args.brokerFirmID
       ).then((resp) {
-        _fromDateMax = resp.minDate;
-        _toDateMax = resp.maxDate;
-        _fromDateCurrent = _toDateMax;
-        _toDateCurrent = _toDateMax;
+        _fromDateMax = resp.minDate.toLocal();
+        _toDateMax = resp.maxDate.toLocal();
+        _fromDateCurrent = _toDateMax.toLocal();
+        _toDateCurrent = _toDateMax.toLocal();
       });
 
       // we will use the max date when we query the data
@@ -1034,8 +1086,8 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
         brokerCode: _args.brokerFirmID,
         start: _start,
         limit: _limit,
-        dateFrom: _fromDateCurrent,
-        dateTo: _toDateCurrent
+        dateFrom: _fromDateCurrent.toLocal(),
+        dateTo: _toDateCurrent.toLocal(),
       ).then((resp) {
         // set the current transaction list
         _transactionList = resp;

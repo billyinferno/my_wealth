@@ -39,8 +39,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     // ensure min and max broker date is not null
     if (_minBrokerDate == null || _maxBrokerDate == null) {
       // assume the max broker date is today
-      _maxBrokerDate = DateTime.now();
-      _minBrokerDate = _maxBrokerDate!.add(const Duration(days: -14));
+      _maxBrokerDate = DateTime.now().toLocal();
+      _minBrokerDate = _maxBrokerDate!.add(const Duration(days: -14)).toLocal();
     }
 
     // get the from and to date
@@ -52,7 +52,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     // and fromDate is -14 days of maxBrokerDate
     if (_fromDate == null || _toDate == null) {
       _toDate = _maxBrokerDate;
-      _fromDate = _toDate!.add(const Duration(days: -14));
+      _fromDate = _minBrokerDate;
     }
 
     // get the accumulation rate
@@ -1054,11 +1054,14 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     // check if we got the result or not?
     if (result != null) {
       // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if ((result.start.compareTo(_fromDate!) != 0) || (result.end.compareTo(_toDate!) != 0)) {                      
+      if (
+        (result.start.toLocal().compareTo(_fromDate!.toLocal()) != 0) ||
+        (result.end.toLocal().compareTo(_toDate!.toLocal()) != 0)
+      ) {                      
         // set the broker from and to date
         setState(() {
-          _fromDate = result.start;
-          _toDate = result.end;
+          _fromDate = result.start.toLocal();
+          _toDate = result.end.toLocal();
         });
       }
     }
@@ -1072,8 +1075,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     await _insightAPI.getBrokerCollect(
       broker: _brokerCode,
       accumLimit: _accumRate,
-      dateFrom: _fromDate,
-      dateTo: _toDate,
+      dateFrom: _fromDate!.toLocal(),
+      dateTo: _toDate!.toLocal(),
     ).then((resp) async {
       // put the response to the broker collect
       _brokerCollect = resp;
@@ -1082,8 +1085,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       await InsightSharedPreferences.setBrokerCollect(
         brokerCollectList: _brokerCollect!,
         brokerId: _brokerCode,
-        fromDate: _fromDate!,
-        toDate: _toDate!,
+        fromDate: _fromDate!.toLocal(),
+        toDate: _toDate!.toLocal(),
         rate: _accumRate
       );
     }).onError((error, stackTrace) {

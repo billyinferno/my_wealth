@@ -32,8 +32,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
     // ensure min and max broker date is not null
     if (_minBrokerDate == null || _maxBrokerDate == null) {
       // assume the max broker date is today
-      _maxBrokerDate = DateTime.now();
-      _minBrokerDate = _maxBrokerDate!.add(const Duration(days: -14));
+      _maxBrokerDate = DateTime.now().toLocal();
+      _minBrokerDate = _maxBrokerDate!.add(const Duration(days: -14)).toLocal();
     }
 
     // get the from and to date
@@ -45,7 +45,7 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
     // and fromDate is -14 days of maxBrokerDate
     if (_fromDate == null || _toDate == null) {
       _toDate = _maxBrokerDate;
-      _fromDate = _toDate!.add(const Duration(days: -14));
+      _fromDate = _minBrokerDate;
     }
 
     // get the accumulation rate
@@ -211,8 +211,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
               // get the accumulation result from the insight API
               await _insightAPI.getStockCollect(
                 accumLimit: _accumRate,
-                dateFrom: _fromDate,
-                dateTo: _toDate,
+                dateFrom: _fromDate!.toLocal(),
+                dateTo: _toDate!.toLocal(),
               ).then((resp) {      
                 // set the collection list as resp
                 setState(() {
@@ -222,8 +222,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
                   // stored the response to the insight preferences
                   InsightSharedPreferences.setStockCollect(
                     stockCollectList: _stockCollectList!,
-                    fromDate: _fromDate!,
-                    toDate: _toDate!,
+                    fromDate: _fromDate!.toLocal(),
+                    toDate: _toDate!.toLocal(),
                     rate: _accumRate
                   );
                 });
@@ -334,7 +334,10 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
       context: context,
       firstDate: _minBrokerDate!.toLocal(),
       lastDate: _maxBrokerDate!.toLocal(),
-      initialDateRange: DateTimeRange(start: _fromDate!.toLocal(), end: _toDate!.toLocal()),
+      initialDateRange: DateTimeRange(
+        start: _fromDate!.toLocal(),
+        end: _toDate!.toLocal()
+      ),
       confirmText: 'Done',
       currentDate: _maxBrokerDate!.toLocal(),
       initialEntryMode: DatePickerEntryMode.calendarOnly,
@@ -343,11 +346,13 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
     // check if we got the result or not?
     if (result != null) {
       // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if ((result.start.compareTo(_fromDate!) != 0) || (result.end.compareTo(_toDate!) != 0)) {                      
+      if (
+        (result.start.toLocal().compareTo(_fromDate!.toLocal()) != 0) ||
+        (result.end.toLocal().compareTo(_toDate!.toLocal()) != 0)) {                      
         // set the broker from and to date
         setState(() {
-          _fromDate = result.start;
-          _toDate = result.end;
+          _fromDate = result.start.toLocal();
+          _toDate = result.end.toLocal();
         });
       }
     }
@@ -365,8 +370,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
         // shared preferences for next use
         await _insightAPI.getStockCollect(
           accumLimit: _accumRate,
-          dateFrom: _fromDate,
-          dateTo: _toDate,
+          dateFrom: _fromDate!.toLocal(),
+          dateTo: _toDate!.toLocal(),
         ).then((resp) {
           _stockCollectList!.clear();
           _stockCollectList!.addAll(resp);
@@ -374,8 +379,8 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
           // stored the response to the insight preferences
           InsightSharedPreferences.setStockCollect(
             stockCollectList: _stockCollectList!,
-            fromDate: _fromDate!,
-            toDate: _toDate!,
+            fromDate: _fromDate!.toLocal(),
+            toDate: _toDate!.toLocal(),
             rate: _accumRate
           );
         });

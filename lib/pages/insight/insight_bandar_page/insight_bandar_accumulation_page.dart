@@ -563,7 +563,10 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
       DateTime brokerMinDate = BrokerSharedPreferences.getBrokerMinDate()!;
       DateTime brokerMaxDate = BrokerSharedPreferences.getBrokerMaxDate()!;
 
-      _brokerSummaryDate = MinMaxDateModel(minDate: brokerMinDate, maxDate: brokerMaxDate);
+      _brokerSummaryDate = MinMaxDateModel(
+        minDate: brokerMinDate.toLocal(),
+        maxDate: brokerMaxDate.toLocal()
+      );
     }
 
     return true;

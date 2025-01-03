@@ -982,11 +982,14 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     // check if we got the result or not?
     if (result != null) {
       // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if ((result.start.compareTo(_dateFrom) != 0) || (result.end.compareTo(_dateTo) != 0)) {                      
+      if (
+        (result.start.toLocal().compareTo(_dateFrom.toLocal()) != 0) ||
+        (result.end.toLocal().compareTo(_dateTo.toLocal()) != 0)
+      ) {                      
         // set the broker from and to date
         setState(() {
-          _dateFrom = result.start;
-          _dateTo = result.end;
+          _dateFrom = result.start.toLocal();
+          _dateTo = result.end.toLocal();
         });
       }
     }
@@ -1001,8 +1004,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       await _brokerSummaryAPI.getBrokerTransactionDetail(
         brokerCode: _brokerCode,
         stockCode: _companySahamCode,
-        dateFrom: _dateFrom,
-        dateTo: _dateTo
+        dateFrom: _dateFrom.toLocal(),
+        dateTo: _dateTo.toLocal(),
       ).then((resp) {
         _brokerSummaryData = resp;
         
@@ -1012,8 +1015,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
           brokerSummaryData: _brokerSummaryData!,
           brokerId: _brokerCode,
           company: _companyDetail!,
-          fromDate: _dateFrom,
-          toDate: _dateTo,
+          fromDate: _dateFrom.toLocal(),
+          toDate: _dateTo.toLocal(),
         );
       }).onError((error, stackTrace) {
         if (mounted) {

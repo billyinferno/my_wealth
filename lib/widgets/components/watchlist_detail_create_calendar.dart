@@ -21,7 +21,7 @@ class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCale
 
     // initialize variable
     _isDateVisible = false;
-    _selectedDate = (widget.initialDate ?? DateTime.now());
+    _selectedDate = (widget.initialDate ?? DateTime.now()).toLocal();
   }
 
   @override
@@ -103,9 +103,9 @@ class WatchlistDetailCreateCalendarState extends State<WatchlistDetailCreateCale
                 mode: CupertinoDatePickerMode.date,
                 onDateTimeChanged: ((newDate) {
                   setState(() {
-                    _selectedDate = newDate;
+                    _selectedDate = newDate.toLocal();
                   });
-                  widget.onDateChange(newDate);
+                  widget.onDateChange(newDate.toLocal());
                 }),
               ),
             ),

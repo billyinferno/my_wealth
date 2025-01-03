@@ -149,7 +149,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
       // call API to add watchlist detail
       await _watchlistAPI.addDetail(
         id: _watchlist.watchlistId,
-        date: _selectedDate,
+        date: _selectedDate.toLocal(),
         shares: shares,
         price: price,
       ).then((watchlistDetail) async {

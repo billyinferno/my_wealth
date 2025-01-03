@@ -93,8 +93,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     _dateCurrent = DateTime.now().toLocal();
     _dateFrom = (InsightSharedPreferences.getBrokerCompanyDate(type: DateType.from) ?? DateTime.now().subtract(const Duration(days: 30)).toLocal());
     _dateTo = (InsightSharedPreferences.getBrokerCompanyDate(type: DateType.to) ?? DateTime.now().subtract(const Duration(days: 1)).toLocal());
-    _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
-    _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
+    _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom).toLocal();
+    _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo).toLocal();
 
     // check brokerMinDate is more than _dateFrom or not?
     if (_brokerMinDate.isAfter(_dateFrom)) {
@@ -176,7 +176,10 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                             InkWell(
                               onTap: (() async {
                                 // navigate to the find other company list and we will get the value from there
-                                await Navigator.pushNamed(context, '/company/detail/find', arguments: _companyFindOtherArgs).then((value) {
+                                await Navigator.pushNamed(
+                                  context, '/company/detail/find',
+                                  arguments: _companyFindOtherArgs
+                                ).then((value) {
                                   if (value != null) {
                                     // convert value to company list model
                                     _companyData = value as CompanyListModel;

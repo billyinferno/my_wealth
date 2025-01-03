@@ -178,7 +178,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
         // send sell request to API
         await _watchlistAPI.addDetail(
           id: _watchlist.watchlistId,
-          date: _selectedDate,
+          date: _selectedDate.toLocal(),
           shares: shares,
           price: price,
         ).then((watchlistDetail) async {

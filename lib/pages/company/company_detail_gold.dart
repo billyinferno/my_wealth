@@ -748,7 +748,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
               // since gold have weekend, then we can just generate the heat
               // graph data from 90 days
               _heatMapGraphData[resp[i].priceGoldDate] = GraphData(
-                date: resp[i].priceGoldDate, price: resp[i].priceGoldIdr
+                date: resp[i].priceGoldDate.toLocal(),
+                price: resp[i].priceGoldIdr
               );
             }
 
@@ -917,10 +918,20 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
 
       // generate the graph data
       if (_currentPriceCcy.toLowerCase() == "idr") {
-        _graphData.add(GraphData(date: price.priceGoldDate, price: price.priceGoldIdr));
+        _graphData.add(
+          GraphData(
+            date: price.priceGoldDate.toLocal(),
+            price: price.priceGoldIdr
+          )
+        );
       }
       else {
-        _graphData.add(GraphData(date: price.priceGoldDate, price: price.priceGoldUsd));
+        _graphData.add(
+          GraphData(
+            date: price.priceGoldDate.toLocal(),
+            price: price.priceGoldUsd
+          )
+        );
       }
     }
 

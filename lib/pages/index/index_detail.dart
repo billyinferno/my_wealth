@@ -622,7 +622,12 @@ class IndexDetailPageState extends State<IndexDetailPage> {
 
       totalPrice = totalPrice + price.indexPriceValue;
 
-      _graphData.add(GraphData(date: price.indexPriceDate, price: price.indexPriceValue));
+      _graphData.add(
+        GraphData(
+          date: price.indexPriceDate.toLocal(),
+          price: price.indexPriceValue
+        )
+      );
     }
 
     // check if we got > 0 num price or not?

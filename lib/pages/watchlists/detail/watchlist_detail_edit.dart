@@ -189,7 +189,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
       // call the update detail API
       await _watchlistApi.updateDetail(
         id: _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId,
-        date: _selectedDate,
+        date: _selectedDate.toLocal(),
         shares: shares,
         price: price,
       ).then((resp) async {

@@ -1513,6 +1513,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               watchlist: _watchlistDetail,
               showLegend: false,
               dateOffset: _dateOffset,
+              fillDate: true,
             ),
           ],
         );
@@ -1538,6 +1539,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               watchlist: _watchlistDetail,
               showLegend: false,
               dateOffset: _dateOffset,
+              fillDate: true,
             ),
           ],
         );
@@ -1694,6 +1696,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               height: 250,
               watchlist: _watchlistDetail,
               dateOffset: _dateOffset,
+              fillDate: true,
             ),
           ],
         );

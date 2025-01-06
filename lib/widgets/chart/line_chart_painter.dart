@@ -45,7 +45,7 @@ class LineChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(LineChartPainter oldDelegate) {
-    return listEquals<GraphData>(oldDelegate.data, data);
+    return !(listEquals<GraphData>(oldDelegate.data, data));
   }
 
   double _maxData({required List<GraphData> data}) {

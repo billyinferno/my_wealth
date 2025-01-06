@@ -689,6 +689,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
               height: 250,
               watchlist: _watchlistDetail,
               dateOffset: (_priceGold.length ~/ 10),
+              fillDate: true,
+              onlyWeekday: false,
             ),
           ),
         )

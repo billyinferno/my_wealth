@@ -4562,8 +4562,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               data: _brokerSummaryDailyData,
               color: const [Colors.green, secondaryDark],
               legend: const ["Buy", "Sell"],
-              dateOffset:
-                  (_brokerSummaryDailyMonthlyDataSelected == 'd' ? 20 : 4),
+              dateOffset: (_brokerSummaryDailyMonthlyDataSelected == 'd' ? 20 : 4),
             ),
           ],
         );
@@ -4746,6 +4745,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               height: 250,
               watchlist: _watchlistDetail,
               dateOffset: (_graphData.length > 10 ? null : 1),
+              fillDate: true,
             ),
           ],
         );

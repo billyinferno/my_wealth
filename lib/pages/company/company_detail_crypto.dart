@@ -849,6 +849,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
               height: 250,
               watchlist: _watchlistDetail,
               dateOffset: (_graphData.length ~/ 10),
+              fillDate: true,
+              onlyWeekday: false,
             ),
           ),
         )

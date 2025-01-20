@@ -130,10 +130,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_launcher_icons
-      sha256: "31cd0885738e87c72d6f055564d37fabcdacee743b396b78c7636c169cac64f5"
+      sha256: bfa04787c85d80ecb3f8777bde5fc10c3de809240c48fa061a2c2bf15ea5211c
       url: "https://pub.dev"
     source: hosted
-    version: "0.14.2"
+    version: "0.14.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -192,10 +192,10 @@ packages:
     dependency: "direct main"
     description:
       name: hive_ce
-      sha256: f09558be773f3e6bfa242d2b52e31c3cf8ea4edeb2b26d3cf0121c33aff94ffb
+      sha256: "918d3379fafea06d501a161805965f04d0ff164aa3948daeb746b31ed936a51b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.8.0+3"
+    version: "2.9.0"
   hive_ce_flutter:
     dependency: "direct main"
     description:

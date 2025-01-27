@@ -95,7 +95,7 @@ class _BrokerPageState extends State<BrokerPage> {
               child: RefreshIndicator(
                 onRefresh: (() async {
                   await _refreshBroker().then((value) {
-                    Log.success(message: "🔃 Refresh Index");
+                    Log.success(message: "🔃 Refresh Broker");
                     // rebuild the state
                     setState(() {
                     });
@@ -179,7 +179,7 @@ class _BrokerPageState extends State<BrokerPage> {
                                   flex: 2,
                                   text: "Date",
                                   value: Globals.dfddMMyyyy.formatLocal(
-                                    _filterBrokerList[index].brokerDate.toLocal()
+                                    _filterBrokerList[index].brokerDate
                                   )
                                 ),
                                 _informationText(

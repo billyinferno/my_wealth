@@ -2553,7 +2553,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         cumDate: Globals.dfddMMyy.formatDateWithNull(dividend.cumDividend),
         exDate: Globals.dfddMMyy.formatDateWithNull(dividend.exDividend),
         recordDate: Globals.dfddMMyy.formatLocal(dividend.recordDate),
-        paymentDate: Globals.dfddMMyy.formatLocal(dividend.paymentDate.toLocal()),
+        paymentDate: Globals.dfddMMyy.formatLocal(dividend.paymentDate),
         cashDividend: formatCurrency(dividend.cashDividend.toDouble()),
         price: formatCurrencyWithNull(dividend.price),
         priceDate: Globals.dfddMMyy.formatDateWithNull(dividend.priceDate),

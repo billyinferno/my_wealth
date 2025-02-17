@@ -256,10 +256,10 @@ packages:
     dependency: "direct main"
     description:
       name: la_icons
-      sha256: "684a6c0800c3a06fa765e48469e9d40c2cd906cebc26f1a1ba5f13041d8852f3"
+      sha256: d1eaa5aff67c21bc8d405c3a191292a59361275085e3a8e81222265d418c3de8
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.2"
   lazy_load_scrollview:
     dependency: "direct main"
     description:

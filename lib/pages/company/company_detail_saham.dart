@@ -4266,21 +4266,19 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 content: SizedBox(
                                   width: 300,
                                   height: 300,
-                                  child: YearPicker(
+                                  child: MyYearPicker(
                                     firstDate: _minPriceDate.toLocal(),
                                     lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
-                                    selectedDate: _monthlyPerformanceDateTo,
-                                    currentDate: DateTime.now().toLocal(),
-                                    onChanged: (newDate) async {
-                                      // remove the dialog
+                                    startDate: _monthlyPerformanceDateTo,
+                                    onChanged: (value) async {
                                       Navigator.pop(context);
                       
                                       // check the new date whether it's same year or not?
-                                      if (newDate.toLocal().year != _monthlyPerformanceDateFrom.year) {
+                                      if (value.startDate.toLocal().year != _monthlyPerformanceDateFrom.year || value.endDate.toLocal().year != _monthlyPerformanceDateTo.year) {
                                         // not same year, set the current year to the monthly performance year
-                                        _monthlyPerformanceDateFrom = DateTime(newDate.toLocal().year, 1, 1);
-                                        _monthlyPerformanceDateTo = DateTime(newDate.toLocal().year, 12, 31);
-                      
+                                        _monthlyPerformanceDateFrom = value.startDate;
+                                        _monthlyPerformanceDateTo = value.endDate;
+                                      
                                         // get the monthly performance
                                         await _getMonthlyPerformance().onError((error, stackTrace) {
                                           // if error then revert back the date
@@ -4297,8 +4295,41 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                           }
                                         },);
                                       }
-                                    },
+                                    }
                                   ),
+                                  // child: YearPicker(
+                                  //   firstDate: _minPriceDate.toLocal(),
+                                  //   lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                                  //   selectedDate: _monthlyPerformanceDateTo,
+                                  //   currentDate: DateTime.now().toLocal(),
+                                  //   onChanged: (newDate) async {
+                                  //     // remove the dialog
+                                  //     Navigator.pop(context);
+                      
+                                  //     // check the new date whether it's same year or not?
+                                  //     if (newDate.toLocal().year != _monthlyPerformanceDateFrom.year) {
+                                  //       // not same year, set the current year to the monthly performance year
+                                  //       _monthlyPerformanceDateFrom = DateTime(newDate.toLocal().year, 1, 1);
+                                  //       _monthlyPerformanceDateTo = DateTime(newDate.toLocal().year, 12, 31);
+                      
+                                  //       // get the monthly performance
+                                  //       await _getMonthlyPerformance().onError((error, stackTrace) {
+                                  //         // if error then revert back the date
+                                  //         _monthlyPerformanceDateFrom = prevDateFrom;
+                                  //         _monthlyPerformanceDateTo = prevDateTo;
+
+                                  //         // show error
+                                  //         if (context.mounted) {
+                                  //           ScaffoldMessenger.of(context).showSnackBar(
+                                  //             createSnackBar(
+                                  //               message: error.toString()
+                                  //             )
+                                  //           );
+                                  //         }
+                                  //       },);
+                                  //     }
+                                  //   },
+                                  // ),
                                 ),
                               );
                             },

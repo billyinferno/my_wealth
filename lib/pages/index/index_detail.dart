@@ -50,7 +50,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late CompanyWeekdayPerformanceModel _monthlyPerformance;
   late DateTime _monthlyPerformanceDateFrom;
   late DateTime _monthlyPerformanceDateTo;
-  late bool _monthlyIsRange;
+  late MyYearPickerCalendarType _calendarType;
   late DateTime _minPriceDate;
 
   @override
@@ -68,8 +68,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     _monthlyPerformanceDateFrom = DateTime(_weekdayPerformanceDateTo.year, 1, 1);
     _monthlyPerformanceDateTo = DateTime(_weekdayPerformanceDateTo.year, 12, 31);
 
-    // set the monthly analysis selection not in range
-    _monthlyIsRange = false;
+    // default the calendar type to single
+    _calendarType = MyYearPickerCalendarType.single;
     
     if (Globals.indexName.containsKey(_index.indexName)) {
       _indexName = "($_indexName) ${Globals.indexName[_indexName]}";
@@ -825,6 +825,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               const SizedBox(height: 2,),
               InkWell(
                 onTap: (() async {
+                  //TODO: to give option to select free range date or year range date picker instead
+                  
                   // stored current from and to date
                   DateTime prevDateFrom = _weekdayPerformanceDateFrom;
                   DateTime prevDateTo = _weekdayPerformanceDateTo;
@@ -922,117 +924,74 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         DateTime prevDateFrom = _monthlyPerformanceDateFrom;
                         DateTime prevDateTo = _monthlyPerformanceDateTo;
 
-                        if (_monthlyIsRange) {
-                          // check for the max date to avoid any assertion that the initial date range
-                          // is more than the lastDate
-                          DateTime maxDate = _minMaxDate.maxDate.toLocal();
-                          if (maxDate.isBefore(_index.indexLastUpdate.toLocal())) {
-                            maxDate = _index.indexLastUpdate;
-                          }
-
-                          DateTimeRange? result = await showDateRangePicker(
-                            context: context,
-                            firstDate: _minPriceDate.toLocal(),
-                            lastDate: maxDate.toLocal(),
-                            initialDateRange: DateTimeRange(
-                              start: _monthlyPerformanceDateFrom.toLocal(),
-                              end: _monthlyPerformanceDateTo.toLocal()
-                            ),
-                            confirmText: 'Done',
-                            currentDate: _index.indexLastUpdate.toLocal(),
-                            initialEntryMode: DatePickerEntryMode.calendarOnly,
-                          );
-
-                          // check if we got the result or not?
-                          if (result != null) {
-                            // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                            if ((result.start.compareTo(_monthlyPerformanceDateFrom) != 0) ||
-                                (result.end.compareTo(_monthlyPerformanceDateTo) != 0)) {
-                              // set the weekday performance from and to date
-                              _monthlyPerformanceDateFrom = result.start;
-                              _monthlyPerformanceDateTo = result.end;
-
-                              // get the weekday performance
-                              await _getMonthlyPerformance().onError((error, stackTrace) {
-                                // if got error, then revert back the date
-                                _monthlyPerformanceDateFrom = prevDateFrom;
-                                _monthlyPerformanceDateTo = prevDateTo;
-
-                                // showed error
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    createSnackBar(
-                                      message: error.toString()
-                                    )
-                                  );
-                                }
-                              },);
-                            }
-                          }
+                        // check for the max date to avoid any assertion that the initial date range
+                        // is more than the lastDate
+                        DateTime maxDate = _minMaxDate.maxDate.toLocal();
+                        if (maxDate.isBefore(_index.indexLastUpdate.toLocal())) {
+                          maxDate = _index.indexLastUpdate;
                         }
-                        else {
-                          await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text("Select Year"),
-                                    IconButton(
-                                    icon: Icon(
-                                      Ionicons.close,
-                                    ),
-                                    onPressed: () {
-                                      // remove the dialog
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  ],
-                                ),
-                                contentPadding: const EdgeInsets.all(10),
-                                content: SizedBox(
-                                  width: 300,
-                                  height: 300,
-                                  child: YearPicker(
-                                    firstDate: _minMaxDate.minDate.toLocal(),
-                                    lastDate: _minMaxDate.maxDate.toLocal(),
-                                    selectedDate: _monthlyPerformanceDateTo,
-                                    currentDate: DateTime.now().toLocal(),
-                                    onChanged: (newDate) async {
-                                      // remove the dialog
-                                      Navigator.pop(context);
-                      
-                                      // check the new date whether it's same year or not?
-                                      if (newDate.toLocal().year != _monthlyPerformanceDateFrom.year) {
-                                        // not same year, set the current year to the monthly performance year
-                                        _monthlyPerformanceDateFrom = DateTime(newDate.toLocal().year, 1, 1);
-                                        _monthlyPerformanceDateTo = DateTime(newDate.toLocal().year, 12, 31);
-                      
-                                        // get the monthly performance
-                                        await _getMonthlyPerformance().onError((error, stackTrace) {
-                                          // if got error, then revert back the date
-                                          _monthlyPerformanceDateFrom = prevDateFrom;
-                                          _monthlyPerformanceDateTo = prevDateTo;
 
-                                          // showed error
-                                          if (context.mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              createSnackBar(
-                                                message: error.toString()
-                                              )
-                                            );
-                                          }
-                                        },);
-                                      }
-                                    },
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Select Year"),
+                                  IconButton(
+                                  icon: Icon(
+                                    Ionicons.close,
                                   ),
+                                  onPressed: () {
+                                    // remove the dialog
+                                    Navigator.pop(context);
+                                  },
                                 ),
-                              );
-                            },
-                          );
-                        }
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.all(10),
+                              content: SizedBox(
+                                width: 300,
+                                height: 300,
+                                child: MyYearPicker(
+                                  firstDate: _minPriceDate.toLocal(),
+                                  lastDate: maxDate.toLocal(),
+                                  startDate: _monthlyPerformanceDateFrom,
+                                  endDate: _monthlyPerformanceDateTo,
+                                  type: _calendarType,
+                                  onChanged: (value) async {
+                                    Navigator.pop(context);
+                    
+                                    // check the new date whether it's same year or not?
+                                    if (value.startDate.toLocal().year != _monthlyPerformanceDateFrom.year || value.endDate.toLocal().year != _monthlyPerformanceDateTo.year) {
+                                      // not same year, set the current year to the monthly performance year
+                                      _monthlyPerformanceDateFrom = value.startDate;
+                                      _monthlyPerformanceDateTo = value.endDate;
+                                    
+                                      // get the monthly performance
+                                      await _getMonthlyPerformance().onError((error, stackTrace) {
+                                        // if error then revert back the date
+                                        _monthlyPerformanceDateFrom = prevDateFrom;
+                                        _monthlyPerformanceDateTo = prevDateTo;
+
+                                        // show error
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            createSnackBar(
+                                              message: error.toString()
+                                            )
+                                          );
+                                        }
+                                      },);
+                                    }
+                                  }
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       }),
                       child: Container(
                         width: double.infinity,
@@ -1040,8 +999,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         child: Center(
                           child: Text(
                             (
-                              _monthlyIsRange ?
-                              "${Globals.dfDDMMMyyyy.format(_monthlyPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_monthlyPerformanceDateTo)}" :
                               "${_monthlyPerformanceDateFrom.year}${(
                                 _monthlyPerformanceDateFrom.year != _monthlyPerformanceDateTo.year ?
                                 " - ${_monthlyPerformanceDateTo.year}" :
@@ -1063,11 +1020,16 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     child: Transform.scale(
                       scale: 0.5,
                       child: CupertinoSwitch(
-                        value: _monthlyIsRange,
+                        value: (_calendarType == MyYearPickerCalendarType.range),
                         activeTrackColor: secondaryColor,
                         onChanged: (value) {
                           setState(() {
-                            _monthlyIsRange = value;
+                            if (value) {
+                              _calendarType = MyYearPickerCalendarType.range;
+                            }
+                            else {
+                              _calendarType = MyYearPickerCalendarType.single;
+                            }
                           });
                         },
                       ),

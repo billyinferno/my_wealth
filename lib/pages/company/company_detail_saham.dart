@@ -95,6 +95,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late bool _additionalInfoAvailable;
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePER;
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePBV;
+  late MyYearPickerCalendarType _calendarType;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -122,7 +123,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late DateTime _weekdayPerformanceDateTo;
   late DateTime _monthlyPerformanceDateFrom;
   late DateTime _monthlyPerformanceDateTo;
-  late bool _monthlyIsRange;
   late DateTime _minPriceDate;
 
   late Future<bool> _getData;
@@ -239,8 +239,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     // default the minimum price date to 2019-12-30 (as per DB info)
     _minPriceDate = DateTime(2019, 12, 30);
 
-    // default the monthly selection to not range first
-    _monthlyIsRange = false;
+    // default the calendar type to single
+    _calendarType = MyYearPickerCalendarType.single;
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -2958,6 +2958,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   ),
                   InkWell(
                     onTap: (() async {
+                      //TODO: to give option to select free range date or year range date picker instead
+
                       // check for the max date to avoid any assertion that the initial date range
                       // is more than the lastDate
                       DateTime maxDate =
@@ -4192,149 +4194,67 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         DateTime prevDateFrom = _monthlyPerformanceDateFrom;
                         DateTime prevDateTo = _monthlyPerformanceDateTo;
 
-                        // check if we enable the range for monthly analysis
-                        if (_monthlyIsRange) {
-                          // check for the max date to avoid any assertion that the initial date range
-                          // is more than the lastDate
-                          DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
-                          if (maxDate.isBefore(_minPriceDate.toLocal())) {
-                            maxDate = _minPriceDate;
-                          }
-
-                          DateTimeRange? result = await showDateRangePicker(
-                            context: context,
-                            firstDate: _minPriceDate.toLocal(),
-                            lastDate: maxDate.toLocal(),
-                            initialDateRange: DateTimeRange(
-                              start: _monthlyPerformanceDateFrom.toLocal(),
-                              end: _monthlyPerformanceDateTo.toLocal()
-                            ),
-                            confirmText: 'Done',
-                            currentDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
-                            initialEntryMode: DatePickerEntryMode.calendarOnly,
-                          );
-
-                          // check if we got the result or not?
-                          if (result != null) {
-                            // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                            if ((result.start.compareTo(_monthlyPerformanceDateFrom) != 0) ||
-                                (result.end.compareTo(_monthlyPerformanceDateTo) != 0)) {
-                              // set the weekday performance from and to date
-                              _monthlyPerformanceDateFrom = result.start;
-                              _monthlyPerformanceDateTo = result.end;
-
-                              // get the weekday performance
-                              await _getMonthlyPerformance().onError((error, stackTrace) {
-                                // if error then revert back the date
-                                _monthlyPerformanceDateFrom = prevDateFrom;
-                                _monthlyPerformanceDateTo = prevDateTo;
-
-                                // show error
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    createSnackBar(
-                                      message: error.toString()
-                                    )
-                                  );
-                                }
-                              },);
-                            }
-                          }
-                        }
-                        else {
-                          await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text("Select Year"),
-                                    IconButton(
-                                    icon: Icon(
-                                      Ionicons.close,
-                                    ),
-                                    onPressed: () {
-                                      // remove the dialog
-                                      Navigator.pop(context);
-                                    },
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Select Year"),
+                                  IconButton(
+                                  icon: Icon(
+                                    Ionicons.close,
                                   ),
-                                  ],
+                                  onPressed: () {
+                                    // remove the dialog
+                                    Navigator.pop(context);
+                                  },
                                 ),
-                                contentPadding: const EdgeInsets.all(10),
-                                content: SizedBox(
-                                  width: 300,
-                                  height: 300,
-                                  child: MyYearPicker(
-                                    firstDate: _minPriceDate.toLocal(),
-                                    lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
-                                    startDate: _monthlyPerformanceDateTo,
-                                    onChanged: (value) async {
-                                      Navigator.pop(context);
-                      
-                                      // check the new date whether it's same year or not?
-                                      if (value.startDate.toLocal().year != _monthlyPerformanceDateFrom.year || value.endDate.toLocal().year != _monthlyPerformanceDateTo.year) {
-                                        // not same year, set the current year to the monthly performance year
-                                        _monthlyPerformanceDateFrom = value.startDate;
-                                        _monthlyPerformanceDateTo = value.endDate;
-                                      
-                                        // get the monthly performance
-                                        await _getMonthlyPerformance().onError((error, stackTrace) {
-                                          // if error then revert back the date
-                                          _monthlyPerformanceDateFrom = prevDateFrom;
-                                          _monthlyPerformanceDateTo = prevDateTo;
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.all(10),
+                              content: SizedBox(
+                                width: 300,
+                                height: 300,
+                                child: MyYearPicker(
+                                  firstDate: _minPriceDate.toLocal(),
+                                  lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                                  startDate: _monthlyPerformanceDateFrom,
+                                  endDate: _monthlyPerformanceDateTo,
+                                  type: _calendarType,
+                                  onChanged: (value) async {
+                                    Navigator.pop(context);
+                    
+                                    // check the new date whether it's same year or not?
+                                    if (value.startDate.toLocal().year != _monthlyPerformanceDateFrom.year || value.endDate.toLocal().year != _monthlyPerformanceDateTo.year) {
+                                      // not same year, set the current year to the monthly performance year
+                                      _monthlyPerformanceDateFrom = value.startDate;
+                                      _monthlyPerformanceDateTo = value.endDate;
+                                    
+                                      // get the monthly performance
+                                      await _getMonthlyPerformance().onError((error, stackTrace) {
+                                        // if error then revert back the date
+                                        _monthlyPerformanceDateFrom = prevDateFrom;
+                                        _monthlyPerformanceDateTo = prevDateTo;
 
-                                          // show error
-                                          if (context.mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              createSnackBar(
-                                                message: error.toString()
-                                              )
-                                            );
-                                          }
-                                        },);
-                                      }
+                                        // show error
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            createSnackBar(
+                                              message: error.toString()
+                                            )
+                                          );
+                                        }
+                                      },);
                                     }
-                                  ),
-                                  // child: YearPicker(
-                                  //   firstDate: _minPriceDate.toLocal(),
-                                  //   lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
-                                  //   selectedDate: _monthlyPerformanceDateTo,
-                                  //   currentDate: DateTime.now().toLocal(),
-                                  //   onChanged: (newDate) async {
-                                  //     // remove the dialog
-                                  //     Navigator.pop(context);
-                      
-                                  //     // check the new date whether it's same year or not?
-                                  //     if (newDate.toLocal().year != _monthlyPerformanceDateFrom.year) {
-                                  //       // not same year, set the current year to the monthly performance year
-                                  //       _monthlyPerformanceDateFrom = DateTime(newDate.toLocal().year, 1, 1);
-                                  //       _monthlyPerformanceDateTo = DateTime(newDate.toLocal().year, 12, 31);
-                      
-                                  //       // get the monthly performance
-                                  //       await _getMonthlyPerformance().onError((error, stackTrace) {
-                                  //         // if error then revert back the date
-                                  //         _monthlyPerformanceDateFrom = prevDateFrom;
-                                  //         _monthlyPerformanceDateTo = prevDateTo;
-
-                                  //         // show error
-                                  //         if (context.mounted) {
-                                  //           ScaffoldMessenger.of(context).showSnackBar(
-                                  //             createSnackBar(
-                                  //               message: error.toString()
-                                  //             )
-                                  //           );
-                                  //         }
-                                  //       },);
-                                  //     }
-                                  //   },
-                                  // ),
+                                  }
                                 ),
-                              );
-                            },
-                          );
-                        }
+                              ),
+                            );
+                          },
+                        );
                       }),
                       child: Container(
                         width: double.infinity,
@@ -4342,8 +4262,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         child: Center(
                           child: Text(
                             (
-                              _monthlyIsRange ?
-                              "${Globals.dfDDMMMyyyy.format(_monthlyPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_monthlyPerformanceDateTo)}" :
                               "${_monthlyPerformanceDateFrom.year}${(
                                 _monthlyPerformanceDateFrom.year != _monthlyPerformanceDateTo.year ?
                                 " - ${_monthlyPerformanceDateTo.year}" :
@@ -4365,11 +4283,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                     child: Transform.scale(
                       scale: 0.5,
                       child: CupertinoSwitch(
-                        value: _monthlyIsRange,
+                        value: (_calendarType == MyYearPickerCalendarType.range),
                         activeTrackColor: secondaryColor,
                         onChanged: (value) {
                           setState(() {
-                            _monthlyIsRange = value;
+                            if (value) {
+                              _calendarType = MyYearPickerCalendarType.range;
+                            }
+                            else {
+                              _calendarType = MyYearPickerCalendarType.single;
+                            }
                           });
                         },
                       ),

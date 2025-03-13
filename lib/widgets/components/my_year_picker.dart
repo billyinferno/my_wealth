@@ -161,6 +161,17 @@ class _MyYearPickerState extends State<MyYearPicker> {
     );
   }
 
+  void _checkDate() {
+    // compare the start and end date with the min and max date
+    // if lesser or more then clamp the date within min and max date
+    if (_startDate.isBefore(widget.firstDate)) {
+      _startDate = widget.firstDate;
+    }
+    if (_endDate.isAfter(widget.lastDate)) {
+      _endDate = widget.lastDate;
+    }
+  }
+
   Widget _buildYearItem(BuildContext context, int index) {
     final DatePickerThemeData datePickerTheme = DatePickerTheme.of(context);
     final DatePickerThemeData defaults = DatePickerTheme.defaults(context);
@@ -297,6 +308,7 @@ class _MyYearPickerState extends State<MyYearPicker> {
             // this is single
             _startDate = DateTime(year, 1, 1);
             _endDate = DateTime(year, 12, 31);
+            _checkDate();
             widget.onChanged(MyYearDateResult(startDate: _startDate, endDate: _endDate));
           }
           else {
@@ -313,16 +325,24 @@ class _MyYearPickerState extends State<MyYearPicker> {
                 _startDate = DateTime(_endDate.year, 1, 1);
               }
               else {
-                // check normally the year
-                if (_startDate.year > year) {
-                  // change the start date
+                if (year > _startDate.year && year < _endDate.year) {
+                  // set this year as the start and end
                   _startDate = DateTime(year, 1, 1);
-                }
-                else {
-                  // it means we need to change the _endDate
                   _endDate = DateTime(year, 12, 31);
                 }
+                else {
+                  // check normally the year
+                  if (_startDate.year > year) {
+                    // change the start date
+                    _startDate = DateTime(year, 1, 1);
+                  }
+                  else {
+                    // it means we need to change the _endDate
+                    _endDate = DateTime(year, 12, 31);
+                  }
+                }
               }
+              _checkDate();
             });
           }
         },

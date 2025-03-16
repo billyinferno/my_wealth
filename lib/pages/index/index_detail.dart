@@ -50,7 +50,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late CompanyWeekdayPerformanceModel _monthlyPerformance;
   late DateTime _monthlyPerformanceDateFrom;
   late DateTime _monthlyPerformanceDateTo;
-  late MyYearPickerCalendarType _calendarType;
+  late MyYearPickerCalendarType _calendarMonthlyType;
+  late bool _calendarWeeklyRange;
   late DateTime _minPriceDate;
 
   @override
@@ -69,7 +70,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     _monthlyPerformanceDateTo = DateTime(_weekdayPerformanceDateTo.year, 12, 31);
 
     // default the calendar type to single
-    _calendarType = MyYearPickerCalendarType.single;
+    _calendarMonthlyType = MyYearPickerCalendarType.single;
+
+    // default the weekly calendar to range instead year
+    _calendarWeeklyRange = true;
     
     if (Globals.indexName.containsKey(_index.indexName)) {
       _indexName = "($_indexName) ${Globals.indexName[_indexName]}";
@@ -823,72 +827,175 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               const SizedBox(height: 5,),
               Center(child: Text("Weekday Performance")),
               const SizedBox(height: 2,),
-              InkWell(
-                onTap: (() async {
-                  //TODO: to give option to select free range date or year range date picker instead
-                  
-                  // stored current from and to date
-                  DateTime prevDateFrom = _weekdayPerformanceDateFrom;
-                  DateTime prevDateTo = _weekdayPerformanceDateTo;
-
-                  // check for the max date to avoid any assertion that the initial date range
-                  // is more than the lastDate
-                  DateTime maxDate = _minMaxDate.maxDate.toLocal();
-                  if (maxDate.isBefore(_weekdayPerformanceDateFrom.toLocal())) {
-                    maxDate = _weekdayPerformanceDateFrom;
-                  }
-
-                  DateTimeRange? result = await showDateRangePicker(
-                    context: context,
-                    firstDate: _minPriceDate.toLocal(),
-                    lastDate: maxDate.toLocal(),
-                    initialDateRange: DateTimeRange(
-                      start: _weekdayPerformanceDateFrom.toLocal(),
-                      end: _weekdayPerformanceDateTo.toLocal()
-                    ),
-                    confirmText: 'Done',
-                    currentDate: _index.indexLastUpdate.toLocal(),
-                    initialEntryMode: DatePickerEntryMode.calendarOnly,
-                  );
-
-                  // check if we got the result or not?
-                  if (result != null) {
-                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                    if ((result.start.compareTo(_weekdayPerformanceDateFrom) != 0) ||
-                        (result.end.compareTo(_weekdayPerformanceDateTo) != 0)) {
-                      // set the weekday performance from and to date
-                      _weekdayPerformanceDateFrom = result.start;
-                      _weekdayPerformanceDateTo = result.end;
-
-                      // get the weekday performance
-                      await _getWeekdayPerformance().onError((error, stackTrace) {
-                        // if error then revert back the date
-                        _weekdayPerformanceDateFrom = prevDateFrom;
-                        _weekdayPerformanceDateTo = prevDateTo;
-
-                        // show error
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            createSnackBar(
-                              message: error.toString()
-                            )
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: InkWell(
+                      onTap: (() async {
+                        // stored current from and to date
+                        DateTime prevDateFrom = _weekdayPerformanceDateFrom;
+                        DateTime prevDateTo = _weekdayPerformanceDateTo;
+                    
+                        // check for the max date to avoid any assertion that the initial date range
+                        // is more than the lastDate
+                        DateTime maxDate = _minMaxDate.maxDate.toLocal();
+                        if (maxDate.isBefore(_weekdayPerformanceDateFrom.toLocal())) {
+                          maxDate = _weekdayPerformanceDateFrom;
+                        }
+                        
+                        if (_calendarWeeklyRange) {
+                          DateTimeRange? result = await showDateRangePicker(
+                            context: context,
+                            firstDate: _minPriceDate.toLocal(),
+                            lastDate: maxDate.toLocal(),
+                            initialDateRange: DateTimeRange(
+                              start: _weekdayPerformanceDateFrom.toLocal(),
+                              end: _weekdayPerformanceDateTo.toLocal()
+                            ),
+                            confirmText: 'Done',
+                            currentDate: _index.indexLastUpdate.toLocal(),
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
+                          );
+                      
+                          // check if we got the result or not?
+                          if (result != null) {
+                            // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                            if ((result.start.compareTo(_weekdayPerformanceDateFrom) != 0) ||
+                                (result.end.compareTo(_weekdayPerformanceDateTo) != 0)) {
+                              // set the weekday performance from and to date
+                              _weekdayPerformanceDateFrom = result.start;
+                              _weekdayPerformanceDateTo = result.end;
+                      
+                              // get the weekday performance
+                              await _getWeekdayPerformance().onError((error, stackTrace) {
+                                // if error then revert back the date
+                                _weekdayPerformanceDateFrom = prevDateFrom;
+                                _weekdayPerformanceDateTo = prevDateTo;
+                      
+                                // show error
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    createSnackBar(
+                                      message: error.toString()
+                                    )
+                                  );
+                                }
+                              },);
+                            }
+                          }
+                        }
+                        else {
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text("Select Year"),
+                                    IconButton(
+                                    icon: Icon(
+                                      Ionicons.close,
+                                    ),
+                                    onPressed: () {
+                                      // remove the dialog
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  ],
+                                ),
+                                contentPadding: const EdgeInsets.all(10),
+                                content: SizedBox(
+                                  width: 300,
+                                  height: 300,
+                                  child: MyYearPicker(
+                                    firstDate: _minPriceDate.toLocal(),
+                                    lastDate: maxDate.toLocal(),
+                                    startDate: _weekdayPerformanceDateFrom,
+                                    endDate: _weekdayPerformanceDateTo,
+                                    type: MyYearPickerCalendarType.range,
+                                    onChanged: (value) async {
+                                      Navigator.pop(context);
+                      
+                                      // check the new date whether it's same year or not?
+                                      if (
+                                        value.startDate.toLocal().year != _weekdayPerformanceDateFrom.year ||
+                                        value.endDate.toLocal().year != _weekdayPerformanceDateTo.year
+                                      ) {
+                                        // not same year, set the current year to the monthly performance year
+                                        _weekdayPerformanceDateFrom = value.startDate;
+                                        _weekdayPerformanceDateTo = value.endDate;
+                                      
+                                        // get the weekday performance
+                                        await _getWeekdayPerformance().onError((error, stackTrace) {
+                                          // if error then revert back the date
+                                          _weekdayPerformanceDateFrom = prevDateFrom;
+                                          _weekdayPerformanceDateTo = prevDateTo;
+                                
+                                          // show error
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              createSnackBar(
+                                                message: error.toString()
+                                              )
+                                            );
+                                          }
+                                        },);
+                                      }
+                                    }
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         }
-                      },);
-                    }
-                  }
-                }),
-                child: Container(
-                  color: Colors.transparent,
-                  child: Center(
-                    child: Text(
-                      "${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateTo)}",
-                      style: TextStyle(
-                        color: secondaryLight,
+                      }),
+                      child: Container(
+                        color: Colors.transparent,
+                        child: Center(
+                          child: Text(
+                            "${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateTo)}",
+                            style: TextStyle(
+                              color: secondaryLight,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 5,),
+                  SizedBox(
+                    height: 15,
+                    width: 30,
+                    child: Transform.scale(
+                      scale: 0.5,
+                      child: CupertinoSwitch(
+                        value: _calendarWeeklyRange,
+                        activeTrackColor: secondaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            _calendarWeeklyRange = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 2,),
+                  SizedBox(
+                    width: 35,
+                    child: Text(
+                      (_calendarWeeklyRange ? "Day" : "Year"),
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                ],
               ),
               WeekdayPerformanceChart(
                 data: _weekdayPerformance,
@@ -960,7 +1067,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   lastDate: maxDate.toLocal(),
                                   startDate: _monthlyPerformanceDateFrom,
                                   endDate: _monthlyPerformanceDateTo,
-                                  type: _calendarType,
+                                  type: _calendarMonthlyType,
                                   onChanged: (value) async {
                                     Navigator.pop(context);
                     
@@ -1020,15 +1127,15 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     child: Transform.scale(
                       scale: 0.5,
                       child: CupertinoSwitch(
-                        value: (_calendarType == MyYearPickerCalendarType.range),
+                        value: (_calendarMonthlyType == MyYearPickerCalendarType.range),
                         activeTrackColor: secondaryColor,
                         onChanged: (value) {
                           setState(() {
                             if (value) {
-                              _calendarType = MyYearPickerCalendarType.range;
+                              _calendarMonthlyType = MyYearPickerCalendarType.range;
                             }
                             else {
-                              _calendarType = MyYearPickerCalendarType.single;
+                              _calendarMonthlyType = MyYearPickerCalendarType.single;
                             }
                           });
                         },

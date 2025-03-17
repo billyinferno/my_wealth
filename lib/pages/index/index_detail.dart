@@ -828,7 +828,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               Center(child: Text("Weekday Performance")),
               const SizedBox(height: 2,),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(width: 10,),

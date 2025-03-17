@@ -95,7 +95,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late bool _additionalInfoAvailable;
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePER;
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePBV;
-  late MyYearPickerCalendarType _calendarType;
+  late MyYearPickerCalendarType _calendarMonthlyType;
+  late bool _calendarWeeklyRange;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -240,7 +241,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _minPriceDate = DateTime(2019, 12, 30);
 
     // default the calendar type to single
-    _calendarType = MyYearPickerCalendarType.single;
+    _calendarMonthlyType = MyYearPickerCalendarType.single;
+
+    // default the weekly calendar type to range
+    _calendarWeeklyRange = true;
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -3285,90 +3289,71 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   const SizedBox(
                     height: 10,
                   ),
-                  InkWell(
-                    onTap: (() async {
-                      // check for the max date to avoid any assertion that the initial date range
-                      // is more than the lastDate
-                      DateTime maxDate =
-                          _brokerSummaryDate.maxDate.toLocal();
-                      DateTime minDate =
-                          _brokerSummaryDate.minDate.toLocal();
-                      if (maxDate.isBefore(_topBrokerDateTo.toLocal())) {
-                        maxDate = _topBrokerDateTo;
-                      }
-                      if (minDate.isAfter(_topBrokerDateFrom.toLocal())) {
-                        minDate = _topBrokerDateFrom;
-                      }
-
-                      DateTimeRange? result = await showDateRangePicker(
-                        context: context,
-                        firstDate: minDate.toLocal(),
-                        lastDate: maxDate.toLocal(),
-                        initialDateRange: DateTimeRange(
-                            start: _topBrokerDateFrom.toLocal(),
-                            end: _topBrokerDateTo.toLocal()),
-                        confirmText: 'Done',
-                        currentDate:
-                            _companyDetail.companyLastUpdate!.toLocal(),
-                        initialEntryMode: DatePickerEntryMode.calendarOnly,
-                      );
-
-                      // check if we got the result or not?
-                      if (result != null) {
-                        // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                        if ((result.start.compareTo(_topBrokerDateFrom) != 0) ||
-                            (result.end.compareTo(_topBrokerDateTo) != 0)) {
-                          // set the broker from and to date
-                          _topBrokerDateFrom = result.start;
-                          _topBrokerDateTo = result.end;
-
-                          await _getTopBroker();
-                        }
-                      }
-                    }),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          Globals.dfddMMyyyy.formatLocal(
-                            _topBroker.brokerMinDate == null ?
-                            DateTime.now() :
-                            _topBroker.brokerMinDate!
-                          ),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: secondaryLight,
-                          ),
-                        ),
-                        const Text(
-                          " - ",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: secondaryLight,
-                          ),
-                        ),
-                        Text(
-                          Globals.dfddMMyyyy.formatLocal(
-                            _topBroker.brokerMaxDate == null ?
-                            DateTime.now() :
-                            _topBroker.brokerMaxDate!
-                          ),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: secondaryLight,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: InkWell(
+                          onTap: (() async {
+                            // check for the max date to avoid any assertion that the initial date range
+                            // is more than the lastDate
+                            DateTime maxDate =
+                                _brokerSummaryDate.maxDate.toLocal();
+                            DateTime minDate =
+                                _brokerSummaryDate.minDate.toLocal();
+                            if (maxDate.isBefore(_topBrokerDateTo.toLocal())) {
+                              maxDate = _topBrokerDateTo;
+                            }
+                            if (minDate.isAfter(_topBrokerDateFrom.toLocal())) {
+                              minDate = _topBrokerDateFrom;
+                            }
+                        
+                            DateTimeRange? result = await showDateRangePicker(
+                              context: context,
+                              firstDate: minDate.toLocal(),
+                              lastDate: maxDate.toLocal(),
+                              initialDateRange: DateTimeRange(
+                                  start: _topBrokerDateFrom.toLocal(),
+                                  end: _topBrokerDateTo.toLocal()),
+                              confirmText: 'Done',
+                              currentDate:
+                                  _companyDetail.companyLastUpdate!.toLocal(),
+                              initialEntryMode: DatePickerEntryMode.calendarOnly,
+                            );
+                        
+                            // check if we got the result or not?
+                            if (result != null) {
+                              // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                              if ((result.start.compareTo(_topBrokerDateFrom) != 0) ||
+                                  (result.end.compareTo(_topBrokerDateTo) != 0)) {
+                                // set the broker from and to date
+                                _topBrokerDateFrom = result.start;
+                                _topBrokerDateTo = result.end;
+                        
+                                await _getTopBroker();
+                              }
+                            }
+                          }),
+                          child: Text(
+                            "${Globals.dfddMMyyyy.formatLocal(
+                              _topBroker.brokerMinDate == null ?
+                              DateTime.now() :
+                              _topBroker.brokerMinDate!
+                            )} - ${Globals.dfddMMyyyy.formatLocal(
+                              _topBroker.brokerMaxDate == null ?
+                              DateTime.now() :
+                              _topBroker.brokerMaxDate!
+                            )}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: secondaryLight,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Icon(
-                          Ionicons.calendar_outline,
-                          size: 15,
-                          color: secondaryLight,
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 10,
@@ -4095,70 +4080,178 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               const SizedBox(height: 5,),
               Center(child: Text("Weekday Performance")),
               const SizedBox(height: 2,),
-              InkWell(
-                onTap: (() async {
-                  // stored current from and to date
-                  DateTime prevDateFrom = _weekdayPerformanceDateFrom;
-                  DateTime prevDateTo = _weekdayPerformanceDateTo;
-
-                  // check for the max date to avoid any assertion that the initial date range
-                  // is more than the lastDate
-                  DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
-                  if (maxDate.isBefore(_minPriceDate.toLocal())) {
-                    maxDate = _minPriceDate;
-                  }
-
-                  DateTimeRange? result = await showDateRangePicker(
-                    context: context,
-                    firstDate: _minPriceDate.toLocal(),
-                    lastDate: maxDate.toLocal(),
-                    initialDateRange: DateTimeRange(
-                      start: _weekdayPerformanceDateFrom.toLocal(),
-                      end: _weekdayPerformanceDateTo.toLocal()
-                    ),
-                    confirmText: 'Done',
-                    currentDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
-                    initialEntryMode: DatePickerEntryMode.calendarOnly,
-                  );
-
-                  // check if we got the result or not?
-                  if (result != null) {
-                    // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                    if ((result.start.compareTo(_weekdayPerformanceDateFrom) != 0) ||
-                        (result.end.compareTo(_weekdayPerformanceDateTo) != 0)) {
-                      // set the weekday performance from and to date
-                      _weekdayPerformanceDateFrom = result.start;
-                      _weekdayPerformanceDateTo = result.end;
-
-                      // get the weekday performance
-                      await _getWeekdayPerformance().onError((error, stackTrace) {
-                        // if error then revert back the date
-                        _weekdayPerformanceDateFrom = prevDateFrom;
-                        _weekdayPerformanceDateTo = prevDateTo;
-
-                        // show error
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            createSnackBar(
-                              message: error.toString()
-                            )
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: InkWell(
+                      onTap: (() async {
+                        // stored current from and to date
+                        DateTime prevDateFrom = _weekdayPerformanceDateFrom;
+                        DateTime prevDateTo = _weekdayPerformanceDateTo;
+                    
+                        // check for the max date to avoid any assertion that the initial date range
+                        // is more than the lastDate
+                        DateTime maxDate = (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal();
+                        if (maxDate.isBefore(_minPriceDate.toLocal())) {
+                          maxDate = _minPriceDate;
+                        }
+                    
+                        if (_calendarWeeklyRange) {
+                          DateTimeRange? result = await showDateRangePicker(
+                            context: context,
+                            firstDate: _minPriceDate.toLocal(),
+                            lastDate: maxDate.toLocal(),
+                            initialDateRange: DateTimeRange(
+                              start: _weekdayPerformanceDateFrom.toLocal(),
+                              end: _weekdayPerformanceDateTo.toLocal()
+                            ),
+                            confirmText: 'Done',
+                            currentDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
+                          );
+                      
+                          // check if we got the result or not?
+                          if (result != null) {
+                            // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                            if ((result.start.compareTo(_weekdayPerformanceDateFrom) != 0) ||
+                                (result.end.compareTo(_weekdayPerformanceDateTo) != 0)) {
+                              // set the weekday performance from and to date
+                              _weekdayPerformanceDateFrom = result.start;
+                              _weekdayPerformanceDateTo = result.end;
+                      
+                              // get the weekday performance
+                              await _getWeekdayPerformance().onError((error, stackTrace) {
+                                // if error then revert back the date
+                                _weekdayPerformanceDateFrom = prevDateFrom;
+                                _weekdayPerformanceDateTo = prevDateTo;
+                      
+                                // show error
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    createSnackBar(
+                                      message: error.toString()
+                                    )
+                                  );
+                                }
+                              },);
+                            }
+                          }
+                        }
+                        else {
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text("Select Year"),
+                                    IconButton(
+                                    icon: Icon(
+                                      Ionicons.close,
+                                    ),
+                                    onPressed: () {
+                                      // remove the dialog
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  ],
+                                ),
+                                contentPadding: const EdgeInsets.all(10),
+                                content: SizedBox(
+                                  width: 300,
+                                  height: 300,
+                                  child: MyYearPicker(
+                                    firstDate: _minPriceDate.toLocal(),
+                                    lastDate: maxDate.toLocal(),
+                                    startDate: _weekdayPerformanceDateFrom,
+                                    endDate: _weekdayPerformanceDateTo,
+                                    type: MyYearPickerCalendarType.range,
+                                    onChanged: (value) async {
+                                      // remove the dialog
+                                      Navigator.pop(context);
+                      
+                                      // check the new date whether it's same year or not?
+                                      if (
+                                        value.startDate.toLocal().year != _weekdayPerformanceDateFrom.year ||
+                                        value.endDate.toLocal().year != _weekdayPerformanceDateTo.year
+                                      ) {
+                                        // not same year, set the current year to the monthly performance year
+                                        _weekdayPerformanceDateFrom = value.startDate;
+                                        _weekdayPerformanceDateTo = value.endDate;
+                                      
+                                        await _getWeekdayPerformance().onError((
+                                          error,
+                                          stackTrace
+                                        ) {
+                                          // if error then revert back the date
+                                          _weekdayPerformanceDateFrom = prevDateFrom;
+                                          _weekdayPerformanceDateTo = prevDateTo;
+                                
+                                          // show error
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              createSnackBar(
+                                                message: error.toString()
+                                              )
+                                            );
+                                          }
+                                        },);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         }
-                      },);
-                    }
-                  }
-                }),
-                child: Container(
-                  color: Colors.transparent,
-                  child: Center(
-                    child: Text(
-                      "${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateTo)}",
-                      style: TextStyle(
-                        color: secondaryLight,
+                      }),
+                      child: Container(
+                        color: Colors.transparent,
+                        child: Center(
+                          child: Text(
+                            "${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateFrom)} - ${Globals.dfDDMMMyyyy.format(_weekdayPerformanceDateTo)}",
+                            style: TextStyle(
+                              color: secondaryLight,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 10,),
+                  SizedBox(
+                    height: 15,
+                    width: 30,
+                    child: Transform.scale(
+                      scale: 0.5,
+                      child: CupertinoSwitch(
+                        value: _calendarWeeklyRange,
+                        activeTrackColor: secondaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            _calendarWeeklyRange = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 2,),
+                  SizedBox(
+                    width: 25,
+                    child: Text(
+                      (_calendarWeeklyRange ? "Day" : "Year"),
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10,),
+                ],
               ),
               WeekdayPerformanceChart(
                 data: _weekdayPerformance,
@@ -4223,7 +4316,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                   lastDate: (_companyDetail.companyLastUpdate ?? DateTime.now()).toLocal(),
                                   startDate: _monthlyPerformanceDateFrom,
                                   endDate: _monthlyPerformanceDateTo,
-                                  type: _calendarType,
+                                  type: _calendarMonthlyType,
                                   onChanged: (value) async {
                                     Navigator.pop(context);
                     
@@ -4283,15 +4376,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                     child: Transform.scale(
                       scale: 0.5,
                       child: CupertinoSwitch(
-                        value: (_calendarType == MyYearPickerCalendarType.range),
+                        value: (_calendarMonthlyType == MyYearPickerCalendarType.range),
                         activeTrackColor: secondaryColor,
                         onChanged: (value) {
                           setState(() {
                             if (value) {
-                              _calendarType = MyYearPickerCalendarType.range;
+                              _calendarMonthlyType = MyYearPickerCalendarType.range;
                             }
                             else {
-                              _calendarType = MyYearPickerCalendarType.single;
+                              _calendarMonthlyType = MyYearPickerCalendarType.single;
                             }
                           });
                         },

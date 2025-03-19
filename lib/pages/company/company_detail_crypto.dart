@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -33,6 +34,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;
+  late bool _sortAsc;
+  late List<PriceModel> _priceData;
   
   int _numPrice = 0;
   BodyPage _bodyPage = BodyPage.summary;
@@ -61,6 +64,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
+
+    // default sort to ascending
+    _sortAsc = true;
 
     // get initial data
     _getData = _getInitData();    
@@ -139,7 +145,22 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
             (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
             color: accentColor,
           ),
-          const SizedBox(width: 20,),
+          IconButton(
+            onPressed: (() {
+              setState(() {
+                _sortAsc = !_sortAsc;
+                _priceData = _priceData.reversed.toList();
+              });
+            }),
+            icon: Icon(
+              (
+                _sortAsc ?
+                LucideIcons.arrow_up_a_z :
+                LucideIcons.arrow_down_z_a
+              )
+            )
+          ),
+          const SizedBox(width: 10,),
         ],
       ),
       body: MySafeArea(
@@ -639,25 +660,49 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        height: 21,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _sortAsc = !_sortAsc;
+                          _priceData = _priceData.reversed.toList();
+                        });
+                      },
+                      child: Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 21,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              )
                             )
-                          )
-                        ),
-                        child: const Text(
-                          "Date",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
                           ),
-                          textAlign: TextAlign.center,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              const Text(
+                                "Date",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(width: 5,),
+                              Icon(
+                                (
+                                  _sortAsc ?
+                                  Ionicons.arrow_up :
+                                  Ionicons.arrow_down
+                                ),
+                                size: 10,
+                                color: textPrimary,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -740,13 +785,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
           child: ListView.builder(
             controller: _priceController,
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: _companyDetail.companyPrices.length,
+            itemCount: _priceData.length,
             itemBuilder: (context, index) {
               double? dayDiff;
               Color dayDiffColor = Colors.transparent;
-              if((index+1) < _companyDetail.companyPrices.length) {
-                double currPrice = _companyDetail.companyPrices[index].priceValue;
-                double prevPrice = _companyDetail.companyPrices[index + 1].priceValue;
+              if((index+1) < _priceData.length) {
+                double currPrice = _priceData[index].priceValue;
+                double prevPrice = _priceData[index + 1].priceValue;
                 dayDiff = currPrice - prevPrice;
                 dayDiffColor = riskColor(
                   value: currPrice,
@@ -756,16 +801,16 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
               }
               return CompanyDetailPriceList(
                 date: Globals.dfddMMyyyy.formatLocal(
-                  _companyDetail.companyPrices[index].priceDate
+                  _priceData[index].priceDate
                 ),
-                price: formatCurrency(_companyDetail.companyPrices[index].priceValue),
+                price: formatCurrency(_priceData[index].priceValue),
                 diff: formatCurrency(
-                  _companyDetail.companyNetAssetValue! - _companyDetail.companyPrices[index].priceValue,
+                  _companyDetail.companyNetAssetValue! - _priceData[index].priceValue,
                   checkThousand: true,
                 ),
                 riskColor: riskColor(
                   value: _companyDetail.companyNetAssetValue!,
-                  cost: _companyDetail.companyPrices[index].priceValue,
+                  cost: _priceData[index].priceValue,
                   riskFactor: _userInfo!.risk
                 ),
                 dayDiff: formatCurrencyWithNull(dayDiff, checkThousand: true),
@@ -936,6 +981,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         ).then((resp) {
           // copy the response to company detail data
           _companyDetail = resp;
+
+          // get the list of price
+          _priceData = _companyDetail.companyPrices;
           
           // generate map data
           _generateGraphData(resp);        

@@ -3678,39 +3678,57 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        height: 21,
-                        decoration: const BoxDecoration(
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          if (_priceSort == "A") {
+                            _priceSort = "D";
+                          } else {
+                            _priceSort = "A";
+                          }
+              
+                          // just reversed the list
+                          _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
+                        });
+                      },
+                      child: Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 21,
+                          decoration: const BoxDecoration(
                             border: Border(
-                                bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ))),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            const Text(
-                              "Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                              bottom: BorderSide(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
                               ),
-                              textAlign: TextAlign.center,
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Icon(
-                              (_priceSort == "A"
-                                  ? Ionicons.arrow_up
-                                  : Ionicons.arrow_down),
-                              size: 10,
-                              color: textPrimary,
-                            ),
-                          ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Text(
+                                "Date",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Icon(
+                                (
+                                  _priceSort == "A" ?
+                                  Ionicons.arrow_up :
+                                  Ionicons.arrow_down
+                                ),
+                                size: 10,
+                                color: textPrimary,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

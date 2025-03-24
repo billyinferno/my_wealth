@@ -660,26 +660,26 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortAsc = !_sortAsc;
-                          _priceData = _priceData.reversed.toList();
-                        });
-                      },
-                      child: Expanded(
-                        flex: 3,
-                        child: Container(
-                          height: 21,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              )
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             )
-                          ),
+                          )
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _sortAsc = !_sortAsc;
+                              _priceData = _priceData.reversed.toList();
+                            });
+                          },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,

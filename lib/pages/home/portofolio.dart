@@ -334,7 +334,8 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                   showDecimal:  true,
                                   shorten: false,
                                 ),
-                                size: fontSize
+                                size: fontSize,
+                                overflow: TextOverflow.ellipsis
                               ),
                             ],
                           )
@@ -347,7 +348,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                             children: <Widget>[
                               _smallText("Total Unrealised"),
                               Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
                                   Icon(
@@ -359,12 +360,13 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                   Text(
                                     formatCurrency(
                                       gain,
-                                      shorten: false,
+                                      shorten: true,
                                     ),
                                     style: TextStyle(
                                       color: trendColor,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -416,7 +418,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                   Text(
                                     formatCurrency(
                                       realised,
-                                      shorten: false,
+                                      shorten: true,
                                     ),
                                     style: TextStyle(
                                       color: realisedColor,
@@ -470,7 +472,8 @@ class _PortofolioPageState extends State<PortofolioPage> {
 
   Widget _largeText({
     required String text,
-    double size = 20
+    double size = 20,
+    TextOverflow? overflow,
   }) {
     return Text(
       text,
@@ -478,6 +481,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         fontSize: size,
         fontWeight: FontWeight.bold,
       ),
+      overflow: overflow,
     );
   }
 }

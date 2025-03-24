@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/widgets/components/flip_flop_switch.dart';
 
 class SahamPriceList {
   final DateTime date;
@@ -115,6 +116,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     fontSize: 10,
   );
   final Bit _bitData = Bit();
+  
+  late String _topBrokerCalendarType;
+  final List<FlipFlopItem> _topBrokerFlipFlopItem = [];
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
@@ -245,6 +249,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // default the weekly calendar type to range
     _calendarWeeklyRange = true;
+
+    // add the flip flop items for top broker
+    _topBrokerCalendarType = 'r';
+    _topBrokerFlipFlopItem.add(FlipFlopItem(
+      key: 's',
+      icon: LucideIcons.calendar_1,
+    ));
+    _topBrokerFlipFlopItem.add(FlipFlopItem(
+      key: 'r',
+      icon: LucideIcons.calendar_range,
+    ));
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -3308,31 +3323,86 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                             if (minDate.isAfter(_topBrokerDateFrom.toLocal())) {
                               minDate = _topBrokerDateFrom;
                             }
-                        
-                            DateTimeRange? result = await showDateRangePicker(
-                              context: context,
-                              firstDate: minDate.toLocal(),
-                              lastDate: maxDate.toLocal(),
-                              initialDateRange: DateTimeRange(
-                                  start: _topBrokerDateFrom.toLocal(),
-                                  end: _topBrokerDateTo.toLocal()),
-                              confirmText: 'Done',
-                              currentDate:
-                                  _companyDetail.companyLastUpdate!.toLocal(),
-                              initialEntryMode: DatePickerEntryMode.calendarOnly,
-                            );
-                        
-                            // check if we got the result or not?
-                            if (result != null) {
-                              // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                              if ((result.start.compareTo(_topBrokerDateFrom) != 0) ||
-                                  (result.end.compareTo(_topBrokerDateTo) != 0)) {
-                                // set the broker from and to date
-                                _topBrokerDateFrom = result.start;
-                                _topBrokerDateTo = result.end;
-                        
-                                await _getTopBroker();
+
+                            if (_topBrokerCalendarType == 'r') {
+                              DateTimeRange? result = await showDateRangePicker(
+                                context: context,
+                                firstDate: minDate.toLocal(),
+                                lastDate: maxDate.toLocal(),
+                                initialDateRange: DateTimeRange(
+                                    start: _topBrokerDateFrom.toLocal(),
+                                    end: _topBrokerDateTo.toLocal()),
+                                confirmText: 'Done',
+                                currentDate:
+                                    _companyDetail.companyLastUpdate!.toLocal(),
+                                initialEntryMode: DatePickerEntryMode.calendarOnly,
+                              );
+                          
+                              // check if we got the result or not?
+                              if (result != null) {
+                                // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                                if ((result.start.compareTo(_topBrokerDateFrom) != 0) ||
+                                    (result.end.compareTo(_topBrokerDateTo) != 0)) {
+                                  // set the broker from and to date
+                                  _topBrokerDateFrom = result.start;
+                                  _topBrokerDateTo = result.end;
+                          
+                                  await _getTopBroker();
+                                }
                               }
+                            }
+                            else {
+                              await showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text("Select Year"),
+                                        IconButton(
+                                        icon: Icon(
+                                          Ionicons.close,
+                                        ),
+                                        onPressed: () {
+                                          // remove the dialog
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ],
+                                    ),
+                                    contentPadding: const EdgeInsets.all(10),
+                                    content: SizedBox(
+                                      width: 300,
+                                      height: 300,
+                                      child: MyYearPicker(
+                                        firstDate: minDate.toLocal(),
+                                        lastDate: maxDate.toLocal(),
+                                        startDate: _topBrokerDateFrom.toLocal(),
+                                        endDate: _topBrokerDateTo.toLocal(),
+                                        type: MyYearPickerCalendarType.range,
+                                        onChanged: (value) async {
+                                          // remove the dialog
+                                          Navigator.pop(context);
+                          
+                                          // check the new date whether it's same year or not?
+                                          if (
+                                            value.startDate.toLocal().compareTo(_topBrokerDateFrom.toLocal()) != 0 ||
+                                            value.endDate.toLocal().compareTo(_topBrokerDateTo.toLocal()) != 0
+                                          ) {
+                                            // not same year, set the current year to the monthly performance year
+                                            _topBrokerDateFrom = value.startDate;
+                                            _topBrokerDateTo = value.endDate;
+                                          
+                                            await _getTopBroker();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
                             }
                           }),
                           child: Text(
@@ -3353,6 +3423,15 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           ),
                         ),
                       ),
+                      const SizedBox(width: 10),
+                      FlipFlopSwitch(
+                        icons: _topBrokerFlipFlopItem,
+                        initialKey: _topBrokerCalendarType,
+                        onChanged: (key) {
+                          _topBrokerCalendarType = key;
+                        },
+                      ),
+                      const SizedBox(width: 10),
                     ],
                   ),
                   const SizedBox(
@@ -3678,32 +3757,32 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          if (_priceSort == "A") {
-                            _priceSort = "D";
-                          } else {
-                            _priceSort = "A";
-                          }
-              
-                          // just reversed the list
-                          _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
-                        });
-                      },
-                      child: Expanded(
-                        flex: 3,
-                        child: Container(
-                          height: 21,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             ),
                           ),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (_priceSort == "A") {
+                                _priceSort = "D";
+                              } else {
+                                _priceSort = "A";
+                              }
+                  
+                              // just reversed the list
+                              _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
+                            });
+                          },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,

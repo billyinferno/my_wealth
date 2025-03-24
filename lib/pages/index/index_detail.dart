@@ -1222,26 +1222,26 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _sortAsc = !_sortAsc;
-                          _indexPriceList = _indexPriceList.reversed.toList();
-                        });
-                      },
-                      child: Expanded(
-                        flex: 2,
-                        child: Container(
-                          height: 21,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: primaryLight,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              )
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             )
-                          ),
+                          )
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _sortAsc = !_sortAsc;
+                              _indexPriceList = _indexPriceList.reversed.toList();
+                            });
+                          },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1264,8 +1264,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               ),
                             ],
                           ),
-                        )
-                      ),
+                        ),
+                      )
                     ),
                     const SizedBox(width: 10,),
                     Expanded(

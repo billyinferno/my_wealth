@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
-class FlipFlopItem {
-  final String key;
+class FlipFlopItem<T> {
+  final T key;
   final IconData icon;
 
   const FlipFlopItem({required this.key, required this.icon});
 }
 
-class FlipFlopSwitch extends StatefulWidget {
-  final String? initialKey;
+class FlipFlopSwitch<T> extends StatefulWidget {
+  final T? initialKey;
   final List<FlipFlopItem> icons;
   final double width;
   final double height;
-  final Function(String) onChanged;
+  final double iconSize;
+  final Function(T) onChanged;
   
   const FlipFlopSwitch({
     super.key,
@@ -21,6 +22,7 @@ class FlipFlopSwitch extends StatefulWidget {
     required this.icons,
     this.width = 25,
     this.height = 25,
+    this.iconSize = 15,
     required this.onChanged,
   });
 
@@ -28,9 +30,9 @@ class FlipFlopSwitch extends StatefulWidget {
   State<FlipFlopSwitch> createState() => _FlipFlopSwitchState();
 }
 
-class _FlipFlopSwitchState extends State<FlipFlopSwitch> {
-  late String _selectedKey;
-  final Map<String, IconData> _items = {};
+class _FlipFlopSwitchState<T> extends State<FlipFlopSwitch> {
+  late T _selectedKey;
+  final Map<T, IconData> _items = {};
 
   @override
   void initState() {
@@ -43,10 +45,10 @@ class _FlipFlopSwitchState extends State<FlipFlopSwitch> {
     // convert the list to maps
     for (FlipFlopItem item in widget.icons) {
       // check if we get the item key in the map or not?
-      assert(!_items.containsKey(item.key.toLowerCase()), "Duplicate key exists on the item list");
+      assert(!_items.containsKey(item.key), "Duplicate key exists on the item list");
 
       // if not then just put the item in the map
-      _items[item.key.toLowerCase()] = item.icon;  
+      _items[item.key] = item.icon;  
     }
     
     assert(_items.containsKey(_selectedKey), "Invalid initial key");
@@ -95,8 +97,8 @@ class _FlipFlopSwitchState extends State<FlipFlopSwitch> {
         InkWell(
           onTap: (() {
             setState(() {
-              _selectedKey = item.key.toLowerCase();           
-              widget.onChanged(item.key.toLowerCase());
+              _selectedKey = item.key;           
+              widget.onChanged(item.key);
             });
           }),
           child: Container(
@@ -109,7 +111,7 @@ class _FlipFlopSwitchState extends State<FlipFlopSwitch> {
             child: Center(
               child: Icon(
                 item.icon,
-                size: 15,
+                size: widget.iconSize,
                 color: (_selectedKey == item.key ? Colors.white : secondaryColor),
               )
             ),

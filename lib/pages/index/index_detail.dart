@@ -1121,33 +1121,17 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     ),
                   ),
                   const SizedBox(width: 5,),
-                  SizedBox(
-                    height: 15,
-                    width: 30,
-                    child: Transform.scale(
-                      scale: 0.5,
-                      child: CupertinoSwitch(
-                        value: (_calendarMonthlyType == MyYearPickerCalendarType.range),
-                        activeTrackColor: secondaryColor,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value) {
-                              _calendarMonthlyType = MyYearPickerCalendarType.range;
-                            }
-                            else {
-                              _calendarMonthlyType = MyYearPickerCalendarType.single;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2,),
-                  Text(
-                    "Range",
-                    style: TextStyle(
-                      fontSize: 10,
-                    ),
+                  FlipFlopSwitch<MyYearPickerCalendarType>(
+                    initialKey: _calendarMonthlyType,
+                    icons: const [
+                      FlipFlopItem<MyYearPickerCalendarType>(key: MyYearPickerCalendarType.single, icon: LucideIcons.calendar_1),
+                      FlipFlopItem<MyYearPickerCalendarType>(key: MyYearPickerCalendarType.range, icon: LucideIcons.calendar_range),
+                    ],
+                    onChanged: <MyYearPickerCalendarType>(value) {
+                      setState(() {
+                        _calendarMonthlyType = value;
+                      });
+                    },
                   ),
                   const SizedBox(width: 10,),
                 ],

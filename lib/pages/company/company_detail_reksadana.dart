@@ -55,7 +55,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;
 
-  late String _infoSort;
   late int _currentDayIndex;
 
   final Bit _bitData = Bit();
@@ -74,6 +73,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late Map<DateTime, double> _indexPriceMap;
   late List<GraphData> _indexData;
   late BodyPage _bodyPage;
+  late ColumnType _columnType;
+  late SortType _sortType;
   
   bool _showCurrentPriceComparison = false;
   bool _recurring = true;
@@ -100,6 +101,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     _bodyPage = BodyPage.summary;
     _numPrice = 0;
+
+    // default column and sort type
+    _columnType = ColumnType.date;
+    _sortType = SortType.ascending;
 
     _movementData = [];
 
@@ -152,7 +157,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     // initialize info reksadana sort, and default the sort to Ascending
     _infoReksadanaSort = [];
-    _infoSort = "A";
 
     // initialize index compare data
     _indexCompareName = "";
@@ -266,25 +270,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           Icon(
             (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
             color: accentColor,
-          ),
-          IconButton(
-            icon: Icon(
-              (_infoSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-              color: textPrimary,
-            ),
-            onPressed: (() {
-              setState(() {
-                if (_infoSort == "A") {
-                  _infoSort = "D";
-                }
-                else {
-                  _infoSort = "A";
-                }
-    
-                // just reversed the list
-                _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
-              });
-            }),
           ),
           const SizedBox(width: 10,),
         ],
@@ -791,7 +776,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                       color: secondaryColor,
                     ),
                     child: const Center(
-                      child: Text("ADD COMPANY"),
+                      child: Text("FIND COMPANY"),
                     ),
                   ),
                 ),
@@ -1002,15 +987,24 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              if (_infoSort == "A") {
-                                _infoSort = "D";
+                              if (_columnType == ColumnType.date) {
+                                if (_sortType == SortType.ascending) {
+                                  _sortType = SortType.descending;
+                                }
+                                else {
+                                  _sortType = SortType.ascending;
+                                }
+
+                                // just reverse the current list
+                                _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
                               }
                               else {
-                                _infoSort = "A";
+                                // set the correct column type
+                                _columnType = ColumnType.date;
+                                
+                                // call sort info to get the correct sort
+                                _sortInfo();
                               }
-                  
-                              // just reversed the list
-                              _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
                             });
                           },
                           child: Row(
@@ -1024,15 +1018,13 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(width: 5,),
-                              Icon(
-                                (
-                                  _infoSort == "A" ?
-                                  Ionicons.arrow_up :
-                                  Ionicons.arrow_down
-                                ),
-                                size: 10,
-                                color: textPrimary,
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: _sortIcon()
                               ),
                             ],
                           ),
@@ -1053,12 +1045,50 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             )
                           )
                         ),
-                        child: const Text(
-                          "Price",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (_columnType == ColumnType.price) {
+                                if (_sortType == SortType.ascending) {
+                                  _sortType = SortType.descending;
+                                }
+                                else {
+                                  _sortType = SortType.ascending;
+                                }
+
+                                // just reverse the current list
+                                _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
+                              }
+                              else {
+                                // set the correct column type
+                                _columnType = ColumnType.price;
+                                
+                                // call sort info to get the correct sort
+                                _sortInfo();
+                              }
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Text(
+                                "Price",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.right,
                         ),
                       )
                     ),
@@ -1076,11 +1106,49 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             )
                           )
                         ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.swap_vertical,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (_columnType == ColumnType.diff) {
+                                if (_sortType == SortType.ascending) {
+                                  _sortType = SortType.descending;
+                                }
+                                else {
+                                  _sortType = SortType.ascending;
+                                }
+
+                                // just reverse the current list
+                                _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
+                              }
+                              else {
+                                // set the correct column type
+                                _columnType = ColumnType.diff;
+                                
+                                // call sort info to get the correct sort
+                                _sortInfo();
+                              }
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.swap_vertical,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -1099,11 +1167,49 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             )
                           )
                         ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.pulse_outline,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (_columnType == ColumnType.gainloss) {
+                                if (_sortType == SortType.ascending) {
+                                  _sortType = SortType.descending;
+                                }
+                                else {
+                                  _sortType = SortType.ascending;
+                                }
+
+                                // just reverse the current list
+                                _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
+                              }
+                              else {
+                                // set the correct column type
+                                _columnType = ColumnType.gainloss;
+                                
+                                // call sort info to get the correct sort
+                                _sortInfo();
+                              }
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.pulse_outline,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -1133,6 +1239,18 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           ),
         )
       ],
+    );
+  }
+
+  Widget _sortIcon() {
+    return Icon(
+      (
+        _sortType == SortType.ascending ?
+        Ionicons.arrow_up :
+        Ionicons.arrow_down
+      ),
+      size: 10,
+      color: textPrimary,
     );
   }
 
@@ -1484,33 +1602,17 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                     ),
                   ),
                   const SizedBox(width: 5,),
-                  SizedBox(
-                    height: 15,
-                    width: 30,
-                    child: Transform.scale(
-                      scale: 0.5,
-                      child: CupertinoSwitch(
-                        value: (_calendarType == MyYearPickerCalendarType.range),
-                        activeTrackColor: secondaryColor,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value) {
-                              _calendarType = MyYearPickerCalendarType.range;
-                            }
-                            else {
-                              _calendarType = MyYearPickerCalendarType.single;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2,),
-                  Text(
-                    "Range",
-                    style: TextStyle(
-                      fontSize: 10,
-                    ),
+                  FlipFlopSwitch<MyYearPickerCalendarType>(
+                    initialKey: _calendarType,
+                    icons: const [
+                      FlipFlopItem<MyYearPickerCalendarType>(key: MyYearPickerCalendarType.single, icon: LucideIcons.calendar_1),
+                      FlipFlopItem<MyYearPickerCalendarType>(key: MyYearPickerCalendarType.range, icon: LucideIcons.calendar_range),
+                    ],
+                    onChanged: <MyYearPickerCalendarType>(value) {
+                      setState(() {
+                        _calendarType = value;
+                      });
+                    },
                   ),
                   const SizedBox(width: 10,),
                 ],
@@ -2697,6 +2799,28 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     },);
   }
 
+  void _sortInfo() {
+    switch(_columnType) {
+      case ColumnType.price:
+        _infoReksadanaSort.sort((a, b) => (a.price.compareTo(b.price)));
+        break;
+      case ColumnType.diff:
+        _infoReksadanaSort.sort((a, b) => (a.diff.compareTo(b.diff)));
+        break;
+      case ColumnType.gainloss:
+        _infoReksadanaSort.sort((a, b) => ((a.dayDiff ?? 0).compareTo((b.dayDiff ?? 0))));
+        break;
+      default:
+        _infoReksadanaSort.sort((a, b) => (a.date.compareTo(b.date)));
+        break;
+    }
+
+    // check if this is descending?
+    if (_sortType == SortType.descending) {
+      _infoReksadana = _infoReksadana.reversed.toList();
+    }
+  }
+
   void _generateInfoSort() {
     double? dayDiff;
     Color dayDiffColor;
@@ -2742,7 +2866,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     }
 
     // check whether it's descending, if so then reverse the list
-    if (_infoSort == "D") {
+    if (_sortType == SortType.descending) {
       _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
     }
   }

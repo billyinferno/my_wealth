@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
-import 'package:my_wealth/widgets/components/flip_flop_switch.dart';
 
 class SahamPriceList {
   final DateTime date;
@@ -118,7 +117,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   final Bit _bitData = Bit();
   
   late String _topBrokerCalendarType;
-  final List<FlipFlopItem> _topBrokerFlipFlopItem = [];
+  final List<FlipFlopItem<String>> _topBrokerFlipFlopItem = [];
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
@@ -3424,7 +3423,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         ),
                       ),
                       const SizedBox(width: 10),
-                      FlipFlopSwitch(
+                      FlipFlopSwitch<String>(
                         icons: _topBrokerFlipFlopItem,
                         initialKey: _topBrokerCalendarType,
                         onChanged: (key) {
@@ -4467,33 +4466,19 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                     ),
                   ),
                   const SizedBox(width: 5,),
-                  SizedBox(
-                    height: 15,
-                    width: 30,
-                    child: Transform.scale(
-                      scale: 0.5,
-                      child: CupertinoSwitch(
-                        value: (_calendarMonthlyType == MyYearPickerCalendarType.range),
-                        activeTrackColor: secondaryColor,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value) {
-                              _calendarMonthlyType = MyYearPickerCalendarType.range;
-                            }
-                            else {
-                              _calendarMonthlyType = MyYearPickerCalendarType.single;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2,),
-                  Text(
-                    "Range",
-                    style: TextStyle(
-                      fontSize: 10,
-                    ),
+                  FlipFlopSwitch<MyYearPickerCalendarType>(
+                    initialKey: _calendarMonthlyType,
+                    icons: const [
+                      FlipFlopItem<MyYearPickerCalendarType>(key: MyYearPickerCalendarType.single, icon: LucideIcons.calendar_1),
+                      FlipFlopItem<MyYearPickerCalendarType>(key: MyYearPickerCalendarType.range, icon: LucideIcons.calendar_range),
+                    ],
+                    onChanged: <MyYearPickerCalendarType>(value) {
+                      setState(() {
+                        debugPrint("$value");
+                        debugPrint("$_calendarMonthlyType");
+                        _calendarMonthlyType = value;
+                      });
+                    },
                   ),
                   const SizedBox(width: 10,),
                 ],

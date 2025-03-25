@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 IndexPriceModel indexPriceModelFromJson(String str) => IndexPriceModel.fromJson(json.decode(str));
 
 String indexPriceModelToJson(IndexPriceModel data) => json.encode(data.toJson());
@@ -12,10 +14,16 @@ class IndexPriceModel {
     IndexPriceModel({
         required this.indexPriceDate,
         required this.indexPriceValue,
+        this.indexPriceDiff = 0,
+        this.indexDayDiff = 0,
+        this.indexColor = Colors.transparent,
     });
 
     final DateTime indexPriceDate;
     final double indexPriceValue;
+    final double indexPriceDiff;
+    final double indexDayDiff;
+    final Color indexColor;
 
     factory IndexPriceModel.fromJson(Map<String, dynamic> json) => IndexPriceModel(
         indexPriceDate: DateTime.parse(json["index_price_date"]),

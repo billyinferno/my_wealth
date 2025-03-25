@@ -71,7 +71,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late List<InfoFundamentalsModel> _infoFundamental;
   late InfoFundamentalsModel _otherInfoFundamental;
   late List<InfoSahamPriceModel> _infoSahamPrice;
-  late String _priceSort;
+  late ColumnType _columnType;
+  late SortType _sortType;
   late List<SahamPriceList> _infoSahamPriceSort;
   final Map<int, List<InfoSahamPriceModel>> _infoSahamPriceData = {};
   late int _currentInfoSahamPrice;
@@ -214,7 +215,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // initialize array and defaulted the sort as ascending
     _infoSahamPriceSort = [];
-    _priceSort = "A";
+    _columnType = ColumnType.date;
+    _sortType = SortType.descending;
 
     _infoSahamPriceData.clear();
 
@@ -344,24 +346,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           Icon(
             (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
             color: accentColor,
-          ),
-          IconButton(
-            icon: Icon(
-              (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-              color: textPrimary,
-            ),
-            onPressed: (() {
-              setState(() {
-                if (_priceSort == "A") {
-                  _priceSort = "D";
-                } else {
-                  _priceSort = "A";
-                }
-    
-                // just reversed the list
-                _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
-              });
-            }),
           ),
           const SizedBox(
             width: 10,
@@ -3772,14 +3756,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              if (_priceSort == "A") {
-                                _priceSort = "D";
-                              } else {
-                                _priceSort = "A";
-                              }
-                  
-                              // just reversed the list
-                              _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
+                              _performSort(columnType: ColumnType.date);
                             });
                           },
                           child: Row(
@@ -3793,17 +3770,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(
-                                width: 5,
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: const SizedBox(width: 5,),
                               ),
-                              Icon(
-                                (
-                                  _priceSort == "A" ?
-                                  Ionicons.arrow_up :
-                                  Ionicons.arrow_down
-                                ),
-                                size: 10,
-                                color: textPrimary,
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: _sortIcon()
                               ),
                             ],
                           ),
@@ -3814,68 +3787,138 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       width: 10,
                     ),
                     Expanded(
-                        flex: 2,
-                        child: Container(
-                          height: 21,
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ))),
-                          child: const Text(
-                            "Price",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             ),
-                            textAlign: TextAlign.right,
                           ),
-                        )),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.price);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Text(
+                                "Price",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: _sortIcon()
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(
                       width: 10,
                     ),
                     Expanded(
-                        flex: 2,
-                        child: Container(
-                          height: 21,
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ))),
-                          child: const Align(
-                            alignment: Alignment.centerRight,
-                            child: Icon(
-                              Ionicons.swap_vertical,
-                              size: 16,
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             ),
                           ),
-                        )),
-                    const SizedBox(
-                      width: 10,
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.diff);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.swap_vertical,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: _sortIcon()
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
+                    const SizedBox(width: 10,),
                     Expanded(
-                        flex: 2,
-                        child: Container(
-                          height: 21,
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                            color: primaryLight,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ))),
-                          child: const Align(
-                            alignment: Alignment.centerRight,
-                            child: Icon(
-                              Ionicons.pulse_outline,
-                              size: 16,
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             ),
                           ),
-                        )),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.gainloss);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.pulse_outline,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: _sortIcon()
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -3911,11 +3954,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                             Expanded(
                               flex: 3,
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.start,
-                                children: [
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
                                   Text(
                                     Globals.dfddMMyyyy.formatLocal(
                                       _infoSahamPriceSort[index].date
@@ -3937,17 +3978,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 ],
                               )
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            const SizedBox(width: 10,),
                             Expanded(
                               flex: 2,
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.end,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.start,
-                                children: [
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
                                   Text(
                                     formatCurrency(
                                       _infoSahamPriceSort[index].lastPrice,
@@ -3979,11 +4016,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                     ),
                                   ),
                                 ],
-                              )
+                              ),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            const SizedBox(width: 10,),
                             Expanded(
                               flex: 2,
                               child: Column(
@@ -4040,9 +4075,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                 ],
                               )
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            const SizedBox(width: 10,),
                             Expanded(
                               flex: 2,
                               child: Column(
@@ -4108,6 +4141,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           ),
         )
       ],
+    );
+  }
+
+  Widget _sortIcon() {
+    return Icon(
+      (
+        _sortType == SortType.ascending ?
+        Ionicons.arrow_up :
+        Ionicons.arrow_down
+      ),
+      size: 10,
+      color: textPrimary,
     );
   }
 
@@ -6457,8 +6502,50 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       _infoSahamPriceSort.add(data);
     }
 
-    // check whether this is ascending or descending
-    if (_priceSort == "D") {
+    // just call sort info here
+    _sortInfo();
+  }
+
+  void _performSort({required ColumnType columnType}) {
+    if (_columnType == columnType) {
+      if (_sortType == SortType.ascending) {
+        _sortType = SortType.descending;
+      }
+      else {
+        _sortType = SortType.ascending;
+      }
+
+      // just reverse the current list
+      _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
+    }
+    else {
+      // set the correct column type
+      _columnType = columnType;
+      
+      // call sort info to get the correct sort
+      _sortInfo();
+    }
+  }
+
+  void _sortInfo() {
+    switch(_columnType) {
+      case ColumnType.price:
+        _infoSahamPriceSort.sort((a, b) => (a.lastPrice.compareTo(b.lastPrice)));
+        break;
+      case ColumnType.diff:
+        _infoSahamPriceSort.sort((a, b) => (
+          ((_companyDetail.companyNetAssetValue ?? 0) - a.lastPrice).compareTo((_companyDetail.companyNetAssetValue ?? 0) - b.lastPrice)));
+        break;
+      case ColumnType.gainloss:
+        _infoSahamPriceSort.sort((a, b) => ((a.dayDiff ?? 0).compareTo((b.dayDiff ?? 0))));
+        break;
+      default:
+        _infoSahamPriceSort.sort((a, b) => (a.date.compareTo(b.date)));
+        break;
+    }
+
+    // check if this is descending?
+    if (_sortType == SortType.descending) {
       _infoSahamPriceSort = _infoSahamPriceSort.reversed.toList();
     }
   }

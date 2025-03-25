@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -36,7 +35,8 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
   late List<PriceGoldModel> _priceGold;
   late Map<String, List<CompanyDetailList>> _priceGoldSortData;
   late List<CompanyDetailList> _priceGoldSort;
-  late String _priceSort;
+  late ColumnType _columnType;
+  late SortType _sortType;
 
   late String _currentPriceCcy;
   
@@ -82,7 +82,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     // initialize the price gold sort and default the sort to Ascending
     _priceGoldSortData = {};
     _priceGoldSort = [];
-    _priceSort = "A";
+    
+    // default the column type to date, and sort type to descending
+    _columnType = ColumnType.date;
+    _sortType = SortType.descending;
 
     // default the price ccy to IDR
     _currentPriceCcy = "IDR";
@@ -155,25 +158,6 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           const Icon(
             Ionicons.star,
             color: accentColor,
-          ),
-          IconButton(
-            icon: Icon(
-              (_priceSort == "A" ? LucideIcons.arrow_up_a_z : LucideIcons.arrow_down_z_a),
-              color: textPrimary,
-            ),
-            onPressed: (() {
-              setState(() {
-                if (_priceSort == "A") {
-                  _priceSort = "D";
-                }
-                else {
-                  _priceSort = "A";
-                }
-    
-                // just reversed the list
-                _priceGoldSort = _priceGoldSort.reversed.toList();
-              });
-            }),
           ),
           const SizedBox(width: 10,),
         ],
@@ -501,15 +485,7 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              if (_priceSort == "A") {
-                                _priceSort = "D";
-                              }
-                              else {
-                                _priceSort = "A";
-                              }
-                  
-                              // just reversed the list
-                              _priceGoldSort = _priceGoldSort.reversed.toList();
+                              _performSort(columnType: ColumnType.date);
                             });
                           },
                           child: Row(
@@ -523,15 +499,13 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(width: 5,),
-                              Icon(
-                                (
-                                  _priceSort == "A" ?
-                                  Ionicons.arrow_up :
-                                  Ionicons.arrow_down
-                                ),
-                                size: 10,
-                                color: textPrimary,
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: _sortIcon()
                               ),
                             ],
                           ),
@@ -552,34 +526,32 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                             )
                           )
                         ),
-                        child: const Text(
-                          "Price",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      )
-                    ),
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        height: 21,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            )
-                          )
-                        ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.swap_vertical,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.price);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Text(
+                                "Price",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -598,11 +570,76 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
                             )
                           )
                         ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.pulse_outline,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.diff);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.swap_vertical,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: _sortIcon()
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.gainloss);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.pulse_outline,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -631,6 +668,18 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _sortIcon() {
+    return Icon(
+      (
+        _sortType == SortType.ascending ?
+        Ionicons.arrow_up :
+        Ionicons.arrow_down
+      ),
+      size: 10,
+      color: textPrimary,
     );
   }
 
@@ -899,12 +948,10 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
             // change the _priceGoldSort based on the selection
             _priceGoldSort = (_priceGoldSortData[_currentPriceCcy.toUpperCase()] ?? []);
 
-            // check if this is ascending or descending
-            if (_priceSort == "D") {
-              // reverse the data
-              _priceGoldSort = _priceGoldSort.reversed.toList();
-            }
+            // call sort info to correctly sort the data
+            _sortInfo();
 
+            // generate graph data
             _generateGraphData();
           });
         }),
@@ -1058,16 +1105,55 @@ class _CompanyDetailGoldPageState extends State<CompanyDetailGoldPage> {
     }
 
     // now add on the map for both IDR and USD
-    if (_priceSort == "A") {
-      _priceGoldSortData["IDR"] = priceIDR;
-      _priceGoldSortData["USD"] = priceUSD;
-    }
+    _priceGoldSortData["IDR"] = priceIDR;
+    _priceGoldSortData["USD"] = priceUSD;
 
     // set the current _priceGoldSort based on the currency
     _priceGoldSort = (_priceGoldSortData[_currentPriceCcy.toUpperCase()] ?? []);
 
-    // check the sort, if this is descending then reverse the data
-    if (_priceSort == "D") {
+    // call sort info
+    _sortInfo();
+  }
+
+  void _performSort({required ColumnType columnType}) {
+    if (_columnType == columnType) {
+      if (_sortType == SortType.ascending) {
+        _sortType = SortType.descending;
+      }
+      else {
+        _sortType = SortType.ascending;
+      }
+
+      // just reverse the current list
+      _priceGoldSort = _priceGoldSort.reversed.toList();
+    }
+    else {
+      // set the correct column type
+      _columnType = columnType;
+      
+      // call sort info to get the correct sort
+      _sortInfo();
+    }
+  }
+
+  void _sortInfo() {
+    switch(_columnType) {
+      case ColumnType.price:
+        _priceGoldSort.sort((a, b) => (a.price.compareTo(b.price)));
+        break;
+      case ColumnType.diff:
+        _priceGoldSort.sort((a, b) => (a.diff.compareTo(b.diff)));
+        break;
+      case ColumnType.gainloss:
+        _priceGoldSort.sort((a, b) => ((a.dayDiff ?? 0).compareTo((b.dayDiff ?? 0))));
+        break;
+      default:
+        _priceGoldSort.sort((a, b) => (a.date.compareTo(b.date)));
+        break;
+    }
+
+    // check if this is descending?
+    if (_sortType == SortType.descending) {
       _priceGoldSort = _priceGoldSort.reversed.toList();
     }
   }

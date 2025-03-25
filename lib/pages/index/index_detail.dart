@@ -40,7 +40,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
   late double _minPrice;
   late double _maxPrice;
   late double _avgPrice;
-  late bool _sortAsc;
+  late ColumnType _columnType;
+  late SortType _sortType;
   late int _userRisk;
 
   late String _mapSelection;
@@ -118,7 +119,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     _seasonality = [];
 
     // initialize sort as descending (latest date on top)
-    _sortAsc = false;
+    _columnType = ColumnType.date;
+    _sortType = SortType.descending;
 
     _getData = _getAllData();
   }
@@ -176,24 +178,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
               ),
             ),
           ),
-          actions: <Widget>[
-            IconButton(
-              onPressed: (() {
-                setState(() {
-                  _sortAsc = !_sortAsc;
-                  _indexPriceList = _indexPriceList.reversed.toList();
-                });
-              }),
-              icon: Icon(
-                (
-                  _sortAsc ?
-                  LucideIcons.arrow_up_a_z :
-                  LucideIcons.arrow_down_z_a
-                )
-              )
-            ),
-            const SizedBox(width: 10,),
-        ],
         ),
         body: MySafeArea(
           child: Column(
@@ -589,19 +573,15 @@ class IndexDetailPageState extends State<IndexDetailPage> {
         _indexPriceData[365]!.add(resp[i]);
       }
 
-      // copy the _indexPriceData[180] and put it on the list as we will
-      // use this to display on the index price table
-      _indexPriceList = _indexPriceData[180]!.toList();
-
       // generate current graph data
-      _generateGraphData();
+      _generateIndexData();
 
       // generate heat map data
       _generateHeatMapGraphData();
     });
   }
 
-  void _generateGraphData() {
+  void _generateIndexData() {
     // calculate the _min, _max, _avg, and _num price here
     double totalPrice = 0;
 
@@ -642,6 +622,43 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     else {
       _numPrice = 1;
     }
+
+    // generate the correct index price data
+    _generateIndexPriceTable();
+  }
+
+  void _generateIndexPriceTable() {
+    Color dayDiffColor;
+    double dayDiff = 0;
+
+    // clear the index price list
+    _indexPriceList.clear();
+
+    // loop for the correct index price data
+    for(int i=0; i < _indexPriceData[_currentIndexPrice]!.length; i++) {
+      dayDiffColor = Colors.transparent;
+      if((i + 1) < _indexPriceData[_currentIndexPrice]!.length) {
+        double? currDayPrice = _indexPriceData[_currentIndexPrice]![i].indexPriceValue;
+        double? prevDayPrice = _indexPriceData[_currentIndexPrice]![i+1].indexPriceValue;
+        dayDiff = (currDayPrice - prevDayPrice);
+        dayDiffColor = riskColor(
+          value: currDayPrice,
+          cost: prevDayPrice,
+          riskFactor: _userInfo!.risk
+        );
+      }
+
+      _indexPriceList.add(IndexPriceModel(
+        indexPriceDate: _indexPriceData[_currentIndexPrice]![i].indexPriceDate,
+        indexPriceValue: _indexPriceData[_currentIndexPrice]![i].indexPriceValue,
+        indexPriceDiff: _index.indexNetAssetValue - _indexPriceData[_currentIndexPrice]![i].indexPriceValue,
+        indexDayDiff: dayDiff,
+        indexColor: dayDiffColor,
+      ));
+    }
+
+    // call sort info once finished
+    _sortInfo();
   }
 
   void _generateHeatMapGraphData() {
@@ -748,7 +765,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                   onValueChanged: ((value) {
                     setState(() {
                       _currentIndexPrice = value;
-                      _generateGraphData();
+                      _generateIndexData();
                     });
                   }),
                   groupValue: _currentIndexPrice,
@@ -1222,8 +1239,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              _sortAsc = !_sortAsc;
-                              _indexPriceList = _indexPriceList.reversed.toList();
+                              _performSort(columnType: ColumnType.date);
                             });
                           },
                           child: Row(
@@ -1236,15 +1252,13 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 5,),
-                              Icon(
-                                (
-                                  _sortAsc ?
-                                  Ionicons.arrow_up :
-                                  Ionicons.arrow_down
-                                ),
-                                size: 10,
-                                color: textPrimary,
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: _sortIcon()
                               ),
                             ],
                           ),
@@ -1265,34 +1279,32 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             )
                           )
                         ),
-                        child: const Text(
-                          "Price",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        height: 21,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            )
-                          )
-                        ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.swap_vertical,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.price);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Text(
+                                "Price",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -1311,11 +1323,76 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             )
                           )
                         ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.pulse_outline,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.diff);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.swap_vertical,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: _sortIcon()
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.diff);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.pulse_outline,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -1331,18 +1408,6 @@ class IndexDetailPageState extends State<IndexDetailPage> {
             controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             children: List<Widget>.generate(_indexPriceList.length, (index) {
-              double? dayDiff;
-              Color dayDiffColor = Colors.transparent;
-              if((index + 1) < _indexPriceList.length) {
-                double? currDayPrice = _indexPriceList[index].indexPriceValue;
-                double? prevDayPrice = _indexPriceList[index+1].indexPriceValue;
-                dayDiff = (currDayPrice - prevDayPrice);
-                dayDiffColor = riskColor(
-                  value: currDayPrice,
-                  cost: prevDayPrice,
-                  riskFactor: _userInfo!.risk
-                );
-              }
               return IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1403,7 +1468,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                     )
                                   ),
                                   child: Text(
-                                    formatCurrency(_index.indexNetAssetValue - _indexPriceList[index].indexPriceValue),
+                                    formatCurrency(_indexPriceList[index].indexPriceDiff),
                                     style: const TextStyle(
                                       fontSize: 12,
                                     ),
@@ -1422,13 +1487,13 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                     border: Border(
                                       bottom: BorderSide(
                                         width: 2.0,
-                                        color: dayDiffColor,
+                                        color: _indexPriceList[index].indexColor,
                                         style: BorderStyle.solid,
                                       )
                                     )
                                   ),
                                   child: Text(
-                                    formatCurrencyWithNull(dayDiff),
+                                    formatCurrencyWithNull(_indexPriceList[index].indexDayDiff),
                                     style: const TextStyle(
                                       fontSize: 12,
                                     ),
@@ -1448,6 +1513,18 @@ class IndexDetailPageState extends State<IndexDetailPage> {
           ),
         )
       ],
+    );
+  }
+
+  Widget _sortIcon() {
+    return Icon(
+      (
+        _sortType == SortType.ascending ?
+        Ionicons.arrow_up :
+        Ionicons.arrow_down
+      ),
+      size: 10,
+      color: textPrimary,
     );
   }
 
@@ -1505,5 +1582,48 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       // remove the loading screen
       LoadingScreen.instance().hide();
     },);
+  }
+
+  void _performSort({required ColumnType columnType}) {
+    if (_columnType == columnType) {
+      if (_sortType == SortType.ascending) {
+        _sortType = SortType.descending;
+      }
+      else {
+        _sortType = SortType.ascending;
+      }
+
+      // just reverse the current list
+      _indexPriceList = _indexPriceList.reversed.toList();
+    }
+    else {
+      // set the correct column type
+      _columnType = columnType;
+      
+      // call sort info to get the correct sort
+      _sortInfo();
+    }
+  }
+
+  void _sortInfo() {
+    switch(_columnType) {
+      case ColumnType.price:
+        _indexPriceList.sort((a, b) => (a.indexPriceValue.compareTo(b.indexPriceValue)));
+        break;
+      case ColumnType.diff:
+        _indexPriceList.sort((a, b) => (a.indexPriceDiff.compareTo(b.indexPriceDiff)));
+        break;
+      case ColumnType.gainloss:
+        _indexPriceList.sort((a, b) => (a.indexDayDiff.compareTo(b.indexDayDiff)));
+        break;
+      default:
+        _indexPriceList.sort((a, b) => (a.indexPriceDate.compareTo(b.indexPriceDate)));
+        break;
+    }
+
+    // check if this is descending?
+    if (_sortType == SortType.descending) {
+      _indexPriceList = _indexPriceList.reversed.toList();
+    }
   }
 }

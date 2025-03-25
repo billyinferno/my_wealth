@@ -104,7 +104,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     // default column and sort type
     _columnType = ColumnType.date;
-    _sortType = SortType.ascending;
+    _sortType = SortType.descending;
 
     _movementData = [];
 
@@ -2799,28 +2799,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     },);
   }
 
-  void _sortInfo() {
-    switch(_columnType) {
-      case ColumnType.price:
-        _infoReksadanaSort.sort((a, b) => (a.price.compareTo(b.price)));
-        break;
-      case ColumnType.diff:
-        _infoReksadanaSort.sort((a, b) => (a.diff.compareTo(b.diff)));
-        break;
-      case ColumnType.gainloss:
-        _infoReksadanaSort.sort((a, b) => ((a.dayDiff ?? 0).compareTo((b.dayDiff ?? 0))));
-        break;
-      default:
-        _infoReksadanaSort.sort((a, b) => (a.date.compareTo(b.date)));
-        break;
-    }
-
-    // check if this is descending?
-    if (_sortType == SortType.descending) {
-      _infoReksadana = _infoReksadana.reversed.toList();
-    }
-  }
-
   void _generateInfoSort() {
     double? dayDiff;
     Color dayDiffColor;
@@ -2865,7 +2843,27 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
       _infoReksadanaSort.add(data);
     }
 
-    // check whether it's descending, if so then reverse the list
+    // just call sort info here
+    _sortInfo();
+  }
+
+  void _sortInfo() {
+    switch(_columnType) {
+      case ColumnType.price:
+        _infoReksadanaSort.sort((a, b) => (a.price.compareTo(b.price)));
+        break;
+      case ColumnType.diff:
+        _infoReksadanaSort.sort((a, b) => (a.diff.compareTo(b.diff)));
+        break;
+      case ColumnType.gainloss:
+        _infoReksadanaSort.sort((a, b) => ((a.dayDiff ?? 0).compareTo((b.dayDiff ?? 0))));
+        break;
+      default:
+        _infoReksadanaSort.sort((a, b) => (a.date.compareTo(b.date)));
+        break;
+    }
+
+    // check if this is descending?
     if (_sortType == SortType.descending) {
       _infoReksadanaSort = _infoReksadanaSort.reversed.toList();
     }

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -34,8 +33,9 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;
-  late bool _sortAsc;
-  late List<PriceModel> _priceData;
+  late ColumnType _columnType;
+  late SortType _sortType;
+  late List<CompanyDetailList> _priceData;
   
   int _numPrice = 0;
   BodyPage _bodyPage = BodyPage.summary;
@@ -65,8 +65,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     // assuming we don't have any watchlist detail
     _watchlistDetail = {};
 
-    // default sort to ascending
-    _sortAsc = true;
+    // default column type to date, and sort to descending
+    _priceData = [];
+    _columnType = ColumnType.date;
+    _sortType = SortType.descending;
 
     // get initial data
     _getData = _getInitData();    
@@ -144,21 +146,6 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
           Icon(
             (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
             color: accentColor,
-          ),
-          IconButton(
-            onPressed: (() {
-              setState(() {
-                _sortAsc = !_sortAsc;
-                _priceData = _priceData.reversed.toList();
-              });
-            }),
-            icon: Icon(
-              (
-                _sortAsc ?
-                LucideIcons.arrow_up_a_z :
-                LucideIcons.arrow_down_z_a
-              )
-            )
           ),
           const SizedBox(width: 10,),
         ],
@@ -676,13 +663,12 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              _sortAsc = !_sortAsc;
-                              _priceData = _priceData.reversed.toList();
+                              _performSort(columnType: ColumnType.date);
                             });
                           },
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               const Text(
                                 "Date",
@@ -691,15 +677,13 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(width: 5,),
-                              Icon(
-                                (
-                                  _sortAsc ?
-                                  Ionicons.arrow_up :
-                                  Ionicons.arrow_down
-                                ),
-                                size: 10,
-                                color: textPrimary,
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.date),
+                                child: _sortIcon()
                               ),
                             ],
                           ),
@@ -720,34 +704,32 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                             )
                           )
                         ),
-                        child: const Text(
-                          "Price",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      )
-                    ),
-                    const SizedBox(width: 10,),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        height: 21,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: primaryLight,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            )
-                          )
-                        ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.swap_vertical,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.price);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Text(
+                                "Price",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.price),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -766,11 +748,76 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                             )
                           )
                         ),
-                        child: const Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Ionicons.pulse_outline,
-                            size: 16,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.diff);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.swap_vertical,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.diff),
+                                child: _sortIcon()
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 21,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: primaryLight,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            )
+                          )
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _performSort(columnType: ColumnType.gainloss);
+                            });
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Ionicons.pulse_outline,
+                                  size: 16,
+                                ),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: const SizedBox(width: 5,),
+                              ),
+                              Visibility(
+                                visible: (_columnType == ColumnType.gainloss),
+                                child: _sortIcon()
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -787,39 +834,38 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: _priceData.length,
             itemBuilder: (context, index) {
-              double? dayDiff;
-              Color dayDiffColor = Colors.transparent;
-              if((index+1) < _priceData.length) {
-                double currPrice = _priceData[index].priceValue;
-                double prevPrice = _priceData[index + 1].priceValue;
-                dayDiff = currPrice - prevPrice;
-                dayDiffColor = riskColor(
-                  value: currPrice,
-                  cost: prevPrice,
-                  riskFactor: _userInfo!.risk
-                );
-              }
               return CompanyDetailPriceList(
                 date: Globals.dfddMMyyyy.formatLocal(
-                  _priceData[index].priceDate
+                  _priceData[index].date
                 ),
-                price: formatCurrency(_priceData[index].priceValue),
+                price: formatCurrency(_priceData[index].price),
                 diff: formatCurrency(
-                  _companyDetail.companyNetAssetValue! - _priceData[index].priceValue,
+                  _priceData[index].diff,
                   checkThousand: true,
                 ),
-                riskColor: riskColor(
-                  value: _companyDetail.companyNetAssetValue!,
-                  cost: _priceData[index].priceValue,
-                  riskFactor: _userInfo!.risk
+                riskColor: _priceData[index].riskColor,
+                dayDiff: formatCurrencyWithNull(
+                  _priceData[index].dayDiff,
+                  checkThousand: true
                 ),
-                dayDiff: formatCurrencyWithNull(dayDiff, checkThousand: true),
-                dayDiffColor: dayDiffColor,
+                dayDiffColor: _priceData[index].dayDiffColor,
               );
             },
           ),
         )
       ],
+    );
+  }
+
+  Widget _sortIcon() {
+    return Icon(
+      (
+        _sortType == SortType.ascending ?
+        Ionicons.arrow_up :
+        Ionicons.arrow_down
+      ),
+      size: 10,
+      color: textPrimary,
     );
   }
 
@@ -982,8 +1028,39 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
           // copy the response to company detail data
           _companyDetail = resp;
 
-          // get the list of price
-          _priceData = _companyDetail.companyPrices;
+          // clear price data
+          _priceData.clear();
+
+          // generate price data based on the company prices
+          double dayDiff = 0;
+          Color dayDiffColor = Colors.transparent;
+          
+          for(int i=0; i<_companyDetail.companyPrices.length; i++) {
+            if((i+1) < _companyDetail.companyPrices.length) {
+              double currPrice = _companyDetail.companyPrices[i].priceValue;
+              double prevPrice = _companyDetail.companyPrices[i + 1].priceValue;
+              dayDiff = currPrice - prevPrice;
+              dayDiffColor = riskColor(
+                value: currPrice,
+                cost: prevPrice,
+                riskFactor: _userInfo!.risk
+              );
+            }
+
+            // generate the price data
+            _priceData.add(CompanyDetailList(
+              date: _companyDetail.companyPrices[i].priceDate,
+              price: _companyDetail.companyPrices[i].priceValue,
+              diff: (_companyDetail.companyNetAssetValue ?? 0) - _companyDetail.companyPrices[i].priceValue,
+              dayDiff: dayDiff,
+              riskColor: riskColor(
+                value: _companyDetail.companyNetAssetValue!,
+                cost: _companyDetail.companyPrices[i].priceValue,
+                riskFactor: _userInfo!.risk
+              ),
+              dayDiffColor: dayDiffColor,
+            ));
+          }
           
           // generate map data
           _generateGraphData(resp);        
@@ -1023,6 +1100,11 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         // check if this crypto owned by user or not?
         _checkIfOwned();
       },).onError((error, stackTrace) {
+        Log.error(
+          message: "Error while get data from server",
+          error: error,
+          stackTrace: stackTrace,
+        );
         throw Exception('Error while get data from server');
       });
     }
@@ -1045,6 +1127,49 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
         _isOwned = true;
         return;
       }
+    }
+  }
+
+  void _performSort({required ColumnType columnType}) {
+    if (_columnType == columnType) {
+      if (_sortType == SortType.ascending) {
+        _sortType = SortType.descending;
+      }
+      else {
+        _sortType = SortType.ascending;
+      }
+
+      // just reverse the current list
+      _priceData = _priceData.reversed.toList();
+    }
+    else {
+      // set the correct column type
+      _columnType = columnType;
+      
+      // call sort info to get the correct sort
+      _sortInfo();
+    }
+  }
+
+  void _sortInfo() {
+    switch(_columnType) {
+      case ColumnType.price:
+        _priceData.sort((a, b) => (a.price.compareTo(b.price)));
+        break;
+      case ColumnType.diff:
+        _priceData.sort((a, b) => (a.diff.compareTo(b.diff)));
+        break;
+      case ColumnType.gainloss:
+        _priceData.sort((a, b) => ((a.dayDiff ?? 0).compareTo((b.dayDiff ?? 0))));
+        break;
+      default:
+        _priceData.sort((a, b) => (a.date.compareTo(b.date)));
+        break;
+    }
+
+    // check if this is descending?
+    if (_sortType == SortType.descending) {
+      _priceData = _priceData.reversed.toList();
     }
   }
 }

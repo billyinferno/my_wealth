@@ -124,7 +124,13 @@ class PerformanceCalendar extends StatelessWidget {
 
     // for year we will need to knew the length of the data given, so we knew
     // that we should start from which month?
-    int startIndex = 12 - data.length;
+    int startIndex = 0;
+
+    // check if the first month in the data is not 1, if not then we need
+    // to calculate which month we will need to start
+    if (data.first.date.toLowerCase() != 'jan') {
+      startIndex = 12 - data.length;
+    }
 
     // loop thru the data and replace the generatedData with data
     for(int i=0; i<data.length; i++) {

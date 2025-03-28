@@ -187,11 +187,9 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                               "m": Text("Month"),
                               "y": Text("Year"),
                             },
-                            onValueChanged: ((value) {
-                              String selectedValue = value.toString();
-        
+                            onValueChanged: (<String>(value) {
                               setState(() {
-                                _calendarSelection = selectedValue;
+                                _calendarSelection = value;
                               });
                             }),
                             groupValue: _calendarSelection,

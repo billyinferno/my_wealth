@@ -766,8 +766,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
       await _indexAPI.getIndexPriceDate(
         indexID: _indexCompare.indexId,
-        from: _watchlistPerformance.first.buyDate,
-        to: _watchlistPerformance.last.buyDate
+        from: _watchlistPerformanceDaily.first.buyDate,
+        to: _watchlistPerformanceDaily.last.buyDate
       ).then((resp) async {
         _indexComparePrice = resp;
 
@@ -895,6 +895,23 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     // _indexDataYearly
     _indexDataMonthly = monthly.values.toList();
     _indexDataYearly = yearly.values.toList();
+
+    // now check which graph now is being showed, so we can set the correct
+    // index data
+    switch(_graphSelection) {
+      case "9":
+        _indexData = _indexData90D.toList();
+        break;
+      case "m":
+        _indexData = _indexDataMonthly.toList();
+        break;
+      case "y":
+        _indexData = _indexDataYearly.toList();
+        break;
+      default:
+        _indexData = _indexDataDaily.toList();
+        break;
+    }
   }
 
   (double, double, double, double, double, double) _calculateMinMaxData({

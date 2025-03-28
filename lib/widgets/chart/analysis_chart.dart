@@ -24,6 +24,17 @@ class AnalysisChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Color> pointerColorList = [
+      Color(0xFFFF867C),
+      Color(0xFFFFA49D),
+      Color(0xFFFFC3BE),
+      Color(0xFFFFE1DE),
+      Color(0xFFFFFFFF),
+      Color(0xFFE2F0D2),
+      Color(0xFFC5E1A5),
+      Color(0xFFA8D277),
+      Color(0xFF8BC34A),
+    ];
     // calculate for the left and right padding
     double minData = pesimistic;
     double maxData = optimistic;
@@ -58,12 +69,16 @@ class AnalysisChart extends StatelessWidget {
     int pointerFlex = (((current  - minData) / range) * 100).toInt();
     
     // check what color should we put for the pointer
-    Color pointerColor = textPrimary;
-    if (current < pesimistic) {
+    int pointerColorIndex = ((((current - minData) / range) * 100).toInt() ~/ 10) - 1;    
+    Color pointerColor = Colors.white;
+    if (pointerColorIndex < 0) {
       pointerColor = secondaryLight;
     }
-    if (current > optimistic) {
-      pointerColor = Colors.lightGreenAccent;
+    else if (pointerColorIndex >= 0 && pointerColorIndex < pointerColorList.length) {
+      pointerColor = pointerColorList[pointerColorIndex];
+    }
+    else {
+      pointerColor = Colors.lightGreen;
     }
     
     return Column(
@@ -127,6 +142,7 @@ class AnalysisChart extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
+                      //TODO: in case the flex is too much like GOTO it causing render flex due to the text is passed the render page
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,6 +210,11 @@ class AnalysisChart extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: pointerColor,
                             borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            ),
                           ),
                         ),
                         Container(
@@ -201,7 +222,6 @@ class AnalysisChart extends StatelessWidget {
                           height: 30,
                           decoration: BoxDecoration(
                             color: pointerColor,
-                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
                       ],

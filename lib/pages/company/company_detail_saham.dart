@@ -3410,7 +3410,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                       FlipFlopSwitch<String>(
                         icons: _topBrokerFlipFlopItem,
                         initialKey: _topBrokerCalendarType,
-                        onChanged: (key) {
+                        onChanged: <String>(key) {
                           _topBrokerCalendarType = key;
                         },
                       ),

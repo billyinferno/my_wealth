@@ -45,7 +45,7 @@ class InsightBandarStockCollectPageState extends State<InsightBandarStockCollect
     // and fromDate is -14 days of maxBrokerDate
     if (_fromDate == null || _toDate == null) {
       _toDate = _maxBrokerDate;
-      _fromDate = _minBrokerDate;
+      _fromDate = _maxBrokerDate!.add(const Duration(days: -14));
     }
 
     // get the accumulation rate

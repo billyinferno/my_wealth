@@ -55,6 +55,7 @@ dependencies:
   hive_ce: ^2.5.0
   hive_ce_flutter: ^2.0.0
   la_icons: ^1.0.0
+  easy_sticky_header: ^1.1.1
 
 dev_dependencies:
   flutter_test:

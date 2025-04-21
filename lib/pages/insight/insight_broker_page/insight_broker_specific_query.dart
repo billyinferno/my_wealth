@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:easy_sticky_header/easy_sticky_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -431,70 +432,60 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     _pageItems.clear();
 
     // generate for all
-    // TODO: to create sliver persistent header so when user scroll the header will be still visible
-    _pageItems.add(const Text(
-      "All",
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.bold
+    _pageItems.add(StickyContainerWidget(
+      index: 0,
+      child: _generateRow(
+        title: "All",
+        date: "Date",
+        buyLot: "B.lot",
+        buyValue: "B.val",
+        buyAverage: "B.avg",
+        sellLot: "S.lot",
+        sellValue: "S.val",
+        sellAverage: "S.avg",
+        isBold: true,
+        isBackground: true
       ),
-    ));
-    _pageItems.add(_generateRow(
-      date: "Date",
-      buyLot: "B.lot",
-      buyValue: "B.val",
-      buyAverage: "B.avg",
-      sellLot: "S.lot",
-      sellValue: "S.val",
-      sellAverage: "S.avg",
-      isBold: true,
-      isBackground: true
     ));
     _pageItems.addAll(_generateCombineRows(combineAll));
     _pageItems.add(_generateAverage(combineAll, true));
     _pageItems.add(const SizedBox(height: 10,));
 
     // generate for domestic
-    _pageItems.add(const Text(
-      "Domestic",
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.bold
+    _pageItems.add(StickyContainerWidget(
+      index: 1,
+      child: _generateRow(
+        title: "Domestic",
+        date: "Date",
+        buyLot: "B.lot",
+        buyValue: "B.val",
+        buyAverage: "B.avg",
+        sellLot: "S.lot",
+        sellValue: "S.val",
+        sellAverage: "S.avg",
+        isBold: true,
+        isBackground: true,
       ),
-    ));
-    _pageItems.add(_generateRow(
-      date: "Date",
-      buyLot: "B.lot",
-      buyValue: "B.val",
-      buyAverage: "B.avg",
-      sellLot: "S.lot",
-      sellValue: "S.val",
-      sellAverage: "S.avg",
-      isBold: true,
-      isBackground: true,
     ));
     _pageItems.addAll(_generateCombineRows(combineDomestic));
     _pageItems.add(_generateAverage(combineDomestic));
     _pageItems.add(const SizedBox(height: 10,));
 
     // generate for foreign
-    _pageItems.add(const Text(
-      "Foreign",
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.bold
+    _pageItems.add(StickyContainerWidget(
+      index: 2,
+      child: _generateRow(
+        title: "Foreign",
+        date: "Date",
+        buyLot: "B.lot",
+        buyValue: "B.val",
+        buyAverage: "B.avg",
+        sellLot: "S.lot",
+        sellValue: "S.val",
+        sellAverage: "S.avg",
+        isBold: true,
+        isBackground: true,
       ),
-    ));
-    _pageItems.add(_generateRow(
-      date: "Date",
-      buyLot: "B.lot",
-      buyValue: "B.val",
-      buyAverage: "B.avg",
-      sellLot: "S.lot",
-      sellValue: "S.val",
-      sellAverage: "S.avg",
-      isBold: true,
-      isBackground: true,
     ));
     _pageItems.addAll(_generateCombineRows(combineForeign));
     _pageItems.add(_generateAverage(combineForeign));
@@ -675,11 +666,13 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
             ),
             const SizedBox(height: 10,),
             Expanded(
-              child: ListView.builder(
-                itemCount: _pageItems.length,
-                itemBuilder: (context, index) {
-                  return _pageItems[index];
-                },
+              child: StickyHeader(
+                child: ListView.builder(
+                  itemCount: _pageItems.length,
+                  itemBuilder: (context, index) {
+                    return _pageItems[index];
+                  },
+                ),
               ),
             )
           ],
@@ -740,6 +733,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
   }
 
   Widget _generateRow({
+    String title = '',
     required String date,
     required String buyLot,
     required String buyValue,
@@ -767,78 +761,99 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
       color: (isBackground ? Colors.white : sellColor),
     );
 
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Container(
-          width: 40,
-          color: (isBackground ? accentDark : Colors.transparent),
-          child: Text(
-            date,
-            style: TextStyle(
-              fontSize: 10,
-              color: (isBackground ? Colors.white : dateColorUse)
+        (
+          title.isEmpty ?
+          const SizedBox.shrink() :
+          Container(
+            width: double.infinity,
+            color: primaryColor,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold
+              ),
             ),
-          ),
+          )
         ),
-        Expanded(
-          child: Container(
-            color: (isBackground ? buyColor : Colors.transparent),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    buyLot,
-                    style: textStyleBuy,
-                  ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 40,
+              color: (isBackground ? accentDark : Colors.transparent),
+              child: Text(
+                date,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: (isBackground ? Colors.white : dateColorUse)
                 ),
-                Expanded(
-                  child: Text(
-                    buyValue,
-                    style: textStyleBuy,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    buyAverage,
-                    style: textStyleBuy,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            color: (isBackground ? sellColor : Colors.transparent),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    sellLot,
-                    style: textStyleSell,
-                  ),
+            Expanded(
+              child: Container(
+                color: (isBackground ? buyColor : Colors.transparent),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        buyLot,
+                        style: textStyleBuy,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        buyValue,
+                        style: textStyleBuy,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        buyAverage,
+                        style: textStyleBuy,
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Text(
-                    sellValue,
-                    style: textStyleSell,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    sellAverage,
-                    style: textStyleSell,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Expanded(
+              child: Container(
+                color: (isBackground ? sellColor : Colors.transparent),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        sellLot,
+                        style: textStyleSell,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        sellValue,
+                        style: textStyleSell,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        sellAverage,
+                        style: textStyleSell,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

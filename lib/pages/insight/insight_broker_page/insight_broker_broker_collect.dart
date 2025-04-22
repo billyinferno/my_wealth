@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
@@ -15,6 +16,9 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
   final ScrollController _scrollController = ScrollController();
+
+  final List<FlipFlopItem<CalendarType>> _brokerFlipFlopItem = [];
+  late CalendarType _brokerCalendarType;
   
   late BrokerModel _brokerData;
   late String _brokerCode;
@@ -60,6 +64,17 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
 
     // get the broker collection
     _brokerCollect = InsightSharedPreferences.getBrokerCollect();
+
+    // add the flip flop items for top broker
+    _brokerCalendarType = CalendarType.day;
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.day,
+      icon: LucideIcons.calendar_1,
+    ));
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.year,
+      icon: LucideIcons.calendar_range,
+    ));
   }
 
   @override
@@ -102,7 +117,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
@@ -179,6 +194,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               buttonColor: secondaryColor,
                               bgColor: primaryDark,
                               textColor: textPrimary,
+                              textSize: 10,
+                              iconSize: 15,
                               initialRate: _accumRate,
                               onTap: ((newRate) {
                                 _accumRate = newRate;
@@ -265,6 +282,27 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text(
+                            "",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5,),
+                          FlipFlopSwitch<CalendarType>(
+                            icons: _brokerFlipFlopItem,
+                            initialKey: _brokerCalendarType,
+                            onChanged: <CalendarType>(key) {
+                              _brokerCalendarType = key;
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -1041,30 +1079,84 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
   }
 
   Future<void> _showCalendar() async {
-    // TODO: to add my year picker
-    DateTimeRange? result = await showDateRangePicker(
-      context: context,
-      firstDate: _minBrokerDate!.toLocal(),
-      lastDate: _maxBrokerDate!.toLocal(),
-      initialDateRange: DateTimeRange(start: _fromDate!.toLocal(), end: _toDate!.toLocal()),
-      confirmText: 'Done',
-      currentDate: _maxBrokerDate!.toLocal(),
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-    );
+    if (_brokerCalendarType == CalendarType.day) {
+      DateTimeRange? result = await showDateRangePicker(
+        context: context,
+        firstDate: _minBrokerDate!.toLocal(),
+        lastDate: _maxBrokerDate!.toLocal(),
+        initialDateRange: DateTimeRange(start: _fromDate!.toLocal(), end: _toDate!.toLocal()),
+        confirmText: 'Done',
+        currentDate: _maxBrokerDate!.toLocal(),
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
+      );
 
-    // check if we got the result or not?
-    if (result != null) {
-      // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if (
-        (result.start.toLocal().compareTo(_fromDate!.toLocal()) != 0) ||
-        (result.end.toLocal().compareTo(_toDate!.toLocal()) != 0)
-      ) {                      
-        // set the broker from and to date
-        setState(() {
-          _fromDate = result.start.toLocal();
-          _toDate = result.end.toLocal();
-        });
+      // check if we got the result or not?
+      if (result != null) {
+        // check whether the result start and end is different date, if different then we need to get new broker summary data.
+        if (
+          (result.start.toLocal().compareTo(_fromDate!.toLocal()) != 0) ||
+          (result.end.toLocal().compareTo(_toDate!.toLocal()) != 0)
+        ) {                      
+          // set the broker from and to date
+          setState(() {
+            _fromDate = result.start.toLocal();
+            _toDate = result.end.toLocal();
+          });
+        }
       }
+    }
+    else {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Select Year"),
+                IconButton(
+                icon: Icon(
+                  Ionicons.close,
+                ),
+                onPressed: () {
+                  // remove the dialog
+                  Navigator.pop(context);
+                },
+              ),
+              ],
+            ),
+            contentPadding: const EdgeInsets.all(10),
+            content: SizedBox(
+              width: 300,
+              height: 300,
+              child: MyYearPicker(
+                firstDate: _minBrokerDate!.toLocal(),
+                lastDate: _maxBrokerDate!.toLocal(),
+                startDate: _fromDate!.toLocal(),
+                endDate: _toDate!.toLocal(),
+                type: MyYearPickerCalendarType.range,
+                onChanged: (value) async {
+                  // remove the dialog
+                  Navigator.pop(context);
+  
+                  // check the new date whether it's same year or not?
+                  if (
+                    value.startDate.toLocal().compareTo(_fromDate!.toLocal()) != 0 ||
+                    value.endDate.toLocal().compareTo(_toDate!.toLocal()) != 0
+                  ) {
+                    // set the broker from and to date
+                    setState(() {                        
+                      _fromDate = value.startDate;
+                      _toDate = value.endDate;
+                    });
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 

@@ -10,6 +10,7 @@ class NumberStepper extends StatefulWidget {
   final Color iconColor;
   final double iconSize;
   final Color textColor;
+  final double? textSize;
   final int initialRate;
   final String ratePrefix;
   final int minRate;
@@ -27,6 +28,7 @@ class NumberStepper extends StatefulWidget {
     this.iconColor = Colors.white,
     this.iconSize = 20,
     this.textColor = secondaryColor,
+    this.textSize,
     required this.initialRate,
     this.ratePrefix = '%',
     this.minRate = 1,
@@ -126,6 +128,7 @@ class _NumberStepperState extends State<NumberStepper> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: widget.textColor,
+                      fontSize: widget.textSize,
                     ),
                   ),
                 ),

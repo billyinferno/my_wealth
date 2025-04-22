@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'package:easy_sticky_header/easy_sticky_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -22,6 +23,9 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
   final CompanyFindOtherArgs _companyFindOtherArgs = const CompanyFindOtherArgs(
     type: 'saham',
   );
+
+  final List<FlipFlopItem<CalendarType>> _brokerFlipFlopItem = [];
+  late CalendarType _brokerCalendarType;
 
   late UserLoginInfoModel? _userInfo;
   late CompanyListModel? _companyData;
@@ -85,6 +89,17 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     }
 
     _brokerSummaryData = InsightSharedPreferences.getBrokerSpecificResult();
+
+    // add the flip flop items for top broker
+    _brokerCalendarType = CalendarType.day;
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.day,
+      icon: LucideIcons.calendar_1,
+    ));
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.year,
+      icon: LucideIcons.calendar_range,
+    ));
   }
 
   @override
@@ -131,7 +146,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                 children: <Widget>[
                   const SizedBox(height: 10,),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
@@ -181,7 +196,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                   child: Text(
                                     (_brokerCode.isEmpty ? '-' : _brokerCode),
                                     style: const TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 10,
                                     ),
                                   ),
                                 ),
@@ -232,7 +247,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                   child: Text(
                                     (_companySahamCode.isEmpty ? '-' : _companySahamCode),
                                     style: const TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 10,
                                     ),
                                   ),
                                 ),
@@ -283,7 +298,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                         child: Text(
                                           Globals.dfddMMyyyy2.formatLocal(_dateFrom),
                                           style: const TextStyle(
-                                            fontSize: 12,
+                                            fontSize: 10,
                                           ),
                                         ),
                                       ),
@@ -308,7 +323,7 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                         child: Text(
                                           Globals.dfddMMyyyy2.formatLocal(_dateTo),
                                           style: const TextStyle(
-                                            fontSize: 12,
+                                            fontSize: 10,
                                           ),
                                         ),
                                       ),
@@ -359,8 +374,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                               }
                             }),
                             child: Container(
-                              width: 28,
-                              height: 28,
+                              width: 26,
+                              height: 26,
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: secondaryDark,
@@ -376,6 +391,22 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                                 size: 15,
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 5,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(""),
+                          const SizedBox(height: 5,),
+                          FlipFlopSwitch<CalendarType>(
+                            icons: _brokerFlipFlopItem,
+                            initialKey: _brokerCalendarType,
+                            onChanged: <CalendarType>(key) {
+                              _brokerCalendarType = key;
+                            },
                           ),
                         ],
                       ),
@@ -984,30 +1015,87 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
   }
 
   Future<void> _showCalendar() async {
-    //TODO: to add my year picker
-    DateTimeRange? result = await showDateRangePicker(
-      context: context,
-      firstDate: _brokerMinDate.toLocal(),
-      lastDate: _brokerMaxDate.toLocal(),
-      initialDateRange: DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
-      confirmText: 'Done',
-      currentDate: _dateCurrent.toLocal(),
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-    );
+    if (_brokerCalendarType == CalendarType.day) {
+      DateTimeRange? result = await showDateRangePicker(
+        context: context,
+        firstDate: _brokerMinDate.toLocal(),
+        lastDate: _brokerMaxDate.toLocal(),
+        initialDateRange: DateTimeRange(
+          start: _dateFrom.toLocal(),
+          end: _dateTo.toLocal(),
+        ),
+        confirmText: 'Done',
+        currentDate: _dateCurrent.toLocal(),
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
+      );
 
-    // check if we got the result or not?
-    if (result != null) {
-      // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if (
-        (result.start.toLocal().compareTo(_dateFrom.toLocal()) != 0) ||
-        (result.end.toLocal().compareTo(_dateTo.toLocal()) != 0)
-      ) {                      
-        // set the broker from and to date
-        setState(() {
-          _dateFrom = result.start.toLocal();
-          _dateTo = result.end.toLocal();
-        });
+      // check if we got the result or not?
+      if (result != null) {
+        // check whether the result start and end is different date, if different then we need to get new broker summary data.
+        if (
+          (result.start.toLocal().compareTo(_dateFrom.toLocal()) != 0) ||
+          (result.end.toLocal().compareTo(_dateTo.toLocal()) != 0)
+        ) {                      
+          // set the broker from and to date
+          setState(() {
+            _dateFrom = result.start.toLocal();
+            _dateTo = result.end.toLocal();
+          });
+        }
       }
+    }
+    else {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Select Year"),
+                IconButton(
+                icon: Icon(
+                  Ionicons.close,
+                ),
+                onPressed: () {
+                  // remove the dialog
+                  Navigator.pop(context);
+                },
+              ),
+              ],
+            ),
+            contentPadding: const EdgeInsets.all(10),
+            content: SizedBox(
+              width: 300,
+              height: 300,
+              child: MyYearPicker(
+                firstDate: _brokerMinDate.toLocal(),
+                lastDate: _brokerMaxDate.toLocal(),
+                startDate: _dateFrom.toLocal(),
+                endDate: _dateTo.toLocal(),
+                type: MyYearPickerCalendarType.range,
+                onChanged: (value) async {
+                  // remove the dialog
+                  Navigator.pop(context);
+  
+                  // check the new date whether it's same year or not?
+                  if (
+                    value.startDate.toLocal().compareTo(_dateFrom.toLocal()) != 0 ||
+                    value.endDate.toLocal().compareTo(_dateTo.toLocal()) != 0
+                  ) {
+                    setState(() {
+                      // not same year, set the current year to the monthly performance year
+                      _dateFrom = value.startDate;
+                      _dateTo = value.endDate;
+                    });
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 

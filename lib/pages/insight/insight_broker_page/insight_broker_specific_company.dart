@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -30,6 +31,9 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   final CompanyFindOtherArgs _companyFindOtherArgs = const CompanyFindOtherArgs(
     type: 'saham',
   );
+
+  final List<FlipFlopItem<CalendarType>> _brokerFlipFlopItem = [];
+  late CalendarType _brokerCalendarType;
 
   late List<Widget> _pageItemsSummary;
   late List<Widget> _pageItemsTop;
@@ -109,6 +113,17 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
       // _brokerMaxDate
       _dateTo = _brokerMaxDate;
     }
+
+    // add the flip flop items for top broker
+    _brokerCalendarType = CalendarType.day;
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.day,
+      icon: LucideIcons.calendar_1,
+    ));
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.year,
+      icon: LucideIcons.calendar_range,
+    ));
   }
 
   @override
@@ -352,6 +367,22 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                 size: 15,
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 5,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(""),
+                          const SizedBox(height: 5,),
+                          FlipFlopSwitch<CalendarType>(
+                            icons: _brokerFlipFlopItem,
+                            initialKey: _brokerCalendarType,
+                            onChanged: <CalendarType>(key) {
+                              _brokerCalendarType = key;
+                            },
                           ),
                         ],
                       ),
@@ -960,36 +991,111 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
   }
 
   Future<void> _showCalendar() async {
-    //TODO: to add my year picker
-    DateTimeRange? result = await showDateRangePicker(
-      context: context,
-      firstDate: _brokerMinDate.toLocal(),
-      lastDate: _brokerMaxDate.toLocal(),
-      initialDateRange:
-          DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
-      confirmText: 'Done',
-      currentDate: _dateCurrent.toLocal(),
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-    );
+    if (_brokerCalendarType == CalendarType.day) {
+      DateTimeRange? result = await showDateRangePicker(
+        context: context,
+        firstDate: _brokerMinDate.toLocal(),
+        lastDate: _brokerMaxDate.toLocal(),
+        initialDateRange:
+            DateTimeRange(start: _dateFrom.toLocal(), end: _dateTo.toLocal()),
+        confirmText: 'Done',
+        currentDate: _dateCurrent.toLocal(),
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
+      );
 
-    // check if we got the result or not?
-    if (result != null) {
-      // check whether the result start and end is different date, if different then we need to get new broker summary data.
-      if ((result.start.compareTo(_dateFrom) != 0) ||
-          (result.end.compareTo(_dateTo) != 0)) {
-        // set the broker from and to date
-        _dateFrom = result.start;
-        _dateTo = result.end;
-        
-        // directly get the result so it will feel instant
-        await _getBrokerTransaction().then((_) {  
-          setState(() {
-            // generate the summary and top page
-            _generateSummaryPage();
-            _generateTopPage();
-          });
-        },);
+      // check if we got the result or not?
+      if (result != null) {
+        // check whether the result start and end is different date, if different then we need to get new broker summary data.
+        if ((result.start.compareTo(_dateFrom) != 0) ||
+            (result.end.compareTo(_dateTo) != 0)) {
+          // set the broker from and to date
+          _dateFrom = result.start;
+          _dateTo = result.end;
+          
+          // check if all data is already available
+          if (_companySahamCode.isEmpty) {
+            setState(() {              
+            });
+          }
+          else {
+            // directly get the result so it will feel instant
+            await _getBrokerTransaction().then((_) {  
+              setState(() {
+                // generate the summary and top page
+                _generateSummaryPage();
+                _generateTopPage();
+              });
+            },);
+          }
+        }
       }
+    }
+    else {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Select Year"),
+                IconButton(
+                icon: Icon(
+                  Ionicons.close,
+                ),
+                onPressed: () {
+                  // remove the dialog
+                  Navigator.pop(context);
+                },
+              ),
+              ],
+            ),
+            contentPadding: const EdgeInsets.all(10),
+            content: SizedBox(
+              width: 300,
+              height: 300,
+              child: MyYearPicker(
+                firstDate: _brokerMinDate.toLocal(),
+                lastDate: _brokerMaxDate.toLocal(),
+                startDate: _dateFrom.toLocal(),
+                endDate: _dateTo.toLocal(),
+                type: MyYearPickerCalendarType.range,
+                onChanged: (value) async {
+                  // remove the dialog
+                  Navigator.pop(context);
+  
+                  // check the new date whether it's same year or not?
+                  if (
+                    value.startDate.toLocal().compareTo(_dateFrom.toLocal()) != 0 ||
+                    value.endDate.toLocal().compareTo(_dateTo.toLocal()) != 0
+                  ) {
+                    // set the broker from and to date
+                    _dateFrom = value.startDate;
+                    _dateTo = value.endDate;
+                    
+                    // check whether all data is already present or not?
+                    if (_companySahamCode.isEmpty) {
+                      setState(() {                        
+                      });
+                    }
+                    else {
+                      // directly get the result so it will feel instant
+                      await _getBrokerTransaction().then((_) {  
+                        setState(() {
+                          // generate the summary and top page
+                          _generateSummaryPage();
+                          _generateTopPage();
+                        });
+                      },);
+                    }
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 

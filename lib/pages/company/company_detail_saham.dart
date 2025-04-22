@@ -117,8 +117,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   );
   final Bit _bitData = Bit();
   
-  late String _topBrokerCalendarType;
-  final List<FlipFlopItem<String>> _topBrokerFlipFlopItem = [];
+  late CalendarType _topBrokerCalendarType;
+  late CalendarType _brokerCalendarType;
+  final List<FlipFlopItem<CalendarType>> _flipFlopItem = [];
 
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
@@ -252,13 +253,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _calendarWeeklyRange = true;
 
     // add the flip flop items for top broker
-    _topBrokerCalendarType = 'r';
-    _topBrokerFlipFlopItem.add(FlipFlopItem(
-      key: 's',
+    _topBrokerCalendarType = CalendarType.day;
+    _brokerCalendarType = CalendarType.day;
+    _flipFlopItem.add(FlipFlopItem(
+      key: CalendarType.year,
       icon: LucideIcons.calendar_1,
     ));
-    _topBrokerFlipFlopItem.add(FlipFlopItem(
-      key: 'r',
+    _flipFlopItem.add(FlipFlopItem(
+      key: CalendarType.day,
       icon: LucideIcons.calendar_range,
     ));
 
@@ -2960,48 +2962,112 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   ),
                   InkWell(
                     onTap: (() async {
-                      //TODO: to give option to select free range date or year range date picker instead
-
                       // check for the max date to avoid any assertion that the initial date range
                       // is more than the lastDate
-                      DateTime maxDate =
-                          _brokerSummaryDate.maxDate.toLocal();
+                      DateTime maxDate = _brokerSummaryDate.maxDate.toLocal();
                       if (maxDate.isBefore(_brokerSummaryDateTo.toLocal())) {
                         maxDate = _brokerSummaryDateTo;
                       }
 
-                      DateTimeRange? result = await showDateRangePicker(
-                        context: context,
-                        firstDate: _brokerSummaryDate.minDate.toLocal(),
-                        lastDate: maxDate.toLocal(),
-                        initialDateRange: DateTimeRange(
+                      // check the calendar type
+                      if (_brokerCalendarType == CalendarType.day) {
+                        DateTimeRange? result = await showDateRangePicker(
+                          context: context,
+                          firstDate: _brokerSummaryDate.minDate.toLocal(),
+                          lastDate: maxDate.toLocal(),
+                          initialDateRange: DateTimeRange(
                             start: _brokerSummaryDateFrom.toLocal(),
-                            end: _brokerSummaryDateTo.toLocal()),
-                        confirmText: 'Done',
-                        currentDate: _companyDetail.companyLastUpdate,
-                        initialEntryMode: DatePickerEntryMode.calendarOnly,
-                      );
+                            end: _brokerSummaryDateTo.toLocal(),
+                          ),
+                          confirmText: 'Done',
+                          currentDate: _companyDetail.companyLastUpdate,
+                          initialEntryMode: DatePickerEntryMode.calendarOnly,
+                        );
 
-                      // check if we got the result or not?
-                      if (result != null) {
-                        // check whether the result start and end is different date, if different then we need to get new broker summary data.
-                        if ((result.start.compareTo(_brokerSummaryDateFrom) !=
-                                0) ||
-                            (result.end.compareTo(_brokerSummaryDateTo) != 0)) {
-                          // set the broker from and to date
-                          _brokerSummaryDateFrom = result.start;
-                          _brokerSummaryDateTo = result.end;
+                        // check if we got the result or not?
+                        if (result != null) {
+                          // check whether the result start and end is different date, if different then we need to get new broker summary data.
+                          if ((result.start.compareTo(_brokerSummaryDateFrom) != 0) ||
+                              (result.end.compareTo(_brokerSummaryDateTo) != 0)) {
+                            // set the broker from and to date
+                            _brokerSummaryDateFrom = result.start;
+                            _brokerSummaryDateTo = result.end;
 
-                          // get the broker summary
-                          await _getBrokerSummary().onError(
-                            (error, stackTrace) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    createSnackBar(message: error.toString()));
-                              }
-                            },
-                          );
+                            // get the broker summary
+                            await _getBrokerSummary().onError(
+                              (error, stackTrace) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      createSnackBar(message: error.toString()));
+                                }
+                              },
+                            );
+                          }
                         }
+                      }
+                      else {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Select Year"),
+                                  IconButton(
+                                  icon: Icon(
+                                    Ionicons.close,
+                                  ),
+                                  onPressed: () {
+                                    // remove the dialog
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.all(10),
+                              content: SizedBox(
+                                width: 300,
+                                height: 300,
+                                child: MyYearPicker(
+                                  firstDate: _brokerSummaryDate.minDate.toLocal(),
+                                  lastDate: maxDate.toLocal(),
+                                  startDate: _brokerSummaryDateFrom.toLocal(),
+                                  endDate: _brokerSummaryDateTo.toLocal(),
+                                  type: MyYearPickerCalendarType.range,
+                                  onChanged: (value) async {
+                                    // remove the dialog
+                                    Navigator.pop(context);
+                    
+                                    // check the new date whether it's same year or not?
+                                    if (
+                                      value.startDate.toLocal().compareTo(_brokerSummaryDateFrom.toLocal()) != 0 ||
+                                      value.endDate.toLocal().compareTo(_brokerSummaryDateTo.toLocal()) != 0
+                                    ) {
+                                      // set the broker from and to date
+                                      _brokerSummaryDateFrom = value.startDate;
+                                      _brokerSummaryDateTo = value.endDate;
+                                      
+                                      // get the broker summary
+                                      await _getBrokerSummary().onError(
+                                        (error, stackTrace) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              createSnackBar(
+                                                message: error.toString(),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       }
                     }),
                     child: Row(
@@ -3070,6 +3136,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           ),
                         ),
                         const SizedBox(width: 5,),
+                        FlipFlopSwitch<CalendarType>(
+                          icons: _flipFlopItem,
+                          initialKey: _brokerCalendarType,
+                          onChanged: <CalendarType>(key) {
+                            _brokerCalendarType = key;
+                          },
+                        ),
+                        const SizedBox(width: 5,),
                       ],
                     ),
                   ),
@@ -3130,14 +3204,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                  child: _tableRow(
-                                      brokerCode: "BY",
-                                      lot: "B.lot",
-                                      value: "B.val",
-                                      average: "B.avg",
-                                      isBold: true,
-                                      backgroundColor: secondaryDark,
-                                      enableTab: false)),
+                                child: _tableRow(
+                                  brokerCode: "BY",
+                                  lot: "B.lot",
+                                  value: "B.val",
+                                  average: "B.avg",
+                                  isBold: true,
+                                  backgroundColor: secondaryDark,
+                                  enableTab: false,
+                                )
+                              ),
                               ...List<Widget>.generate(
                                 10,
                                 (index) {
@@ -3307,7 +3383,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                               minDate = _topBrokerDateFrom;
                             }
 
-                            if (_topBrokerCalendarType == 'r') {
+                            if (_topBrokerCalendarType == CalendarType.day) {
                               DateTimeRange? result = await showDateRangePicker(
                                 context: context,
                                 firstDate: minDate.toLocal(),
@@ -3407,10 +3483,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         ),
                       ),
                       const SizedBox(width: 10),
-                      FlipFlopSwitch<String>(
-                        icons: _topBrokerFlipFlopItem,
+                      FlipFlopSwitch<CalendarType>(
+                        icons: _flipFlopItem,
                         initialKey: _topBrokerCalendarType,
-                        onChanged: <String>(key) {
+                        onChanged: <CalendarType>(key) {
                           _topBrokerCalendarType = key;
                         },
                       ),

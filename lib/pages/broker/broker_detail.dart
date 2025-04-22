@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -16,6 +17,9 @@ class BrokerDetailPage extends StatefulWidget {
 class _BrokerDetailPageState extends State<BrokerDetailPage> {
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final ScrollController _scrollController = ScrollController();
+  
+  final List<FlipFlopItem<CalendarType>> _brokerFlipFlopItem = [];
+  late CalendarType _brokerCalendarType;
 
   late BrokerDetailArgs _args;
   late BrokerSummaryBrokerTxnListModel _transactionList;
@@ -42,6 +46,17 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
     // init the start and limit
     _start = 0;
     _limit = 20;
+
+    // add the flip flop items for top broker
+    _brokerCalendarType = CalendarType.day;
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.day,
+      icon: LucideIcons.calendar_1,
+    ));
+    _brokerFlipFlopItem.add(FlipFlopItem(
+      key: CalendarType.year,
+      icon: LucideIcons.calendar_range,
+    ));
 
     _getData = _getInitData();
   }
@@ -204,101 +219,182 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
               color: primaryDark,
-              child: InkWell(
-                onTap: (() async {
-                  //TODO: to add year picker here
-                  DateTimeRange? initialDateRange = DateTimeRange(
-                    start: _fromDateCurrent.toLocal(),
-                    end: _toDateCurrent.toLocal()
-                  );
-                  
-                  DateTimeRange? result = await showDateRangePicker(
-                    context: context,
-                    firstDate: _fromDateMax.toLocal(),
-                    lastDate: _toDateMax.toLocal(),
-                    initialDateRange: initialDateRange,
-                    currentDate: DateTime.now().toLocal(),
-                    initialEntryMode: DatePickerEntryMode.calendarOnly,
-                  );
-              
-                  if (result != null) {
-                    // means we got the result, ensure it's not the same with from date and to date
-                    if (
-                      (result.start.toLocal().compareTo(_fromDateCurrent.toLocal()) != 0) ||
-                      (result.end.toLocal().compareTo(_toDateCurrent.toLocal()) != 0)) {
-                      // set the broker from and to date
-                      _fromDateCurrent = result.start.toLocal();
-                      _toDateCurrent = result.end.toLocal();
-              
-                      // set the start back into 0
-                      _start = 0;
-              
-                      // get the broker summary
-                      await _refreshTransactionList().onError((error, stackTrace) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: InkWell(
+                      onTap: (() async {
+                        // check whether we want to select date or year in range
+                        if (_brokerCalendarType == CalendarType.day) {
+                          // show the day range picker
+                          DateTimeRange? initialDateRange = DateTimeRange(
+                            start: _fromDateCurrent.toLocal(),
+                            end: _toDateCurrent.toLocal()
+                          );
+                          
+                          DateTimeRange? result = await showDateRangePicker(
+                            context: context,
+                            firstDate: _fromDateMax.toLocal(),
+                            lastDate: _toDateMax.toLocal(),
+                            initialDateRange: initialDateRange,
+                            currentDate: DateTime.now().toLocal(),
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
+                          );
+                      
+                          if (result != null) {
+                            // means we got the result, ensure it's not the same with from date and to date
+                            if (
+                              (result.start.toLocal().compareTo(_fromDateCurrent.toLocal()) != 0) ||
+                              (result.end.toLocal().compareTo(_toDateCurrent.toLocal()) != 0)) {
+                              // set the broker from and to date
+                              _fromDateCurrent = result.start.toLocal();
+                              _toDateCurrent = result.end.toLocal();
+                      
+                              // set the start back into 0
+                              _start = 0;
+                      
+                              // get the broker summary
+                              await _refreshTransactionList().onError((error, stackTrace) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                }
+                              });
+                            }
+                          }
                         }
-                      });
-                    }
-                  }
-                }),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text(
-                      "From",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: secondaryLight,
+                        else {
+                          // show multi range year picker instead
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text("Select Year"),
+                                    IconButton(
+                                    icon: Icon(
+                                      Ionicons.close,
+                                    ),
+                                    onPressed: () {
+                                      // remove the dialog
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  ],
+                                ),
+                                contentPadding: const EdgeInsets.all(10),
+                                content: SizedBox(
+                                  width: 300,
+                                  height: 300,
+                                  child: MyYearPicker(
+                                    firstDate: _fromDateMax.toLocal(),
+                                    lastDate: _toDateMax.toLocal(),
+                                    startDate: _fromDateCurrent.toLocal(),
+                                    endDate: _toDateCurrent.toLocal(),
+                                    type: MyYearPickerCalendarType.range,
+                                    onChanged: (value) async {
+                                      // remove the dialog
+                                      Navigator.pop(context);
+                      
+                                      // check the new date whether it's same year or not?
+                                      if (
+                                        value.startDate.toLocal().compareTo(_fromDateCurrent.toLocal()) != 0 ||
+                                        value.endDate.toLocal().compareTo(_toDateCurrent.toLocal()) != 0
+                                      ) {
+                                        // not same year, set the current year to the monthly performance year
+                                        _fromDateCurrent = value.startDate;
+                                        _toDateCurrent = value.endDate;
+                                      
+                                        // set the start back into 0
+                                        _start = 0;
+                                      
+                                        // get the broker summary
+                                        await _refreshTransactionList().onError((error, stackTrace) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                          }
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text(
+                            "From",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: secondaryLight,
+                            ),
+                          ),
+                          const SizedBox(width: 5,),
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                              color: primaryDark,
+                            ),
+                            child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryFromDate))
+                          ),
+                          const SizedBox(width: 10,),
+                          const Text(
+                            "To",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: secondaryLight,
+                            ),
+                          ),
+                          const SizedBox(width: 5,),
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: primaryLight,
+                                width: 1.0,
+                                style: BorderStyle.solid,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                              color: primaryDark,
+                            ),
+                            child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryToDate))
+                          ),
+                          const SizedBox(width: 10,),
+                          const Icon(
+                            Ionicons.search,
+                            color: secondaryLight,
+                            size: 15,
+                          )
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 5,),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                        color: primaryDark,
-                      ),
-                      child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryFromDate))
-                    ),
-                    const SizedBox(width: 10,),
-                    const Text(
-                      "To",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: secondaryLight,
-                      ),
-                    ),
-                    const SizedBox(width: 5,),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                        color: primaryDark,
-                      ),
-                      child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryToDate))
-                    ),
-                    const SizedBox(width: 10,),
-                    const Icon(
-                      Ionicons.calendar_outline,
-                      color: secondaryLight,
-                      size: 15,
-                    )
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 10,),
+                  FlipFlopSwitch<CalendarType>(
+                    icons: _brokerFlipFlopItem,
+                    initialKey: _brokerCalendarType,
+                    onChanged: <CalendarType>(key) {
+                      _brokerCalendarType = key;
+                    },
+                  ),
+                ],
               ),
             ),
             Container(

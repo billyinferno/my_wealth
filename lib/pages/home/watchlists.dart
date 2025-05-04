@@ -1,3 +1,4 @@
+import 'package:easy_sticky_header/easy_sticky_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -538,138 +539,146 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const AlwaysScrollableScrollPhysics(),
-              controller: scrollController,
-              itemCount: (data!.length + 1), // add 1 for the summary
-              itemBuilder: ((context, index) {
-                // for the first index we will return the summary
-                if (index == 0) {
-                  return WatchlistSubSummary(
-                    dayGain: dayGain,
-                    cost: cost,
-                    value: value,
-                    riskFactor: _userInfo!.risk,
-                    isVisible: _isSummaryVisible,
+            child: StickyHeader(
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: scrollController,
+                itemCount: (data!.length + 1), // add 1 for the summary
+                itemBuilder: ((context, index) {
+                  // for the first index we will return the summary
+                  if (index == 0) {
+                    return StickyContainerWidget(
+                      index: index,
+                      child: Container(
+                        color: primaryColor,
+                        child: WatchlistSubSummary(
+                          dayGain: dayGain,
+                          cost: cost,
+                          value: value,
+                          riskFactor: _userInfo!.risk,
+                          isVisible: _isSummaryVisible,
+                          type: type,
+                          totalData: data.length,
+                          compResult: _watchlistAll,
+                        ),
+                      ),
+                    );
+                  }
+                  
+                  // create the argumenst when open the company detail page
+                  // or the watchlist list page.
+                  int idx = index - 1;
+                  CompanyDetailArgs args = CompanyDetailArgs(
+                    companyId: data[idx].watchlistCompanyId,
+                    companyName: data[idx].watchlistCompanyName,
+                    companyCode: (data[idx].watchlistCompanySymbol ?? ''),
+                    companyFavourite: (data[idx].watchlistFavouriteId > 0 ? true : false),
+                    favouritesId: data[idx].watchlistFavouriteId,
                     type: type,
-                    totalData: data.length,
-                    compResult: _watchlistAll,
                   );
-                }
-                
-                // create the argumenst when open the company detail page
-                // or the watchlist list page.
-                int idx = index - 1;
-                CompanyDetailArgs args = CompanyDetailArgs(
-                  companyId: data[idx].watchlistCompanyId,
-                  companyName: data[idx].watchlistCompanyName,
-                  companyCode: (data[idx].watchlistCompanySymbol ?? ''),
-                  companyFavourite: (data[idx].watchlistFavouriteId > 0 ? true : false),
-                  favouritesId: data[idx].watchlistFavouriteId,
-                  type: type,
-                );
-
-                WatchlistListArgs watchlistArgs = WatchlistListArgs(
-                  type: type,
-                  watchList: data[idx],
-                  shareName: shareTitle,
-                  isLot: isInLot,
-                );
-
-                return Slidable(
-                  endActionPane: ActionPane(
-                    motion: const ScrollMotion(),
-                    extentRatio: 1,
-                    children: <Widget>[
-                      SlideButton(
-                        icon: Ionicons.add,
-                        iconColor: extendedLight,
-                        onTap: () {
-                          Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: watchlistArgs);
-                        },
-                      ),
-                      SlideButton(
-                        icon: Ionicons.ellipsis_horizontal,
-                        iconColor: (data[idx].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
-                        onTap: () {
-                          if(data[idx].watchlistDetail.isNotEmpty) {
-                            // only do when the list is not empty, otherwise there are nothing that need to be edited
-                            Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
-                          }
-                        },
-                      ),
-                      SlideButton(
-                        icon: Ionicons.pulse_outline,
-                        iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
-                        onTap: () {
-                          if(data[idx].watchlistDetail.isNotEmpty) {
-                            // only do when the list is not empty, otherwise there are nothing that need to be showed as performance
-                            Navigator.pushNamed(context, '/watchlist/performance', arguments: watchlistArgs);
-                          }
-                        },
-                      ),
-                      SlideButton(
-                        icon: Ionicons.calendar_outline,
-                        iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.pink[300]! : primaryLight),
-                        onTap: () {
-                          if(data[idx].watchlistDetail.isNotEmpty) {
-                            Navigator.pushNamed(context, '/watchlist/calendar', arguments: watchlistArgs);
-                          }
-                        },
-                      ),
-                      SlideButton(
-                        icon: Ionicons.business_outline,
-                        iconColor: Colors.green,
-                        onTap: () {
-                          Navigator.pushNamed(context, '/company/detail/$type', arguments: args);
-                        },
-                      ),
-                      SlideButton(
-                        icon: Ionicons.trash_bin_outline,
-                        iconColor: secondaryColor,
-                        onTap: () async {
-                          await ShowMyDialog(
-                            title: "Delete Watchlist",
-                            text: "Are you sure want to delete ${data[idx].watchlistCompanyName}?",
-                            confirmLabel: "Delete",
-                            cancelLabel: "Cancel"
-                          ).show(context).then((resp) async {
-                            if(resp!) {
-                              // delete the watchlist
-                              await _deleteWatchlist(type, data[idx].watchlistId).then((value) {
-                                Log.success(message: "🗑️ Delete Watchlist ${data[idx].watchlistCompanyName}");
-                              }).onError((error, stackTrace) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                                }
-                              });
+              
+                  WatchlistListArgs watchlistArgs = WatchlistListArgs(
+                    type: type,
+                    watchList: data[idx],
+                    shareName: shareTitle,
+                    isLot: isInLot,
+                  );
+              
+                  return Slidable(
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      extentRatio: 1,
+                      children: <Widget>[
+                        SlideButton(
+                          icon: Ionicons.add,
+                          iconColor: extendedLight,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: watchlistArgs);
+                          },
+                        ),
+                        SlideButton(
+                          icon: Ionicons.ellipsis_horizontal,
+                          iconColor: (data[idx].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
+                          onTap: () {
+                            if(data[idx].watchlistDetail.isNotEmpty) {
+                              // only do when the list is not empty, otherwise there are nothing that need to be edited
+                              Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
                             }
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  child: InkWell(
-                    onDoubleTap: (() {
-                      Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
-                    }),
-                    child: ExpandedTileView(
-                      key: Key("watchlist_${type}_${data[idx].watchlistCompanyId}"),
-                      showedLot: _isShowedLots,
-                      inLot: isInLot,
-                      risk: _userInfo!.risk,
-                      isVisible: _isSummaryVisible,
-                      watchlist: data[idx],
-                      watchlistResult: result![idx],
-                      shareTitle: shareTitle,
-                      checkThousandOnPrice: checkThousandOnPrice,
-                      showEmptyWatchlist: _isShowEmptyWatchlist,
-                      showPriceDecimal: (showDecimalPrice ?? true),
+                          },
+                        ),
+                        SlideButton(
+                          icon: Ionicons.pulse_outline,
+                          iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
+                          onTap: () {
+                            if(data[idx].watchlistDetail.isNotEmpty) {
+                              // only do when the list is not empty, otherwise there are nothing that need to be showed as performance
+                              Navigator.pushNamed(context, '/watchlist/performance', arguments: watchlistArgs);
+                            }
+                          },
+                        ),
+                        SlideButton(
+                          icon: Ionicons.calendar_outline,
+                          iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.pink[300]! : primaryLight),
+                          onTap: () {
+                            if(data[idx].watchlistDetail.isNotEmpty) {
+                              Navigator.pushNamed(context, '/watchlist/calendar', arguments: watchlistArgs);
+                            }
+                          },
+                        ),
+                        SlideButton(
+                          icon: Ionicons.business_outline,
+                          iconColor: Colors.green,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/company/detail/$type', arguments: args);
+                          },
+                        ),
+                        SlideButton(
+                          icon: Ionicons.trash_bin_outline,
+                          iconColor: secondaryColor,
+                          onTap: () async {
+                            await ShowMyDialog(
+                              title: "Delete Watchlist",
+                              text: "Are you sure want to delete ${data[idx].watchlistCompanyName}?",
+                              confirmLabel: "Delete",
+                              cancelLabel: "Cancel"
+                            ).show(context).then((resp) async {
+                              if(resp!) {
+                                // delete the watchlist
+                                await _deleteWatchlist(type, data[idx].watchlistId).then((value) {
+                                  Log.success(message: "🗑️ Delete Watchlist ${data[idx].watchlistCompanyName}");
+                                }).onError((error, stackTrace) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                                  }
+                                });
+                              }
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                  ),
-                );
-              }),
+                    child: InkWell(
+                      onDoubleTap: (() {
+                        Navigator.pushNamed(context, '/watchlist/list', arguments: watchlistArgs);
+                      }),
+                      child: ExpandedTileView(
+                        key: Key("watchlist_${type}_${data[idx].watchlistCompanyId}"),
+                        showedLot: _isShowedLots,
+                        inLot: isInLot,
+                        risk: _userInfo!.risk,
+                        isVisible: _isSummaryVisible,
+                        watchlist: data[idx],
+                        watchlistResult: result![idx],
+                        shareTitle: shareTitle,
+                        checkThousandOnPrice: checkThousandOnPrice,
+                        showEmptyWatchlist: _isShowEmptyWatchlist,
+                        showPriceDecimal: (showDecimalPrice ?? true),
+                      ),
+                    ),
+                  );
+                }),
+              ),
             ),
           ),
         ],

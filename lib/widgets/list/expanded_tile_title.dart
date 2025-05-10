@@ -73,8 +73,6 @@ class ExpandedTileTitle extends StatelessWidget {
       trendIcon = Ionicons.caret_down;
     }
 
-    //TODO: to create different sub header if the total shares are 0, instead
-    // showing day gain, we can showed the realized gain for this stock instead
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -256,43 +254,7 @@ class ExpandedTileTitle extends StatelessWidget {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      WatchlistSummaryInfo(
-                        text: "DAY GAIN",
-                        amount: totalDayGain,
-                        amountSize: 12,
-                        visibility: visibility,
-                        topPadding: 5,
-                      ),
-                      const SizedBox(width: 10,),
-                      WatchlistSummaryInfo(
-                        text: "VALUE",
-                        amount: totalValue,
-                        amountSize: 12,
-                        visibility: visibility,
-                        topPadding: 5,
-                      ),
-                      const SizedBox(width: 10,),
-                      WatchlistSummaryInfo(
-                        text: "COST",
-                        amount: totalCost,
-                        amountSize: 12,
-                        visibility: visibility,
-                        topPadding: 5,
-                      ),
-                      const SizedBox(width: 10,),
-                      WatchlistSummaryInfo(
-                        text: "AVERAGE",
-                        amount: averagePrice,
-                        amountSize: 12,
-                        visibility: visibility,
-                        topPadding: 5,
-                      ),
-                    ],
-                  ),
+                  child: _subHeader(),
                 ),
               ),
             ],
@@ -300,5 +262,62 @@ class ExpandedTileTitle extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _subHeader() {
+    if (share > 0) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          WatchlistSummaryInfo(
+            text: "DAY GAIN",
+            amount: totalDayGain,
+            amountSize: 12,
+            visibility: visibility,
+            topPadding: 5,
+          ),
+          const SizedBox(width: 10,),
+          WatchlistSummaryInfo(
+            text: "VALUE",
+            amount: totalValue,
+            amountSize: 12,
+            visibility: visibility,
+            topPadding: 5,
+          ),
+          const SizedBox(width: 10,),
+          WatchlistSummaryInfo(
+            text: "COST",
+            amount: totalCost,
+            amountSize: 12,
+            visibility: visibility,
+            topPadding: 5,
+          ),
+          const SizedBox(width: 10,),
+          WatchlistSummaryInfo(
+            text: "AVERAGE",
+            amount: averagePrice,
+            amountSize: 12,
+            visibility: visibility,
+            topPadding: 5,
+          ),
+        ],
+      );
+    }
+    else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          WatchlistSummaryInfo(
+            text: "REALISED GAIN",
+            amount: realisedGain,
+            amountSize: 12,
+            visibility: visibility,
+            topPadding: 5,
+          ),
+        ],
+      );
+    }
   }
 }

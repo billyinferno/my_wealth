@@ -28,9 +28,6 @@ class ExpandedTileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO: to compute the realized and unrealized if the share are 0 (empty)
-    // this is so we can see the realized gain instead of daily gain which not
-    // used for stock that already empty.
     final WatchlistComputationResult computeResult = detailWatchlistComputation(
       watchlist: watchlist,
       riskFactor: risk
@@ -66,7 +63,13 @@ class ExpandedTileView extends StatelessWidget {
     if (watchlistResult.totalShare <= 0) {
       // override header risk color and sub header into primaryDark
       headerRiskColor = primaryLight;
-      subHeaderRiskColor = primaryLight;
+
+      // use realised gain to determine the subHeaderRiskColor
+      subHeaderRiskColor = riskColor(
+        value: computeResult.totalSellAmount,
+        cost: computeResult.totalBuyAmount,
+        riskFactor: risk,
+      );
     }
 
     return ListTileTheme(
@@ -96,6 +99,7 @@ class ExpandedTileView extends StatelessWidget {
           totalValue: (isVisible ? watchlistResult.totalValue : null),
           totalCost: (isVisible ? watchlistResult.totalCost : null),
           averagePrice: (isVisible ? watchlistResult.averagePrice : null),
+          realisedGain: computeResult.totalRealisedGain,
           fca: (watchlist.watchlistCompanyFCA ?? false),
           showDecimal: showPriceDecimal,
           visibility: isVisible,

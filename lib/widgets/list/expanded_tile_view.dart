@@ -28,26 +28,39 @@ class ExpandedTileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: to compute the realized and unrealized if the share are 0 (empty)
+    // this is so we can see the realized gain instead of daily gain which not
+    // used for stock that already empty.
+    final WatchlistComputationResult computeResult = detailWatchlistComputation(
+      watchlist: watchlist,
+      riskFactor: risk
+    );
+    final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now());
+    
     // initialize the value
     bool isShowedLots = (showedLot ?? false);
     bool isInLot = (inLot ?? false);
-    final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now());
-
-    // after that check if the showEmptyWatchlist is set as false?
-    // if so ensure that if txn > 0 but totalShare is 0, just return SizedBox instead of expansion tile
-    if (!showEmptyWatchlist) {
-      // check if we already have transaction here or not?
-      if ((watchlistResult.totalBuy + watchlistResult.totalSell) > 0) {
-        // already have transaction, ensure we still have share, if not then just hide this
-        if (watchlistResult.totalShare <= 0) {
-          return const SizedBox.shrink();
-        }
-      }
-    }
+    bool isCalculatedLoss = true;
+    bool isEmpty = false;
 
     // get the header and sub header  color
     Color headerRiskColor = watchlistResult.headerRiskColor;
     Color subHeaderRiskColor = watchlistResult.subHeaderRiskColor;
+
+    // check whether we have empty shares or not?
+    // first check if we already have transaction here or not?
+    if ((watchlistResult.totalBuy + watchlistResult.totalSell) > 0) {
+      // already have transaction, ensure we still have share, if not then just hide this
+      if (watchlistResult.totalShare <= 0) {
+        isEmpty = true;
+      }
+    }
+
+    // if currently the watchlist is empty, check whether we need to show empty
+    // watchlist or not?
+    if (!showEmptyWatchlist && isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     // check if the total share is 0
     if (watchlistResult.totalShare <= 0) {
@@ -92,6 +105,19 @@ class ExpandedTileView extends StatelessWidget {
         collapsedTextColor: textPrimary,
         textColor: textPrimary,
         children: List<Widget>.generate(watchlist.watchlistDetail.length, (index) {
+          // default the calculated loss to false, since we will always assume
+          // that the watchlist is empty
+          isCalculatedLoss = false;
+
+          // check if watchlist is not empty? if not empty then check whether
+          // this watchlist date is same or before our company last update date
+          if (!isEmpty) {
+            isCalculatedLoss = watchlist.watchlistDetail[index].watchlistDetailDate.isSameOrBefore(
+              date: checkDate,
+            );
+          }
+
+          // return the tile children
           return ExpandedTileChildren(
             date: Globals.dfddMMyy.formatLocal(watchlist.watchlistDetail[index].watchlistDetailDate),
             shares: watchlist.watchlistDetail[index].watchlistDetailShare,
@@ -100,9 +126,7 @@ class ExpandedTileView extends StatelessWidget {
             currentPrice: watchlist.watchlistCompanyNetAssetValue!,
             averagePrice: watchlistResult.averagePrice,
             risk: risk,
-            calculateLoss: watchlist.watchlistDetail[index].watchlistDetailDate.isSameOrBefore(
-              date: checkDate,
-            ),
+            calculateLoss: isCalculatedLoss,
             visibility: isVisible,
           );
         }),

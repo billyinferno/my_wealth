@@ -19,6 +19,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final double? totalValue;
   final double? totalCost;
   final double? averagePrice;
+  final double realisedGain;
   final bool fca;
   final bool showDecimal;
   final bool visibility;
@@ -42,6 +43,7 @@ class ExpandedTileTitle extends StatelessWidget {
     this.totalValue,
     this.totalCost,
     this.averagePrice,
+    this.realisedGain = 0,
     this.fca = false,
     this.showDecimal = true,
     this.visibility = true,
@@ -71,6 +73,8 @@ class ExpandedTileTitle extends StatelessWidget {
       trendIcon = Ionicons.caret_down;
     }
 
+    //TODO: to create different sub header if the total shares are 0, instead
+    // showing day gain, we can showed the realized gain for this stock instead
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,

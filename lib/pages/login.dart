@@ -992,6 +992,7 @@ class LoginPageState extends State<LoginPage> {
         );
         Log.success(message: '🔟🔟🔟6️⃣ Get Broker Min and Max Date');
       }),
+      //TODO: to get the max date for each type (reksadana, saham, crypto, and gold)
     ]).then((_) {
       Log.success(message: "💯 Finished get additional information");
     });

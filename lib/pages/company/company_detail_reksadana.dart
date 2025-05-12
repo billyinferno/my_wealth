@@ -301,7 +301,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            _companyData.companyName,
+                            _companyData.companyName, //TODO: to also add warning icon for the check last update
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,

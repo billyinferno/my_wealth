@@ -325,6 +325,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         shareTitle: "Share",
         checkThousandOnPrice: false,
         scrollController: _scrollControllerMutual,
+        checkLastUpdate: true,
       );
     }
     return const Center(child: Text("No mutual fund watchlists"));
@@ -520,6 +521,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     required bool checkThousandOnPrice,
     required ScrollController scrollController,
     bool? showDecimalPrice,
+    bool checkLastUpdate = false, //TODO: to perform check for the last update and showed the fca/warning icon
+    IconData warningIcon = Ionicons.warning,
+    Color warningColor = secondaryColor,
   }) {
     return RefreshIndicator(
       onRefresh: (() async {
@@ -674,6 +678,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         checkThousandOnPrice: checkThousandOnPrice,
                         showEmptyWatchlist: _isShowEmptyWatchlist,
                         showPriceDecimal: (showDecimalPrice ?? true),
+                        warning: (data[idx].watchlistCompanyFCA ?? false), //TODO: to be based on the checklastupdate parameter
+                        warningIcon: warningIcon,
+                        warningColor: warningColor,
                       ),
                     ),
                   );

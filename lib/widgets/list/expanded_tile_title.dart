@@ -20,7 +20,9 @@ class ExpandedTileTitle extends StatelessWidget {
   final double? totalCost;
   final double? averagePrice;
   final double realisedGain;
-  final bool fca;
+  final bool warning;
+  final IconData warningIcon;
+  final Color warningColor;
   final bool showDecimal;
   final bool visibility;
   final bool isLot;
@@ -44,7 +46,9 @@ class ExpandedTileTitle extends StatelessWidget {
     this.totalCost,
     this.averagePrice,
     this.realisedGain = 0,
-    this.fca = false,
+    this.warning = false,
+    this.warningIcon = Ionicons.warning,
+    this.warningColor = secondaryColor,
     this.showDecimal = true,
     this.visibility = true,
     this.isLot = false,
@@ -98,15 +102,15 @@ class ExpandedTileTitle extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Visibility(
-                            visible: fca,
-                            child: const Icon(
-                              Ionicons.warning,
-                              color: secondaryColor,
+                            visible: warning,
+                            child: Icon(
+                              warningIcon,
+                              color: warningColor,
                               size: 15,
                             )
                           ),
                           Visibility(
-                            visible: fca,
+                            visible: warning,
                             child: const SizedBox(width: 5,)
                           ),
                           Expanded(

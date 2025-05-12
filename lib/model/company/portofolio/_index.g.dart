@@ -1,0 +1,1 @@
+export './company_portofolio_asset_model.dart';

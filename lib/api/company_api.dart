@@ -55,9 +55,15 @@ class CompanyAPI {
     });
 
     // parse the response to get the detail company information
-    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
-    CompanyDetailModel company = CompanyDetailModel.fromJson(commonModel.data[0]['attributes']);
-    return company;
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    if (commonModel.data.length == 1) {
+      dynamic data = commonModel.data[0];
+      CompanyDetailModel company = CompanyDetailModel.fromJson(data['attributes']);
+      return company;
+    }
+    else {
+      throw 'Invalid company detail data';
+    }
   }
 
   Future<List<CompanySearchModel>> getCompanyByName({
@@ -503,5 +509,38 @@ class CompanyAPI {
       );
       throw error as NetException;
     }
+  }
+
+  Future<CompanyPortofolioAssetModel> getCompanyPortofolioAsset({
+    required int companyId,
+  }) async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanyPortofolioAsset}/id/$companyId'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyPortofolioAsset',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the detail company information
+    late CompanyPortofolioAssetModel portofolioAsset;
+
+    try {
+      CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+      portofolioAsset = CompanyPortofolioAssetModel.fromJson(commonModel.data['attributes']);
+      
+    }
+    catch(e) {
+      Log.error(
+        message: 'Error converting portofolio asset data',
+        error: e,
+      );
+    }
+    
+    return portofolioAsset;
   }
 }

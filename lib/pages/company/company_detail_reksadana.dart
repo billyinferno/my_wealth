@@ -49,6 +49,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late CompanyWeekdayPerformanceModel _monthlyPerformance;
   late DateTime _monthlyPerformanceDateFrom;
   late DateTime _monthlyPerformanceDateTo;
+  late CompanyPortofolioAssetModel _portofolioAssetModel;
+  late List<BarChartData> _portofolioBarChart;
   late MyYearPickerCalendarType _calendarType;
   late bool _calendarWeeklyType;
 
@@ -92,7 +94,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     super.initState();
 
     // initialize tab
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
 
     // initialize variable
     _recurring = true;
@@ -172,6 +174,9 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
 
     // default the weekly calendar to range
     _calendarWeeklyType = true;
+
+    // initialize the bar chart
+    _portofolioBarChart = [];
 
     _getData = _getInitData();
   }
@@ -584,6 +589,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           tabs: const <Widget>[
             Tab(text: 'SUMMARY',),
             Tab(text: 'COMPARE'),
+            Tab(text: 'PORTOFOLIO',),
           ],
         ),
         const SizedBox(height: 10,),
@@ -593,6 +599,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             children: <Widget>[
               _tabSummaryInfo(),
               _tabCompareInfo(),
+              _tabPortofolioAssetInfo(),
             ],
           ),
         ),
@@ -831,6 +838,98 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tabPortofolioAssetInfo() {
+    if (_portofolioAssetModel.portofolioDate == null) {
+      return Center(
+        child: Text("No portofolio data available"),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: Text(
+              "Portofolio Date",
+              style: TextStyle(
+                fontSize: 11,
+                color: secondaryLight,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Center(
+            child: Text(
+              Globals.dfDDMMMyyyy.format(
+                _portofolioAssetModel.portofolioDate!,
+              ),
+            ),
+          ),
+          BarChart(
+            data: _portofolioBarChart,
+            showLegend: false,
+          ),
+          const SizedBox(height: 10,),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _portofolioAssetModel.portofolio.length,
+              itemBuilder: (context, index) {
+                int colorIndex = index % (Globals.colorList.length - 1);
+
+                return Container(
+                  padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      )
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Globals.colorList[colorIndex],
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        child: Text(
+                          "${_portofolioAssetModel.portofolio[index].code.isNotEmpty ? '(${_portofolioAssetModel.portofolio[index].code}) ' : ''}${_portofolioAssetModel.portofolio[index].name}",
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Text(
+                        "${_portofolioAssetModel.portofolio[index].value}%",
+                        style: TextStyle(
+                          color: accentColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -2524,6 +2623,33 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           toDate: _monthlyPerformanceDateTo,
         ).then((resp) {
           _monthlyPerformance = resp;
+        }),
+
+        _companyApi.getCompanyPortofolioAsset(
+          companyId: _companyData.companyId,
+        ).then((resp) {
+          _portofolioAssetModel = resp;
+
+          double totalValue = 0;
+          for(int i=0; i<_portofolioAssetModel.portofolio.length; i++) {
+            totalValue += _portofolioAssetModel.portofolio[i].value;
+          }
+
+          // clear the bar chart data first
+          _portofolioBarChart.clear();
+
+          // generate bar chart data based on the portofolio
+          for(int i=0; i<_portofolioAssetModel.portofolio.length; i++) {
+            int colorIndex = i % (Globals.colorList.length - 1);
+            _portofolioBarChart.add(
+              BarChartData(
+                title: _portofolioAssetModel.portofolio[i].name,
+                value: _portofolioAssetModel.portofolio[i].value,
+                total: totalValue,
+                color: Globals.colorList[colorIndex],
+              )
+            );
+          }
         }),
 
         // check if this company owned by user or not?

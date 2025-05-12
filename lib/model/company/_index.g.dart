@@ -1,3 +1,4 @@
+export './portofolio/_index.g.dart';
 export './company_detail_model.dart';
 export './company_info_fundamentals_model.dart';
 export './company_info_reksadana_model.dart';

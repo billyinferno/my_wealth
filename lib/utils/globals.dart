@@ -15,6 +15,7 @@ class Globals {
   static String apiBroker = '${apiURL}api/company-brokers';
   static String apiBrokerSummary = '${apiURL}api/broker-summaries';
   static String apiCompanies = '${apiURL}api/companies';
+  static String apiCompanyPortofolioAsset = '${apiURL}api/portofolio-asset';
   static String apiCompanySaham = '${apiURL}api/company-saham';
   static String apiFavourites = '${apiURL}api/favourites';
   static String apiIndices = '${apiURL}api/indices';

@@ -22,6 +22,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   late String _filterSort;
   final Map<String, String> _filterList = {};
 
+  late CompanyLastUpdateModel _lastUpdate;
   late Future<bool> _getData;
 
   List<FavouritesListModel> _faveList = [];
@@ -54,6 +55,11 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     // default filter mode to Code and ASC
     _filterMode = "nm";
     _filterSort = "ASC";
+
+    // get the company last update
+    _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
+      type: CompanyLastUpdateType.max,
+    );
 
     // get the favourite company list for reksadana
     _getData = _getInitData();
@@ -362,6 +368,14 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: _sortedFaveList.length,
                 itemBuilder: ((context, index) {
+                  bool isWarning = false;
+                  // check for the company last update
+                  if (_sortedFaveList[index].favouritesLastUpdate != null) {
+                    if (_sortedFaveList[index].favouritesLastUpdate!.isBeforeDate(date: _lastUpdate.reksadana)) {
+                      isWarning = true;
+                    }
+                  }
+
                   return InkWell(
                     onTap: (() {
                       CompanyDetailArgs args = CompanyDetailArgs(
@@ -383,6 +397,8 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                       value: _sortedFaveList[index].favouritesNetAssetValue,
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),
+                      warning: isWarning,
+                      warningIcon: Ionicons.lock_closed,
                       subWidget: _subInfoWidget(_sortedFaveList[index]),
                       onPress: (() async {
                         await _setFavourite(index);

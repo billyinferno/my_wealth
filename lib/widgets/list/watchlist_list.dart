@@ -9,6 +9,9 @@ class WatchlistList extends StatelessWidget {
   final Color riskColor;
   final bool canAdd;
   final bool fca;
+  final bool warning;
+  final IconData warningIcon;
+  final Color warningColor;
   final VoidCallback onPress;
   const WatchlistList({
     super.key,
@@ -18,6 +21,9 @@ class WatchlistList extends StatelessWidget {
     required this.riskColor,
     required this.canAdd,
     required this.fca,
+    this.warning = false,
+    this.warningIcon = Ionicons.warning,
+    this.warningColor = secondaryColor,
     required this.onPress
   });
 
@@ -59,16 +65,26 @@ class WatchlistList extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Visibility(
-                                visible: fca,
-                                child: const Icon(
-                                  Ionicons.warning,
-                                  color: secondaryColor,
-                                  size: 15,
+                                visible: warning,
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                  child: Icon(
+                                    warningIcon,
+                                    color: warningColor,
+                                    size: 15,
+                                  ),
                                 )
                               ),
                               Visibility(
                                 visible: fca,
-                                child: const SizedBox(width: 5,)
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                  child: const Icon(
+                                    Ionicons.warning,
+                                    color: secondaryColor,
+                                    size: 15,
+                                  ),
+                                )
                               ),
                               Expanded(
                                 child: Text(

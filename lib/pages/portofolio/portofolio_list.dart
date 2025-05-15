@@ -92,8 +92,8 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
     // get show sort
     _showSort = (_args.showSort ?? true);
 
-    // default the show zero product into true
-    _showZeroProduct = true;
+    // default the show zero product into false
+    _showZeroProduct = false;
   }
 
   @override
@@ -383,10 +383,6 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                 ],
               ),
             ),
-            BarChart(
-              data: _barChartData,
-              showLegend: false,
-            ),
             const SizedBox(height: 5,),
             InkWell(
               onTap: (() {
@@ -421,6 +417,11 @@ class _PortofolioListPageState extends State<PortofolioListPage> {
                   ],
                 ),
               ),
+            ),
+            BarChart(
+              data: _barChartData,
+              showLegend: true,
+              showEmpty: _showZeroProduct,
             ),
             const SizedBox(height: 15,),
             Expanded(

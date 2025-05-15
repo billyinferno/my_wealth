@@ -98,6 +98,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePBV;
   late MyYearPickerCalendarType _calendarMonthlyType;
   late bool _calendarWeeklyRange;
+  late CompanyLastUpdateModel _lastUpdate;
 
   final CompanyAPI _companyApi = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
@@ -147,6 +148,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
   late List<WatchlistListModel> _watchlists;
   late bool _isOwned;
+  late bool _isWarning;
 
   int _numPrice = 0;
   BodyPage _bodyPage = BodyPage.summary;
@@ -185,6 +187,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     // get user watchlists data
     _watchlists = WatchlistSharedPreferences.getWatchlist(type: "saham");
     _isOwned = false;
+
+    // get the company max last update
+    _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
+      type: CompanyLastUpdateType.max,
+    );
 
     // initialize graph data
     _graphData = [];
@@ -263,6 +270,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       key: CalendarType.day,
       icon: LucideIcons.calendar_range,
     ));
+
+    // default the is warning to false
+    _isWarning = false;
 
     // get all the data needed during initialization
     _getData = _getInitData();
@@ -403,17 +413,36 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            (
-                              _companyDetail.companySymbol == null ?
-                              "" :
-                              "(${_companyDetail.companySymbol!}) "
-                            ) + _companyData.companyName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Visibility(
+                                visible: _isWarning,
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                  child: Icon(
+                                    Ionicons.lock_closed,
+                                    size: 14,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  (
+                                    _companyDetail.companySymbol == null ?
+                                    "" :
+                                    "(${_companyDetail.companySymbol!}) "
+                                  ) + _companyData.companyName,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             height: 5,
@@ -5887,6 +5916,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       ).then((resp) {
         // copy the response to company detail data
         _companyDetail = resp;
+
+        // check if the company already decommisioned or not?
+        if (_companyDetail.companyLastUpdate != null) {
+          if (_companyDetail.companyLastUpdate!.isBeforeDate(date: _lastUpdate.saham)) {
+            _isWarning = true;
+          }
+        }
 
         // set the broker summary date based on the last update of the company
         _brokerSummaryDateFrom = (_companyDetail.companyLastUpdate ?? DateTime.now());

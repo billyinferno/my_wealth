@@ -3,6 +3,7 @@ export './company_detail_model.dart';
 export './company_info_fundamentals_model.dart';
 export './company_info_reksadana_model.dart';
 export './company_info_saham_price_model.dart';
+export './company_last_update_model.dart';
 export './company_list_model.dart';
 export './company_saham_additional_model.dart';
 export './company_saham_dividend_model.dart';

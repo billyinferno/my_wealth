@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -19,6 +20,8 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
   late String _filterSort;
   final Map<String, String> _filterList = {};
 
+  late CompanyLastUpdateModel _lastUpdate;
+
   late Future<bool> _getData;
 
   List<FavouritesListModel> _faveList = [];
@@ -28,6 +31,11 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
   @override
   void initState() {
     super.initState();
+
+    // get the max last update
+    _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
+      type: CompanyLastUpdateType.max,
+    );
 
     // list all the filter that we want to put here
     _filterList["nm"] = "Name";
@@ -168,6 +176,14 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: _sortedFaveList.length,
                 itemBuilder: ((context, index) {
+                  bool isWarning = false;
+                  // check for the company last update
+                  if (_sortedFaveList[index].favouritesLastUpdate != null) {
+                    if (_sortedFaveList[index].favouritesLastUpdate!.isBeforeDate(date: _lastUpdate.reksadana)) {
+                      isWarning = true;
+                    }
+                  }
+
                   return InkWell(
                     onTap: (() {
                       CompanyDetailArgs args = CompanyDetailArgs(
@@ -189,6 +205,8 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
                       value: _sortedFaveList[index].favouritesNetAssetValue,
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),
+                      warning: isWarning,
+                      warningIcon: Ionicons.lock_closed,
                       subWidget: _subInfoWidget(_sortedFaveList[index]),
                       onPress: (() async {
                         await _setFavourite(index);

@@ -77,6 +77,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   late BodyPage _bodyPage;
   late ColumnType _columnType;
   late SortType _sortType;
+  late bool _isWarning;
+  late CompanyLastUpdateModel _lastUpdate;
   
   bool _showCurrentPriceComparison = false;
   bool _recurring = true;
@@ -131,6 +133,11 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     // assume that user don't own this
     _isOwned = false;
 
+    // get the max company last update
+    _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
+      type: CompanyLastUpdateType.max,
+    );
+
     // initialize graph data
     _graphData = [];
     _unitData = [];
@@ -178,6 +185,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     // initialize the bar chart
     _portofolioBarChart = [];
 
+    // default the is warning into false
+    _isWarning = false;
+
+    // get the data
     _getData = _getInitData();
   }
 
@@ -300,13 +311,32 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            _companyData.companyName, //TODO: to also add warning icon for the check last update
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Visibility(
+                                visible: _isWarning,
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                  child: Icon(
+                                    Ionicons.lock_closed,
+                                    size: 14,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  _companyData.companyName,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                           Text(
                             formatCurrency(_companyDetail.companyNetAssetValue!),
@@ -2485,6 +2515,13 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
         // initialize the monthly performance date
         _monthlyPerformanceDateFrom = DateTime(_weekdayPerformanceDateTo.year, 1, 1);
         _monthlyPerformanceDateTo = _weekdayPerformanceDateTo;
+
+        // check whether the company last update is before the maximum update
+        if (_companyDetail.companyLastUpdate != null) {
+          if (_companyDetail.companyLastUpdate!.isBeforeDate(date: _lastUpdate.reksadana)) {
+            _isWarning = true;
+          }
+        }
       }).onError((error, stackTrace) {
         Log.error(
           message: "Error when get company information",

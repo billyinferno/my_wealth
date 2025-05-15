@@ -990,9 +990,16 @@ class LoginPageState extends State<LoginPage> {
           minDate: resp.minDate,
           maxDate: resp.maxDate
         );
-        Log.success(message: '🔟🔟🔟6️⃣ Get Broker Min and Max Date');
+        Log.success(message: '🔟🔟🔟5️⃣ Get Broker Min and Max Date');
       }),
-      //TODO: to get the max date for each type (reksadana, saham, crypto, and gold)
+      _companyAPI.getCompanyMaxUpdate().then((resp) async {
+        if (!mounted) return;
+        await CompanySharedPreferences.setCompanyLastUpdateModel(
+          type: CompanyLastUpdateType.max,
+          lastUpdateModel: resp,
+        );
+        Log.success(message: '🔟🔟🔟6️⃣ Get Company Max Last Update');
+      }),
     ]).then((_) {
       Log.success(message: "💯 Finished get additional information");
     });

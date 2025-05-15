@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
 
+enum CompanyLastUpdateType {
+  max,
+  min,
+}
 class CompanySharedPreferences {
   static const _sectorNameListKey = "sector_name_list";
   static const _companyListKey = "company_list_";
   static const _companySearchKey = "company_search_";
+  static const _companyLastUpdate = "company_last_update_";
 
   static Future<void> setSectorNameList({
     required List<SectorNameModel> sectorNameList
@@ -213,5 +218,63 @@ class CompanySharedPreferences {
     // clear all the company list we stored so we can re-fetch it with the
     // latest information.
     LocalBox.delete(key: _companySearchKey, cache: true);
+  }
+
+  static Future<void> setCompanyLastUpdateModel({
+    required CompanyLastUpdateType type,
+    required CompanyLastUpdateModel lastUpdateModel
+  }) async {
+    String key = _companyLastUpdate;
+    switch(type) {
+      case CompanyLastUpdateType.max:
+        key += 'max';
+        break;
+      case CompanyLastUpdateType.min:
+        key += 'min';
+        break;
+    }
+
+    // convert the json to string so we can stored it on the local storage
+    String lastUpdateString = jsonEncode(lastUpdateModel.toJson());
+    LocalBox.putString(
+      key: key,
+      value: lastUpdateString
+    );
+  }
+
+  static CompanyLastUpdateModel getCompanyLastUpdateModel({
+    required CompanyLastUpdateType type,
+  }) {
+    String key = _companyLastUpdate;
+    switch(type) {
+      case CompanyLastUpdateType.max:
+        key += 'max';
+        break;
+      case CompanyLastUpdateType.min:
+        key += 'min';
+        break;
+    }
+
+    // get the data from local box
+    String lastUpdateString = (
+      LocalBox.getString(key: key) ?? ''
+    );
+
+    // check if the list is empty or not?
+    if (lastUpdateString.isNotEmpty) {
+      // string is not empty, parse the string to company max update
+      CompanyLastUpdateModel ret = CompanyLastUpdateModel.fromJson(jsonDecode(lastUpdateString));
+
+      // return the company max update model
+      return ret;
+    }
+    else {
+      // no data
+      return CompanyLastUpdateModel(
+        reksadana: DateTime.now(),
+        crypto: DateTime.now(),
+        saham: DateTime.now(),
+      );
+    }
   }
 }

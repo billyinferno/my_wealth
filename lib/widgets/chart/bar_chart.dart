@@ -23,6 +23,7 @@ class BarChart extends StatelessWidget {
   final BoxDecoration barDecoration;
   final double legendPadding;
   final bool showLegend;
+  final bool showEmpty;
   const BarChart({
     super.key,
     required this.data,
@@ -55,6 +56,7 @@ class BarChart extends StatelessWidget {
     ),
     this.legendPadding = 5,
     this.showLegend = true,
+    this.showEmpty = true,
   });
 
   @override
@@ -89,11 +91,21 @@ class BarChart extends StatelessWidget {
           Visibility(
             visible: showLegend,
             child: Container(
+              width: double.infinity,
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: List<Widget>.generate(data.length, (index) {
+                  // check whether we need to show empty data or not?
+                  if (!showEmpty) {
+                    // if not then we need to check whether we have value on
+                    // this or not?
+                    if (data[index].value <= 0) {
+                      return const SizedBox.shrink();
+                    }
+                  }
+
                   return _barLegend(
                     text: data[index].title,
                     color: data[index].color
@@ -111,7 +123,9 @@ class BarChart extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
+        const SizedBox(width: 5,),
         Container(
           height: 10,
           width: 10,
@@ -127,6 +141,7 @@ class BarChart extends StatelessWidget {
             fontSize: 10,
           ),
         ),
+        const SizedBox(width: 5,),
       ],
     );
   }

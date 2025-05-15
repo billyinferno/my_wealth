@@ -21,8 +21,13 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
   late List<CompanySearchModel> _companyList;
   late List<CompanySearchModel> _companyFilterResult;
   late UserLoginInfoModel? _userInfo;
+  late CompanyLastUpdateModel _lastUpdate;
   late Future<bool> _getData;
   late bool _isAdd;
+  late bool _showFca;
+  late bool _showWarning;
+  late String _title;
+  late DateTime _currentLastUpdate;
 
   @override
   void initState() {
@@ -30,9 +35,27 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
 
     // get user information
     _userInfo = UserSharedPreferences.getUserInfo();
+
+    // get the max last update
+    _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
+      type: CompanyLastUpdateType.max,
+    );
     
     // convert the arguments being passed down to knew what we want to add
     _args = widget.watchlistArgs as WatchlistAddArgs;
+
+    // default the title value to empty
+    _title = '';
+
+    // default the last update to today
+    _currentLastUpdate = DateTime.now();
+
+    // default both show fca and warning to true
+    _showFca = true;
+    _showWarning = true;
+
+    // call initTitleAndDate
+    _initTitleAndDate();
 
     // set the search result as empty, then get the company list from API
     _companyList = [];
@@ -110,7 +133,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
         ),
         title: Center(
           child: Text(
-            _getTitle(),
+            _title,
             style: const TextStyle(
               color: secondaryColor,
             ),
@@ -143,6 +166,56 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 }),
               ),
             ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      CupertinoSwitch(
+                        value: _showWarning,
+                        activeTrackColor: secondaryLight,
+                        onChanged: (value) {
+                          setState(() {
+                            _showWarning = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 5,),
+                      Text(
+                        'Show Decomm'
+                      ),
+                    ],
+                  ),
+                  Visibility(
+                    visible: (_args.type.toLowerCase() == 'saham'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        CupertinoSwitch(
+                          value: _showFca,
+                          activeTrackColor: secondaryLight,
+                          onChanged: (value) {
+                            setState(() {
+                              _showFca = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 5,),
+                        Text(
+                          'Show FCA'
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 10,),
             _generateResult(),
           ],
@@ -151,17 +224,19 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
     );
   }
 
-  String _getTitle() {
+  void _initTitleAndDate() {
     if (_args.type == "reksadana") {
-      return "Add Mutual Fund Watchlist";
+      _title = "Add Mutual Fund Watchlist";
+      _currentLastUpdate = _lastUpdate.reksadana;
     }
     else if (_args.type == "saham") {
-      return "Add Stock Watchlist";
+      _title = "Add Stock Watchlist";
+      _currentLastUpdate = _lastUpdate.saham;
     }
     else if (_args.type == "crypto") {
-      return "Add Crypto Watchlist";
+      _title = "Add Crypto Watchlist";
+      _currentLastUpdate = _lastUpdate.crypto;
     }
-    return "";
   }
 
   Widget _generateResult() {
@@ -169,6 +244,27 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: List<Widget>.generate(_companyFilterResult.length, (index) {
+          bool isFca = (_companyFilterResult[index].companyFCA ?? false);
+          
+          // check company last update with current last update
+          bool isWarning = false;
+          if (_companyFilterResult[index].companyLastUpdate.isBeforeDate(date: _currentLastUpdate)) {
+            isWarning = true;
+          }
+
+          // check whether we showed fca or not?
+          if (!_showWarning) {
+            if (isWarning) {
+              return const SizedBox.shrink();
+            }
+          }
+
+          if (!_showFca) {
+            if (isFca) {
+              return const SizedBox.shrink();
+            }
+          }
+
           return WatchlistList(
             name: _companyFilterResult[index].companyName,
             price: formatCurrency(
@@ -183,7 +279,9 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
               riskFactor: _userInfo!.risk
             ),
             canAdd: _companyFilterResult[index].companyCanAdd,
-            fca: (_companyFilterResult[index].companyFCA ?? false),
+            fca: isFca,
+            warning: isWarning,
+            warningIcon: Ionicons.lock_closed,
             onPress: (() async {
               await _addCompanyToWatchlist(index).then((_) async {
                 Log.success(

@@ -20,6 +20,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final double? totalCost;
   final double? averagePrice;
   final double realisedGain;
+  final bool fca;
   final bool warning;
   final IconData warningIcon;
   final Color warningColor;
@@ -46,6 +47,7 @@ class ExpandedTileTitle extends StatelessWidget {
     this.totalCost,
     this.averagePrice,
     this.realisedGain = 0,
+    this.fca = false,
     this.warning = false,
     this.warningIcon = Ionicons.warning,
     this.warningColor = secondaryColor,
@@ -102,16 +104,26 @@ class ExpandedTileTitle extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Visibility(
-                            visible: warning,
-                            child: Icon(
-                              warningIcon,
-                              color: warningColor,
-                              size: 15,
+                            visible: fca,
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                              child: Icon(
+                                Ionicons.warning,
+                                color: secondaryColor,
+                                size: 15,
+                              ),
                             )
                           ),
                           Visibility(
                             visible: warning,
-                            child: const SizedBox(width: 5,)
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                              child: Icon(
+                                warningIcon,
+                                color: warningColor,
+                                size: 15,
+                              ),
+                            )
                           ),
                           Expanded(
                             child: Text(

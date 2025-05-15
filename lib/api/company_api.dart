@@ -543,4 +543,44 @@ class CompanyAPI {
     
     return portofolioAsset;
   }
+
+  Future<CompanyLastUpdateModel> getCompanyMaxUpdate() async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/max/update'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyMaxUpdate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the detail company information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyLastUpdateModel companyMaxUpdate = CompanyLastUpdateModel.fromJson(commonModel.data['attributes']);
+
+    return companyMaxUpdate;
+  }
+
+  Future<CompanyLastUpdateModel> getCompanyMinUpdate() async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanies}/min/update'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyMinUpdate',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the detail company information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanyLastUpdateModel companyMinUpdate = CompanyLastUpdateModel.fromJson(commonModel.data['attributes']);
+
+    return companyMinUpdate;
+  }
 }

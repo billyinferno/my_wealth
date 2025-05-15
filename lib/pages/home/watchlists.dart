@@ -21,6 +21,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   final ScrollController _scrollControllerGold = ScrollController();
   final ScrollController _scrollControllerHistory = ScrollController();
   final TextStyle _historyStyle = const TextStyle(fontSize: 11, color: textPrimary);
+
   late TabController _tabController;
   late UserLoginInfoModel? _userInfo;
   late List<WatchlistListModel>? _watchlistReksadana;
@@ -33,7 +34,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
   late List<ComputeWatchlistResult> _watchlistResultSaham;
   late List<ComputeWatchlistResult> _watchlistResultCrypto;
   late List<ComputeWatchlistResult> _watchlistResultGold;
-  
+  late CompanyLastUpdateModel _companyMaxLastUpdate;
+
   bool _isShowedLots = false;
   bool _isSummaryVisible = false;
   bool _isShowEmptyWatchlist = true;
@@ -52,6 +54,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     _watchlistCrypto = WatchlistSharedPreferences.getWatchlist(type: "crypto");
     _watchlistGold = WatchlistSharedPreferences.getWatchlist(type: "gold");
     _watchlistHistory = WatchlistSharedPreferences.getWatchlistHistory();
+    _companyMaxLastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(type: CompanyLastUpdateType.max);
 
     // sort the watchlist
     _watchlistReksadana = _sortWatchlist(_watchlistReksadana!);
@@ -326,6 +329,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         checkThousandOnPrice: false,
         scrollController: _scrollControllerMutual,
         checkLastUpdate: true,
+        lastUpdate: _companyMaxLastUpdate.reksadana,
+        warningIcon: Ionicons.lock_closed,
       );
     }
     return const Center(child: Text("No mutual fund watchlists"));
@@ -521,10 +526,14 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     required bool checkThousandOnPrice,
     required ScrollController scrollController,
     bool? showDecimalPrice,
-    bool checkLastUpdate = false, //TODO: to perform check for the last update and showed the fca/warning icon
+    bool checkLastUpdate = false,
+    DateTime? lastUpdate,
     IconData warningIcon = Ionicons.warning,
     Color warningColor = secondaryColor,
   }) {
+    // check if we have last update or not?
+    final DateTime currentLastUpdate = (lastUpdate ?? DateTime.now());
+
     return RefreshIndicator(
       onRefresh: (() async {
         await _refreshWatchlist().then((_) {  
@@ -588,6 +597,19 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     shareName: shareTitle,
                     isLot: isInLot,
                   );
+
+                  bool isWarning = false;
+
+                  // check if we need to check last update date or not?
+                  if (checkLastUpdate) {
+                    // check current last update for this watchlist
+                    if (data[idx].watchlistCompanyLastUpdate != null) {
+                      // compare the company last update
+                      if (data[idx].watchlistCompanyLastUpdate!.isBeforeDate(date: currentLastUpdate)) {
+                        isWarning = true;
+                      }
+                    } 
+                  }
               
                   return Slidable(
                     endActionPane: ActionPane(
@@ -678,7 +700,8 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         checkThousandOnPrice: checkThousandOnPrice,
                         showEmptyWatchlist: _isShowEmptyWatchlist,
                         showPriceDecimal: (showDecimalPrice ?? true),
-                        warning: (data[idx].watchlistCompanyFCA ?? false), //TODO: to be based on the checklastupdate parameter
+                        fca: (data[idx].watchlistCompanyFCA ?? false),
+                        warning: isWarning,
                         warningIcon: warningIcon,
                         warningColor: warningColor,
                       ),

@@ -13,6 +13,7 @@ class ExpandedTileView extends StatelessWidget {
   final bool checkThousandOnPrice;
   final bool showEmptyWatchlist;
   final bool showPriceDecimal;
+  final bool fca;
   final bool warning;
   final IconData warningIcon;
   final Color warningColor; 
@@ -28,6 +29,7 @@ class ExpandedTileView extends StatelessWidget {
     this.checkThousandOnPrice = false,
     required this.showEmptyWatchlist,
     required this.showPriceDecimal,
+    this.fca = false,
     this.warning = false,
     this.warningIcon = Ionicons.warning,
     this.warningColor = secondaryColor,
@@ -107,7 +109,8 @@ class ExpandedTileView extends StatelessWidget {
           totalCost: (isVisible ? watchlistResult.totalCost : null),
           averagePrice: (isVisible ? watchlistResult.averagePrice : null),
           realisedGain: computeResult.totalRealisedGain,
-          warning: (watchlist.watchlistCompanyFCA ?? warning),
+          fca: fca,
+          warning: warning,
           warningIcon: warningIcon,
           warningColor: warningColor,
           showDecimal: showPriceDecimal,

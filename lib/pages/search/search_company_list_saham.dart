@@ -159,6 +159,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
               ),
             ),
             const SizedBox(height: 10,),
+            //TODO: to add to filter fca and decomm stock
             Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Text(

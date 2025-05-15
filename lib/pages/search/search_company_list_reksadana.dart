@@ -339,7 +339,8 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                   const SizedBox(width: 5,),
                                   const Text("Show All"),
                                 ],
-                              )
+                              ),
+                              //TODO: to add filter for the decomm mutual fund
                             ],
                           ),
                         ],

@@ -17,7 +17,7 @@ class InsightBrokerCollectModel {
     final int summaryTotalSellValue;
     final int summaryCountSell;
     final int summaryTotalLeft;
-    final List<Datum> data;
+    final List<BrokerCollectCompany> data;
 
     InsightBrokerCollectModel({
         required this.brokerSummaryId,
@@ -40,7 +40,7 @@ class InsightBrokerCollectModel {
         summaryTotalSellValue: json["summary_total_sell_value"],
         summaryCountSell: json["summary_count_sell"],
         summaryTotalLeft: json["summary_total_left"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        data: List<BrokerCollectCompany>.from(json["data"].map((x) => BrokerCollectCompany.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -56,9 +56,10 @@ class InsightBrokerCollectModel {
     };
 }
 
-class Datum {
+class BrokerCollectCompany {
     final String code;
     final String name;
+    final bool fca;
     final int lastPrice;
     final int totalBuy;
     final int totalBuyValue;
@@ -71,9 +72,10 @@ class Datum {
     final int totalLeft;
     final double totalPercentage;
 
-    Datum({
+    BrokerCollectCompany({
         required this.code,
         required this.name,
+        required this.fca,
         required this.lastPrice,
         required this.totalBuy,
         required this.totalBuyValue,
@@ -87,9 +89,10 @@ class Datum {
         required this.totalPercentage,
     });
 
-    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    factory BrokerCollectCompany.fromJson(Map<String, dynamic> json) => BrokerCollectCompany(
         code: json["code"],
         name: json["name"],
+        fca: (json["fca"] ?? false),
         lastPrice: (json["last_price"] ?? 0),
         totalBuy: json["total_buy"],
         totalBuyValue: json["total_buy_value"],
@@ -106,6 +109,7 @@ class Datum {
     Map<String, dynamic> toJson() => {
         "code": code,
         "name": name,
+        "fca": fca,
         "last_price": lastPrice,
         "total_buy": totalBuy,
         "total_buy_value": totalBuyValue,

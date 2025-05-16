@@ -122,6 +122,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late CalendarType _brokerCalendarType;
   final List<FlipFlopItem<CalendarType>> _flipFlopItem = [];
 
+  late Map<String, SectorSummaryModel> _mapSectorSummary;
+
   late DateTime _brokerSummaryDateFrom;
   late DateTime _brokerSummaryDateTo;
   late DateTime _topBrokerDateFrom;
@@ -193,6 +195,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       type: CompanyLastUpdateType.max,
     );
 
+    // convert list to map
+    _mapSectorSummary = {
+      for (SectorSummaryModel v in InsightSharedPreferences.getSectorSummaryList()) v.sectorName.toUpperCase() : v
+    };
+
     // initialize graph data
     _graphData = [];
     _heatMapGraphData = {};
@@ -203,13 +210,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     // initialize the other company variable that will be used for compare
     _otherCompanyCode = null;
     _otherCompanyDetail = CompanyDetailModel(
-        companyId: -1,
-        companySymbol: null,
-        companyName: '',
-        companyType: '',
-        companyIndustry: '',
-        companySharia: false,
-        companyPrices: []);
+      companyId: -1,
+      companySymbol: null,
+      companyName: '',
+      companyType: '',
+      companyIndustry: '',
+      companySharia: false,
+      companyPrices: [],
+    );
     _otherInfoFundamental = InfoFundamentalsModel(code: '');
 
     // initialize the broker summary accumulation as empty list
@@ -300,16 +308,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   Widget build(BuildContext context) {
     // return _generatePage();
     return FutureBuilder(
-        future: _getData,
-        builder: ((context, snapshot) {
-          if (snapshot.hasError) {
-            return const CommonErrorPage(errorText: 'Error loading stock data');
-          } else if (snapshot.hasData) {
-            return _generatePage();
-          } else {
-            return const CommonLoadingPage();
-          }
-        }));
+      future: _getData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error loading stock data');
+        } else if (snapshot.hasData) {
+          return _generatePage();
+        } else {
+          return const CommonLoadingPage();
+        }
+      }),
+    );
   }
 
   Widget _generatePage() {
@@ -457,9 +466,22 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                               children: [
                                 Visibility(
                                   visible: (_companyDetail.companyType.isNotEmpty),
-                                  child: _chip(
-                                    text: _companyDetail.companyType,
-                                    subText: _companyDetail.companySubType,
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (_mapSectorSummary.containsKey(_companyDetail.companyType.toUpperCase())) {
+                                        // get the industry args
+                                        IndustrySummaryArgs industryArgs = IndustrySummaryArgs(
+                                          sectorData: _mapSectorSummary[_companyDetail.companyType.toUpperCase()]!,
+                                        );
+
+                                        // navigate to the industry page
+                                        Navigator.pushNamed(context, '/insight/stock/industry', arguments: industryArgs);
+                                      }
+                                    },
+                                    child: _chip(
+                                      text: _companyDetail.companyType,
+                                      subText: _companyDetail.companySubType,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(

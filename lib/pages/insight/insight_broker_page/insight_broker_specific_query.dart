@@ -69,8 +69,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     
     _pageItems = [];
     _dateCurrent = DateTime.now().toLocal();
-    _dateFrom = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.from) ?? DateTime.now().subtract(const Duration(days: 30)).toLocal());
-    _dateTo = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.to) ?? DateTime.now().subtract(const Duration(days: 1)).toLocal());
+    _dateFrom = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.from) ?? _dateCurrent.subtract(const Duration(days: 30)));
+    _dateTo = (InsightSharedPreferences.getBrokerSpecificDate(type: DateType.to) ?? _dateCurrent.subtract(const Duration(days: 1)).toLocal());
     _brokerMinDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _dateFrom);
     _brokerMaxDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? _dateTo);
     
@@ -421,6 +421,20 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
                 controller: _chipController,
                 company: _companyDetail,
                 risk: _userInfo!.risk,
+                onTap: () {
+                  // create the company detail arguments
+                  CompanyDetailArgs args = CompanyDetailArgs(
+                    companyId: _companyDetail!.companyId,
+                    companyName: _companyDetail!.companyName,
+                    companyCode: (_companyDetail!.companySymbol ?? ''),
+                    companyFavourite: (_companyDetail!.companyFavourites ?? false),
+                    favouritesId: (_companyDetail!.companyFavouritesId ?? -1),
+                    type: "saham",
+                  );
+
+                  // go to the company detail saham page
+                  Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                },
               ),
             ),
             _generateBrokerData(),

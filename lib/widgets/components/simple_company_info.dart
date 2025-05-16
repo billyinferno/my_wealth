@@ -90,138 +90,172 @@ class SimpleCompanyInfo extends StatelessWidget {
                 color: currentRiskColor,
               ),
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        company!.companyName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2,),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: controller,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Visibility(
-                                visible: (company!.companyType.isNotEmpty),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: secondaryLight,
-                                      style: BorderStyle.solid,
-                                      width: 1.0
-                                    ),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: const EdgeInsets.all(2),
-                                  child: Text(
-                                    company!.companyType,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: secondaryLight,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Visibility(
-                                visible: (
-                                  company!.companyType.toLowerCase() !=
-                                  company!.companyIndustry.toLowerCase()
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: secondaryLight,
-                                      style: BorderStyle.solid,
-                                      width: 1.0
-                                    ),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  padding: const EdgeInsets.all(2),
-                                  child: Text(
-                                    company!.companyIndustry,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: secondaryLight,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            formatCurrency(currentPrice),
-                            style: const TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Visibility(
+                      visible: (company!.companyFCA ?? false),
+                      child: Container(
+                        width: double.infinity,
+                        color: secondaryDark,
+                        padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Ionicons.warning,
+                              size: 10,
+                              color: secondaryLight,
                             ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Icon(
-                            currentIcon,
-                            color: currentRiskColor,
-                            size: 11,
-                          ),
-                          const SizedBox(width: 5,),
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: currentRiskColor,
-                                  width: 2.0,
-                                  style: BorderStyle.solid,
-                                ),
-                              )
-                            ),
-                            child: Text(
-                              formatCurrency(currentPrice - prevPrice),
+                            const SizedBox(width: 5,),
+                            Text(
+                              "This company is flagged with Full Call Auction",
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                               ),
                             ),
-                          ),
-                          Expanded(child: SizedBox(),),
-                          const Icon(
-                            Ionicons.time_outline,
-                            color: primaryLight,
-                            size: 11,
-                          ),
-                          const SizedBox(width: 5,),
-                          Text(
-                            Globals.dfddMMyyyy.formatDateWithNull(
-                              company!.companyLastUpdate,
-                            ),
-                            style: TextStyle(
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              company!.companyName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 2,),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                controller: controller,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Visibility(
+                                      visible: (company!.companyType.isNotEmpty),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: secondaryLight,
+                                            style: BorderStyle.solid,
+                                            width: 1.0
+                                          ),
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        padding: const EdgeInsets.all(2),
+                                        child: Text(
+                                          company!.companyType,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: secondaryLight,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Visibility(
+                                      visible: (
+                                        company!.companyType.toLowerCase() !=
+                                        company!.companyIndustry.toLowerCase()
+                                      ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: secondaryLight,
+                                            style: BorderStyle.solid,
+                                            width: 1.0
+                                          ),
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        padding: const EdgeInsets.all(2),
+                                        child: Text(
+                                          company!.companyIndustry,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: secondaryLight,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 5,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  formatCurrency(currentPrice),
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                Icon(
+                                  currentIcon,
+                                  color: currentRiskColor,
+                                  size: 11,
+                                ),
+                                const SizedBox(width: 5,),
+                                Container(
+                                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: currentRiskColor,
+                                        width: 2.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    )
+                                  ),
+                                  child: Text(
+                                    formatCurrency(currentPrice - prevPrice),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(child: SizedBox(),),
+                                const Icon(
+                                  Ionicons.time_outline,
+                                  color: primaryLight,
+                                  size: 11,
+                                ),
+                                const SizedBox(width: 5,),
+                                Text(
+                                  Globals.dfddMMyyyy.formatDateWithNull(
+                                    company!.companyLastUpdate,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -22,10 +22,10 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
   
   late BrokerModel _brokerData;
   late String _brokerCode;
-  late DateTime? _minBrokerDate;
-  late DateTime? _maxBrokerDate;
-  late DateTime? _fromDate;
-  late DateTime? _toDate;
+  late DateTime _minBrokerDate;
+  late DateTime _maxBrokerDate;
+  late DateTime _fromDate;
+  late DateTime _toDate;
   late int _accumRate;
   late InsightBrokerCollectModel? _brokerCollect;
 
@@ -37,25 +37,15 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     _brokerCode = InsightSharedPreferences.getBrokerCollectID();
     
     // get the minimum and maximum broker date
-    _minBrokerDate = BrokerSharedPreferences.getBrokerMinDate();
-    _maxBrokerDate = BrokerSharedPreferences.getBrokerMaxDate();
-
-    // ensure min and max broker date is not null
-    if (_minBrokerDate == null || _maxBrokerDate == null) {
-      // assume the max broker date is today
-      _maxBrokerDate = DateTime.now().toLocal();
-      _minBrokerDate = _maxBrokerDate!.add(const Duration(days: -14)).toLocal();
-    }
+    _minBrokerDate = (BrokerSharedPreferences.getBrokerMinDate() ?? _maxBrokerDate.add(const Duration(days: -14)).toLocal());
+    _maxBrokerDate = (BrokerSharedPreferences.getBrokerMaxDate() ?? DateTime.now().toLocal());
 
     // get the from and to date
-    _fromDate = InsightSharedPreferences.getBrokerCollectDate(type: 'from');
-    _toDate = InsightSharedPreferences.getBrokerCollectDate(type: 'to');
+    _fromDate = (InsightSharedPreferences.getBrokerCollectDate(type: 'from') ?? DateTime.now().subtract(const Duration(days: 30)).toLocal());
+    _toDate = (InsightSharedPreferences.getBrokerCollectDate(type: 'to') ?? DateTime.now().toLocal());
 
-    // check if we got null?
-    // if got null, it means that we will defaulted the toDate to the maxBrokerDate
-    // and fromDate is -14 days of maxBrokerDate
-    if (_fromDate == null || _toDate == null) {
-      _toDate = _maxBrokerDate;
+    // check if the from date is beofre the _minBrokerDate
+    if (_minBrokerDate.isAfter(_fromDate)) {
       _fromDate = _minBrokerDate;
     }
 
@@ -103,6 +93,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
             ),
           ),
         ),
+        //TODO: to add filter for sort on buy lot, buy value, sell lot, sell value, left lot, left value, left avg, left %, avg price diff
       ),
       body: MySafeArea(
         child: Column(
@@ -734,22 +725,54 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Text(
-                            "${_brokerCollect!.data[index].code} - ${_brokerCollect!.data[index].name}",
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Visibility(
+                                visible: _brokerCollect!.data[index].fca,
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                  child: Icon(
+                                    Ionicons.warning,
+                                    size: 12,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                _brokerCollect!.data[index].code,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: accentColor,
+                                ),
+                              ),
+                              const SizedBox(width: 5,),
+                              Expanded(
+                                child: Text(
+                                  _brokerCollect!.data[index].name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(width: 10,),
                         Container(
-                          height: 20,
-                          padding: const EdgeInsets.all(2),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: priceColor,
+                            border: Border(
+                              bottom: BorderSide(
+                                color: priceColor,
+                                width: 2.0,
+                                style: BorderStyle.solid,
+                              )
+                            ),
                           ),
                           child: Text(
                             formatIntWithNull(
@@ -1082,11 +1105,11 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     if (_brokerCalendarType == CalendarType.day) {
       DateTimeRange? result = await showDateRangePicker(
         context: context,
-        firstDate: _minBrokerDate!.toLocal(),
-        lastDate: _maxBrokerDate!.toLocal(),
-        initialDateRange: DateTimeRange(start: _fromDate!.toLocal(), end: _toDate!.toLocal()),
+        firstDate: _minBrokerDate.toLocal(),
+        lastDate: _maxBrokerDate.toLocal(),
+        initialDateRange: DateTimeRange(start: _fromDate.toLocal(), end: _toDate.toLocal()),
         confirmText: 'Done',
-        currentDate: _maxBrokerDate!.toLocal(),
+        currentDate: _maxBrokerDate.toLocal(),
         initialEntryMode: DatePickerEntryMode.calendarOnly,
       );
 
@@ -1094,8 +1117,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       if (result != null) {
         // check whether the result start and end is different date, if different then we need to get new broker summary data.
         if (
-          (result.start.toLocal().compareTo(_fromDate!.toLocal()) != 0) ||
-          (result.end.toLocal().compareTo(_toDate!.toLocal()) != 0)
+          (result.start.toLocal().compareTo(_fromDate.toLocal()) != 0) ||
+          (result.end.toLocal().compareTo(_toDate.toLocal()) != 0)
         ) {                      
           // set the broker from and to date
           setState(() {
@@ -1131,10 +1154,10 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
               width: 300,
               height: 300,
               child: MyYearPicker(
-                firstDate: _minBrokerDate!.toLocal(),
-                lastDate: _maxBrokerDate!.toLocal(),
-                startDate: _fromDate!.toLocal(),
-                endDate: _toDate!.toLocal(),
+                firstDate: _minBrokerDate.toLocal(),
+                lastDate: _maxBrokerDate.toLocal(),
+                startDate: _fromDate.toLocal(),
+                endDate: _toDate.toLocal(),
                 type: MyYearPickerCalendarType.range,
                 onChanged: (value) async {
                   // remove the dialog
@@ -1142,8 +1165,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
   
                   // check the new date whether it's same year or not?
                   if (
-                    value.startDate.toLocal().compareTo(_fromDate!.toLocal()) != 0 ||
-                    value.endDate.toLocal().compareTo(_toDate!.toLocal()) != 0
+                    value.startDate.toLocal().compareTo(_fromDate.toLocal()) != 0 ||
+                    value.endDate.toLocal().compareTo(_toDate.toLocal()) != 0
                   ) {
                     // set the broker from and to date
                     setState(() {                        
@@ -1168,8 +1191,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     await _insightAPI.getBrokerCollect(
       broker: _brokerCode,
       accumLimit: _accumRate,
-      dateFrom: _fromDate!.toLocal(),
-      dateTo: _toDate!.toLocal(),
+      dateFrom: _fromDate.toLocal(),
+      dateTo: _toDate.toLocal(),
     ).then((resp) async {
       // put the response to the broker collect
       _brokerCollect = resp;
@@ -1178,8 +1201,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       await InsightSharedPreferences.setBrokerCollect(
         brokerCollectList: _brokerCollect!,
         brokerId: _brokerCode,
-        fromDate: _fromDate!.toLocal(),
-        toDate: _toDate!.toLocal(),
+        fromDate: _fromDate.toLocal(),
+        toDate: _toDate.toLocal(),
         rate: _accumRate
       );
     }).onError((error, stackTrace) {

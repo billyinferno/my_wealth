@@ -9,6 +9,7 @@ export './selectable_button.dart';
 export './simple_company_info.dart';
 export './selectable_list.dart';
 export './slide_button.dart';
+export './small_box.dart';
 export './stepper_selector.dart';
 export './stepper_selector_controller.dart';
 export './transparent_button.dart';

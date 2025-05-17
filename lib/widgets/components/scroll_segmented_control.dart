@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
-class ScrollSegmentedControl extends StatefulWidget {
-  final Map<String, String> data;
+class ScrollSegmentedControl<T> extends StatefulWidget {
+  final Map<T, String> data;
+  final T? initialSelected;
   final Color? borderColor;
   final Color? bgColor;
   final Color? textColor;
   final Color? selectedBgColor;
   final Color? selectedTextColor;
-  final Function(String) onPress;
+  final Function(T) onPress;
   const ScrollSegmentedControl({
     super.key,
     required this.data,
+    this.initialSelected,
     this.borderColor,
     this.bgColor,
     this.textColor,
@@ -22,10 +24,10 @@ class ScrollSegmentedControl extends StatefulWidget {
   });
 
   @override
-  State<ScrollSegmentedControl> createState() => ScrollSegmentedControlState();
+  State<ScrollSegmentedControl<T>> createState() => ScrollSegmentedControlState<T>();
 }
 
-class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
+class ScrollSegmentedControlState<T> extends State<ScrollSegmentedControl<T>> {
   final ScrollController _scrollController = ScrollController();
   late Color _borderColor;
   late Color _bgColor;
@@ -33,7 +35,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
   late Color _selectedBgColor;
   late Color _selectedTextColor;
   late BorderSide _borderSide;
-  late String _selectedValue;
+  late T _selectedValue;
 
   @override
   void initState() {
@@ -53,7 +55,7 @@ class ScrollSegmentedControlState extends State<ScrollSegmentedControl> {
     );
 
     // get the first element
-    _selectedValue = widget.data.keys.first;
+    _selectedValue = (widget.initialSelected ?? widget.data.keys.first);
   }
 
   @override

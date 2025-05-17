@@ -1,43 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
-class SelectableItem {
-  final String name;
-  final String value;
-
-  const SelectableItem({required this.name, required this.value});
-}
-
-class SelectableList extends StatefulWidget {
-  final List<SelectableItem> items;
-  final String? initialValue;
-  final Function(String) onPress;
-  const SelectableList({super.key, required this.items, this.initialValue, required this.onPress});
+class SelectableList<T> extends StatefulWidget {
+  final Map<T, String> items;
+  final T? initialValue;
+  final Function(T) onPress;
+  const SelectableList({
+    super.key,
+    required this.items,
+    this.initialValue,
+    required this.onPress,
+  });
 
   @override
-  State<SelectableList> createState() => _SelectableListState();
+  State<SelectableList<T>> createState() => _SelectableListState<T>();
 }
 
-class _SelectableListState extends State<SelectableList> {
-  final Map<String, String> _items = {};
-  String _initialValue = "";
-  String _selectedValue = "";
+class _SelectableListState<T> extends State<SelectableList<T>> {
+  late T _initialValue;
+  late T _selectedValue;
   
   @override
   void initState() {
     super.initState();
 
-    // loop thru the items and put it into map
-    for (SelectableItem item in widget.items) {
-      _items[item.name] = item.value;
-    }
-
     // check if initial value is set or not?
     if (widget.items.isNotEmpty) {
-      _initialValue = (widget.initialValue ?? widget.items[0].value);
+      _initialValue = (widget.initialValue ?? widget.items.keys.first);
 
       // ensure that this initial value is exists
-      assert(_items.containsKey(_initialValue), 'Initial keys is not part of the item list');
+      assert(
+        widget.items.containsKey(_initialValue),
+        'Initial keys ${_initialValue.toString()} is not part of the item list',
+      );
     }
 
     // set the selected value as initial value
@@ -51,7 +46,7 @@ class _SelectableListState extends State<SelectableList> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: _items.entries.map((item) {
+        children: widget.items.entries.map((item) {
           return SelectableButton(
             text: item.value,
             selected: (item.key == _selectedValue),
@@ -65,7 +60,7 @@ class _SelectableListState extends State<SelectableList> {
     );
   }
 
-  void _setSelected(String value) {
+  void _setSelected(T value) {
     setState(() {
       _selectedValue = value;
     });

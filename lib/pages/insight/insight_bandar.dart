@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
+enum InsightBandarSubPage {
+  atl30,
+  nearATL30,
+  topACQ,
+  stockCollect,
+  topEPS,
+  sideways,
+  indexBeater,
+}
+
 class InsightBandarPage extends StatefulWidget {
   const InsightBandarPage({super.key});
 
@@ -11,7 +21,7 @@ class InsightBandarPage extends StatefulWidget {
 
 class _InsightBandarPageState extends State<InsightBandarPage> {
   late InsightBandarInterestModel _bandarInterest;
-  String _selectedBandarPage = "atl30";
+  InsightBandarSubPage _selectedBandarPage = InsightBandarSubPage.atl30;
 
   @override
   void initState() {
@@ -42,15 +52,15 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              ScrollSegmentedControl(
+              ScrollSegmentedControl<InsightBandarSubPage>(
                 data: const {
-                  "atl30": "ATL30",
-                  "nearAtl30": "Near-ATL30",
-                  "topAcq": "Accumulation",
-                  "stockCollect": "Stock Collection",
-                  "topEps": "EPS",
-                  "sideways": "Sideways",
-                  "indexBeater": "Index Beater",
+                  InsightBandarSubPage.atl30: "ATL30",
+                  InsightBandarSubPage.nearATL30: "Near-ATL30",
+                  InsightBandarSubPage.topACQ: "Accumulation",
+                  InsightBandarSubPage.stockCollect: "Stock Collection",
+                  InsightBandarSubPage.topEPS: "EPS",
+                  InsightBandarSubPage.sideways: "Sideways",
+                  InsightBandarSubPage.indexBeater: "Index Beater",
                 },
                 onPress: ((value) {
                   setState(() {
@@ -68,39 +78,31 @@ class _InsightBandarPageState extends State<InsightBandarPage> {
   }
 
   Widget _showPage() {
-    if (_selectedBandarPage == "atl30") {
-      return InsightBandarAtlPage(
-        title: "ATL30 Result",
-        dialogTitle: "ATL30 Information",
-        dialogDescription: "ATL30 is the list of stock where the current price is the lowest in the last 30-days of trading date.\n\nThis is curated with stock where the volume of the transaction is active (more than average volume for 20 days)",
-        data: _bandarInterest.atl
-      );
+    switch(_selectedBandarPage) {
+      case InsightBandarSubPage.atl30:
+        return InsightBandarAtlPage(
+          title: "ATL30 Result",
+          dialogTitle: "ATL30 Information",
+          dialogDescription: "ATL30 is the list of stock where the current price is the lowest in the last 30-days of trading date.\n\nThis is curated with stock where the volume of the transaction is active (more than average volume for 20 days)",
+          data: _bandarInterest.atl
+        );
+      case InsightBandarSubPage.nearATL30:
+        return InsightBandarAtlPage(
+          title: "Near-ATL30 Result",
+          dialogTitle: "Near-ATL30 Information",
+          dialogDescription: "Near-ATL30 is the list of stock where the current price is the nearly reach the lowest price in the last 30-days of trading date.\n\nThis is curated with stock where the volume of the transaction is active (more than average volume for 20 days)",
+          data: _bandarInterest.nonAtl
+        );
+      case InsightBandarSubPage.topACQ:
+        return const InsightBandarAccumulationPage();
+      case InsightBandarSubPage.stockCollect:
+        return const InsightBandarStockCollectPage();
+      case InsightBandarSubPage.topEPS:
+        return const InsightBandarEPSPage();
+      case InsightBandarSubPage.sideways:
+        return const InsightBandarSidewayPage();
+      case InsightBandarSubPage.indexBeater:
+        return const InsightBandarIndexBeaterPage();
     }
-    if (_selectedBandarPage == "nearAtl30") {
-      return InsightBandarAtlPage(
-        title: "Near-ATL30 Result",
-        dialogTitle: "Near-ATL30 Information",
-        dialogDescription: "Near-ATL30 is the list of stock where the current price is the nearly reach the lowest price in the last 30-days of trading date.\n\nThis is curated with stock where the volume of the transaction is active (more than average volume for 20 days)",
-        data: _bandarInterest.nonAtl
-      );
-    }
-    if (_selectedBandarPage == "topAcq") {
-      return const InsightBandarAccumulationPage();
-    }
-    if (_selectedBandarPage == "stockCollect") {
-      return const InsightBandarStockCollectPage();
-    }
-    if (_selectedBandarPage == "topEps") {
-      return const InsightBandarEPSPage();
-    }
-    if (_selectedBandarPage == "sideways") {
-      return const InsightBandarSidewayPage();
-    }
-    if (_selectedBandarPage == "indexBeater") {
-      return const InsightBandarIndexBeaterPage();
-    }
-
-    // default return nothing
-    return const SizedBox.shrink();
   }
 }

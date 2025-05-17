@@ -81,18 +81,21 @@ class CompanyInfo {
         required this.companySahamId,
         required this.name,
         required this.code,
+        this.fca = false,
         required this.gain,
     });
 
     final int companySahamId;
     final String name;
     final String code;
+    final bool fca;
     final double gain;
 
     factory CompanyInfo.fromJson(Map<String, dynamic> json) => CompanyInfo(
         companySahamId: json["company_saham_id"],
         name: json["name"],
         code: json["code"],
+        fca: (json["fca"] ?? false),
         gain: json["gain"].toDouble(),
     );
 
@@ -100,6 +103,7 @@ class CompanyInfo {
         "company_saham_id": companySahamId,
         "name": name,
         "code": code,
+        "fca": fca,
         "gain": gain,
     };
 }

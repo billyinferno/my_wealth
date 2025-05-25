@@ -118,24 +118,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                 });
               })
             ),
-            _listItem(
-              indicatorColor: Colors.white,
-              bgColor: primaryDark,
-              code: '',
-              title: "Average ${_data.averagePerYear}",
-              per: formatDecimalWithNull(
-                _data.averagePerDaily,
-                decimal: 2
-              ),
-              periodic: formatDecimalWithNull(
-                _data.averagePerPeriodatic,
-                decimal: 2
-              ),
-              annual: formatDecimalWithNull(
-                _data.averagePerAnnualized,
-                decimal: 2
-              ),
-            ),
+            _perSummaryWigdet(),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
@@ -157,13 +140,24 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
                     // annual - 6
                     // now let calculate increment/decrement for each per
                     double periodWeight = ((_codeList[index].period ?? 0 * 30)/365);
-                    double dailyPer = ((_codeList[index].perDaily ?? 0) / _data.averagePerDaily.makePositive()) * 0.03; // (1/365)
-                    double periodPer = ((_codeList[index].perPeriodatic ?? 0) / _data.averagePerPeriodatic.makePositive()) * periodWeight;
-                    double annualPer = ((_codeList[index].perAnnualized ?? 0) / _data.averagePerAnnualized.makePositive()) * 1;
+                    double dailyPer = (_codeList[index].perDaily ?? 0);
+                    double periodPer = (_codeList[index].perPeriodatic ?? 0) * periodWeight;
+                    double annualPer = (_codeList[index].perAnnualized ?? 0) / 365;
 
+                    // calculate the PER normalized value
+                    double totalPer = dailyPer + periodPer + annualPer;
+                    double perNormalizedValue = normalizeValue(input: totalPer);
+
+                    // as we will use the middle value 0.5 as the neutral value
+                    // calculate the PER normalized value based on this
+                    if (perNormalizedValue > 0.5) {
+                      perNormalizedValue = 1 - perNormalizedValue;
+                    }
+
+                    // get the indicator color based on the PER normalized value
                     indicatorColor = riskColor(
-                      value: (dailyPer + periodPer + annualPer),
-                      cost: (1.03 + periodWeight),
+                      value: perNormalizedValue,
+                      cost: -0.1, // cost should be below 0, since 0 is the minimun value for PR normalized value
                       riskFactor: _userInfo!.risk
                     );
                   }
@@ -220,6 +214,50 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
     },);
 
     return true;
+  }
+
+  Widget _perSummaryWigdet() {
+    Color indicatorColor = Colors.white;
+
+    // calculate the average PER color
+    double dailyPer = _data.averagePerDaily;
+    double annualPer = _data.averagePerAnnualized / 365;
+
+    // calculate the PER normalized value
+    double totalPer = dailyPer + annualPer;
+    double perNormalizedValue = normalizeValue(input: totalPer);
+
+    // as we will use the middle value 0.5 as the neutral value
+    // calculate the PER normalized value based on this
+    if (perNormalizedValue > 0.5) {
+      perNormalizedValue = 1 - perNormalizedValue;
+    }
+
+    // get the indicator color based on the PER normalized value
+    indicatorColor = riskColor(
+      value: perNormalizedValue,
+      cost: -0.1, // cost should be below 0, since 0 is the minimun value for PR normalized value
+      riskFactor: _userInfo!.risk
+    );
+
+    return _listItem(
+      indicatorColor: indicatorColor,
+      bgColor: primaryDark,
+      code: '',
+      title: "Average ${_data.averagePerYear}",
+      per: formatDecimalWithNull(
+        _data.averagePerDaily,
+        decimal: 2
+      ),
+      periodic: formatDecimalWithNull(
+        _data.averagePerPeriodatic,
+        decimal: 2
+      ),
+      annual: formatDecimalWithNull(
+        _data.averagePerAnnualized,
+        decimal: 2
+      ),
+    );
   }
 
   Widget _listItem({

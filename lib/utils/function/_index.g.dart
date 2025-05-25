@@ -5,6 +5,7 @@ export './compute_watchlist_all.dart';
 export './format_currency.dart';
 export './list_equals.dart';
 export './map_sorted.dart';
+export './normalize_value.dart';
 export './parse_error.dart';
 export './risk_color.dart';
 export './util.dart';

@@ -176,12 +176,12 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
                       children: <Widget>[
                         SizedBox(
                           width: 150,
-                          child: CupertinoSegmentedControl(
+                          child: CupertinoSegmentedControl<String>(
                             children: const {
                               "m": Text("Month"),
                               "y": Text("Year"),
                             },
-                            onValueChanged: (<String>(value) {
+                            onValueChanged: ((value) {
                               setState(() {
                                 _calendarSelection = value;
                               });

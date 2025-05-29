@@ -115,7 +115,7 @@ class _UserPageState extends State<UserPage> {
                                 _isVisible = !_isVisible;
                                 await _updateVisibilitySummary(_isVisible).then((resp) {
                                   Log.success(message: "🔃 Update Visibility to $_isVisible");
-                                  setSummaryVisible(_isVisible);
+                                  _setSummaryVisible(_isVisible);
                                 }).onError((error, stackTrace) {
                                   _showScaffoldMessage(text: error.toString());
                                 });
@@ -132,7 +132,7 @@ class _UserPageState extends State<UserPage> {
                                 _showLots = !_showLots;
                                 await _updateShowLots(_showLots).then((resp) {
                                   Log.success(message: "🔃 Update Show Lots to $_showLots");
-                                  setShowLots(_showLots);
+                                  _setShowLots(_showLots);
                                 }).onError((error, stackTrace) {
                                   _showScaffoldMessage(text: error.toString());
                                 });
@@ -149,7 +149,7 @@ class _UserPageState extends State<UserPage> {
                                 _showEmptyWatchlist = !_showEmptyWatchlist;
                                 await _updateShowEmptyWatchlist(_showEmptyWatchlist).then((resp) {
                                   Log.success(message: "🔃 Update Show Empty Watchlist to $_showEmptyWatchlist");
-                                  setShowEmptywatchlist(_showEmptyWatchlist);
+                                  _setShowEmptywatchlist(_showEmptyWatchlist);
                                 }).onError((error, stackTrace) {
                                   _showScaffoldMessage(text: error.toString());
                                 });
@@ -248,7 +248,7 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  void setSummaryVisible(visibilility) {
+  void _setSummaryVisible(bool visibilility) {
     setState(() {
       _isVisible = visibilility;
     });
@@ -286,7 +286,7 @@ class _UserPageState extends State<UserPage> {
     return ret;
   }
 
-  void setShowLots(showLots) {
+  void _setShowLots(bool showLots) {
     setState(() {
       _showLots = showLots;
     });
@@ -322,7 +322,7 @@ class _UserPageState extends State<UserPage> {
     return ret;
   }
 
-  void setShowEmptywatchlist(showEmptyWatchlist) {
+  void _setShowEmptywatchlist(bool showEmptyWatchlist) {
     setState(() {
       _showEmptyWatchlist = showEmptyWatchlist;
     });

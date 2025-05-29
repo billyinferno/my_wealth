@@ -30,7 +30,7 @@ class Bit {
     return (int.tryParse(_binArr[index])! == 0 ? false : true);
   }
 
-  operator []=(int index, int value) {
+  void operator []=(int index, int value) {
     assert(index >= 0 && index <= 15, "Bit position should be between 0-15");
     assert(value == 0 || value == 1, "Bit value should be 0 or 1");
 

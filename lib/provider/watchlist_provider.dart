@@ -8,7 +8,7 @@ class WatchlistProvider extends ChangeNotifier {
   List<WatchlistListModel>? watchlistGold;
   List<WatchlistHistoryModel>? watchlistHistory;
 
-  setWatchlist({
+  void setWatchlist({
     required String type,
     required List<WatchlistListModel> watchlistData
   }) {
@@ -27,7 +27,7 @@ class WatchlistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setWatchlistHistory({required List<WatchlistHistoryModel> watchlistData}) {
+  void setWatchlistHistory({required List<WatchlistHistoryModel> watchlistData}) {
     watchlistHistory = watchlistData;
     notifyListeners();
   }

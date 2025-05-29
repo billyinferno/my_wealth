@@ -19,12 +19,12 @@ class InsightProvider extends ChangeNotifier {
   List<StockSplitListModel>? stockSplitList;
   List<InsightStockCollectModel>? stockCollectList;
 
-  setSectorSummaryList({required List<SectorSummaryModel> list}) {
+  void setSectorSummaryList({required List<SectorSummaryModel> list}) {
     sectorSummaryList = list;
     notifyListeners();
   }
 
-  setTopWorseCompanyList({
+  void setTopWorseCompanyList({
     required String type,
     required TopWorseCompanyListModel data
   }) {
@@ -37,12 +37,12 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBrokerTopTransactionList({required BrokerTopTransactionModel data}) {
+  void setBrokerTopTransactionList({required BrokerTopTransactionModel data}) {
     brokerTopTransactionList = data;
     notifyListeners();
   }
 
-  setTopReksadanaList({
+  void setTopReksadanaList({
     required String type,
     required TopWorseCompanyListModel data
   }) {
@@ -54,7 +54,7 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setWorseReksadanaList({
+  void setWorseReksadanaList({
     required String type,
     required TopWorseCompanyListModel data
   }) {
@@ -66,12 +66,12 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBandarInterestingList({required InsightBandarInterestModel data}) {
+  void setBandarInterestingList({required InsightBandarInterestModel data}) {
     bandarInterestList = data;
     notifyListeners();
   }
 
-  setTopAccumulation({
+  void setTopAccumulation({
     required DateTime accumeDate,
     required int accumRate,
     required List<InsightAccumulationModel> accumList
@@ -83,32 +83,32 @@ class InsightProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBrokerMarketToday({required MarketTodayModel data}) {
+  void setBrokerMarketToday({required MarketTodayModel data}) {
     brokerMarketToday = data;
     notifyListeners();
   }
 
-  setMarketCap({required List<MarketCapModel> data}) {
+  void setMarketCap({required List<MarketCapModel> data}) {
     marketCap = data;
     notifyListeners();
   }
 
-  setStockNewListed({required List<StockNewListedModel> data}) {
+  void setStockNewListed({required List<StockNewListedModel> data}) {
     stockNewListed = data;
     notifyListeners();
   }
 
-  setStockDividendList({required List<StockDividendListModel> data}) {
+  void setStockDividendList({required List<StockDividendListModel> data}) {
     stockDividendList = data;
     notifyListeners();
   }
 
-  setStockSplitList({required List<StockSplitListModel> data}) {
+  void setStockSplitList({required List<StockSplitListModel> data}) {
     stockSplitList = data;
     notifyListeners();
   }
 
-  setStockCollectList({required List<InsightStockCollectModel> data}) {
+  void setStockCollectList({required List<InsightStockCollectModel> data}) {
     stockCollectList = data;
     notifyListeners();
   }

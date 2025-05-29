@@ -6,7 +6,7 @@ class FavouritesProvider extends ChangeNotifier {
   List<FavouritesModel>? favouriteListSaham;
   List<FavouritesModel>? favouriteListCrypto;
 
-  setFavouriteList({
+  void setFavouriteList({
     required String type,
     required List<FavouritesModel> favouriteListData
   }) {

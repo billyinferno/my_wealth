@@ -1397,7 +1397,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
               "w": Text("Weekday"),
               "m": Text("Monthly"),
             },
-            onValueChanged: (<String>(value) {
+            onValueChanged: ((value) {
               setState(() {
                 _mapSelection = value;
               });

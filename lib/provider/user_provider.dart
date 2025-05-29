@@ -7,12 +7,12 @@ class UserProvider extends ChangeNotifier {
   bool? _isShowLots;
   bool? _isShowEmptyWatchlists;
 
-  setUserLoginInfo({required UserLoginInfoModel user}) {
+  void setUserLoginInfo({required UserLoginInfoModel user}) {
     userInfo = user;
     notifyListeners();
   }
 
-  setSummaryVisibility({required bool visibility}) {
+  void setSummaryVisibility({required bool visibility}) {
     _isSummaryVisible = visibility;
   }
 
@@ -20,7 +20,7 @@ class UserProvider extends ChangeNotifier {
     return (_isSummaryVisible ?? false);
   }
 
-  setShowLots({required bool visibility}) {
+  void setShowLots({required bool visibility}) {
     _isShowLots = visibility;
   }
 
@@ -28,7 +28,7 @@ class UserProvider extends ChangeNotifier {
     return (_isShowLots ?? false);
   }
 
-  setShowEmptyWatchlists({required bool visibility}) {
+  void setShowEmptyWatchlists({required bool visibility}) {
     _isShowEmptyWatchlists = visibility;
   }
 

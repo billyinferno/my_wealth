@@ -544,7 +544,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     await _watchlistAPI.findSpecific(type: type, id: id).then((resp) {
       WatchlistListArgs watchlistArgs = WatchlistListArgs(
         type: _args.type,
-        watchList: resp,
+        watchlist: resp,
         shareName: shareTitle,
         isLot: isLot,
       );

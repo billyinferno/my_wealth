@@ -62,11 +62,11 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // set the company args so we can navigate to company detail page
     _companyArgs = CompanyDetailArgs(
-      companyId: _watchlistArgs.watchList.watchlistCompanyId,
-      companyName: _watchlistArgs.watchList.watchlistCompanyName,
-      companyCode: _watchlistArgs.watchList.watchlistCompanySymbol ?? '',
-      companyFavourite: (_watchlistArgs.watchList.watchlistFavouriteId > 0 ? true : false),
-      favouritesId: _watchlistArgs.watchList.watchlistFavouriteId,
+      companyId: _watchlistArgs.watchlist.watchlistCompanyId,
+      companyName: _watchlistArgs.watchlist.watchlistCompanyName,
+      companyCode: _watchlistArgs.watchlist.watchlistCompanySymbol ?? '',
+      companyFavourite: (_watchlistArgs.watchlist.watchlistFavouriteId > 0 ? true : false),
+      favouritesId: _watchlistArgs.watchlist.watchlistFavouriteId,
       type: _watchlistArgs.type
     );
 
@@ -78,7 +78,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     // get the computation for the watchlist
     _watchlistComputation = detailWatchlistComputation(
-      watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk
+      watchlist: _watchlistArgs.watchlist, riskFactor: _userInfo.risk
     );
 
     // initialize pl month and year
@@ -251,7 +251,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    _watchlistArgs.watchList.watchlistCompanyName,
+                    _watchlistArgs.watchlist.watchlistCompanyName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -268,7 +268,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                         children: <Widget>[
                           Text(
                             formatCurrencyWithNull(
-                              _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                              _watchlistArgs.watchlist.watchlistCompanyNetAssetValue,
                               shorten: false,
                               decimalNum: 2
                             ),
@@ -313,7 +313,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                           const SizedBox(width: 5,),
                           Text(
                             Globals.dfddMMyyyy.formatDateWithNull(
-                              _watchlistArgs.watchList.watchlistCompanyLastUpdate
+                              _watchlistArgs.watchlist.watchlistCompanyLastUpdate
                             ),
                           ),
                         ],
@@ -733,7 +733,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
     await _watchlistAPI.getWatchlistPerformance(
       type: _watchlistArgs.type,
-      id: _watchlistArgs.watchList.watchlistId
+      id: _watchlistArgs.watchlist.watchlistId
     ).then((resp) {
       // format the data, we can get the first and last date based on the
       // result given

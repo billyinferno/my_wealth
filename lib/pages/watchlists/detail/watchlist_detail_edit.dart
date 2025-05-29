@@ -26,6 +26,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
   DateTime _prevDate = DateTime.now();
   double _prevShares = 0;
   double _prevPrice = 0;
+  double _hintPrice = 0;
 
   @override
   void initState() {
@@ -53,7 +54,18 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     if (_prevShares < 0) {
       _prevShares *= -1;
     }
+
+    // check if this is in lot or not?
+    if (_watchlistArgs.isLot) {
+      // if this is in lot, then divide the shares by 100
+      _prevShares = _prevShares / 100;
+    }
+
     _prevPrice = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailPrice;
+
+    // set hint price same as current price
+    //TODO: to dynamicly generate the hint price based on date selected
+    _hintPrice = _prevPrice;
 
     _sharesController.text = formatDecimal(_prevShares);
     _priceController.text = formatDecimal(_prevPrice);
@@ -98,7 +110,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
             ),
             WatchlistDetailCreateTextFields(
               controller: _sharesController,
-              title: "Shares",
+              title: _watchlistArgs.shareName.toCapitalized(),
               hintText: formatDecimalWithNull(
                 _prevShares,
                 decimal: 2
@@ -109,11 +121,11 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
               controller: _priceController,
               title: "Price",
               hintText: formatDecimalWithNull(
-                _prevPrice,
+                _hintPrice,
                 decimal: 2
               ),
               decimal: 6,
-              defaultPrice: _prevPrice,
+              defaultPrice: _hintPrice,
             ),
             const SizedBox(height: 10,),
             Row(
@@ -181,6 +193,12 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
       if (_txn == "s") {
         // return back update of sales to minus again
         shares *= -1;
+      }
+
+      // check if this is in lot?
+      if (_watchlistArgs.isLot) {
+        // multiple the shares by 100
+        shares *= 100;
       }
 
       // show the loadin gscreen

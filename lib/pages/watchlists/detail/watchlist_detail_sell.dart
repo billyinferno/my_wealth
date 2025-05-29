@@ -21,6 +21,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
   late String _type;
   late WatchlistListModel _watchlist;
   late double _currentShare;
+  late double _hintPrice;
   
   DateTime _selectedDate = DateTime.now();
 
@@ -29,7 +30,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
     super.initState();
     _watchlistArgs = widget.watchlistArgs as WatchlistListArgs;
     _type = _watchlistArgs.type;
-    _watchlist = _watchlistArgs.watchList;
+    _watchlist = _watchlistArgs.watchlist;
     _currentShare = (_watchlistArgs.currentShare ?? 0);
     if (_currentShare > 0) {
       // check whether this is in lot or not?
@@ -37,6 +38,8 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
         _currentShare = _currentShare / 100;
       }
     }
+    //TODO: to dynamicly generate the hint price based on date selected
+    _hintPrice = (_watchlistArgs.watchlist.watchlistCompanyNetAssetValue ?? 0);
   }
 
   @override
@@ -95,11 +98,11 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
               controller: _priceController,
               title: "Price",
               hintText: formatDecimalWithNull(
-                _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                _hintPrice,
                 decimal: 2
               ),
               decimal: 6,
-              defaultPrice: _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+              defaultPrice: _hintPrice,
             ),
             const SizedBox(height: 10,),
             Row(

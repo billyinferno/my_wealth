@@ -41,7 +41,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     super.initState();
     _watchlistArgs = widget.watchlistArgs as WatchlistListArgs;
     _type = _watchlistArgs.type;
-    _watchlist = _watchlistArgs.watchList;
+    _watchlist = _watchlistArgs.watchlist;
     _userInfo = UserSharedPreferences.getUserInfo();
   }
 
@@ -427,7 +427,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           onTap: (() {
                             WatchlistListArgs args = WatchlistListArgs(
                               type: _type,
-                              watchList: _watchlist,
+                              watchlist: _watchlist,
                               currentShare: _totalCurrentShares,
                               shareName: _watchlistArgs.shareName,
                               isLot: _watchlistArgs.isLot,
@@ -534,7 +534,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                         WatchlistDetailEditArgs editArg = WatchlistDetailEditArgs(
                           type: _type,
                           watchlist: _watchlist,
-                          index: index
+                          index: index,
+                          isLot: _watchlistArgs.isLot,
+                          shareName: _watchlistArgs.shareName,
                         ); 
               
                         return Slidable(

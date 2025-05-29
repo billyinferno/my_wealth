@@ -593,7 +593,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
               
                   WatchlistListArgs watchlistArgs = WatchlistListArgs(
                     type: type,
-                    watchList: data[idx],
+                    watchlist: data[idx],
                     shareName: shareTitle,
                     isLot: isInLot,
                   );

@@ -84,16 +84,16 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
     // set the company args so we can navigate to company detail page
     _companyArgs = CompanyDetailArgs(
-      companyId: _watchlistArgs.watchList.watchlistCompanyId,
-      companyName: _watchlistArgs.watchList.watchlistCompanyName,
-      companyCode: _watchlistArgs.watchList.watchlistCompanySymbol ?? '',
-      companyFavourite: (_watchlistArgs.watchList.watchlistFavouriteId > 0 ? true : false),
-      favouritesId: _watchlistArgs.watchList.watchlistFavouriteId,
+      companyId: _watchlistArgs.watchlist.watchlistCompanyId,
+      companyName: _watchlistArgs.watchlist.watchlistCompanyName,
+      companyCode: _watchlistArgs.watchlist.watchlistCompanySymbol ?? '',
+      companyFavourite: (_watchlistArgs.watchlist.watchlistFavouriteId > 0 ? true : false),
+      favouritesId: _watchlistArgs.watchlist.watchlistFavouriteId,
       type: _watchlistArgs.type
     );
 
     // get the computation for the watchlist
-    _watchlistComputation = detailWatchlistComputation(watchlist: _watchlistArgs.watchList, riskFactor: _userInfo.risk);
+    _watchlistComputation = detailWatchlistComputation(watchlist: _watchlistArgs.watchlist, riskFactor: _userInfo.risk);
 
     // assume max, min, and average is null
     _max = 0;
@@ -349,7 +349,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
               width: double.infinity,
               child: PerformanceChart(
                 watchlistPerfData: _watchlistPerformance,
-                watchlist: _watchlistArgs.watchList.watchlistDetail,
+                watchlist: _watchlistArgs.watchlist.watchlistDetail,
                 compare: _indexData,
                 height: 250,
                 dateOffset: (_watchlistPerformance.length > 10 ? null : 1),
@@ -520,7 +520,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    _watchlistArgs.watchList.watchlistCompanyName,
+                    _watchlistArgs.watchlist.watchlistCompanyName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -537,7 +537,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         children: <Widget>[
                           Text(
                             formatCurrencyWithNull(
-                              _watchlistArgs.watchList.watchlistCompanyNetAssetValue,
+                              _watchlistArgs.watchlist.watchlistCompanyNetAssetValue,
                               shorten: false,
                               decimalNum: 2
                             ),
@@ -585,7 +585,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                           const SizedBox(width: 5,),
                           Text(
                             Globals.dfddMMyyyy.formatDateWithNull(
-                              _watchlistArgs.watchList.watchlistCompanyLastUpdate
+                              _watchlistArgs.watchlist.watchlistCompanyLastUpdate
                             ),
                           ),
                         ],
@@ -678,7 +678,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       // perform the get company detail information here
       await _watchlistAPI.getWatchlistPerformance(
         type: _watchlistArgs.type,
-        id: _watchlistArgs.watchList.watchlistId
+        id: _watchlistArgs.watchlist.watchlistId
       ).then((resp) {
         // generate all the watchlist performance, 90 day, daily, monthly, yearly
         _watchlistPerformance90Day.clear();

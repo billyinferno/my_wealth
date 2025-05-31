@@ -82,7 +82,7 @@ class SimpleCompanyInfo extends StatelessWidget {
         ),
         child: IntrinsicHeight(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
@@ -257,6 +257,12 @@ class SimpleCompanyInfo extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 10,),
+              Icon(
+                Ionicons.chevron_forward,
+                color: primaryLight,
+                size: 30,
               ),
             ],
           ),

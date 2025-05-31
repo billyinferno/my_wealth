@@ -381,75 +381,81 @@ class LoginPageState extends State<LoginPage> {
     bool ret = false;
     String currJwtToken = UserSharedPreferences.getUserJWT();
 
-    try {
-      await _userAPI.me().then((resp) async {
-        // check if user confirmed and not blocked
-        if(resp.confirmed == true && resp.blocked == false) {
-          ret = true;
+    // check if the current JWT token is not empty
+    if (currJwtToken.isNotEmpty) {
+      try {
+        await _userAPI.me().then((resp) async {
+          // check if user confirmed and not blocked
+          if(resp.confirmed == true && resp.blocked == false) {
+            ret = true;
 
-          // stored this information on the shared preference,
-          // in case there are update from user that directly performed
-          // on server.
-          await UserSharedPreferences.setUserInfo(userInfo: resp).then((_) {
-            if (mounted) {
-              // put the user information on the provider
-              Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
-              Log.success(message: "3️⃣ Update user information");
+            // stored this information on the shared preference,
+            // in case there are update from user that directly performed
+            // on server.
+            await UserSharedPreferences.setUserInfo(userInfo: resp).then((_) {
+              if (mounted) {
+                // put the user information on the provider
+                Provider.of<UserProvider>(context, listen: false).setUserLoginInfo(user: resp);
+                Log.success(message: "3️⃣ Update user information");
 
-              // set the current visibility configuration on the provider
-              Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: resp.visibility);
-              Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: resp.showLots);
-              Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: resp.showEmptyWatchlist);
-            }
-          });
-        }
-      });
-    }
-    on NetException catch (error, _) {
-      Log.error(message: "⛔ ${error.message}");
-
-      // check if this is rejection from server
-      // check the error code, if -1 it means this is client exception
-      if (error.code == -1) {
-        _showScaffoldMessage(text: "Unable to connect to server");
+                // set the current visibility configuration on the provider
+                Provider.of<UserProvider>(context, listen: false).setSummaryVisibility(visibility: resp.visibility);
+                Provider.of<UserProvider>(context, listen: false).setShowLots(visibility: resp.showLots);
+                Provider.of<UserProvider>(context, listen: false).setShowEmptyWatchlists(visibility: resp.showEmptyWatchlist);
+              }
+            });
+          }
+        });
       }
-      // if -2 it means that it's a generic error
-      else if (error.code == -2) {
+      on NetException catch (error, _) {
+        Log.error(message: "⛔ ${error.message}");
+
+        // check if this is rejection from server
+        // check the error code, if -1 it means this is client exception
+        if (error.code == -1) {
+          _showScaffoldMessage(text: "Unable to connect to server");
+        }
+        // if -2 it means that it's a generic error
+        else if (error.code == -2) {
+          _showScaffoldMessage(text: "Error processing on application");
+        }
+        else {
+          if(error.code != 200) {
+            // check if we have jwt token or not?
+            if (currJwtToken.isNotEmpty) {
+              // if already got token but unable to login, it means that the token already invalid
+              _isInvalidToken = true;
+              
+              // since we knew that this is invalid token, then just clear the JWT
+              // otherwise it will causing the login to be invalid as we still have
+              // the invalid JWT token in the NetUtils
+              NetUtils.clearJWT();
+
+              // show invalid token message on the login screen
+              _showScaffoldMessage(text: "Token expired, please re-login");
+            }
+            else {
+              if (error.code != 401) {
+                // show invalid token message on the login screen
+                _showScaffoldMessage(text: error.message);
+              }
+            }
+          }
+        }
+      }
+      catch (error, stackTrace) {
+        Log.error(
+          message: "⛔ Generic error ${error.toString()}",
+          error: error,
+          stackTrace: stackTrace,
+        );
+
+        // show generic error on application
         _showScaffoldMessage(text: "Error processing on application");
       }
-      else {
-        if(error.code != 200) {
-          // check if we have jwt token or not?
-          if (currJwtToken.isNotEmpty) {
-            // if already got token but unable to login, it means that the token already invalid
-            _isInvalidToken = true;
-            
-            // since we knew that this is invalid token, then just clear the JWT
-            // otherwise it will causing the login to be invalid as we still have
-            // the invalid JWT token in the NetUtils
-            NetUtils.clearJWT();
-
-            // show invalid token message on the login screen
-            _showScaffoldMessage(text: "Token expired, please re-login");
-          }
-          else {
-            if (error.code != 401) {
-              // show invalid token message on the login screen
-              _showScaffoldMessage(text: error.message);
-            }
-          }
-        }
-      }
     }
-    catch (error, stackTrace) {
-      Log.error(
-        message: "⛔ Generic error ${error.toString()}",
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      // show generic error on application
-      _showScaffoldMessage(text: "Error processing on application");
+    else {
+      Log.info(message: "ℹ️ Not yet login");
     }
 
     // return the result of the check login to the caller

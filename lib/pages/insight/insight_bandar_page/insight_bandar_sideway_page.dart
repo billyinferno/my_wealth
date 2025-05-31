@@ -17,7 +17,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
   // sort helper
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
 
   late List<InsightSidewayModel> _sidewayList;
@@ -44,7 +44,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
 
     // default filter mode to Code and ASC
     _filterMode = "nm";
-    _filterSort = "ASC";
+    _filterSort = SortBoxType.ascending;
 
     // initialize all the default variable
     _maxOneDay = InsightSharedPreferences.getSidewayOneDayRate();
@@ -264,27 +264,24 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
           const SizedBox(height: 10,),
           Visibility(
             visible: (_sortedList.isNotEmpty),
-            child: SearchBox(
+            child: SortBox(
               bgColor: Colors.transparent,
-              filterMode: _filterMode,
+              initialFilter: _filterMode,
               filterList: _filterList,
               filterSort: _filterSort,
-              onFilterSelect: ((newMode) {
-                if (newMode != _filterMode) {
-                  setState(() {
-                    _filterMode = newMode;
+              onChanged: (filter, sort) {
+                setState(() {
+                  if (_filterMode != filter) {
+                    _filterMode = filter;
                     _filterData();
-                  });
-                }
-              }),
-              onSortSelect: ((newSort) {
-                if (newSort != _filterSort) {
-                  setState(() {
-                    _filterSort = newSort;
+                  }
+
+                  if (_filterSort != sort) {
+                    _filterSort = sort;
                     _sortData();
-                  });
-                }
-              })
+                  }
+                });
+              },
             ),
           ),
           const SizedBox(height: 10,),
@@ -495,7 +492,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
     _sortedList.clear();
 
     // check the filter type
-    if (_filterSort == "ASC") {
+    if (_filterSort == SortBoxType.ascending) {
       _sortedList = List<InsightSidewayModel>.from(tempFilter);
     }
     else {

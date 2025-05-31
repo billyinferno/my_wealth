@@ -18,7 +18,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
   late List<CompanyDetailModel> _companyList;
   late List<CompanyDetailModel> _companyFilter;
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
   late UserLoginInfoModel? _userInfo;
 
@@ -41,6 +41,10 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     _filterList["1y"] = "One Year";
     _filterList["3y"] = "Three Year";
     _filterList["5y"] = "Five Year";
+
+    // default filter mode to Code and ASC
+    _filterMode = "AB";
+    _filterSort = SortBoxType.ascending;
 
     _getData = _getInitData();
   }
@@ -99,22 +103,17 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SearchBox(
-              filterMode: _filterMode,
+            SortBox(
+              initialFilter: _filterMode,
               filterList: _filterList,
               filterSort: _filterSort,
-              onFilterSelect: ((value) {
+              onChanged: (filter, sort) {
                 setState(() {
-                  _filterMode = value;
+                  _filterMode = filter;
+                  _filterSort = sort;
                   _sortedCompanyList();
                 });
-              }),
-              onSortSelect: ((value) {
-                setState(() {
-                  _filterSort = value;
-                  _sortedCompanyList();
-                });
-              })
+              },
             ),
             const SizedBox(height: 10,),
             Expanded(
@@ -318,7 +317,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     // if the filter mode is "AB" which is code, then just copy from the _companyList
     if (_filterMode == "AB") {
       // check the sort methode?
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _companyFilter = List<CompanyDetailModel>.from(_companyList);
       }
       else {
@@ -358,7 +357,7 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
       }
 
       // check the filter type
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _companyFilter = List<CompanyDetailModel>.from(tempFilter);
       }
       else {
@@ -376,8 +375,6 @@ class _InsightStockSubListPageState extends State<InsightStockSubListPage> {
     ).then((resp) {
       _companyList = resp;
       _companyFilter = List<CompanyDetailModel>.generate(_companyList.length, (index) => _companyList[index]);
-      _filterMode = "AB";
-      _filterSort = "ASC";
     }).onError((error, stackTrace) {
       Log.error(
         message: 'Error getting sub sector data',

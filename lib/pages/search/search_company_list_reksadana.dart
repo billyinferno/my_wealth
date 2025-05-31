@@ -19,7 +19,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   final StepperSelectorController _stepperControllerRisk = StepperSelectorController();
 
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
 
   late CompanyLastUpdateModel _lastUpdate;
@@ -55,7 +55,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
 
     // default filter mode to Code and ASC
     _filterMode = "nm";
-    _filterSort = "ASC";
+    _filterSort = SortBoxType.ascending;
 
     // get the company last update
     _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
@@ -132,22 +132,17 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SearchBox(
-              filterMode: _filterMode,
+            SortBox(
+              initialFilter: _filterMode,
               filterList: _filterList,
-              filterSort: _filterSort, 
-              onFilterSelect: ((value) {
+              filterSort: _filterSort,
+              onChanged: (filter, sort) {
                 setState(() {
-                  _filterMode = value;
+                  _filterMode = filter;
+                  _filterSort = sort;
                   _sortedFave();
                 });
-              }),
-              onSortSelect: ((value) {
-                setState(() {
-                  _filterSort = value;
-                  _sortedFave();
-                });
-              })
+              },
             ),
             const SizedBox(height: 10,),
             Container(
@@ -705,7 +700,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     // if the filter mode is "nm" which is name, then just copy from the _filterFaveList
     if (_filterMode == "nm") {
       // check the sort methode?
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _sortedFaveList = List<FavouritesListModel>.from(_filterFaveList);
       }
       else {
@@ -748,7 +743,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
       }
 
       // check the filter type
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _sortedFaveList = List<FavouritesListModel>.from(tempFilter);
       }
       else {

@@ -15,7 +15,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
 
   // sort helper
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
 
   late List<IndexBeaterModel> _indexBeaterList;
@@ -41,7 +41,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
 
     // default filter mode to Code and ASC
     _filterMode = "nm";
-    _filterSort = "ASC";
+    _filterSort = SortBoxType.ascending;
 
     // get the data from the API or shared storage
     _getData = _fetchData();
@@ -106,21 +106,18 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
             ),
           ),
           const SizedBox(height: 10,),
-          SearchBox(
-            filterMode: _filterMode,
+          SortBox(
+            initialFilter: _filterMode,
             filterList: _filterList,
             filterSort: _filterSort,
             bgColor: Colors.transparent,
-            onFilterSelect: ((value) {
+            onChanged: (filter, sort) {  
               setState(() {
-                _sortedIndexBeater(newFilterMode: value, newSortMode: _filterSort);
+                _filterMode = filter;
+                _filterSort = sort;
+                _sortedIndexBeater(newFilterMode: _filterMode, newSortMode: _filterSort);
               });
-            }),
-            onSortSelect: ((value) {
-              setState(() {
-                _sortedIndexBeater(newFilterMode: _filterMode, newSortMode: value);
-              });
-            })
+            },
           ),
           const SizedBox(height: 10,),
           Expanded(
@@ -277,7 +274,10 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
     return true;
   }
 
-  void _sortedIndexBeater({required String newFilterMode, required String newSortMode}) {
+  void _sortedIndexBeater({
+    required String newFilterMode,
+    required SortBoxType newSortMode,
+  }) {
     // check if the new filter is same as previous or not?
     if ((newFilterMode != _filterMode)) {
       _filterMode = newFilterMode;
@@ -288,7 +288,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
       // if the filter mode is "nm" which is name, then just copy from the _filterFaveList
       if (_filterMode == "nm") {
         // check the sort methode?
-        if (_filterSort == "ASC") {
+        if (_filterSort == SortBoxType.ascending) {
           _sortedBeaterList = List<IndexBeaterModel>.from(_indexBeaterList);
         }
         else {
@@ -331,7 +331,7 @@ class InsightBandarIndexBeaterPageState extends State<InsightBandarIndexBeaterPa
         }
 
         // check the filter type
-        if (_filterSort == "ASC") {
+        if (_filterSort == SortBoxType.ascending) {
           _sortedBeaterList = List<IndexBeaterModel>.from(tempFilter);
         }
         else {

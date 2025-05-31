@@ -21,7 +21,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
   late UserLoginInfoModel? _userInfo;
   
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
 
   late Future<bool> _getData;
@@ -41,7 +41,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
 
     // default filter mode to Code and ASC
     _filterMode = "AB";
-    _filterSort = "ASC";
+    _filterSort = SortBoxType.ascending;
 
     // get the sector PER from API
     _getData = _getSectorPER();
@@ -101,22 +101,17 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SearchBox(
-              filterMode: _filterMode,
+            SortBox(
+              initialFilter: _filterMode,
               filterList: _filterList,
-              filterSort: _filterSort, 
-              onFilterSelect: ((value) {
+              filterSort: _filterSort,
+              onChanged: (filter, sort) {
                 setState(() {
-                  _filterMode = value;
+                  _filterMode = filter;
+                  _filterSort = sort;
                   _sortedCompanyList();
                 });
-              }),
-              onSortSelect: ((value) {
-                setState(() {
-                  _filterSort = value;
-                  _sortedCompanyList();
-                });
-              })
+              },
             ),
             _perSummaryWigdet(),
             Expanded(
@@ -443,7 +438,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
     // if the filter mode is "AB" which is code, then just copy from the _companyList
     if (_filterMode == "AB") {
       // check the sort methode?
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _codeList = List<CodeList>.from(_data.codeList);
       }
       else {
@@ -468,7 +463,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
       }
 
       // check the filter type
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _codeList = List<CodeList>.from(tempFilter);
       }
       else {

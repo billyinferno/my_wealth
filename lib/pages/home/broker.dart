@@ -20,7 +20,7 @@ class _BrokerPageState extends State<BrokerPage> {
   late List<BrokerModel> _brokerList;
   late List<BrokerModel> _filterBrokerList;
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   late DateTime _maxBrokerDate;
 
   @override
@@ -39,7 +39,7 @@ class _BrokerPageState extends State<BrokerPage> {
 
     // default filter mode to Code and ASC
     _filterMode = "CD";
-    _filterSort = "ASC";
+    _filterSort = SortBoxType.ascending;
   }
 
   @override
@@ -74,22 +74,15 @@ class _BrokerPageState extends State<BrokerPage> {
                 }),
               ),
             ),
-            SearchBox(
+            SortBox(
               filterList: _filterList,
-              filterMode: _filterMode,
+              initialFilter: _filterMode,
               filterSort: _filterSort,
-              onFilterSelect: ((value) {
-                setState(() {
-                  _filterMode = value;
-                  _sortedBrokerList();
-                });
-              }),
-              onSortSelect: ((value) {
-                setState(() {
-                  _filterSort = value;
-                  _sortedBrokerList();
-                });
-              }),
+              onChanged: (filter, sort) {
+                _filterMode = filter;
+                _filterSort = sort;
+                _sortedBrokerList();
+              },
             ),
             Expanded(
               child: RefreshIndicator(
@@ -335,7 +328,7 @@ class _BrokerPageState extends State<BrokerPage> {
     }
 
     // check the filter type
-    if (_filterSort == "ASC") {
+    if (_filterSort == SortBoxType.ascending) {
       _filterBrokerList = List<BrokerModel>.from(tempFilter);
     }
     else {

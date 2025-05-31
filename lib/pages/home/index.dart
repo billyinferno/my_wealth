@@ -13,7 +13,7 @@ class IndexPageState extends State<IndexPage> {
   final IndexAPI _indexApi = IndexAPI();
 
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
 
   late List<IndexModel> _indexList;
@@ -34,7 +34,7 @@ class IndexPageState extends State<IndexPage> {
 
     // default filter mode to Code and ASC
     _filterMode = "AB";
-    _filterSort = "ASC";
+    _filterSort = SortBoxType.ascending;
   }
 
   @override
@@ -49,22 +49,15 @@ class IndexPageState extends State<IndexPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SearchBox(
-          filterMode: _filterMode,
+        SortBox(
+          initialFilter: _filterMode,
           filterList: _filterList,
           filterSort: _filterSort,
-          onFilterSelect: ((value) {
-            setState(() {
-              _filterMode = value;
-              _sortedIndexList();
-            });
-          }),
-          onSortSelect: ((value) {
-            setState(() {
-              _filterSort = value;
-              _sortedIndexList();
-            });
-          })
+          onChanged: (filter, sort) {
+            _filterMode = filter;
+            _filterSort = sort;
+            _sortedIndexList();
+          },
         ),
         Expanded(
           child: RefreshIndicator(
@@ -145,7 +138,7 @@ class IndexPageState extends State<IndexPage> {
     // if the filter mode is "AB" which is code, then just copy from the _companyList
     if (_filterMode == "AB") {
       // check the sort methode?
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _indexList = IndexSharedPreferences.getIndexList();
       }
       else {
@@ -174,7 +167,7 @@ class IndexPageState extends State<IndexPage> {
       }
 
       // check the filter type
-      if (_filterSort == "ASC") {
+      if (_filterSort == SortBoxType.ascending) {
         _indexList = List<IndexModel>.from(tempFilter);
       }
       else {

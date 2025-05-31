@@ -17,7 +17,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
   // sort helper
   late String _filterMode;
-  late String _filterSort;
+  late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
 
   late int _oneDayRate;
@@ -49,7 +49,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
 
     // default filter mode to Code and ASC
     _filterMode = "df";
-    _filterSort = "DESC";
+    _filterSort = SortBoxType.descending;
 
     // get the data either from server or cache
     _getData = _getInitData();
@@ -271,27 +271,23 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
           const SizedBox(height: 10,),
           Visibility(
             visible: _listAccumulation.isNotEmpty,
-            child: SearchBox(
-              filterMode: _filterMode,
+            child: SortBox(
+              initialFilter: _filterMode,
               filterList: _filterList,
               filterSort: _filterSort,
               bgColor: Colors.transparent,
-              onFilterSelect: ((newFilter) {
-                if (newFilter != _filterMode) {
-                  setState(() {
-                    _filterMode = newFilter;
+              onChanged: (filter, sort) {
+                setState(() {  
+                  if (filter != _filterMode) {
+                    _filterMode = filter;
                     _filterData();
-                  });
-                }
-              }),
-              onSortSelect: ((newSort) {
-                if (newSort != _filterSort) {
-                  setState(() {
-                    _filterSort = newSort;
+                  }
+                  if (sort != _filterSort) {
+                    _filterSort = sort;
                     _sortData();
-                  });
-                }
-              }),
+                  }
+                });
+              },
             ),
           ),
           const SizedBox(height: 10,),
@@ -475,7 +471,7 @@ class _InsightBandarAccumulationPageState extends State<InsightBandarAccumulatio
     _listAccumulation.clear();
 
     // check the filter type
-    if (_filterSort == "ASC") {
+    if (_filterSort == SortBoxType.ascending) {
       _listAccumulation = List<InsightAccumulationModel>.from(tempFilter);
     }
     else {

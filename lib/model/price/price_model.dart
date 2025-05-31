@@ -20,7 +20,7 @@ class PriceModel {
     final double priceValue;
 
     factory PriceModel.fromJson(Map<String, dynamic> json) => PriceModel(
-        id: json["id"],
+        id: (json["id"] ?? -1),
         priceDate: DateTime.parse(json["price_date"]),
         priceValue: json["price_value"].toDouble(),
     );

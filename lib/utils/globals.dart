@@ -35,6 +35,7 @@ class Globals {
   static String apiWatchlistDetails = '${apiURL}api/watchlists-details';
   static String apiInsight = '${apiURL}api/insight';
   static String apiPriceGold = '${apiURL}api/price-golds';
+  static String apiPrices = '${apiURL}api/prices';
   
   static String appVersion = (dotenv.env['APP_VERSION'] ?? '0.0.1 - dev');
   static String flutterVersion = (dotenv.env['FLUTTER_VERSION'] ?? 'beta');

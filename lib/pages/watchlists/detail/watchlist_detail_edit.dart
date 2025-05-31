@@ -15,12 +15,16 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
   final TextEditingController _sharesController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final WatchlistAPI _watchlistApi = WatchlistAPI();
+  final PriceAPI _priceApi = PriceAPI();
   
   late WatchlistDetailEditArgs _watchlistArgs;
   late String _type;
   late String _txn;
   late WatchlistListModel _watchlist;
   late int _watchlistDetailIndex;
+
+  late Map<DateTime, double> _priceData;
+  late Future<bool> _getPriceData;
 
   DateTime _selectedDate = DateTime.now();
   DateTime _prevDate = DateTime.now();
@@ -64,15 +68,35 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     _prevPrice = _watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailPrice;
 
     // set hint price same as current price
-    //TODO: to dynamicly generate the hint price based on date selected
     _hintPrice = _prevPrice;
 
     _sharesController.text = formatDecimal(_prevShares);
     _priceController.text = formatDecimal(_prevPrice);
+
+    // initialize price data
+    _priceData = {};
+
+    // get the price data from API
+    _getPriceData = _getCompanyPriceFromID();
   }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getPriceData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error occured on watchlist detail');
+        } else if (snapshot.hasData) {
+          return _generatePage();
+        } else {
+          return const CommonLoadingPage();
+        }
+      }),
+    );
+  }
+
+  Widget _generatePage() {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -81,7 +105,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
           ),
           onPressed: (() async {
             await _checkForm().then((value) {
-              if(context.mounted && value) {
+              if(mounted && value) {
                 Navigator.pop(context);
               }
             });
@@ -105,7 +129,17 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
             WatchlistDetailCreateCalendar(
               initialDate: _selectedDate,
               onDateChange: ((newDate) {
-                _selectedDate = newDate;
+                setState(() {                
+                  _selectedDate = newDate;
+
+                  // check if we have price data for this date
+                  if (_priceData.containsKey(_selectedDate)) {
+                    _hintPrice = _priceData[_selectedDate]!;
+                  } else {
+                    // if not, then use the default price
+                    _hintPrice = _prevPrice;
+                  }
+                });
               })
             ),
             WatchlistDetailCreateTextFields(
@@ -140,7 +174,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   icon: Ionicons.close,
                   onTap: (() async {
                     await _checkForm().then((value) {
-                      if(context.mounted && value) {
+                      if(mounted && value) {
                         Navigator.pop(context);
                       }
                     });
@@ -159,13 +193,13 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                           message: "💾 Update the watchlist detail ID ${_watchlist.watchlistDetail[_watchlistDetailIndex].watchlistDetailId} for ${_watchlist.watchlistId}"
                         );
 
-                        if (context.mounted) {
+                        if (mounted) {
                           // return back to the previous page
                           Navigator.pop(context);
                         }
                       }
                     }).onError((error, stackTrace) {
-                      if (context.mounted) {
+                      if (mounted) {
                         // show error on snack bar
                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                       }
@@ -313,5 +347,25 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     else {
       return true;
     }
+  }
+
+  Future<bool> _getCompanyPriceFromID() async {
+    await _priceApi.getCompanyPriceByID(
+      id: _watchlistArgs.watchlist.watchlistCompanyId,
+      type: _type,
+    ).then((price) {
+      // generate the price data from the resp
+      for(int i=0; i < price.length; i++) {
+        _priceData[price[i].priceDate.toLocal()] = price[i].priceValue;
+      }
+    }).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyPriceFromID',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    },);
+    // always return true, even when API is down
+    return true;
   }
 }

@@ -16,12 +16,16 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
   final TextEditingController _sharesController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
+  final PriceAPI _priceApi = PriceAPI();
 
   late WatchlistListArgs _watchlistArgs;
   late String _type;
   late WatchlistListModel _watchlist;
   late double _currentShare;
   late double _hintPrice;
+
+  late Map<DateTime, double> _priceData;
+  late Future<bool> _getPriceData;
   
   DateTime _selectedDate = DateTime.now();
 
@@ -38,12 +42,33 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
         _currentShare = _currentShare / 100;
       }
     }
-    //TODO: to dynamicly generate the hint price based on date selected
+    
     _hintPrice = (_watchlistArgs.watchlist.watchlistCompanyNetAssetValue ?? 0);
+
+    // initialize price data
+    _priceData = {};
+
+    // get the price data from API
+    _getPriceData = _getCompanyPriceFromID();
   }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getPriceData,
+      builder: ((context, snapshot) {
+        if (snapshot.hasError) {
+          return const CommonErrorPage(errorText: 'Error occured on watchlist detail');
+        } else if (snapshot.hasData) {
+          return _generatePage();
+        } else {
+          return const CommonLoadingPage();
+        }
+      }),
+    );
+  }
+
+  Widget _generatePage() {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -52,7 +77,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
           ),
           onPressed: (() async {
             await _checkForm().then((value) {
-              if (context.mounted) {
+              if (mounted) {
                 if(value) {
                   Navigator.pop(context);
                 }
@@ -77,7 +102,17 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
           children: <Widget>[
             WatchlistDetailCreateCalendar(
               onDateChange: ((newDate) {
-                _selectedDate = newDate;
+                setState(() {                
+                  _selectedDate = newDate;
+
+                  // check if we have price data for this date
+                  if (_priceData.containsKey(_selectedDate)) {
+                    _hintPrice = _priceData[_selectedDate]!;
+                  } else {
+                    // if not, then use the default price
+                    _hintPrice = (_watchlist.watchlistCompanyNetAssetValue ?? 0);
+                  }
+                });
               })
             ),
             WatchlistDetailCreateTextFields(
@@ -117,7 +152,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                   icon: Ionicons.close,
                   onTap: (() async {
                     await _checkForm().then((value) {
-                      if (context.mounted) {
+                      if (mounted) {
                         if(value) {
                           Navigator.pop(context);
                         }
@@ -137,12 +172,12 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
                         message: "💾 Sell the watchlist detail for ${_watchlist.watchlistId}"
                       );
 
-                      if (context.mounted) {
+                      if (mounted) {
                         // return back to the previous page
                         Navigator.pop(context);
                       }
                     }).onError((error, stackTrace) {
-                      if (context.mounted) {
+                      if (mounted) {
                         // show error on snack bar
                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
                       }
@@ -250,5 +285,25 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
     else {
       return true;
     }
+  }
+
+  Future<bool> _getCompanyPriceFromID() async {
+    await _priceApi.getCompanyPriceByID(
+      id: _watchlistArgs.watchlist.watchlistCompanyId,
+      type: _type,
+    ).then((price) {
+      // generate the price data from the resp
+      for(int i=0; i < price.length; i++) {
+        _priceData[price[i].priceDate.toLocal()] = price[i].priceValue;
+      }
+    }).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyPriceFromID',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    },);
+    // always return true, even when API is down
+    return true;
   }
 }

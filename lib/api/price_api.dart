@@ -69,4 +69,31 @@ class PriceAPI {
     }
     return listPriceGold;
   }
+
+  Future<List<PriceModel>> getCompanyPriceByID({
+    required int id,
+    required String type,
+    int limit = 90,
+  }) async {
+    // get reksadana information using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiPrices}/type/$type/id/$id/limit/$limit'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanyPriceByID',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to reksdana information
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<PriceModel> listPrice = [];
+    for (var data in commonModel.data) {
+      PriceModel price = PriceModel.fromJson(data['attributes']);
+      listPrice.add(price);
+    }
+    return listPrice;
+  }
 }

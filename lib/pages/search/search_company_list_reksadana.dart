@@ -32,7 +32,8 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   bool _isSaham = true;
   bool _isPasarUang = true;
   bool _isPendapatanTetap = true;
-  bool _isShowAll = true;
+  bool _isIncludeFave = true;
+  bool _isShowDecomm = true;
   int _currentRatingNum = 0;
   int _currentRiskNum = 0;
 
@@ -154,7 +155,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
               child: CupertinoSearchTextField(
                 controller: _textController,
                 onChanged: ((value) {
-                  filterData();
+                  _filterData();
                 }),
                 style: const TextStyle(
                   color: textPrimary,
@@ -202,7 +203,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                       value: _isCampuran,
                                       onChanged: ((val) {
                                         _isCampuran = val;
-                                        filterData();
+                                        _filterData();
                                       }),
                                       activeTrackColor: accentDark,
                                     ),
@@ -221,7 +222,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                       value: _isSaham,
                                       onChanged: ((val) {
                                         _isSaham = val;
-                                        filterData();
+                                        _filterData();
                                       }),
                                       activeTrackColor: accentDark,
                                     ),
@@ -240,7 +241,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                       value: _isPasarUang,
                                       onChanged: ((val) {
                                         _isPasarUang = val;
-                                        filterData();
+                                        _filterData();
                                       }),
                                       activeTrackColor: accentDark,
                                     ),
@@ -259,7 +260,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                       value: _isPendapatanTetap,
                                       onChanged: ((val) {
                                         _isPendapatanTetap = val;
-                                        filterData();
+                                        _filterData();
                                       }),
                                       activeTrackColor: accentDark,
                                     ),
@@ -299,7 +300,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                 defaultValue: _currentRatingNum,
                                 onChanged: ((val) {
                                   _currentRatingNum = val;
-                                  filterData();
+                                  _filterData();
                                 }),
                               ),
                               const SizedBox(height: 10,),
@@ -317,10 +318,9 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                 defaultValue: _currentRiskNum,
                                 onChanged: ((val) {
                                   _currentRiskNum = val;
-                                  filterData();
+                                  _filterData();
                                 }),
                               ),
-                              const SizedBox(height: 10,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -328,19 +328,37 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                                   Transform.scale(
                                     scale: 1,
                                     child: CupertinoSwitch(
-                                      value: _isShowAll,
+                                      value: _isIncludeFave,
                                       onChanged: ((val) {
-                                        _isShowAll = val;
-                                        filterData();
+                                        _isIncludeFave = val;
+                                        _filterData();
                                       }),
                                       activeTrackColor: accentDark,
                                     ),
                                   ),
                                   const SizedBox(width: 5,),
-                                  const Text("Show All"),
+                                  const Text("Include Faves"),
                                 ],
                               ),
-                              //TODO: to add filter for the decomm mutual fund
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Transform.scale(
+                                    scale: 1,
+                                    child: CupertinoSwitch(
+                                      value: _isShowDecomm,
+                                      onChanged: ((val) {
+                                        _isShowDecomm = val;
+                                        _filterData();
+                                      }),
+                                      activeTrackColor: accentDark,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5,),
+                                  const Text("Show Decomm"),
+                                ],
+                              ),
                             ],
                           ),
                         ],
@@ -578,7 +596,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     });
   }
 
-  void filterData() {
+  void _filterData() {
     // create a temporary list to hold resulted filter list
     List<FavouritesListModel> result = [];
     String find = _textController.text;
@@ -588,14 +606,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     for (FavouritesListModel fave in _faveList) {
       if (_isCampuran && _isPendapatanTetap && _isPasarUang && _isSaham) {
         // check whether we want to show all or not?
-        if (_isShowAll) {
-          result.add(fave);
-        }
-        else {
-          if (fave.favouritesId! < 0) {
-            result.add(fave);
-          }
-        }
+        isAdd = true;
       }
       else {
         // check the type first
@@ -612,17 +623,28 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
         if(fave.favouritesCompanyType == "reksadanasaham" && _isSaham) {
           isAdd = true;
         }
+      }
 
-        if (isAdd) {
-          if (_isShowAll) {
-            result.add(fave);
-          }
-          else {
-            if (fave.favouritesId! < 0) {
-              result.add(fave);
-            }
+      // first check if we need to check decomm or not?
+      if (!_isShowDecomm) {
+        if (fave.favouritesLastUpdate != null) {
+          if (fave.favouritesLastUpdate!.isBeforeDate(date: _lastUpdate.reksadana)) {
+            isAdd = false;
           }
         }
+      }
+
+      // check if we need to add this or not?
+      if (!_isIncludeFave) {
+        if (fave.favouritesId! >= 0) {
+          isAdd = false;
+        }
+      }
+
+      // check if we need to add this favorite or not?
+      if (isAdd) {
+        // add to list
+        result.add(fave);
       }
     }
 

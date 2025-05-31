@@ -24,6 +24,9 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
 
   late Future<bool> _getData;
 
+  late bool _isShowDecomm;
+  late bool _isShowFCA;
+
   List<FavouritesListModel> _faveList = [];
   List<FavouritesListModel> _filterFaveList = [];
   List<FavouritesListModel> _sortedFaveList = [];
@@ -51,6 +54,10 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
     // default filter mode to Code and ASC
     _filterMode = "nm";
     _filterSort = "ASC";
+
+    // default the is show decom and fca to true
+    _isShowDecomm = true;
+    _isShowFCA = true;
 
     // get the favourite company list for saham
     _getData = _getInitData();
@@ -159,7 +166,54 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
               ),
             ),
             const SizedBox(height: 10,),
-            //TODO: to add to filter fca and decomm stock
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      CupertinoSwitch(
+                        value: _isShowDecomm,
+                        onChanged: ((val) {
+                          setState(() {  
+                            _isShowDecomm = val;
+                            _filterData();
+                          });
+                        }),
+                        activeTrackColor: accentDark,
+                      ),
+                      const SizedBox(width: 5,),
+                      const Text("Show Decomm"),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      CupertinoSwitch(
+                        value: _isShowFCA,
+                        onChanged: ((val) {
+                          setState(() {  
+                            _isShowFCA = val;
+                            _filterData();
+                          });
+                        }),
+                        activeTrackColor: accentDark,
+                      ),
+                      const SizedBox(width: 5,),
+                      const Text("Show FCA"),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10,),
             Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Text(
@@ -180,7 +234,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
                   bool isWarning = false;
                   // check for the company last update
                   if (_sortedFaveList[index].favouritesLastUpdate != null) {
-                    if (_sortedFaveList[index].favouritesLastUpdate!.isBeforeDate(date: _lastUpdate.reksadana)) {
+                    if (_sortedFaveList[index].favouritesLastUpdate!.isBeforeDate(date: _lastUpdate.saham)) {
                       isWarning = true;
                     }
                   }
@@ -378,6 +432,49 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
         _filterFaveList.add(_faveList[i]);
       }
     }
+    _sortedFave();
+  }
+
+  void _filterData() {
+    // clear the filter list first
+    _filterFaveList.clear();
+
+    // then loop thru _faveList and check whether we want to show fca and
+    // decommisionned company or not?
+    bool isAdd;  
+    for (var i = 0; i < _faveList.length; i++) {
+      // default isAdd to true
+      isAdd = true;
+
+      // check if we want to show fca or not?
+      if (!_isShowFCA) {
+        // check if the current company is fca or not?
+        if ((_faveList[i].favouritesFCA ?? false)) {
+          // no need to add this company
+          isAdd = false;
+        }
+      }
+
+      // check if need to add or not?
+      if (isAdd) {
+        // check if the current company is decommissioned or not?
+        if (!_isShowDecomm) {
+          // check the company last update is the same as the last update from
+          // server or not?
+          if (_faveList[i].favouritesLastUpdate!.isBeforeDate(date: _lastUpdate.saham)) {
+            isAdd = false;
+          }
+        }
+      }
+      
+      // check if we need to add this or not?
+      if (isAdd) {
+        // add this filter list
+        _filterFaveList.add(_faveList[i]);
+      }
+    }
+
+    // once finished sorted the fave list
     _sortedFave();
   }
 

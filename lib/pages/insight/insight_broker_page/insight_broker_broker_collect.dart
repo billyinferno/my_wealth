@@ -28,6 +28,12 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
   late DateTime _toDate;
   late int _accumRate;
   late InsightBrokerCollectModel? _brokerCollect;
+  late List<BrokerCollectCompany> _brokerCollectCompanyList;
+  late List<BrokerCollectCompany> _filteredBrokcerCollectCompanyList;
+
+  late String _filterMode;
+  late SortBoxType _filterSort;
+  final Map<String, String> _filterList = {};
 
   @override
   void initState() {
@@ -49,11 +55,18 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       _fromDate = _minBrokerDate;
     }
 
+    // check if the to date is after the _maxBrokerDate
+    if (_maxBrokerDate.isBefore(_toDate)) {
+      _toDate = _maxBrokerDate;
+    }
+
     // get the accumulation rate
     _accumRate = InsightSharedPreferences.getBrokerCollectAccumulationRate();
 
     // get the broker collection
     _brokerCollect = InsightSharedPreferences.getBrokerCollect();
+    _brokerCollectCompanyList = (_brokerCollect?.data ?? []);
+    _filteredBrokcerCollectCompanyList = _brokerCollectCompanyList.toList();
 
     // add the flip flop items for top broker
     _brokerCalendarType = CalendarType.day;
@@ -65,6 +78,22 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       key: CalendarType.year,
       icon: LucideIcons.calendar_range,
     ));
+
+    // list all the filter that we want to put here
+    _filterList["CD"] = "Code";
+    _filterList["BL"] = "Buy Lot";
+    _filterList["BV"] = "Buy Value";
+    _filterList["BP"] = "AVG Buy Price";
+    _filterList["SL"] = "Sell Lot";
+    _filterList["SV"] = "Sell Value";
+    _filterList["SP"] = "AVG Sell Price";
+    _filterList["LL"] = "Left Lot";
+    _filterList["LV"] = "Left Value";
+    _filterList["LP"] = "AVG Left Price";
+
+    // default filter mode to Code and ASC
+    _filterMode = "LL";
+    _filterSort = SortBoxType.descending;
   }
 
   @override
@@ -93,7 +122,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
             ),
           ),
         ),
-        //TODO: to add filter for sort on buy lot, buy value, sell lot, sell value, left lot, left value, left avg, left %, avg price diff
       ),
       body: MySafeArea(
         child: Column(
@@ -352,8 +380,24 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         color: secondaryColor,
                         borderColor: secondaryLight,
                         text: "SEARCH",
-                      )
+                      ),
                     ],
+                  ),
+                  Visibility(
+                    visible: (_brokerCollect != null),
+                    child: SortBox(
+                      initialFilter: _filterMode,
+                      filterList: _filterList,
+                      filterSort: _filterSort,
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                      onChanged: (filter, sort) {
+                        setState(() {
+                          _filterMode = filter;
+                          _filterSort = sort;
+                          _filterData();
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -377,7 +421,6 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     // create the summary box
     return Container(
       margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
         border: Border.all(
           color: primaryLight,
@@ -394,7 +437,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
           Container(
             height: 40,
             decoration: const BoxDecoration(
-              color: secondaryColor,
+              color: primaryDark,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
@@ -406,92 +449,100 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
               ),
             ),
           ),
-          const SizedBox(height: 10,),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "BUY",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      color: Colors.green,
+                      child: const Center(
+                        child: Text(
+                          "BUY",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 10,),
-                      const Text(
-                        "Lot",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
+                    ),
+                    const SizedBox(height: 5,),
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "Lot",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            formatIntWithNull(
+                              _brokerCollect!.summaryTotalBuy,
+                              showDecimal: false,
+                              decimalNum: 0,
+                              shorten: false,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 5,),
+                          const Text(
+                            "Value",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            formatIntWithNull(
+                              _brokerCollect!.summaryTotalBuyValue,
+                              showDecimal: false,
+                              decimalNum: 2,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 5,),
+                          const Text(
+                            "Count",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            "${formatIntWithNull(
+                              _brokerCollect!.summaryCountBuy,
+                              showDecimal: false,
+                              decimalNum: 0,
+                              shorten: false
+                            )} time${(_brokerCollect!.summaryCountBuy) > 1 ? 's' : ''}",
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        formatIntWithNull(
-                          _brokerCollect!.summaryTotalBuy,
-                          showDecimal: false,
-                          decimalNum: 0,
-                          shorten: false,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      const Text(
-                        "Value",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        formatIntWithNull(
-                          _brokerCollect!.summaryTotalBuyValue,
-                          showDecimal: false,
-                          decimalNum: 2,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      const Text(
-                        "Count",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        "${formatIntWithNull(
-                          _brokerCollect!.summaryCountBuy,
-                          showDecimal: false,
-                          decimalNum: 0,
-                          shorten: false
-                        )}x",
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   decoration: const BoxDecoration(
                     border: Border(
                       left: BorderSide(
@@ -510,152 +561,175 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      const Text(
-                        "SELL",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: secondaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 10,),
-                      const Text(
-                        "Lot",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        formatIntWithNull(
-                          _brokerCollect!.summaryTotalSell,
-                          showDecimal: false,
-                          decimalNum: 0,
-                          shorten: false
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        color: secondaryColor,
+                        child: const Center(
+                          child: Text(
+                            "SELL",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 5,),
-                      const Text(
-                        "Value",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              "Lot",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              formatIntWithNull(
+                                _brokerCollect!.summaryTotalSell,
+                                showDecimal: false,
+                                decimalNum: 0,
+                                shorten: false
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 5,),
+                            const Text(
+                              "Value",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              formatIntWithNull(
+                                _brokerCollect!.summaryTotalSellValue,
+                                showDecimal: false,
+                                decimalNum: 2,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 5,),
+                            const Text(
+                              "Count",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              "${formatIntWithNull(
+                                _brokerCollect!.summaryCountSell,
+                                showDecimal: false,
+                                decimalNum: 0,
+                                shorten: false
+                              )} time${(_brokerCollect!.summaryCountSell) > 1 ? 's' : ''}",
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        formatIntWithNull(
-                          _brokerCollect!.summaryTotalSellValue,
-                          showDecimal: false,
-                          decimalNum: 2,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      const Text(
-                        "Count",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        "${formatIntWithNull(
-                          _brokerCollect!.summaryCountSell,
-                          showDecimal: false,
-                          decimalNum: 0,
-                          shorten: false
-                        )}x",
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
                     ],
                   ),
                 ),
               ),
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "LEFT",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: accentColor,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      color: accentDark,
+                      child: const Center(
+                        child: Text(
+                          "LEFT",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 10,),
-                      const Text(
-                        "Lot",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
+                    ),
+                    const SizedBox(height: 5,),
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "Lot",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            formatIntWithNull(
+                              _brokerCollect!.summaryTotalLeft,
+                              showDecimal: false,
+                              decimalNum: 0,
+                              shorten: false
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 5,),
+                          const Text(
+                            "Value",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            formatIntWithNull(
+                              _brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue,
+                              showDecimal: false,
+                              decimalNum: 2,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 5,),
+                          const Text(
+                            "Percent Left",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            "${formatDecimalWithNull(
+                              _brokerCollect!.summaryTotalLeft / _brokerCollect!.summaryTotalBuy,
+                              times: 100,
+                              decimal: 2
+                            )} %",
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        formatIntWithNull(
-                          _brokerCollect!.summaryTotalLeft,
-                          showDecimal: false,
-                          decimalNum: 0,
-                          shorten: false
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      const Text(
-                        "Value",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        formatIntWithNull(
-                          _brokerCollect!.summaryTotalBuyValue - _brokerCollect!.summaryTotalSellValue,
-                          showDecimal: false,
-                          decimalNum: 2,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      const Text(
-                        "Percent Left",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        "${formatDecimalWithNull(
-                          _brokerCollect!.summaryTotalLeft / _brokerCollect!.summaryTotalBuy,
-                          times: 100,
-                          decimal: 2
-                        )} %",
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -676,14 +750,14 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
       child: ListView.builder(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _brokerCollect!.data.length,
+        itemCount: _filteredBrokcerCollectCompanyList.length,
         itemBuilder: ((context, index) {
-          double avgPrice = (_brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue) / (_brokerCollect!.data[index].totalLeft * 100);
+          double avgPrice = (_filteredBrokcerCollectCompanyList[index].totalBuyValue - _filteredBrokcerCollectCompanyList[index].totalSellValue) / (_filteredBrokcerCollectCompanyList[index].totalLeft * 100);
           Color priceColor = primaryDark;
-          if (avgPrice > _brokerCollect!.data[index].lastPrice) {
+          if (avgPrice > _filteredBrokcerCollectCompanyList[index].lastPrice) {
             priceColor = Colors.green[900]!;
           }
-          else if (avgPrice < _brokerCollect!.data[index].lastPrice) {
+          else if (avgPrice < _filteredBrokcerCollectCompanyList[index].lastPrice) {
             priceColor = secondaryDark;
           }
 
@@ -696,14 +770,13 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                   icon: Ionicons.business_outline,
                   iconColor: extendedLight,
                   onTap: () {
-                    _getCompanyDetailAndGo(code: _brokerCollect!.data[index].code);
+                    _getCompanyDetailAndGo(code: _filteredBrokcerCollectCompanyList[index].code);
                   },
                 ),
               ],
             ),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
               decoration: const BoxDecoration(
                 border: Border(
@@ -719,7 +792,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    color: primaryDark,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -730,7 +804,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Visibility(
-                                visible: _brokerCollect!.data[index].fca,
+                                visible: _filteredBrokcerCollectCompanyList[index].fca,
                                 child: Container(
                                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                                   child: Icon(
@@ -741,7 +815,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ),
                               ),
                               Text(
-                                _brokerCollect!.data[index].code,
+                                _filteredBrokcerCollectCompanyList[index].code,
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -751,7 +825,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                               const SizedBox(width: 5,),
                               Expanded(
                                 child: Text(
-                                  _brokerCollect!.data[index].name,
+                                  _filteredBrokcerCollectCompanyList[index].name,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 12,
@@ -776,7 +850,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                           ),
                           child: Text(
                             formatIntWithNull(
-                              _brokerCollect!.data[index].lastPrice,
+                              _filteredBrokcerCollectCompanyList[index].lastPrice,
                               showDecimal: false,
                               decimalNum: 0,
                               shorten: false
@@ -796,103 +870,113 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "BUY",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              color: Colors.green,
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              child: const Center(
+                                child: Text(
+                                  "BUY",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 2,),
-                              const Text(
-                                "Lot",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(10, 2, 10, 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Text(
+                                    "Lot",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].totalBuy,
+                                      showDecimal: false,
+                                      decimalNum: 0,
+                                      shorten: false
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Value",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].totalBuyValue,
+                                      checkThousand:false,
+                                      showDecimal:false,
+                                      decimalNum:0,
+                                      shorten:false
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "AVG",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatDecimalWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].totalBuyAvg,
+                                      decimal: 2
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Count",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${formatIntWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].countBuy,
+                                      checkThousand:false,
+                                      showDecimal:false,
+                                      decimalNum:0,
+                                      shorten:false
+                                    )}x",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                formatIntWithNull(
-                                  _brokerCollect!.data[index].totalBuy,
-                                  showDecimal: false,
-                                  decimalNum: 0,
-                                  shorten: false
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Value",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatIntWithNull(
-                                  _brokerCollect!.data[index].totalBuyValue,
-                                  checkThousand:false,
-                                  showDecimal:false,
-                                  decimalNum:0,
-                                  shorten:false
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "AVG",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatDecimalWithNull(
-                                  _brokerCollect!.data[index].totalBuyAvg,
-                                  decimal: 2
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Count",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                "${formatIntWithNull(
-                                  _brokerCollect!.data[index].countBuy,
-                                  checkThousand:false,
-                                  showDecimal:false,
-                                  decimalNum:0,
-                                  shorten:false
-                                )}x",
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           decoration: const BoxDecoration(
                             border: Border(
                               left: BorderSide(
@@ -911,86 +995,100 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              const Text(
-                                "SELL",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: secondaryColor,
+                              Container(
+                                padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                color: secondaryColor,
+                                child: const Center(
+                                  child: Text(
+                                    "SELL",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 2,),
-                              const Text(
-                                "Lot",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatIntWithNull(
-                                  _brokerCollect!.data[index].totalSell,
-                                  showDecimal: false,
-                                  decimalNum: 0,
-                                  shorten: false
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Value",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatIntWithNull(
-                                  _brokerCollect!.data[index].totalSellValue,
-                                  showDecimal: false,
-                                  decimalNum: 0,
-                                  shorten: false
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "AVG",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatDecimalWithNull(
-                                  _brokerCollect!.data[index].totalSellAvg,
-                                  decimal: 2
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Count",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                "${formatIntWithNull(
-                                  _brokerCollect!.data[index].countSell,
-                                  showDecimal: false,
-                                  decimalNum: 0,
-                                  shorten: false
-                                )}x",
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
+                              Container(
+                                padding: const EdgeInsets.fromLTRB(10, 2, 10, 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    const Text(
+                                      "Lot",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Text(
+                                      formatIntWithNull(
+                                        _filteredBrokcerCollectCompanyList[index].totalSell,
+                                        showDecimal: false,
+                                        decimalNum: 0,
+                                        shorten: false
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const Text(
+                                      "Value",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Text(
+                                      formatIntWithNull(
+                                        _filteredBrokcerCollectCompanyList[index].totalSellValue,
+                                        showDecimal: false,
+                                        decimalNum: 0,
+                                        shorten: false
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const Text(
+                                      "AVG",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Text(
+                                      formatDecimalWithNull(
+                                        _filteredBrokcerCollectCompanyList[index].totalSellAvg,
+                                        decimal: 2
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const Text(
+                                      "Count",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${formatIntWithNull(
+                                        _filteredBrokcerCollectCompanyList[index].countSell,
+                                        showDecimal: false,
+                                        decimalNum: 0,
+                                        shorten: false
+                                      )}x",
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -998,95 +1096,107 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                         ),
                       ),
                       Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "LEFT",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: accentColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              color: accentDark,
+                              child: const Center(
+                                child: Text(
+                                  "LEFT",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 2,),
-                              const Text(
-                                "Lot",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
+                            ),
+                            const SizedBox(height: 2,),
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  const Text(
+                                    "Lot",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].totalLeft,
+                                      showDecimal: false,
+                                      decimalNum: 0,
+                                      shorten: false
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Value",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatIntWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].totalBuyValue - _filteredBrokcerCollectCompanyList[index].totalSellValue,
+                                      showDecimal: false,
+                                      decimalNum: 0,
+                                      shorten: false
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "AVG",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatDecimalWithNull(
+                                      avgPrice,
+                                      decimal: 2
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Percent Left",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${formatDecimalWithNull(
+                                      _filteredBrokcerCollectCompanyList[index].totalPercentage,
+                                      times: 100,
+                                      decimal: 2
+                                    )} %",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                formatIntWithNull(
-                                  _brokerCollect!.data[index].totalLeft,
-                                  showDecimal: false,
-                                  decimalNum: 0,
-                                  shorten: false
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Value",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatIntWithNull(
-                                  _brokerCollect!.data[index].totalBuyValue - _brokerCollect!.data[index].totalSellValue,
-                                  showDecimal: false,
-                                  decimalNum: 0,
-                                  shorten: false
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "AVG",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                formatDecimalWithNull(
-                                  avgPrice,
-                                  decimal: 2
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Percent Left",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                "${formatDecimalWithNull(
-                                  _brokerCollect!.data[index].totalPercentage,
-                                  times: 100,
-                                  decimal: 2
-                                )} %",
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -1183,6 +1293,84 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     }
   }
 
+  void _filterData() {
+    // clear filter list data first
+    _filteredBrokcerCollectCompanyList.clear();
+
+    // check which filter currently active
+    switch(_filterMode) {
+      case "BL":
+        // sort the broker collect company list by buy lot
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => b.totalBuy.compareTo(a.totalBuy))
+        );
+        break;
+      case "BV":
+        // sort the broker collect company list by buy value
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => b.totalBuyValue.compareTo(a.totalBuyValue))
+        );
+        break;
+      case "BP":
+        // sort the broker collect company list by buy price
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => (b.totalBuyValue / b.totalBuy).compareTo(a.totalBuyValue / a.totalBuy))
+        );
+        break;
+      case "SL":
+        // sort the broker collect company list by sell lot
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => b.totalSell.compareTo(a.totalSell))
+        );
+        break;
+      case "SV":
+        // sort the broker collect company list by sell value
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => b.totalSellValue.compareTo(a.totalSellValue))
+        );
+        break;
+      case "SP":
+        // sort the broker collect company list by sell price
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => (b.totalSellValue / b.totalSell).compareTo(a.totalSellValue / a.totalSell))
+        );
+        break;
+      case "LL":
+        // sort the broker collect company list by left lot
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => b.totalLeft.compareTo(a.totalLeft))
+        );
+        break;
+      case "LV":
+        // sort the broker collect company list by left value
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => (b.totalBuyValue - b.totalSellValue).compareTo(a.totalBuyValue - a.totalSellValue))
+        );
+        break;
+      case "LP":
+        // sort the broker collect company list by left price
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList.where((element) => element.totalLeft > 0).toList()
+            ..sort((a, b) => ((b.totalBuyValue - b.totalSellValue) / b.totalLeft).compareTo((a.totalBuyValue - a.totalSellValue) / a.totalLeft))
+        );
+        break;
+      default:
+        // sort the broker collect company list by code
+        _filteredBrokcerCollectCompanyList.addAll(
+          _brokerCollectCompanyList..sort((a, b) => b.code.compareTo(a.code))
+        );
+        break;
+    }
+
+    // check if the sort is ascending or descending
+    if (_filterSort == SortBoxType.ascending) {
+      // reverse the list
+      _filteredBrokcerCollectCompanyList = List<BrokerCollectCompany>.from(
+        _filteredBrokcerCollectCompanyList.reversed
+      );
+    }
+  }
+
   Future<void> _getBrokerCollect() async {
     // show loading screen
     LoadingScreen.instance().show(context: context);
@@ -1196,8 +1384,10 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     ).then((resp) async {
       // put the response to the broker collect
       _brokerCollect = resp;
+      _brokerCollectCompanyList = (_brokerCollect?.data ?? []);
+      _filterData();
       
-      // stre the broker collection query result to the shared preferences
+      // store the broker collection query result to the shared preferences
       await InsightSharedPreferences.setBrokerCollect(
         brokerCollectList: _brokerCollect!,
         brokerId: _brokerCode,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,12 +17,25 @@ void main() async {
     // after that we can initialize the box
     await Future.microtask(() async {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]); // set prefered orientation
-      await dotenv.load(fileName: "env/.dev.env"); // load the environment files
+      if (kReleaseMode) {
+        await dotenv.load(fileName: "conf/.prod.env");
+        Log.info(message: "⏳ Loading production environment variables");
+      }
+      else {
+        await dotenv.load(fileName: "conf/.dev.env");
+        Log.info(message: "⏳ Loading development environment variables");
+      }
       await Hive.initFlutter(); // initialize Hive
       await LocalBox.init(); // initialize box (normal and secure)
     }).then((_) {
       // if all the future success means application is initialized
       Log.success(message: "💯 Application Initialized");
+      if (kReleaseMode) {
+        Log.info(message: "🚀 Application version v.${Globals.appVersion}");
+      }
+      else {
+        Log.info(message: "🚀 Development mode");
+      }
     }).onError((error, stackTrace) {
       // if caught error print all the error and the stack trace
       Log.error(

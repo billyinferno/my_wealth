@@ -18,11 +18,11 @@ void main() async {
     await Future.microtask(() async {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]); // set prefered orientation
       if (kReleaseMode) {
-        await dotenv.load(fileName: "conf/.prod.env");
+        await dotenv.load(fileName: "env/.prod.env");
         Log.info(message: "⏳ Loading production environment variables");
       }
       else {
-        await dotenv.load(fileName: "conf/.dev.env");
+        await dotenv.load(fileName: "env/.dev.env");
         Log.info(message: "⏳ Loading development environment variables");
       }
       await Hive.initFlutter(); // initialize Hive

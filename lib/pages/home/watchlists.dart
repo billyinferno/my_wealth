@@ -330,7 +330,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         scrollController: _scrollControllerMutual,
         checkLastUpdate: true,
         lastUpdate: _companyMaxLastUpdate.reksadana,
-        warningIcon: Ionicons.lock_closed,
+        warningIcon: Ionicons.pause,
       );
     }
     return const Center(child: Text("No mutual fund watchlists"));
@@ -350,6 +350,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         checkThousandOnPrice: false,
         scrollController: _scrollControllerStock,
         showDecimalPrice: false,
+        checkLastUpdate: true,
+        lastUpdate: _companyMaxLastUpdate.saham,
+        warningIcon: Ionicons.pause,
       );
     }
     return const Center(child: Text("No stock watchlists"));
@@ -368,6 +371,9 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         shareTitle: "Coin",
         checkThousandOnPrice: true,
         scrollController: _scrollControllerCrypto,
+        checkLastUpdate: true,
+        lastUpdate: _companyMaxLastUpdate.crypto,
+        warningIcon: Ionicons.pause,
       );
     }
     return const Center(child: Text("No crypto watchlists"));

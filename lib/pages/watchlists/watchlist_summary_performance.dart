@@ -1282,11 +1282,33 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
     bool isPLMinMax;
     bool isDiffMinMax;
     double? percentGain;
+    double prevTotal = 1; // default to 1 so we can avoid divide by zero error
     
     // clear current perf data sort
     _perfDataSort.clear();
 
     for(int index=0; index<_perfData.length; index++) {
+      // if index already more than 0, then we can use the previous total
+      // otherwise we will use the prevTotal as 1, so we can avoid divide by
+      // zero error
+      if (index > 0) {
+        // check if we have previous total or not?
+        if (_perfData[index - 1].total > 0) {
+          // set the prev total to the previous total
+          prevTotal = _perfData[index - 1].total;
+        }
+        else {
+          // if we don't have previous total, then just use the prevTotal
+          // which is 1, so we can avoid divide by zero error
+          prevTotal = 1;
+        }
+      }
+      else {
+        // if index is 0, then we will use the prevTotal as 1, so we can avoid
+        // divide by zero error
+        prevTotal = 1;
+      }
+
       // default the diff color as text primary
       plDiffColor = textPrimary;
       plDiff = null;
@@ -1335,6 +1357,11 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
       percentGain = null;
       if (_perfData[index].total > 0) {
         percentGain = _perfData[index].gain / _perfData[index].total;
+      }
+      else {
+        // if we don't have total, just use the previous total for the
+        // percentage gain calculation
+        percentGain = _perfData[index].gain / prevTotal;
       }
 
       SummaryPerformanceDataList data = SummaryPerformanceDataList(

@@ -130,10 +130,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_dotenv
-      sha256: b7c7be5cd9f6ef7a78429cabd2774d3c4af50e79cb2b7593e3d5d763ef95c61b
+      sha256: d4130c4a43e0b13fefc593bc3961f2cb46e30cb79e253d4a526b1b5d24ae1ce4
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.1"
+    version: "6.0.0"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -171,10 +171,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: a510f1e94d766bc240ea264a350d18a5e60cf0d0
+      resolved-ref: fe17928a35ac9bce9502d9993bde0921c446a3ac
       url: "https://github.com/letsar/flutter_slidable.git"
     source: git
-    version: "4.0.0"
+    version: "4.0.1"
   flutter_spinkit:
     dependency: "direct main"
     description:
@@ -200,18 +200,18 @@ packages:
     dependency: "direct main"
     description:
       name: hive_ce
-      sha256: "708bb39050998707c5d422752159f91944d3c81ab42d80e1bd0ee37d8e130658"
+      sha256: "5620f634fb51c760144de69b55199419360f2aadba56bbcd5c7c2f1fe4bbfdd6"
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.3"
+    version: "2.11.4"
   hive_ce_flutter:
     dependency: "direct main"
     description:
       name: hive_ce_flutter
-      sha256: a0989670652eab097b47544f1e5a4456e861b1b01b050098ea0b80a5fabe9909
+      sha256: f5bd57fda84402bca7557fedb8c629c96c8ea10fab4a542968d7b60864ca02cc
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.2"
   http:
     dependency: "direct main"
     description:
@@ -384,10 +384,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: d0d310befe2c8ab9e7f393288ccbb11b60c019c6b5afc21973eeee4dda2b35e9
+      sha256: "993381400e94d18469750e5b9dcb8206f15bc09f9da86b9e44a9b0092a0066db"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.17"
+    version: "2.2.18"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -456,10 +456,10 @@ packages:
     dependency: "direct main"
     description:
       name: provider
-      sha256: "4abbd070a04e9ddc287673bf5a030c7ca8b685ff70218720abab8b092f53dd84"
+      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.5"
+    version: "6.1.5+1"
   sky_engine:
     dependency: transitive
     description: flutter

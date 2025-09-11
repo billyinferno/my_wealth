@@ -9,6 +9,7 @@ export './multi_line_chart.dart';
 export './multi_line_chart_painter.dart';
 export './performance_chart.dart';
 export './performance_chart_painter.dart';
+export './progress_chart_with_title.dart';
 export './seasonality_table.dart';
 export './stock_candlestick_painter.dart';
 export './stock_chart.dart';

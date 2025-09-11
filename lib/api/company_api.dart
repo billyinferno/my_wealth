@@ -583,4 +583,24 @@ class CompanyAPI {
 
     return companyMinUpdate;
   }
+
+  Future<CompanySahamPricePerformanceModel> getCompanySahamPricePerformance({required String code}) async {
+    // get the company data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiCompanySaham}/price-performance/${code.toUpperCase()}'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getCompanySahamPricePerformance',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the detail company information
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    CompanySahamPricePerformanceModel pricePerformance = CompanySahamPricePerformanceModel.fromJson(commonModel.data['attributes']);
+
+    return pricePerformance;
+  }
 }

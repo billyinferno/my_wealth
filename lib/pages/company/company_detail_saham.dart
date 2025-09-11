@@ -96,6 +96,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late bool _additionalInfoAvailable;
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePER;
   late CompanySahamSectorIndustryAverageModel _sectorIndustryAveragePBV;
+  late CompanySahamPricePerformanceModel _pricePerformance;
   late MyYearPickerCalendarType _calendarMonthlyType;
   late bool _calendarWeeklyRange;
   late CompanyLastUpdateModel _lastUpdate;
@@ -770,7 +771,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           unselectedLabelColor: textPrimary,
           dividerHeight: 0,
           tabs: const <Widget>[
-            Tab(text: 'SUMMARY',),
+            Tab(text: 'KEYSTATS',),
             Tab(text: 'ANALYSIS',),
             Tab(text: 'FUNDAMENTAL',),
             Tab(text: 'COMPARE'),
@@ -784,7 +785,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           child: TabBarView(
             controller: _tabController,
             children: <Widget>[
-              _tabSummaryInfo(),
+              _tabKeystatsInfo(),
               _tabAnalysis(),
               _tabFundamentalInfo(),
               _tabCompareInfo(),
@@ -798,7 +799,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     );
   }
 
-  Widget _tabSummaryInfo() {
+  Widget _tabKeystatsInfo() {
     return SingleChildScrollView(
       controller: _infoController,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -896,159 +897,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             const SizedBox(
               height: 5,
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                CompanyInfoBox(
-                  header: "One Day",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyDailyReturn,
-                      times: 100,
-                      decimal: 4
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "One Week",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyWeeklyReturn,
-                      times: 100,
-                      decimal: 4
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "One Month",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyMonthlyReturn,
-                      times: 100,
-                      decimal: 4
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                CompanyInfoBox(
-                  header: "Three Months",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyQuarterlyReturn,
-                      times: 100,
-                      decimal: 4
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "Six Months",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companySemiAnnualReturn,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "One Year",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyYearlyReturn,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                CompanyInfoBox(
-                  header: "Three Years",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyThreeYear,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "Five Years",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyFiveYear,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "Ten Years",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyTenYear,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+            // TODO: to create API also for MTD and YTD so we can show it on price performance, instead here
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -1299,9 +1148,79 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 ),
               ],
             ),
+            const SizedBox(height: 20,),
+            Text(
+              "Price Performance",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 5,),
+            _showPricePerformance(
+              title: "1D",
+              percentage: _companyDetail.companyDailyReturn,
+              data: _pricePerformance.pricePerformance.the1D,
+            ),
+            _showPricePerformance(
+              title: "1W",
+              percentage: _companyDetail.companyWeeklyReturn,
+              data: _pricePerformance.pricePerformance.the1W,
+            ),
+            _showPricePerformance(
+              title: "1M",
+              percentage: _companyDetail.companyMonthlyReturn,
+              data: _pricePerformance.pricePerformance.the1M,
+            ),
+            _showPricePerformance(
+              title: "3M",
+              percentage: _companyDetail.companyQuarterlyReturn,
+              data: _pricePerformance.pricePerformance.the3M,
+            ),
+            _showPricePerformance(
+              title: "6M",
+              percentage: _companyDetail.companySemiAnnualReturn,
+              data: _pricePerformance.pricePerformance.the6M,
+            ),
+            _showPricePerformance(
+              title: "1Y",
+              percentage: _companyDetail.companyYearlyReturn,
+              data: _pricePerformance.pricePerformance.the1Y,
+            ),
+            _showPricePerformance(
+              title: "3Y",
+              percentage: _companyDetail.companyThreeYear,
+              data: _pricePerformance.pricePerformance.the3Y,
+            ),
+            _showPricePerformance(
+              title: "5Y",
+              percentage: _companyDetail.companyFiveYear,
+              data: _pricePerformance.pricePerformance.the5Y,
+            ),
+            _showPricePerformance(
+              title: "10Y",
+              percentage: _companyDetail.companyTenYear,
+              data: _pricePerformance.pricePerformance.the10Y,
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _showPricePerformance({
+    required String title,
+    required MinMaxData? data,
+    required double? percentage,
+  }) {
+    // if data is null then just return sized boz
+    if (data == null) return const SizedBox.shrink();
+
+    return ProgressChartWithTitle(
+      title: title,
+      percentage: (percentage ?? 0),
+      min: data.min,
+      max: data.max,
+      current: _companyDetail.companyNetAssetValue!.toInt()
     );
   }
 
@@ -6369,6 +6288,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           type: 'pbv',
         ).then((resp) {
           _sectorIndustryAveragePBV = resp;
+        }),
+
+        // get the price performance
+        _companyApi.getCompanySahamPricePerformance(
+          code: _companyData.companyCode,
+        ).then((resp) {
+          _pricePerformance = resp;
         }),
 
         // check if user owned this stock or not?

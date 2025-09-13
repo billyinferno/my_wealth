@@ -38,6 +38,8 @@ class PricePerformance {
     final MinMaxData? the3Y;
     final MinMaxData? the5Y;
     final MinMaxData? the10Y;
+    final MinMaxData? theMTD;
+    final MinMaxData? theYTD;
 
     PricePerformance({
         required this.the1D,
@@ -49,6 +51,8 @@ class PricePerformance {
         required this.the3Y,
         required this.the5Y,
         required this.the10Y,
+        required this.theMTD,
+        required this.theYTD,
     });
 
     factory PricePerformance.fromJson(Map<String, dynamic> json) => PricePerformance(
@@ -61,6 +65,8 @@ class PricePerformance {
         the3Y: json["3Y"] == null ? null : MinMaxData.fromJson(json["3Y"]),
         the5Y: json["5Y"] == null ? null : MinMaxData.fromJson(json["5Y"]),
         the10Y: json["10Y"] == null ? null : MinMaxData.fromJson(json["10Y"]),
+        theMTD: json["MTD"] == null ? null : MinMaxData.fromJson(json["MTD"]),
+        theYTD: json["YTD"] == null ? null : MinMaxData.fromJson(json["YTD"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -73,6 +79,8 @@ class PricePerformance {
         "3Y": the3Y?.toJson(),
         "5Y": the5Y?.toJson(),
         "10Y": the10Y?.toJson(),
+        "MTD": theMTD?.toJson(),
+        "YTD": theYTD?.toJson(),
     };
 }
 

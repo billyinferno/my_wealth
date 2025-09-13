@@ -897,49 +897,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             const SizedBox(
               height: 5,
             ),
-            // TODO: to create API also for MTD and YTD so we can show it on price performance, instead here
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                CompanyInfoBox(
-                  header: "MTD",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyMtd,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                CompanyInfoBox(
-                  header: "YTD",
-                  headerAlign: MainAxisAlignment.end,
-                  child: Text(
-                    "${formatDecimalWithNull(
-                      _companyDetail.companyYtdReturn,
-                      times: 100,
-                      decimal: 4,
-                    )}%",
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const Expanded(
-                  child: SizedBox(),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -1200,6 +1157,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
               title: "10Y",
               percentage: _companyDetail.companyTenYear,
               data: _pricePerformance.pricePerformance.the10Y,
+            ),
+            _showPricePerformance(
+              title: "MTD",
+              percentage: _companyDetail.companyMtd,
+              data: _pricePerformance.pricePerformance.theMTD,
+            ),
+            _showPricePerformance(
+              title: "YTD",
+              percentage: _companyDetail.companyYtdReturn,
+              data: _pricePerformance.pricePerformance.theYTD,
             ),
           ],
         ),

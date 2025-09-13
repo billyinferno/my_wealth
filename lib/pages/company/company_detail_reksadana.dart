@@ -617,7 +617,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           unselectedLabelColor: textPrimary,
           dividerHeight: 0,
           tabs: const <Widget>[
-            Tab(text: 'SUMMARY',),
+            Tab(text: 'KEYSTATS',),
             Tab(text: 'COMPARE'),
             Tab(text: 'PORTOFOLIO',),
           ],

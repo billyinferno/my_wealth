@@ -171,10 +171,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: fe17928a35ac9bce9502d9993bde0921c446a3ac
+      resolved-ref: "0563760f9dcf22f5498a3126deec611af5604072"
       url: "https://github.com/letsar/flutter_slidable.git"
     source: git
-    version: "4.0.1"
+    version: "4.0.3"
   flutter_spinkit:
     dependency: "direct main"
     description:
@@ -200,10 +200,10 @@ packages:
     dependency: "direct main"
     description:
       name: hive_ce
-      sha256: "89746b555109029a30780e0a601978460b8065643592667f6e43a238faccb8a4"
+      sha256: d678b1b2e315c18cd7ed8fd79eda25d70a1f3852d6988bfe5461cffe260c60aa
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.2"
+    version: "2.14.0"
   hive_ce_flutter:
     dependency: "direct main"
     description:

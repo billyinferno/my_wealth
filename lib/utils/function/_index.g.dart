@@ -1,4 +1,5 @@
 export './binary_computation.dart';
+export './compare_number.dart';
 export './computation.dart';
 export './compute_watchlist.dart';
 export './compute_watchlist_all.dart';

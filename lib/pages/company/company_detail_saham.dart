@@ -1619,149 +1619,152 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   }
 
   Widget _tabFundamentalInfo() {
-    return SingleChildScrollView(
-      controller: _fundamentalController,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Center(
-              child: InkWell(
-                onTap: (() async {
-                  int? quarter;
-                  await showCupertinoModalPopup<void>(
-                    context: context,
-                    builder: ((BuildContext context) {
-                      return MySafeArea(
-                        child: CupertinoActionSheet(
-                          title: const Text(
-                            "Select Period",
-                            style: TextStyle(
-                              fontFamily: '--apple-system',
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: InkWell(
+              onTap: (() async {
+                int? quarter;
+                await showCupertinoModalPopup<void>(
+                  context: context,
+                  builder: ((BuildContext context) {
+                    return MySafeArea(
+                      child: CupertinoActionSheet(
+                        title: const Text(
+                          "Select Period",
+                          style: TextStyle(
+                            fontFamily: '--apple-system',
+                          ),
+                        ),
+                        actions: <CupertinoActionSheetAction>[
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              quarter = 5;
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "Every Quarter",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
+                              ),
                             ),
                           ),
-                          actions: <CupertinoActionSheetAction>[
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                quarter = 5;
-                                Navigator.pop(context);
-                              }),
-                              child: const Text(
-                                "Every Quarter",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              quarter = 1;
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "3 Month",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
                               ),
                             ),
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                quarter = 1;
-                                Navigator.pop(context);
-                              }),
-                              child: const Text(
-                                "3 Month",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
+                          ),
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              quarter = 2;
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "6 Month",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
                               ),
                             ),
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                quarter = 2;
-                                Navigator.pop(context);
-                              }),
-                              child: const Text(
-                                "6 Month",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
+                          ),
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              quarter = 3;
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "9 Month",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
                               ),
                             ),
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                quarter = 3;
-                                Navigator.pop(context);
-                              }),
-                              child: const Text(
-                                "9 Month",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
+                          ),
+                          CupertinoActionSheetAction(
+                            onPressed: (() {
+                              quarter = 4;
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "12 Month",
+                              style: TextStyle(
+                                fontFamily: '--apple-system',
+                                color: textPrimary,
                               ),
                             ),
-                            CupertinoActionSheetAction(
-                              onPressed: (() {
-                                quarter = 4;
-                                Navigator.pop(context);
-                              }),
-                              child: const Text(
-                                "12 Month",
-                                style: TextStyle(
-                                  fontFamily: '--apple-system',
-                                  color: textPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                  );
-            
-                  // check if quarter is null or not?
-                  if (quarter != null) {
-                    // set the quarter selection
-                    _quarterSelection = quarter!;
-                    // set the quarter selection text
-                    switch (_quarterSelection) {
-                      case 1:
-                        _quarterSelectionText = "3 Month";
-                        break;
-                      case 2:
-                        _quarterSelectionText = "6 Month";
-                        break;
-                      case 3:
-                        _quarterSelectionText = "9 Month";
-                        break;
-                      case 4:
-                        _quarterSelectionText = "12 Month";
-                        break;
-                      case 5:
-                        _quarterSelectionText = "Every Quarter";
-                        break;
-                      default:
-                        _quarterSelectionText = "Every Quarter";
-                        break;
-                    }
-            
-                    // get the new data from api
-                    await _getFundamental();
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                );
+          
+                // check if quarter is null or not?
+                if (quarter != null) {
+                  // set the quarter selection
+                  _quarterSelection = quarter!;
+                  // set the quarter selection text
+                  switch (_quarterSelection) {
+                    case 1:
+                      _quarterSelectionText = "3 Month";
+                      break;
+                    case 2:
+                      _quarterSelectionText = "6 Month";
+                      break;
+                    case 3:
+                      _quarterSelectionText = "9 Month";
+                      break;
+                    case 4:
+                      _quarterSelectionText = "12 Month";
+                      break;
+                    case 5:
+                      _quarterSelectionText = "Every Quarter";
+                      break;
+                    default:
+                      _quarterSelectionText = "Every Quarter";
+                      break;
                   }
-                }),
-                child: Text(
-                  _quarterSelectionText,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: secondaryColor,
-                  ),
+          
+                  // get the new data from api
+                  await _getFundamental();
+                }
+              }),
+              child: Text(
+                _quarterSelectionText,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: secondaryColor,
                 ),
               ),
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                    width: 125,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _fundamentalController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 120,
+                    padding: const EdgeInsets.only(right: 5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -1865,33 +1868,40 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           text: "EBITDA/IntExps",
                         ),
                       ],
-                    )),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: _fundamentalItemController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: List<Widget>.generate(_infoFundamental.length,
-                          (index) {
-                        return SizedBox(
-                            width: 85,
-                            child: _fundamentalItem(
-                                fundamental: _infoFundamental[index]));
-                      }),
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 5, right: 5),
+                      color: primaryDark,
+                      child: SingleChildScrollView(
+                        controller: _fundamentalItemController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List<Widget>.generate(_infoFundamental.length,
+                            ((index) {
+                              return SizedBox(
+                                width: 120,
+                                child: _fundamentalItem(
+                                  fundamental: _infoFundamental[index],
+                                  previousFundamental: (index < (_infoFundamental.length - 1) ? _infoFundamental[index + 1] : null),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+          ),
+        ],
+      )
     );
   }
 
@@ -2687,174 +2697,254 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     return ret;
   }
 
-  Widget _fundamentalItem({required InfoFundamentalsModel fundamental}) {
+  Widget _fundamentalItem({
+    required InfoFundamentalsModel fundamental,
+    InfoFundamentalsModel? previousFundamental,
+  }) {
+    bool addSubRow = false;
+    if (previousFundamental != null) {
+      addSubRow = true;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         _text(
-            text: "${fundamental.period}M ${fundamental.year}",
-            fontWeight: FontWeight.bold,
-            bgColor: primaryDark,
-            color: secondaryLight),
+          text: "${fundamental.period}M ${fundamental.year}",
+          textAlign: TextAlign.center,
+          fontWeight: FontWeight.bold,
+          color: secondaryLight,
+          addSubRow: true,
+          subText: '',
+          subColor: Colors.transparent,
+        ),
         _text(
           text: formatIntWithNull(
             fundamental.lastPrice,
             showDecimal: false
           ),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.lastPrice, previousFundamental.lastPrice), showDecimal: false) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.lastPrice, previousFundamental.lastPrice) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.shareOut,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.shareOut, previousFundamental.shareOut), showDecimal: false) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.shareOut, previousFundamental.shareOut) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(
             fundamental.marketCap,
           ),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.marketCap, previousFundamental.marketCap)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.marketCap, previousFundamental.marketCap) : primaryLight),
         ),
-        _text(
-          text: "",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-        ),
+        _divider(),
         _text(
           text: formatIntWithNull(fundamental.cash,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.cash, previousFundamental.cash)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.cash, previousFundamental.cash) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.totalAsset,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.totalAsset, previousFundamental.totalAsset)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.totalAsset, previousFundamental.totalAsset) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.stBorrowing,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.stBorrowing, previousFundamental.stBorrowing)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.stBorrowing, previousFundamental.stBorrowing) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.ltBorrowing,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.ltBorrowing, previousFundamental.ltBorrowing)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.ltBorrowing, previousFundamental.ltBorrowing) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.totalEquity,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.totalEquity, previousFundamental.totalEquity)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.totalEquity, previousFundamental.totalEquity) : primaryLight),
         ),
-        _text(
-          text: "",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-        ),
+        _divider(),
         _text(
           text: formatIntWithNull(fundamental.revenue,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.revenue, previousFundamental.revenue)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.revenue, previousFundamental.revenue) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.grossProfit,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.grossProfit, previousFundamental.grossProfit)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.grossProfit, previousFundamental.grossProfit) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.operatingProfit,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.operatingProfit, previousFundamental.operatingProfit)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.operatingProfit, previousFundamental.operatingProfit) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.netProfit,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.netProfit, previousFundamental.netProfit)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.netProfit, previousFundamental.netProfit) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.ebitda,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.ebitda, previousFundamental.ebitda)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.ebitda, previousFundamental.ebitda) : primaryLight),
         ),
         _text(
           text: formatIntWithNull(fundamental.interestExpense,),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatIntWithNull(diffIntWithNull(fundamental.interestExpense, previousFundamental.interestExpense)) : ''),
+          subColor: (previousFundamental != null ? colorDiffIntWithNull(fundamental.interestExpense, previousFundamental.interestExpense) : primaryLight),
         ),
-        _text(
-          text: "",
-          fontWeight: FontWeight.bold,
-          bgColor: primaryDark,
-        ),
+        _divider(),
         _text(
           text: formatCurrencyWithNull(fundamental.deviden),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.deviden, previousFundamental.deviden)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.deviden, previousFundamental.deviden) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.eps),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.eps, previousFundamental.eps)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.eps, previousFundamental.eps) : primaryLight),
         ),
         _text(
           text: '${formatCurrencyWithNull(fundamental.per)} x',
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.per, previousFundamental.per)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.per, previousFundamental.per) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.bvps),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.bvps, previousFundamental.bvps)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.bvps, previousFundamental.bvps) : primaryLight),
         ),
         _text(
           text: '${formatCurrencyWithNull(fundamental.pbv)} x',
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.pbv, previousFundamental.pbv)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.pbv, previousFundamental.pbv) : primaryLight),
         ),
         _text(
           text: '${formatCurrencyWithNull(fundamental.roa)} %',
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.roa, previousFundamental.roa)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.roa, previousFundamental.roa) : primaryLight),
         ),
         _text(
           text: '${formatCurrencyWithNull(fundamental.roe)} %',
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.roe, previousFundamental.roe)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.roe, previousFundamental.roe) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.evEbitda),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.evEbitda, previousFundamental.evEbitda)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.evEbitda, previousFundamental.evEbitda) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.debtEquity),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.debtEquity, previousFundamental.debtEquity)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.debtEquity, previousFundamental.debtEquity) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.debtTotalcap),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.debtTotalcap, previousFundamental.debtTotalcap)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.debtTotalcap, previousFundamental.debtTotalcap) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.debtEbitda),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.debtEbitda, previousFundamental.debtEbitda)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.debtEbitda, previousFundamental.debtEbitda) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.ebitdaInterestexpense),
-          bgColor: primaryDark,
+          addSubRow: addSubRow,
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.ebitdaInterestexpense, previousFundamental.ebitdaInterestexpense)) : ''),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.ebitdaInterestexpense, previousFundamental.ebitdaInterestexpense) : primaryLight),
         ),
       ],
     );
   }
 
-  Widget _text(
-      {required String text,
-      FontWeight? fontWeight,
-      double? fontSize,
-      Color? color,
-      Color? bgColor}) {
-    FontWeight? fontWeightUsed = (fontWeight ?? FontWeight.normal);
-    double? fontSizeUsed = (fontSize ?? 10);
-    Color? colorUsed = (color ?? textPrimary);
-    Color? bgColorUsed = (bgColor ?? Colors.transparent);
+  Widget _divider() {
+    return const Divider(
+      color: primaryLight,
+      height: 25,
+      thickness: 1,
+      indent: 0,
+      endIndent: 0,
+    );
+  }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Container(
-            color: bgColorUsed,
+  Widget _text({
+    required String text,
+    TextAlign textAlign = TextAlign.start,
+    FontWeight fontWeight = FontWeight.normal,
+    double fontSize = 10,
+    Color color = textPrimary,
+    bool addSubRow = false,
+    String subText = '',
+    Color subTextColor = textPrimary,
+    Color subColor = primaryLight,
+  }) {
+    return SizedBox(
+      height: 25,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
             child: Text(
               text,
               style: TextStyle(
-                fontWeight: fontWeightUsed,
-                fontSize: fontSizeUsed,
-                color: colorUsed,
+                fontWeight: fontWeight,
+                fontSize: fontSize,
+                color: color,
               ),
+              textAlign: textAlign,
             ),
           ),
-        ),
-      ],
-    );
+          (addSubRow ? Container(
+            margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+            padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
+            decoration: BoxDecoration(
+              color: subColor,
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Text(
+              subText,
+              style: TextStyle(
+                fontWeight: FontWeight.normal,
+                color: subTextColor,
+                fontSize: fontSize - 1,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ) : const SizedBox.shrink()),
+        ],
+      ),
+    );    
   }
 
   Widget _showBroker() {

@@ -8,6 +8,7 @@
     "description": "Your portofolio organizer",
     "orientation": "portrait",
     "prefer_related_applications": false,
+    "version": "1.0.0-20260116",
     "icons": [
         {
             "src": "icons/Icon-192.png",

@@ -521,6 +521,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           cost: (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
                           riskFactor: _userInfo!.risk
                         );
+
+                        double? currentPL;
+                        double? currentPLPercentage;
+                        Color currentPLColor = Colors.white;
           
                         // check if the watchlist item date is more than company last update
                         // if so, then just make it black instead of calculate the risk color
@@ -529,6 +533,33 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           date: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
                         )) {
                           rColor = Colors.black;
+                        }
+                        else {
+                          currentPL = (_watchlist.watchlistCompanyNetAssetValue ?? 0) - _watchlist.watchlistDetail[index].watchlistDetailPrice;
+                          currentPL = currentPL * _watchlist.watchlistDetail[index].watchlistDetailShare;
+
+                          // check whether this is buy or what?
+                          if (_watchlist.watchlistDetail[index].watchlistDetailShare < 0) {
+                            // this is selling
+                            currentPLColor = extendedLight;
+
+                            // so get the sell value instead as this is realized profit already
+                            currentPL = (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice).makePositive();
+                          }
+                          else {
+                            if ((_watchlist.watchlistCompanyNetAssetValue ?? 0) > 0) {
+                              currentPLPercentage = (_watchlist.watchlistCompanyNetAssetValue ?? 0) - _watchlist.watchlistDetail[index].watchlistDetailPrice;
+                              currentPLPercentage = currentPLPercentage / (_watchlist.watchlistCompanyNetAssetValue ?? 0);
+                            }
+
+                            // check if currentPL is + or -
+                            if (currentPL > 0) {
+                              currentPLColor = green50;
+                            }
+                            else if (currentPL < 0) {
+                              currentPLColor = red40;
+                            }
+                          }
                         }
 
                         WatchlistDetailEditArgs editArg = WatchlistDetailEditArgs(
@@ -610,9 +641,9 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                     ),
                                     Expanded(
                                       child: Container(
-                                        padding: const EdgeInsets.fromLTRB(5, 12, 10, 12),
+                                        padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
                                         child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           children: <Widget>[
                                             Expanded(
@@ -625,17 +656,30 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                             ),
                                             const SizedBox(width: 10,),
                                             Expanded(
-                                              child: Text(
-                                                formatCurrency(
-                                                  _watchlistArgs.isLot ?
-                                                  _watchlist.watchlistDetail[index].watchlistDetailShare / 100 :
-                                                  _watchlist.watchlistDetail[index].watchlistDetailShare
-                                                ),
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.right,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Text(
+                                                    formatCurrency(
+                                                      _watchlistArgs.isLot ?
+                                                      _watchlist.watchlistDetail[index].watchlistDetailShare / 100 :
+                                                      _watchlist.watchlistDetail[index].watchlistDetailShare
+                                                    ),
+                                                    style: const TextStyle(
+                                                      fontSize: 11,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  Text(
+                                                    "${formatCurrencyWithNull(currentPL, checkThousand: true)} (${formatDecimalWithNull(currentPLPercentage, times: 100, decimal: 2)}%)",
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: currentPLColor,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ],
                                               )
                                             ),
                                             const SizedBox(width: 10,),

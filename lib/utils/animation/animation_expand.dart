@@ -65,7 +65,8 @@ class AnimationExpandState extends State<AnimationExpand> with SingleTickerProvi
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
-      axisAlignment: 1.0,
+      // axisAlignment: 1.0,
+      alignment: AlignmentGeometry.bottomCenter,
       sizeFactor: _animation,
       child: widget.child,
     );

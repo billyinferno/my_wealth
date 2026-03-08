@@ -4,7 +4,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class BrokerSummaryDistributionChart extends StatefulWidget {
-  final List<BrokerSummaryAccumulationModel> data;
+  final Map<int, BrokerSummaryAccumulationModel> data;
   const BrokerSummaryDistributionChart({super.key, required this.data});
 
   @override
@@ -24,14 +24,14 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
     super.initState();
 
     // initialize all the variable needed for the widget
-    _accumVersion = 1;
+    _accumVersion = 2;
 
     // check if we need to enable v2 or not?
     // we can do this by checking if the length of the widget.data is more than 1
     // since v2 will use index-1.
     if (widget.data.length < 2) {
       _enableV2 = false;
-      _accumVersion = 0; // force  to v1
+      _accumVersion = 1; // force  to v1
 
       // defaulted left and right as 0
       _brokerAccumulationLeft = 0;
@@ -63,7 +63,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                   String v2Info = "This will perform comparison for each day to see the movement of the broker, and summarize it to see whether in 10 day the broker is mostly buy or sell, and it will compare with the average of the net broker transaction for 10 day.\n\nIt will use the company last update date as the current date.";
                   await ShowInfoDialog(
                     title: "Broker Accumulation",
-                    text: (_accumVersion == 0 ? v1Info : v2Info),
+                    text: (_accumVersion == 1 ? v1Info : v2Info),
                     okayColor: accentColor
                   ).show(context);
                 }),
@@ -98,14 +98,14 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                       height: 25,
                       child: FittedBox(
                         child: CupertinoSwitch(
-                          value: (_accumVersion == 1),
+                          value: (_accumVersion == 2),
                           activeTrackColor: accentColor,
                           onChanged: ((_enableV2 == false ? null : (value) {
-                            if (_accumVersion == 0) {
-                              _accumVersion = 1;
+                            if (_accumVersion == 1) {
+                              _accumVersion = 2;
                             }
                             else {
-                              _accumVersion = 0;
+                              _accumVersion = 1;
                             }
                                                   
                             setState(() {
@@ -337,75 +337,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                       ),
                     ],
                   ),
-                  ...List<Widget>.generate(widget.data.length > 1 ? widget.data[1].brokerSummaryData.length : 0, (index) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: 80,
-                          padding: const EdgeInsets.all(2.5),
-                          child: Text(
-                            Globals.dfddMMyyyy.formatLocal(widget.data[1].brokerSummaryData[index].brokerSummaryDate),
-                            style: const TextStyle(
-                              fontSize: 10,
-                            ),
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(2.5),
-                            child: Text(
-                              formatIntWithNull(
-                                widget.data[1].brokerSummaryData[index].brokerSummaryBuyLot,
-                                decimalNum: 2
-                              ),
-                              style: const TextStyle(
-                                fontSize: 10,
-                              ),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(2.5),
-                            child: Text(
-                              formatIntWithNull(
-                                widget.data[1].brokerSummaryData[index].brokerSummarySellLot,
-                                decimalNum: 2,
-                              ),
-                              style: const TextStyle(
-                                fontSize: 10,
-                              ),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(2.5),
-                            child: Text(
-                              formatIntWithNull(
-                                widget.data[1].brokerSummaryData[index].brokerSummaryLot,
-                                decimalNum: 2,
-                              ),
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: (widget.data[1].brokerSummaryData[index].brokerSummaryLot == 0 ? textPrimary : (widget.data[1].brokerSummaryData[index].brokerSummaryLot < 0) ? secondaryColor : Colors.green),
-                              ),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
+                  ..._generateBrokerSummaryDetails(),
                 ],
               ),
             )
@@ -415,9 +347,94 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
     );
   }
 
+  List<Widget> _generateBrokerSummaryDetails() {
+    // as broker summary details coming from v2, check if we got v2 or not?
+    if (widget.data[2] == null) {
+      // return the result as empty data
+      return [SizedBox.shrink()];
+    }
+
+    return List<Widget>.generate(widget.data.length > 1 ? widget.data[2]!.brokerSummaryData.length : 0, (index) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 80,
+            padding: const EdgeInsets.all(2.5),
+            child: Text(
+              Globals.dfddMMyyyy.formatLocal(widget.data[2]!.brokerSummaryData[index].brokerSummaryDate),
+              style: const TextStyle(
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(2.5),
+              child: Text(
+                formatIntWithNull(
+                  widget.data[2]!.brokerSummaryData[index].brokerSummaryBuyLot,
+                  decimalNum: 2
+                ),
+                style: const TextStyle(
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(2.5),
+              child: Text(
+                formatIntWithNull(
+                  widget.data[2]!.brokerSummaryData[index].brokerSummarySellLot,
+                  decimalNum: 2,
+                ),
+                style: const TextStyle(
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(2.5),
+              child: Text(
+                formatIntWithNull(
+                  widget.data[2]!.brokerSummaryData[index].brokerSummaryLot,
+                  decimalNum: 2,
+                ),
+                style: TextStyle(
+                  fontSize: 10,
+                  color: (widget.data[2]!.brokerSummaryData[index].brokerSummaryLot == 0 ? textPrimary : (widget.data[2]!.brokerSummaryData[index].brokerSummaryLot < 0) ? secondaryColor : Colors.green),
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+
   void _calculateBrokerAccumulationRatio({
-    required BrokerSummaryAccumulationModel data
+    required BrokerSummaryAccumulationModel? data
   }) {
+    // check if data is null or not?
+    if (data == null) {
+      return;
+    }
+
+    // data is not null, we can continue the calculation for the broker summary
     // check if _brokerSummaryAccumulation.brokerSummaryAvgLot == 0, if so then let left and right as 1
     if (data.brokerSummaryAvgLot == 0) {
       // use the current value as the guide to either go left or right

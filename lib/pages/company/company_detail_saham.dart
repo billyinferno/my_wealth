@@ -64,7 +64,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late CompanyTopBrokerModel _topBroker;
   late BrokerSummaryBuySellModel _brokerSummaryBuySell;
   late MinMaxDateModel _brokerSummaryDate;
-  late List<BrokerSummaryAccumulationModel> _brokerSummaryAccumulation;
+  late Map<int, BrokerSummaryAccumulationModel> _brokerSummaryAccumulation;
   late PriceSahamMovingAverageModel _priceMA;
   late PriceSahamMovementModel _priceMovement;
   late List<Map<String, double>> _priceMovementData;
@@ -222,7 +222,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _otherInfoFundamental = InfoFundamentalsModel(code: '');
 
     // initialize the broker summary accumulation as empty list
-    _brokerSummaryAccumulation = [];
+    _brokerSummaryAccumulation = {};
 
     // initialize info fundamental with empty array
     _infoFundamental = [];
@@ -6054,7 +6054,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           stockCode: _companyData.companyCode,
           date: _brokerSummaryDateFrom.toLocal()
         ).then((resp) {
-          _brokerSummaryAccumulation.add(resp);
+          _brokerSummaryAccumulation[1] = resp;
         }).onError(
           (error, stackTrace) {
             Log.error(
@@ -6070,7 +6070,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           stockCode: _companyData.companyCode,
           date: _brokerSummaryDateFrom.toLocal()
         ).then((resp) {
-          _brokerSummaryAccumulation.add(resp);
+          _brokerSummaryAccumulation[2] = resp;
         }).onError(
           (error, stackTrace) {
             Log.error(

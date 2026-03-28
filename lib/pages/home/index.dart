@@ -56,7 +56,9 @@ class IndexPageState extends State<IndexPage> {
           onChanged: (filter, sort) {
             _filterMode = filter;
             _filterSort = sort;
-            _sortedIndexList();
+            setState(() {            
+              _sortedIndexList();
+            });
           },
         ),
         Expanded(

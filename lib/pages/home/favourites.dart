@@ -24,6 +24,11 @@ class FavouritesPageState extends State<FavouritesPage>
   late List<FavouritesModel> _favouriteListSaham;
   late List<FavouritesModel> _favouriteListCrypto;
 
+  // filter for reksadana
+  late String _filterMode;
+  late SortBoxType _filterSort;
+  final Map<String, String> _filterList = {};
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +44,17 @@ class FavouritesPageState extends State<FavouritesPage>
     _favouriteListCrypto = FavouritesSharedPreferences.getFavouritesList(
       type: "crypto"
     );
+
+    // filter reksadana
+    // list all the filter that we want to put here
+    _filterList["NM"] = "Name";
+    _filterList["PR"] = "Price";
+    _filterList["CP"] = "Change (%)";
+    _filterList["CH"] = "Change (\$)";
+
+    // default filter mode to Code and ASC
+    _filterMode = "NM";
+    _filterSort = SortBoxType.ascending;
   }
 
   @override
@@ -69,59 +85,64 @@ class FavouritesPageState extends State<FavouritesPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    indicatorColor: accentColor,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: textPrimary,
-                    unselectedLabelColor: textPrimary,
-                    dividerHeight: 0,
-                    tabs: const <Widget>[
-                      Tab(
-                        text: 'MUTUAL',
-                      ),
-                      Tab(
-                        text: 'STOCK',
-                      ),
-                      Tab(
-                        text: 'CRYPTO',
-                      ),
-                    ],
+                  Container(
+                    color: primaryDark,
+                    width: double.infinity,
+                    child: TabBar(
+                      controller: _tabController,
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      indicatorColor: accentColor,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelColor: textPrimary,
+                      unselectedLabelColor: textPrimary,
+                      dividerHeight: 0,
+                      tabs: const <Widget>[
+                        Tab(
+                          text: 'MUTUAL',
+                        ),
+                        Tab(
+                          text: 'STOCK',
+                        ),
+                        Tab(
+                          text: 'CRYPTO',
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(
-                    height: 10,
+                  SortBox(
+                    initialFilter: _filterMode,
+                    filterList: _filterList,
+                    filterSort: _filterSort,
+                    onChanged: (filter, sort) {
+                      _filterMode = filter;
+                      _filterSort = sort;
+                      setState(() {
+                        _sortData(_favouriteListReksadana, "reksadana");
+                        _sortData(_favouriteListSaham, "saham");
+                        _sortData(_favouriteListCrypto, "crypto");
+                        
+                      });
+                    },
                   ),
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,
                       children: <Widget>[
-                        (
-                          _favouriteListReksadana.isNotEmpty ?
-                          _createList(
-                            controller: _scrollControllerMutual,
-                            type: "reksadana",
-                            data: _favouriteListReksadana
-                          ) :
-                          const Center(child: Text("No favourites data"))),
-                        (
-                          _favouriteListSaham.isNotEmpty ?
-                          _createList(
-                            controller: _scrollControllerStock,
-                            type: "saham",
-                            data: _favouriteListSaham
-                          ) :
-                          const Center(child: Text("No favourites data"))
+                        _createTabPage(
+                          controller: _scrollControllerMutual,
+                          type: "reksadana",
+                          data: _favouriteListReksadana
                         ),
-                        (
-                          _favouriteListCrypto.isNotEmpty ?
-                          _createList(
-                            controller: _scrollControllerCrypto,
-                            type: "crypto",
-                            data: _favouriteListCrypto
-                          ) :
-                          const Center(child: Text("No favourites data"))
+                        _createTabPage(
+                          controller: _scrollControllerStock,
+                          type: "saham",
+                          data: _favouriteListSaham
+                        ),
+                        _createTabPage(
+                          controller: _scrollControllerCrypto,
+                          type: "crypto",
+                          data: _favouriteListCrypto
                         ),
                       ],
                     ),
@@ -135,15 +156,67 @@ class FavouritesPageState extends State<FavouritesPage>
     );
   }
 
+  Future<void> _sortData(List<FavouritesModel> data, String type) async {
+    List<FavouritesModel> sortedData = List.from(data);
+
+    // sort the data based on the filter mode and sort type
+    if (_filterMode == "NM") {
+      sortedData.sort((a, b) => a.favouritesCompanyName.compareTo(b.favouritesCompanyName));
+    } else if (_filterMode == "PR") {
+      sortedData.sort((a, b) => a.favouritesNetAssetValue.compareTo(b.favouritesNetAssetValue));
+    } else if (_filterMode == "CP") {
+      sortedData.sort((a, b) => a.favouritesCompanyDailyReturn.compareTo(b.favouritesCompanyDailyReturn));
+    } else if (_filterMode == "CH") {
+      sortedData.sort((a, b) => (a.favouritesNetAssetValue - a.favouritesPrevAssetValue).compareTo(b.favouritesNetAssetValue - b.favouritesPrevAssetValue));
+    }
+
+    // if the sort type is descending, reverse the sorted data
+    if (_filterSort == SortBoxType.descending) {
+      sortedData = sortedData.reversed.toList();
+    }
+
+    // stored the sorted data to the provider and shared preferences
+    if (mounted) {
+      Provider.of<FavouritesProvider>(
+        context,
+        listen: false
+      ).setFavouriteList(
+        type: type,
+        favouriteListData: sortedData
+      );
+    }
+    await FavouritesSharedPreferences.setFavouritesList(
+      type: type,
+      favouriteList: sortedData,
+    );
+  }
+
+  Widget _createTabPage({
+    required List<FavouritesModel> data,
+    required ScrollController controller,
+    required String type,
+  }) {
+    // check if the list is empty or not, if empty just show the text
+    if (data.isEmpty) {
+      return const Center(child: Text("No favourites data"));
+    }
+
+    return _createList(
+      controller: controller,
+      type: type,
+      data: data,
+    );
+  }
+
   Widget _createList({
     required ScrollController controller,
     required String type,
-    required List<FavouritesModel> data
+    required List<FavouritesModel> data,
   }) {
     return RefreshIndicator(
       onRefresh: (() async {
         Log.info(message: "🔃 Refresh favourites");
-
+    
         // use future wait so we can sent it all together to save the time when
         // we need to wait for the response.
         await Future.wait([
@@ -204,10 +277,10 @@ class FavouritesPageState extends State<FavouritesPage>
               createSnackBar(message: error.toString())
             );
           }
-
+    
           // remove the loading screen if error
           LoadingScreen.instance().hide();
-
+    
           Log.error(
             message: "⛔ Error when refresh favourites",
             error: error,
@@ -215,10 +288,10 @@ class FavouritesPageState extends State<FavouritesPage>
           );
           throw Exception('⛔ Error when refresh favourites');
         });
-
+    
         // remove the loading screen
         LoadingScreen.instance().hide();
-
+    
         // once finished just rebuild the widget
         setState(() {
           // just rebuild
@@ -266,7 +339,7 @@ class FavouritesPageState extends State<FavouritesPage>
                         confirmLabel: "Delete",
                         confirmColor: secondaryColor,
                       ).show(context);
-
+    
                       result.then((value) async {
                         if (value == true) {
                           await _deleteFavourites(index, type);
@@ -279,12 +352,18 @@ class FavouritesPageState extends State<FavouritesPage>
               child: SimpleListItem(
                   fca: fave.favouritesFCA,
                   name: _generateName(
-                      type, fave.favouritesCompanyName, fave.favouritesSymbol),
+                    type,
+                    fave.favouritesCompanyName,
+                    fave.favouritesSymbol,
+                  ),
                   date: Globals.dfddMMyyyy.formatLocal(fave.favouritesLastUpdate),
                   price: fave.favouritesNetAssetValue,
-                  percentChange: fave.favouritesCompanyDailyReturn,
-                  priceChange: (fave.favouritesNetAssetValue -
-                      fave.favouritesPrevAssetValue),
+                  percentChange: (fave.favouritesCompanyDailyReturn * 100),
+                  percentChangeTitle: "Daily Chg (%)",
+                  percentChangeDecimal: 4,
+                  priceChange: (fave.favouritesNetAssetValue - fave.favouritesPrevAssetValue),
+                  priceChangeTitle: "Daily Chg (\$)",
+                  priceChangeDecimal: 2,
                   riskFactor: _userInfo!.risk),
             ),
           );

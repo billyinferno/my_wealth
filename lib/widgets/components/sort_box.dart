@@ -31,6 +31,9 @@ class SortBox extends StatefulWidget {
 }
 
 class _SortBoxState extends State<SortBox> {
+  //TODO: to also implement search box in the future, so we can filter the filter list if it is too long
+  final TextEditingController _filterController = TextEditingController();
+
   late TextStyle _filterTypeSelected;
   late TextStyle _filterTypeUnselected;
   late SortBoxType _currentSort;
@@ -69,6 +72,12 @@ class _SortBoxState extends State<SortBox> {
 
     // get the current filter from the parent widget
     _currentFilter = widget.initialFilter;
+  }
+  
+  @override
+  void dispose() {
+    _filterController.dispose();
+    super.dispose();
   }
 
   @override

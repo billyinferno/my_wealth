@@ -8,12 +8,33 @@ class SimpleListItem extends StatelessWidget {
   final bool? fca;
   final String name;
   final String date;
+  final String? dateTitle;
   final double price;
+  final String? priceTitle;
   final double percentChange;
+  final String? percentChangeTitle;
+  final int? percentChangeDecimal;
   final double priceChange;
+  final String? priceChangeTitle;
+  final int? priceChangeDecimal;
   final int riskFactor;
 
-  const SimpleListItem({ super.key, this.fca, required this.name, required this.date, required this.price, required this.percentChange, required this.priceChange, required this.riskFactor });
+  const SimpleListItem({
+    super.key,
+    this.fca,
+    required this.name,
+    required this.date,
+    this.dateTitle,
+    required this.price,
+    this.priceTitle,
+    required this.percentChange,
+    this.percentChangeTitle,
+    this.percentChangeDecimal,
+    required this.priceChange,
+    this.priceChangeDecimal,
+    this.priceChangeTitle,
+    required this.riskFactor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,15 +98,16 @@ class SimpleListItem extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 5,),
-                    const Row(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            "Date",
+                            (dateTitle ?? "Date"),
                             style: TextStyle(
                               fontSize: 10,
+                              overflow: TextOverflow.ellipsis,
                             )
                           )
                         ),
@@ -93,9 +115,10 @@ class SimpleListItem extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              "Price",
+                              (priceTitle ?? "Price"),
                               style: TextStyle(
                                 fontSize: 10,
+                                overflow: TextOverflow.ellipsis,
                               )
                             ),
                           )
@@ -104,9 +127,10 @@ class SimpleListItem extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              "% Change",
+                              (percentChangeTitle ?? "% Change"),
                               style: TextStyle(
                                 fontSize: 10,
+                                overflow: TextOverflow.ellipsis,
                               )
                             ),
                           )
@@ -115,9 +139,10 @@ class SimpleListItem extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              "Change",
+                              (priceChangeTitle ?? "Change"),
                               style: TextStyle(
                                 fontSize: 10,
+                                overflow: TextOverflow.ellipsis,
                               )
                             ),
                           )
@@ -161,7 +186,10 @@ class SimpleListItem extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                "${formatCurrency(percentChange)}%",
+                                "${formatCurrency(
+                                  percentChange,
+                                  decimalNum: (percentChangeDecimal ?? 2)
+                                )}%",
                                 style: const TextStyle(
                                   fontSize: 12,
                                 )
@@ -183,7 +211,10 @@ class SimpleListItem extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                formatCurrency(priceChange),
+                                formatCurrency(
+                                  priceChange,
+                                  decimalNum: (priceChangeDecimal ?? 2),
+                                ),
                                 style: const TextStyle(
                                   fontSize: 12,
                                 )

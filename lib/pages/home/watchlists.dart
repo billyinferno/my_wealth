@@ -155,6 +155,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
               dayGain: _watchlistAll!.totalDayGain,
               value: _watchlistAll!.totalValue,
               cost: _watchlistAll!.totalCost,
+              realisedGain: _watchlistAll!.totalRealised,
               riskFactor: _userInfo!.risk,
               visibility: _isSummaryVisible,
               compResult: _watchlistAll,

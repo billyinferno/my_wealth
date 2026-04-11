@@ -8,6 +8,7 @@ class WatchlistSummary extends StatelessWidget {
   final double dayGain;
   final double value;
   final double cost;
+  final double realisedGain;
   final int riskFactor;
   final bool visibility;
   final VoidCallback onVisibilityPress;
@@ -18,11 +19,12 @@ class WatchlistSummary extends StatelessWidget {
     required this.dayGain,
     required this.value,
     required this.cost,
+    required this.realisedGain,
     required this.riskFactor,
     required this.visibility,
     required this.onVisibilityPress,
-    this.compResult}
-  );
+    this.compResult,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +103,7 @@ class WatchlistSummary extends StatelessWidget {
                                 visible: (cost > 0 && visibility),
                                 child: Text(
                                   "(${formatDecimalWithNull(
-                                    (cost > 0 ? (value - cost) / cost : 0),
+                                    (cost > 0 ? ((value - cost) + realisedGain) / cost : 0),
                                     times: 100,
                                     decimal: 2
                                   )}%)",
@@ -166,7 +168,7 @@ class WatchlistSummary extends StatelessWidget {
   String _totalGain() {
     if (visibility) {
       // calculate the total gain by subtract the value and cost
-      double gain = value - cost;
+      double gain = (value - cost) + realisedGain;
       return formatCurrency(gain);
     }
     return "****";

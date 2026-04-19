@@ -170,10 +170,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_lucide
-      sha256: "352e2a1986d01dbce8d5d4bf36b903cdedb973531265ddc0bbeba1000f9bd921"
+      sha256: "107b16db5a1257d0a2d31faefd6ecf0becbbb0fc113fe1c7f4553e7151a8f794"
       url: "https://pub.dev"
     source: hosted
-    version: "1.8.2"
+    version: "1.9.0"
   flutter_shaders:
     dependency: transitive
     description:
@@ -621,10 +621,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "45caa6c5917fa127b5dbcfbd1fa60b14e583afdc08bfc96dda38886ca252eb60"
+      sha256: "046d3928e16fa4dc46e8350415661755ab759d9fc97fc21b5ab295f71e4f0499"
       url: "https://pub.dev"
     source: hosted
-    version: "15.0.2"
+    version: "15.1.0"
   web:
     dependency: transitive
     description:

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class BrokerSummaryDistributionChart extends StatefulWidget {
   final Map<int, BrokerSummaryAccumulationModel> data;
@@ -79,8 +79,8 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                       ),
                     ),
                     const SizedBox(width: 5,),
-                    const Icon(
-                      Ionicons.information_circle,
+                    Icon(
+                      MyIonicons(MyIoniconsData.information_circle).data,
                       color: accentLight,
                       size: 15,
                     ),
@@ -229,7 +229,7 @@ class _BrokerSummaryDistributionChartState extends State<BrokerSummaryDistributi
                         Expanded(
                           child: SizedBox(
                             child: Icon(
-                              (_showBrokerAccumulationList ? Ionicons.chevron_up : Ionicons.chevron_down),
+                              (_showBrokerAccumulationList ? MyIonicons(MyIoniconsData.chevron_up).data : MyIonicons(MyIoniconsData.chevron_down).data),
                               color: Colors.white,
                               size: 10,
                             ),

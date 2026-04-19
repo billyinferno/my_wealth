@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class SimpleListItem extends StatelessWidget {
   final bool? fca;
@@ -76,8 +76,8 @@ class SimpleListItem extends StatelessWidget {
                       children: <Widget>[
                         Visibility(
                           visible: (fca ?? false),
-                          child: const Icon(
-                            Ionicons.warning,
+                          child: Icon(
+                            MyIonicons(MyIoniconsData.warning).data,
                             color: secondaryColor,
                             size: 15,
                           )

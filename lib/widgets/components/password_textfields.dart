@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class PasswordTextFields extends StatefulWidget {
   final TextEditingController controller;
@@ -39,7 +39,7 @@ class _PasswordTextFieldsState extends State<PasswordTextFields> {
           labelStyle: const TextStyle(
             color: primaryLight
           ),
-          icon: const Icon(Ionicons.lock_closed_outline),
+          icon: Icon(MyIonicons(MyIoniconsData.lock_closed_outline).data),
           border: const UnderlineInputBorder(
             borderSide: BorderSide(
               color: primaryLight,
@@ -49,8 +49,8 @@ class _PasswordTextFieldsState extends State<PasswordTextFields> {
           suffixIcon: IconButton(
             icon: Icon(
               (_masked
-                ? Ionicons.eye_off_outline
-                : Ionicons.eye_off_outline
+                ? MyIonicons(MyIoniconsData.eye_off_outline).data
+                : MyIonicons(MyIoniconsData.eye_off_outline).data
               ),
               color: secondaryLight,
             ),

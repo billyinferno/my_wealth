@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -133,7 +133,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           TransparentButton(
-                            icon: Ionicons.funnel,
+                            icon: MyIonicons(MyIoniconsData.funnel).data,
                             iconSize: 12,
                             color: primaryDark,
                             borderColor: primaryLight,
@@ -145,7 +145,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           ),
                           const SizedBox(width: 10,),
                           TransparentButton(
-                            icon: Ionicons.funnel,
+                            icon: MyIonicons(MyIoniconsData.funnel).data,
                             iconSize: 12,
                             color: primaryDark,
                             borderColor: primaryLight,
@@ -157,7 +157,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                           ),
                           const SizedBox(width: 10,),
                           TransparentButton(
-                            icon: Ionicons.funnel,
+                            icon: MyIonicons(MyIoniconsData.funnel).data,
                             iconSize: 12,
                             color: primaryDark,
                             borderColor: primaryLight,

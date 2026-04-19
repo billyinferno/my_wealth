@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class InsightBrokerSpecificCompanyPage extends StatefulWidget {
   const InsightBrokerSpecificCompanyPage({super.key});
@@ -141,8 +141,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           ),
           onPressed: (() {
             Navigator.pop(context);
@@ -361,8 +361,8 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                                 borderRadius: BorderRadius.circular(5),
                                 color: secondaryColor,
                               ),
-                              child: const Icon(
-                                Ionicons.search,
+                              child: Icon(
+                                MyIonicons(MyIoniconsData.search).data,
                                 color: textPrimary,
                                 size: 15,
                               ),
@@ -1042,7 +1042,7 @@ class _InsightBrokerSpecificCompanyPageState extends State<InsightBrokerSpecific
                 Text("Select Year"),
                 IconButton(
                 icon: Icon(
-                  Ionicons.close,
+                  MyIonicons(MyIoniconsData.close).data,
                 ),
                 onPressed: () {
                   // remove the dialog

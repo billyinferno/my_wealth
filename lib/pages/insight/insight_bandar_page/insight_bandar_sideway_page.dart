@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class InsightBandarSidewayPage extends StatefulWidget {
   const InsightBandarSidewayPage({super.key});
@@ -99,7 +99,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                 okayColor: secondaryLight,
               ).show(context);
             }),
-            child: const Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -112,7 +112,7 @@ class _InsightBandarSidewayPageState extends State<InsightBandarSidewayPage> {
                 ),
                 SizedBox(width: 5,),
                 Icon(
-                  Ionicons.information_circle,
+                  MyIonicons(MyIoniconsData.information_circle).data,
                   size: 15,
                   color: accentColor,
                 ),

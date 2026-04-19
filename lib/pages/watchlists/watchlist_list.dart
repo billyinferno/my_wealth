@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -58,8 +58,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(
-              Ionicons.arrow_back
+            icon: Icon(
+              MyIonicons(MyIoniconsData.arrow_back).data
             ),
             onPressed: (() {
               Navigator.pop(context);
@@ -72,16 +72,16 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                   Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
                 }
               }),
-              icon: const Icon(
-                Ionicons.business_outline
+              icon: Icon(
+                MyIonicons(MyIoniconsData.business_outline).data
               ),
             ),
             IconButton(
               onPressed: (() {
                 Navigator.pushNamed(context, '/watchlist/performance', arguments: _watchlistArgs);
               }),
-              icon: const Icon(
-                Ionicons.pulse_outline
+              icon: Icon(
+                MyIonicons(MyIoniconsData.pulse_outline).data
               ),
             ),
           ],
@@ -169,12 +169,12 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                       color: secondaryDark,
-                      child: const Row(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Icon(
-                            Ionicons.warning,
+                            MyIonicons(MyIoniconsData.warning).data,
                             color: secondaryLight,
                             size: 10,
                           ),
@@ -241,7 +241,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                           ),
                                           const SizedBox(width: 5,),
                                           Icon(
-                                            (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                            (_priceDiff > 0 ? MyIonicons(MyIoniconsData.caret_up).data : MyIonicons(MyIoniconsData.caret_down).data),
                                             color: riskColor(
                                               value: _watchlist.watchlistCompanyNetAssetValue!,
                                               cost: _watchlist.watchlistCompanyPrevPrice!,
@@ -279,8 +279,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: <Widget>[
-                                        const Icon(
-                                          Ionicons.time_outline,
+                                        Icon(
+                                          MyIonicons(MyIoniconsData.time_outline).data,
                                           color: primaryLight,
                                           size: 20,
                                         ),
@@ -412,7 +412,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Buy",
                           color: primaryDark,
                           borderColor: primaryLight,
-                          icon: Ionicons.add,
+                          icon: MyIonicons(MyIoniconsData.add).data,
                           onTap: (() {
                             Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: _watchlistArgs);
                           })
@@ -422,7 +422,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Sell",
                           color: primaryDark,
                           borderColor: primaryLight,
-                          icon: Ionicons.remove,
+                          icon: MyIonicons(MyIoniconsData.remove).data,
                           enabled: (_totalCurrentShares > 0),
                           onTap: (() {
                             WatchlistListArgs args = WatchlistListArgs(
@@ -440,7 +440,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                           text: "Delete",
                           color: primaryDark,
                           borderColor: primaryLight,
-                          icon: Ionicons.trash,
+                          icon: MyIonicons(MyIoniconsData.trash).data,
                           onTap: (() async {
                             await ShowMyDialog(
                               title: "Delete Watchlist",
@@ -575,14 +575,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             motion: const ScrollMotion(),
                             children: <Widget>[
                               SlideButton(
-                                icon: Ionicons.pencil,
+                                icon: MyIonicons(MyIoniconsData.pencil).data,
                                 iconColor: accentColor,
                                 onTap: () {
                                   Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: editArg);
                                 },
                               ),
                               SlideButton(
-                                icon: Ionicons.trash,
+                                icon: MyIonicons(MyIoniconsData.trash).data,
                                 iconColor: secondaryColor,
                                 onTap: () async {
                                   await ShowMyDialog(

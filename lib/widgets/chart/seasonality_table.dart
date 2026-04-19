@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class SeasonalityTableResult {
   final double averageDiffPrice;
@@ -444,28 +444,28 @@ class SeasonalityTable extends StatelessWidget {
   }) {
     if (value1 == null || value2 == null) {
       return Icon(
-        Ionicons.remove,
+        MyIonicons(MyIoniconsData.remove).data,
         size: size,
         color: (color ?? Colors.white),
       );
     }
     if (value1 == value2) {
       return Icon(
-        Ionicons.remove,
+        MyIonicons(MyIoniconsData.remove).data,
         size: size,
         color: (color ?? Colors.white),
       );
     }
     else if (value1 < value2) {
       return Icon(
-        Ionicons.caret_up,
+        MyIonicons(MyIoniconsData.caret_up).data,
         size: size,
         color: (color ?? Colors.green),
       );
     }
     else {
       return Icon(
-        Ionicons.caret_down,
+        MyIonicons(MyIoniconsData.caret_down).data,
         size: size,
         color: (color ?? Colors.red),
       );

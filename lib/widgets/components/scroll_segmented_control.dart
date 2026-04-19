@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class ScrollSegmentedControl<T> extends StatefulWidget {
   final Map<T, String> data;
@@ -109,8 +109,8 @@ class ScrollSegmentedControlState<T> extends State<ScrollSegmentedControl<T>> {
                   //   ]
                   // )
                 ),
-                child: const Icon(
-                  Ionicons.code,
+                child: Icon(
+                  MyIonicons(MyIoniconsData.code).data,
                   size: 15,
                   color: secondaryColor,
                 ),

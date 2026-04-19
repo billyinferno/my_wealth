@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistPerformancePage extends StatefulWidget {
   final Object? args;
@@ -154,8 +154,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             // return back to the previous page
             Navigator.pop(context);
           })),
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           )
         ),
         actions: <Widget>[
@@ -183,8 +183,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 }
               });
             }),
-            icon: const Icon(
-              Ionicons.git_compare_outline,
+            icon: Icon(
+              MyIonicons(MyIoniconsData.git_compare_outline).data,
               color: textPrimary,
             ),
           ),
@@ -192,8 +192,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             onPressed: (() {
               Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
             }),
-            icon: const Icon(
-              Ionicons.business_outline
+            icon: Icon(
+              MyIonicons(MyIoniconsData.business_outline).data
             ),
           )
         ],
@@ -310,8 +310,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                             ),
                           ),
                           const SizedBox(width: 5,),
-                          const Icon(
-                            Ionicons.close,
+                          Icon(
+                            MyIonicons(MyIoniconsData.close).data,
                             size: 10,
                             color: textPrimary,
                           ),
@@ -494,11 +494,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   Widget _summaryBoxInfo() {
     Icon iconPriceDiff = (
       _watchlistComputation.priceDiff == 0 ?
-      const Icon(Ionicons.remove_outline, color: textPrimary, size: 15,) :
+      Icon(MyIonicons(MyIoniconsData.remove_outline).data, color: textPrimary, size: 15,) :
       (
         _watchlistComputation.priceDiff > 0 ?
-        const Icon(Ionicons.caret_up, color: Colors.green, size: 12,) :
-        const Icon(Ionicons.caret_down, color: secondaryColor, size: 12,)
+        Icon(MyIonicons(MyIoniconsData.caret_up).data, color: Colors.green, size: 12,) :
+        Icon(MyIonicons(MyIoniconsData.caret_down).data, color: secondaryColor, size: 12,)
       )
     );
 
@@ -577,8 +577,8 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          const Icon(
-                            Ionicons.time_outline,
+                          Icon(
+                            MyIonicons(MyIoniconsData.time_outline).data,
                             color: primaryLight,
                             size: 15,
                           ),

@@ -2,9 +2,9 @@ import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistSummaryCalendarPage extends StatefulWidget {
   final Object? args;
@@ -142,8 +142,8 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
             // return back to the previous page
             Navigator.pop(context);
           })),
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           )
         ),
         title: Center(
@@ -316,8 +316,8 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           children: <Widget>[
             Text(Globals.dfyyyyMM.formatLocal(_currentDate)),
             const SizedBox(width: 5,),
-            const Icon(
-              Ionicons.caret_down_sharp,
+            Icon(
+              MyIonicons(MyIoniconsData.caret_down_sharp).data,
               color: primaryLight,
               size: 10,
             ),
@@ -382,8 +382,8 @@ class _WatchlistSummaryCalendarPageState extends State<WatchlistSummaryCalendarP
           children: <Widget>[
             Text("${_currentDate.year}"),
             const SizedBox(width: 5,),
-            const Icon(
-              Ionicons.caret_down_sharp,
+            Icon(
+              MyIonicons(MyIoniconsData.caret_down_sharp).data,
               color: primaryLight,
               size: 10,
             ),

@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:intl/intl.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class SummaryPerformanceDataList {
   final DateTime date;
@@ -182,8 +182,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
             // return back to the previous page
             Navigator.pop(context);
           })),
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           )
         ),
         title: Center(
@@ -219,8 +219,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                 }
               });
             }),
-            icon: const Icon(
-              Ionicons.git_compare_outline,
+            icon: Icon(
+              MyIonicons(MyIoniconsData.git_compare_outline).data,
               color: textPrimary,
             ),
           ),
@@ -352,8 +352,8 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                               ),
                             ),
                             const SizedBox(width: 5,),
-                            const Icon(
-                              Ionicons.close,
+                            Icon(
+                              MyIonicons(MyIoniconsData.close).data,
                               size: 10,
                               color: textPrimary,
                             ),
@@ -413,7 +413,7 @@ class _WatchlistSummaryPerformancePageState extends State<WatchlistSummaryPerfor
                         ),
                         const SizedBox(width: 5,),
                         Icon(
-                          (_perfSort == "A" ? Ionicons.arrow_up : Ionicons.arrow_down),
+                          (_perfSort == "A" ? MyIonicons(MyIoniconsData.arrow_up).data : MyIonicons(MyIoniconsData.arrow_down).data),
                           size: 10,
                           color: textPrimary,
                         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class StockCollectExpanded extends StatelessWidget {
   final InsightStockCollectModel data;
@@ -17,7 +17,7 @@ class StockCollectExpanded extends StatelessWidget {
         extentRatio: 0.15,
         children: <Widget>[
           SlideButton(
-            icon: Ionicons.business_outline,
+            icon: MyIonicons(MyIoniconsData.business_outline).data,
             iconColor: extendedLight,
             onTap: () async {
               // show loading screen

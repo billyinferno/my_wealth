@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class NumberStepper extends StatefulWidget {
   final double height;
@@ -101,7 +101,7 @@ class _NumberStepperState extends State<NumberStepper> {
                 )
               ),
               child: Icon(
-                Ionicons.remove,
+                MyIonicons(MyIoniconsData.remove).data,
                 color: widget.iconColor,
                 size: widget.iconSize,
               ),
@@ -165,7 +165,7 @@ class _NumberStepperState extends State<NumberStepper> {
                 )
               ),
               child: Icon(
-                Ionicons.add,
+                MyIonicons(MyIoniconsData.add).data,
                 color: widget.iconColor,
                 size: widget.iconSize,
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class InsightBandarAtlPage extends StatefulWidget {
   final String title;
@@ -55,8 +55,8 @@ class _InsightBandarAtlPageState extends State<InsightBandarAtlPage> {
                   ),
                 ),
                 const SizedBox(width: 5,),
-                const Icon(
-                  Ionicons.information_circle,
+                Icon(
+                  MyIonicons(MyIoniconsData.information_circle).data,
                   size: 15,
                   color: accentColor,
                 ),

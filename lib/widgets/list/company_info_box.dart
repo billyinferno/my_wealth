@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class CompanyInfoBox extends StatelessWidget {
   final String header;
@@ -58,8 +58,8 @@ class CompanyInfoBox extends StatelessWidget {
                   ),
                   Visibility(
                     visible: (onTap != null),
-                    child: const Icon(
-                      Ionicons.information_circle,
+                    child: Icon(
+                      MyIonicons(MyIoniconsData.information_circle).data,
                       color: accentLight,
                       size: 15,
                     )

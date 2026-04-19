@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class FavouriteCompanyList extends StatelessWidget {
   final int companyId;
@@ -11,7 +11,7 @@ class FavouriteCompanyList extends StatelessWidget {
   final bool isFavourite;
   final bool fca;
   final bool warning;
-  final IconData warningIcon;
+  final IconData? warningIcon;
   final Color warningColor;
   final VoidCallback onPress;
   final double? subWidgetSpace;
@@ -26,7 +26,7 @@ class FavouriteCompanyList extends StatelessWidget {
     required this.isFavourite,
     required this.fca,
     this.warning = false,
-    this.warningIcon = Ionicons.warning,
+    this.warningIcon,
     this.warningColor = secondaryColor,
     required this.onPress,
     this.subWidgetSpace, 
@@ -35,6 +35,7 @@ class FavouriteCompanyList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final IconData currentWarningIcon = (warningIcon ?? MyIonicons(MyIoniconsData.warning).data);
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -65,7 +66,7 @@ class FavouriteCompanyList extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                           child: Icon(
-                            warningIcon,
+                            currentWarningIcon,
                             color: warningColor,
                             size: 15,
                           ),
@@ -75,8 +76,8 @@ class FavouriteCompanyList extends StatelessWidget {
                         visible: fca,
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                          child: const Icon(
-                            Ionicons.warning,
+                          child: Icon(
+                            MyIonicons(MyIoniconsData.warning).data,
                             color: secondaryColor,
                             size: 15,
                           ),
@@ -144,7 +145,7 @@ class FavouriteCompanyList extends StatelessWidget {
               onPress();
             }),
             icon: Icon(
-              (isFavourite ? Ionicons.star : Ionicons.star_outline),
+              (isFavourite ? MyIonicons(MyIoniconsData.star).data : MyIonicons(MyIoniconsData.star_outline).data),
               color: (isFavourite ? accentColor : accentDark),
             )
           ),

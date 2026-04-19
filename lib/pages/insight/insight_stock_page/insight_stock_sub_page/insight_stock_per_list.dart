@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class InsightStockPERListPage extends StatefulWidget {
   final Object? args;
@@ -80,8 +80,8 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           ),
           onPressed: (() {
             Navigator.pop(context);

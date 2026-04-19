@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -256,7 +256,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),
                       warning: isWarning,
-                      warningIcon: Ionicons.lock_closed,
+                      warningIcon: MyIonicons(MyIoniconsData.lock_closed).data,
                       subWidget: _subInfoWidget(_sortedFaveList[index]),
                       onPress: (() async {
                         await _setFavourite(index);

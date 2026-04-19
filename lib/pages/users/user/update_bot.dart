@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -36,7 +36,7 @@ class _UpdateBotPageState extends State<UpdateBotPage> {
           ),
         )),
         leading: IconButton(
-          icon: const Icon(Ionicons.arrow_back),
+          icon: Icon(MyIonicons(MyIoniconsData.arrow_back).data),
           onPressed: (() {
             Navigator.pop(context);
           }),

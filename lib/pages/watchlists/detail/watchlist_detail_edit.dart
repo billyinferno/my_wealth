@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -100,8 +100,8 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data
           ),
           onPressed: (() async {
             await _checkForm().then((value) {
@@ -171,7 +171,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   text: "Cancel",
                   color: secondaryDark,
                   borderColor: secondaryLight,
-                  icon: Ionicons.close,
+                  icon: MyIonicons(MyIoniconsData.close).data,
                   onTap: (() async {
                     await _checkForm().then((value) {
                       if(mounted && value) {
@@ -185,7 +185,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
                   text: "Update ${_txn == "b" ? "Buy" : "Sell"}",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.save,
+                  icon: MyIonicons(MyIoniconsData.save).data,
                   onTap: (() async {
                     await _updateDetail().then((resp) {
                       if(resp) {                      

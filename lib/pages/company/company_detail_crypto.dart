@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class CompanyDetailCryptoPage extends StatefulWidget {
   final Object? companyData;
@@ -102,7 +102,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
   }
 
   Widget _generatePage() {
-    IconData currentIcon = Ionicons.remove;
+    IconData currentIcon = MyIonicons(MyIoniconsData.remove).data;
     Color priceColor = riskColor(
       value: _companyDetail.companyNetAssetValue!,
       cost: _companyDetail.companyPrevPrice!,
@@ -110,10 +110,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     );
 
     if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-      currentIcon = Ionicons.caret_up;
+      currentIcon = MyIonicons(MyIoniconsData.caret_up).data;
     }
     else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-      currentIcon = Ionicons.caret_down;
+      currentIcon = MyIonicons(MyIoniconsData.caret_down).data;
     }
     // generate the actual page
     return Scaffold(
@@ -137,14 +137,14 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
             visible: _isOwned,
             child: Container(
               padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-              child: const Icon(
-                Ionicons.checkmark,
+              child: Icon(
+                MyIonicons(MyIoniconsData.checkmark).data,
                 color: Colors.green,
               ),
             ),
           ),
           Icon(
-            (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+            (_companyData.companyFavourite ? MyIonicons(MyIoniconsData.star).data : MyIonicons(MyIoniconsData.star_outline).data),
             color: accentColor,
           ),
           const SizedBox(width: 10,),
@@ -228,8 +228,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                                 ),
                               ),
                               Expanded(child: Container(),),
-                              const Icon(
-                                Ionicons.time_outline,
+                              Icon(
+                                MyIonicons(MyIoniconsData.time_outline).data,
                                 color: primaryLight,
                               ),
                               const SizedBox(width: 10,),
@@ -323,7 +323,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Info",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.speedometer_outline,
+                  icon: MyIonicons(MyIoniconsData.speedometer_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.summary;
@@ -337,7 +337,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Table",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.list_outline,
+                  icon: MyIonicons(MyIoniconsData.list_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.table;
@@ -351,7 +351,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Map",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.calendar_clear_outline,
+                  icon: MyIonicons(MyIoniconsData.calendar_clear_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.map;
@@ -365,7 +365,7 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                   text: "Graph",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.stats_chart_outline,
+                  icon: MyIonicons(MyIoniconsData.stats_chart_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.graph;
@@ -758,10 +758,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(
-                                  Ionicons.swap_vertical,
+                                  MyIonicons(MyIoniconsData.swap_vertical).data,
                                   size: 16,
                                 ),
                               ),
@@ -802,10 +802,10 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(
-                                  Ionicons.pulse_outline,
+                                  MyIonicons(MyIoniconsData.pulse_outline).data,
                                   size: 16,
                                 ),
                               ),
@@ -861,8 +861,8 @@ class _CompanyDetailCryptoPageState extends State<CompanyDetailCryptoPage> {
     return Icon(
       (
         _sortType == SortType.ascending ?
-        Ionicons.arrow_up :
-        Ionicons.arrow_down
+        MyIonicons(MyIoniconsData.arrow_up).data :
+        MyIonicons(MyIoniconsData.arrow_down).data
       ),
       size: 10,
       color: textPrimary,

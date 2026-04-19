@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistDetailCreateTextFields extends StatelessWidget {
   final TextEditingController controller;
@@ -78,8 +78,8 @@ class WatchlistDetailCreateTextFields extends StatelessWidget {
                         width: 20,
                         height: 20,
                         color: Colors.transparent,
-                        child: const Icon(
-                          Ionicons.locate_outline,
+                        child: Icon(
+                          MyIonicons(MyIoniconsData.locate_outline).data,
                           size: 15,
                           color: primaryLight,
                         ),

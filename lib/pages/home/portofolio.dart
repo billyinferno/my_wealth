@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -229,12 +229,12 @@ class _PortofolioPageState extends State<PortofolioPage> {
             borderRadius: BorderRadius.circular(100),
           ),
           padding: const EdgeInsets.all(10),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(
-                Ionicons.eye_outline,
+                MyIonicons(MyIoniconsData.eye_outline).data,
                 color: primaryLight,
                 size: 35,
               ),
@@ -296,26 +296,24 @@ class _PortofolioPageState extends State<PortofolioPage> {
     double gain = value - cost;
     Color trendColor = Colors.white;
     Color realisedColor = Colors.white;
-    IconData trendIcon = Ionicons.remove;
-    // Color dayGainColor = Colors.white;
-    // IconData dayGainIcon = Ionicons.remove;
+    IconData trendIcon = MyIonicons(MyIoniconsData.remove).data;
 
     if (gain > 0) {
       trendColor = Colors.green;
-      trendIcon = Ionicons.trending_up;
+      trendIcon = MyIonicons(MyIoniconsData.trending_up).data;
     }
     else if(gain < 0) {
       trendColor = secondaryColor;
-      trendIcon = Ionicons.trending_down;
+      trendIcon = MyIonicons(MyIoniconsData.trending_down).data;
     }
 
     if (realised > 0) {
       realisedColor = Colors.green;
-      trendIcon = Ionicons.trending_up;
+      trendIcon = MyIonicons(MyIoniconsData.trending_up).data;
     }
     else if(realised < 0) {
       realisedColor = secondaryColor;
-      trendIcon = Ionicons.trending_down;
+      trendIcon = MyIonicons(MyIoniconsData.trending_down).data;
     }
 
     return Container(
@@ -429,7 +427,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
                                   Icon(
-                                    Ionicons.wallet_outline,
+                                    MyIonicons(MyIoniconsData.wallet_outline).data,
                                     color: realisedColor,
                                     size: 16,
                                   ),
@@ -467,7 +465,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
                 height: 16,
                 color: Colors.transparent,
                 child: Icon(
-                  (_isSummaryVisible ? Ionicons.eye_off_outline : Ionicons.eye_outline),
+                  (_isSummaryVisible ? MyIonicons(MyIoniconsData.eye_off_outline).data : MyIonicons(MyIoniconsData.eye_outline).data),
                   color: primaryLight,
                   size: 16,
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 
 class InsightStockTopGainerSubPage extends StatefulWidget {
@@ -150,7 +150,7 @@ class _InsightStockTopGainerSubPageState extends State<InsightStockTopGainerSubP
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                     child: Icon(
-                      Ionicons.warning,
+                      MyIonicons(MyIoniconsData.warning).data,
                       size: 12,
                       color: secondaryColor,
                     ),

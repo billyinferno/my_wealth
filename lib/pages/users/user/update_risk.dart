@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -35,8 +35,8 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
           )
         ),
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data
           ),
           onPressed: (() {
             Navigator.pop(context);
@@ -51,7 +51,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               UserButton(
-                icon: Ionicons.warning_outline,
+                icon: MyIonicons(MyIoniconsData.warning_outline).data,
                 text: "Risk Factor (Current: ${_userInfo!.risk}%)",
               ),
               Container(
@@ -116,7 +116,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                     text: "Cancel",
                     color: primaryDark,
                     borderColor: primaryLight,
-                    icon: Ionicons.close,
+                    icon: MyIonicons(MyIoniconsData.close).data,
                     onTap: (() {
                       // return back to the previous screen
                       Navigator.pop(context);
@@ -124,7 +124,7 @@ class UpdateRiskPageState extends State<UpdateRiskPage> {
                   ),
                   const SizedBox(width: 10,),
                   TransparentButton(
-                    icon: Ionicons.save,
+                    icon: MyIonicons(MyIoniconsData.save).data,
                     text: "Save",
                     color: secondaryDark,
                     borderColor: secondaryLight,

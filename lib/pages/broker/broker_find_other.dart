@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class BrokerFindOtherPage extends StatefulWidget {
   const BrokerFindOtherPage({super.key});
@@ -146,7 +146,7 @@ class _BrokerFindOtherPageState extends State<BrokerFindOtherPage> {
                                       Visibility(
                                         visible: _filterList[index].brokerDate.isBeforeDate(date: _brokerMaxDate),
                                         child: Icon(
-                                          Ionicons.warning,
+                                          MyIonicons(MyIoniconsData.warning).data,
                                           size: 12,
                                           color: secondaryColor,
                                         )

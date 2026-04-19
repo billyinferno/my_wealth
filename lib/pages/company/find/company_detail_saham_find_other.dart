@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class CompanyDetailSahamFindOtherPage extends StatefulWidget {
   final Object? args;
@@ -102,8 +102,8 @@ class _CompanyDetailSahamFindOtherPageState extends State<CompanyDetailSahamFind
                     });
                   }
                 }),
-                suffixIcon: const Icon(
-                  Ionicons.trash_bin_outline,
+                suffixIcon: Icon(
+                  MyIonicons(MyIoniconsData.trash_bin_outline).data,
                   color: secondaryColor,
                 ),
                 suffixMode: OverlayVisibilityMode.editing,

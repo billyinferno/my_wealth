@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistCalendarPage extends StatefulWidget {
   final Object? args;
@@ -140,8 +140,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             // return back to the previous page
             Navigator.pop(context);
           }),
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           ),
         ),
         actions: <Widget>[
@@ -149,7 +149,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             onPressed: (() {
               Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
             }),
-            icon: const Icon(Ionicons.business_outline),
+            icon: Icon(MyIonicons(MyIoniconsData.business_outline).data),
           ),
         ],
         title: const Center(
@@ -215,17 +215,17 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
   Widget _summaryBoxInfo() {
     Color color = textPrimary;
-    IconData iconToUsed = Ionicons.remove_outline;
+    IconData iconToUsed = MyIonicons(MyIoniconsData.remove_outline).data;
     double? avgPrice;
 
     // get the icon and color that we will used on the page
     if (_watchlistComputation.priceDiff > 0) {
       color = Colors.green;
-      iconToUsed = Ionicons.caret_up;
+      iconToUsed = MyIonicons(MyIoniconsData.caret_up).data;
     }
     else if (_watchlistComputation.priceDiff < 0) {
       color = secondaryColor;
-      iconToUsed = Ionicons.caret_down;
+      iconToUsed = MyIonicons(MyIoniconsData.caret_down).data;
     }
 
     // check whether we need to calculate the average price or not?
@@ -305,8 +305,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          const Icon(
-                            Ionicons.time_outline,
+                          Icon(
+                            MyIonicons(MyIoniconsData.time_outline).data,
                             color: primaryLight,
                             size: 15,
                           ),
@@ -410,8 +410,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             children: <Widget>[
               Text(Globals.dfyyyyMM.formatLocal(_currentDate)),
               const SizedBox(width: 5,),
-              const Icon(
-                Ionicons.caret_down_sharp,
+              Icon(
+                MyIonicons(MyIoniconsData.caret_down_sharp).data,
                 color: primaryLight,
                 size: 10,
               ),
@@ -490,8 +490,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
             children: <Widget>[
               Text("${_currentDate.year}"),
               const SizedBox(width: 5,),
-              const Icon(
-                Ionicons.caret_down_sharp,
+              Icon(
+                MyIonicons(MyIoniconsData.caret_down_sharp).data,
                 color: primaryLight,
                 size: 10,
               ),

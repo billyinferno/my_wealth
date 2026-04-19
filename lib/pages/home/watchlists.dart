@@ -1,8 +1,8 @@
 import 'package:easy_sticky_header/easy_sticky_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -175,7 +175,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                   text: "Symbol",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.add_outline,
+                  icon: MyIonicons(MyIoniconsData.add_outline).data,
                   onTap: (() {
                     showCupertinoModalPopup<void>(
                       context: context,
@@ -243,7 +243,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                   text: "${_isShowedLots ? 'Show' : 'Hide'} Lots",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: (_isShowedLots ? Ionicons.eye_outline : Ionicons.eye_off_outline),
+                  icon: (_isShowedLots ? MyIonicons(MyIoniconsData.eye_outline).data : MyIonicons(MyIoniconsData.eye_off_outline).data),
                   onTap: (() {
                     setState(() {
                       _isShowedLots = !_isShowedLots;
@@ -256,7 +256,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                   text: "${_isShowEmptyWatchlist ? 'Show' : 'Hide'} Empty",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: (_isShowEmptyWatchlist ? Ionicons.eye_outline : Ionicons.eye_off_outline),
+                  icon: (_isShowEmptyWatchlist ? MyIonicons(MyIoniconsData.eye_outline).data : MyIonicons(MyIoniconsData.eye_off_outline).data),
                   onTap: (() {
                     setState(() {
                       _isShowEmptyWatchlist = !_isShowEmptyWatchlist;
@@ -282,13 +282,13 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                     labelColor: textPrimary,
                     unselectedLabelColor: textPrimary,
                     dividerHeight: 0,
-                    tabs: const <Widget>[
+                    tabs: <Widget>[
                       Tab(text: 'MUTUAL',),
                       Tab(text: 'STOCK',),
                       Tab(text: 'CRYPTO',),
                       Tab(text: 'GOLD'),
                       Tab(icon: Icon(
-                          Ionicons.document_text,
+                          MyIonicons(MyIoniconsData.document_text).data,
                           size: 12,
                           color: accentColor,
                         ),
@@ -331,7 +331,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         scrollController: _scrollControllerMutual,
         checkLastUpdate: true,
         lastUpdate: _companyMaxLastUpdate.reksadana,
-        warningIcon: Ionicons.pause,
+        warningIcon: MyIonicons(MyIoniconsData.pause).data,
       );
     }
     return const Center(child: Text("No mutual fund watchlists"));
@@ -353,7 +353,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         showDecimalPrice: false,
         checkLastUpdate: true,
         lastUpdate: _companyMaxLastUpdate.saham,
-        warningIcon: Ionicons.pause,
+        warningIcon: MyIonicons(MyIoniconsData.pause).data,
       );
     }
     return const Center(child: Text("No stock watchlists"));
@@ -374,7 +374,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         scrollController: _scrollControllerCrypto,
         checkLastUpdate: true,
         lastUpdate: _companyMaxLastUpdate.crypto,
-        warningIcon: Ionicons.pause,
+        warningIcon: MyIonicons(MyIoniconsData.pause).data,
       );
     }
     return const Center(child: Text("No crypto watchlists"));
@@ -457,7 +457,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(
-                          (_watchlistHistory![index].watchlistDetailShare < 0 ? Ionicons.remove_circle : Ionicons.add_circle),
+                          (_watchlistHistory![index].watchlistDetailShare < 0 ? MyIonicons(MyIoniconsData.remove_circle).data : MyIonicons(MyIoniconsData.add_circle).data),
                           color: (_watchlistHistory![index].watchlistDetailShare < 0 ? secondaryColor : Colors.green),
                           size: 15,
                         ),
@@ -535,11 +535,12 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
     bool? showDecimalPrice,
     bool checkLastUpdate = false,
     DateTime? lastUpdate,
-    IconData warningIcon = Ionicons.warning,
+    IconData? warningIcon,
     Color warningColor = secondaryColor,
   }) {
     // check if we have last update or not?
     final DateTime currentLastUpdate = (lastUpdate ?? DateTime.now());
+    final IconData currentWarningIcon = (warningIcon ?? MyIonicons(MyIoniconsData.pause).data);
 
     return RefreshIndicator(
       onRefresh: (() async {
@@ -624,14 +625,14 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                       extentRatio: 1,
                       children: <Widget>[
                         SlideButton(
-                          icon: Ionicons.add,
+                          icon: MyIonicons(MyIoniconsData.add).data,
                           iconColor: extendedLight,
                           onTap: () {
                             Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: watchlistArgs);
                           },
                         ),
                         SlideButton(
-                          icon: Ionicons.ellipsis_horizontal,
+                          icon: MyIonicons(MyIoniconsData.ellipsis_horizontal).data,
                           iconColor: (data[idx].watchlistDetail.isNotEmpty ? accentColor : primaryLight),
                           onTap: () {
                             if(data[idx].watchlistDetail.isNotEmpty) {
@@ -641,7 +642,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                           },
                         ),
                         SlideButton(
-                          icon: Ionicons.pulse_outline,
+                          icon: MyIonicons(MyIoniconsData.pulse_outline).data,
                           iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.purple : primaryLight),
                           onTap: () {
                             if(data[idx].watchlistDetail.isNotEmpty) {
@@ -651,7 +652,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                           },
                         ),
                         SlideButton(
-                          icon: Ionicons.calendar_outline,
+                          icon: MyIonicons(MyIoniconsData.calendar_outline).data,
                           iconColor: (data[idx].watchlistDetail.isNotEmpty ? Colors.pink[300]! : primaryLight),
                           onTap: () {
                             if(data[idx].watchlistDetail.isNotEmpty) {
@@ -660,14 +661,14 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                           },
                         ),
                         SlideButton(
-                          icon: Ionicons.business_outline,
+                          icon: MyIonicons(MyIoniconsData.business_outline).data,
                           iconColor: Colors.green,
                           onTap: () {
                             Navigator.pushNamed(context, '/company/detail/$type', arguments: args);
                           },
                         ),
                         SlideButton(
-                          icon: Ionicons.trash_bin_outline,
+                          icon: MyIonicons(MyIoniconsData.trash_bin_outline).data,
                           iconColor: secondaryColor,
                           onTap: () async {
                             await ShowMyDialog(
@@ -709,7 +710,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                         showPriceDecimal: (showDecimalPrice ?? true),
                         fca: (data[idx].watchlistCompanyFCA ?? false),
                         warning: isWarning,
-                        warningIcon: warningIcon,
+                        warningIcon: currentWarningIcon,
                         warningColor: warningColor,
                       ),
                     ),

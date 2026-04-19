@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({ super.key });
@@ -49,7 +49,7 @@ class HomePageState extends State<HomePage> {
           children: [
             IconButton(
               icon: Icon(
-                (_selectedIndex == 5 ? Ionicons.star : Ionicons.star_outline),
+                (_selectedIndex == 5 ? MyIonicons(MyIoniconsData.star) : MyIonicons(MyIoniconsData.star_outline)).data,
                 color: (_selectedIndex == 5 ? Colors.yellow : textPrimary),
               ),
               onPressed: (() {
@@ -127,13 +127,13 @@ class HomePageState extends State<HomePage> {
                 }),
               );
             }),
-            icon: const Icon(Ionicons.search_outline)
+            icon: Icon(MyIonicons(MyIoniconsData.search_outline).data)
           ),
           IconButton(
             onPressed: (() {
               Navigator.pushNamed(context, '/user');
             }),
-            icon: const Icon(Ionicons.person_outline)
+            icon: Icon(MyIonicons(MyIoniconsData.person_outline).data)
           )
         ],
         automaticallyImplyLeading: false,
@@ -164,25 +164,25 @@ class HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(15),
         duration: const Duration(milliseconds: 300),
         color: Colors.white,
-        tabs: const [
+        tabs: [
           GButton(
-            icon: Ionicons.analytics_outline,
+            icon: MyIonicons(MyIoniconsData.analytics_outline).data,
             iconActiveColor: Color.fromRGBO(129, 199, 132, 1),
           ),
           GButton(
-            icon: Ionicons.business_outline,
+            icon: MyIonicons(MyIoniconsData.business_outline).data,
             iconActiveColor: Color.fromRGBO(186, 104, 200, 1),
           ),
           GButton(
-            icon: Ionicons.list_circle_outline,
+            icon: MyIonicons(MyIoniconsData.list_circle_outline).data,
             iconActiveColor: Colors.orange,
           ),
           GButton(
-            icon: Ionicons.eye_outline,
+            icon: MyIonicons(MyIoniconsData.eye_outline).data,
             iconActiveColor: secondaryLight,
           ),
           GButton(
-            icon: Ionicons.bulb_outline,
+            icon: MyIonicons(MyIoniconsData.bulb_outline).data,
             iconActiveColor: extendedLight,
           ),
         ],

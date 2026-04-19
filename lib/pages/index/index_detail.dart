@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class IndexDetailPage extends StatefulWidget {
   final Object? index;
@@ -163,8 +163,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(
-              Ionicons.arrow_back,
+            icon: Icon(
+              MyIonicons(MyIoniconsData.arrow_back).data,
             ),
             onPressed: (() {
               Navigator.pop(context);
@@ -220,7 +220,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 Icon(
-                                  (_priceDiff > 0 ? Ionicons.caret_up : Ionicons.caret_down),
+                                  (_priceDiff > 0 ? MyIonicons(MyIoniconsData.caret_up).data : MyIonicons(MyIoniconsData.caret_down).data),
                                   color: _riskColor,
                                 ),
                                 const SizedBox(width: 10,),
@@ -238,8 +238,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   child: Text(formatCurrency(_priceDiff)),
                                 ),
                                 Expanded(child: Container(),),
-                                const Icon(
-                                  Ionicons.time_outline,
+                                Icon(
+                                  MyIonicons(MyIoniconsData.time_outline).data,
                                   color: primaryLight,
                                 ),
                                 const SizedBox(width: 10,),
@@ -423,7 +423,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Table",
                     color: primaryDark,
                     borderColor: primaryLight,
-                    icon: Ionicons.list_outline,
+                    icon: MyIonicons(MyIoniconsData.list_outline).data,
                     onTap: (() {
                       setState(() {
                         _bodyPage = BodyPage.table;
@@ -437,7 +437,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Season",
                     color: primaryDark,
                     borderColor: primaryLight,
-                    icon: Ionicons.rainy,
+                    icon: MyIonicons(MyIoniconsData.rainy).data,
                     onTap: (() {
                       setState(() {
                         _bodyPage = BodyPage.season;
@@ -451,7 +451,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Map",
                     color: primaryDark,
                     borderColor: primaryLight,
-                    icon: Ionicons.calendar_clear_outline,
+                    icon: MyIonicons(MyIoniconsData.calendar_clear_outline).data,
                     onTap: (() {
                       setState(() {
                         _bodyPage = BodyPage.map;
@@ -465,7 +465,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                     text: "Graph",
                     color: primaryDark,
                     borderColor: primaryLight,
-                    icon: Ionicons.stats_chart_outline,
+                    icon: MyIonicons(MyIoniconsData.stats_chart_outline).data,
                     onTap: (() {
                       setState(() {
                         _bodyPage = BodyPage.graph;
@@ -916,7 +916,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                     Text("Select Year"),
                                     IconButton(
                                     icon: Icon(
-                                      Ionicons.close,
+                                      MyIonicons(MyIoniconsData.close).data,
                                     ),
                                     onPressed: () {
                                       // remove the dialog
@@ -1066,7 +1066,7 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                                   Text("Select Year"),
                                   IconButton(
                                   icon: Icon(
-                                    Ionicons.close,
+                                    MyIonicons(MyIoniconsData.close).data,
                                   ),
                                   onPressed: () {
                                     // remove the dialog
@@ -1333,10 +1333,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(
-                                  Ionicons.swap_vertical,
+                                  MyIonicons(MyIoniconsData.swap_vertical).data,
                                   size: 16,
                                 ),
                               ),
@@ -1377,10 +1377,10 @@ class IndexDetailPageState extends State<IndexDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(
-                                  Ionicons.pulse_outline,
+                                  MyIonicons(MyIoniconsData.pulse_outline).data,
                                   size: 16,
                                 ),
                               ),
@@ -1520,8 +1520,8 @@ class IndexDetailPageState extends State<IndexDetailPage> {
     return Icon(
       (
         _sortType == SortType.ascending ?
-        Ionicons.arrow_up :
-        Ionicons.arrow_down
+        MyIonicons(MyIoniconsData.arrow_up).data :
+        MyIonicons(MyIoniconsData.arrow_down).data
       ),
       size: 10,
       color: textPrimary,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class ExpandedTileTitle extends StatelessWidget {
   final String name;
@@ -22,7 +22,7 @@ class ExpandedTileTitle extends StatelessWidget {
   final double realisedGain;
   final bool fca;
   final bool warning;
-  final IconData warningIcon;
+  final IconData? warningIcon;
   final Color warningColor;
   final bool showDecimal;
   final bool visibility;
@@ -49,7 +49,7 @@ class ExpandedTileTitle extends StatelessWidget {
     this.realisedGain = 0,
     this.fca = false,
     this.warning = false,
-    this.warningIcon = Ionicons.warning,
+    this.warningIcon,
     this.warningColor = secondaryColor,
     this.showDecimal = true,
     this.visibility = true,
@@ -58,10 +58,11 @@ class ExpandedTileTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final diffPrice = (price - (prevPrice ?? price));
+    final double diffPrice = (price - (prevPrice ?? price));
+    final IconData currentWarningIcon = (warningIcon ?? MyIonicons(MyIoniconsData.warning).data);
     
     Color trendColor = Colors.white;
-    IconData trendIcon = Ionicons.remove;
+    IconData trendIcon = MyIonicons(MyIoniconsData.remove).data;
     int decimalNum = 2;
     if (isLot) {
       // check if share is 1K+ or not
@@ -72,11 +73,11 @@ class ExpandedTileTitle extends StatelessWidget {
     
     if (diffPrice > 0) {
       trendColor = Colors.green;
-      trendIcon = Ionicons.caret_up;
+      trendIcon = MyIonicons(MyIoniconsData.caret_up).data;
     }
     else if(diffPrice < 0) {
       trendColor = secondaryColor;
-      trendIcon = Ionicons.caret_down;
+      trendIcon = MyIonicons(MyIoniconsData.caret_down).data;
     }
 
     return Column(
@@ -108,7 +109,7 @@ class ExpandedTileTitle extends StatelessWidget {
                             child: Container(
                               padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                               child: Icon(
-                                Ionicons.warning,
+                                MyIonicons(MyIoniconsData.warning).data,
                                 color: secondaryColor,
                                 size: 15,
                               ),
@@ -119,7 +120,7 @@ class ExpandedTileTitle extends StatelessWidget {
                             child: Container(
                               padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                               child: Icon(
-                                warningIcon,
+                                currentWarningIcon,
                                 color: warningColor,
                                 size: 15,
                               ),
@@ -166,8 +167,8 @@ class ExpandedTileTitle extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                const Icon(
-                                  Ionicons.time_outline,
+                                Icon(
+                                  MyIonicons(MyIoniconsData.time_outline).data,
                                   size: 15,
                                   color: primaryLight,
                                 ),

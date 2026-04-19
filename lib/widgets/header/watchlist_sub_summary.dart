@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistSubSummary extends StatelessWidget {
   final double dayGain;
@@ -33,7 +33,7 @@ class WatchlistSubSummary extends StatelessWidget {
         extentRatio: 0.42,
         children: <Widget>[
           SlideButton(
-            icon: Ionicons.pulse_outline,
+            icon: MyIonicons(MyIoniconsData.pulse_outline).data,
             iconColor: (totalData > 0 ? Colors.purple : primaryLight),
             onTap: () {
               if (totalData > 0) {
@@ -43,7 +43,7 @@ class WatchlistSubSummary extends StatelessWidget {
             },
           ),
           SlideButton(
-            icon: Ionicons.calendar_outline,
+            icon: MyIonicons(MyIoniconsData.calendar_outline).data,
             iconColor: (totalData > 0 ? Colors.pink[300]! : primaryLight),
             onTap: () {
               if (totalData > 0) {

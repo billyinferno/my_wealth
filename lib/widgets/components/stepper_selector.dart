@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class StepperSelector extends StatefulWidget {
   final StepperSelectorController controller;
@@ -55,11 +55,11 @@ class StepperSelectorState extends State<StepperSelector> {
               });
             }
           }),
-          child: const SizedBox(
+          child: SizedBox(
             width: 25,
             height: 25,
             child: Icon(
-              Ionicons.remove_circle_outline,
+              MyIonicons(MyIoniconsData.remove_circle_outline).data,
               color: accentColor,
             ),
           ),
@@ -79,11 +79,11 @@ class StepperSelectorState extends State<StepperSelector> {
               });
             }
           },
-          child: const SizedBox(
+          child: SizedBox(
             width: 25,
             height: 25,
             child: Icon(
-              Ionicons.add_circle_outline,
+              MyIonicons(MyIoniconsData.add_circle_outline).data,
               color: accentColor,
             ),
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -290,7 +290,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                               ),
                               StepperSelector(
                                 controller: _stepperControllerRating,
-                                icon: Ionicons.star,
+                                icon: MyIonicons(MyIoniconsData.star).data,
                                 iconColor: accentColor,
                                 defaultValue: _currentRatingNum,
                                 onChanged: ((val) {
@@ -308,7 +308,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                               ),
                               StepperSelector(
                                 controller: _stepperControllerRisk,
-                                icon: Ionicons.alert,
+                                icon: MyIonicons(MyIoniconsData.alert).data,
                                 iconColor: secondaryColor,
                                 defaultValue: _currentRiskNum,
                                 onChanged: ((val) {
@@ -412,7 +412,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                       isFavourite: ((_sortedFaveList[index].favouritesUserId ?? -1) > 0 ? true : false),
                       fca: (_sortedFaveList[index].favouritesFCA ?? false),
                       warning: isWarning,
-                      warningIcon: Ionicons.lock_closed,
+                      warningIcon: MyIonicons(MyIoniconsData.lock_closed).data,
                       subWidget: _subInfoWidget(_sortedFaveList[index]),
                       onPress: (() async {
                         await _setFavourite(index);
@@ -442,13 +442,13 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
               _ratingRiskWidget(
                 header: "Rating",
                 value: data.favouritesCompanyYearlyRating,
-                iconData: Ionicons.star,
+                iconData: MyIonicons(MyIoniconsData.star).data,
                 iconColor: Colors.yellow,
               ),
               _ratingRiskWidget(
                 header: "Risk",
                 value: data.favouritesCompanyYearlyRating,
-                iconData: Ionicons.alert,
+                iconData: MyIonicons(MyIoniconsData.alert).data,
                 iconColor: secondaryColor,
               ),
             ],
@@ -574,8 +574,8 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   List<Widget> _generateRatingIcon({required int numRating, required IconData iconData, required Color iconColor}) {
     if (numRating <= 0) {
       return List<Widget>.generate(1, (index) {
-        return const Icon(
-          Ionicons.remove,
+        return Icon(
+          MyIonicons(MyIoniconsData.remove).data,
           color: textPrimary,
           size: 10,
         );

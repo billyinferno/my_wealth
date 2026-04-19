@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class CompareFields extends StatelessWidget {
   final Color color;
@@ -26,14 +26,14 @@ class CompareFields extends StatelessWidget {
     bool currentShowCompare = (showCompare ?? false);
     double currentIsBigger = (isBigger ?? 0);
 
-    IconData currentIcon = Ionicons.remove;
+    IconData currentIcon = MyIonicons(MyIoniconsData.remove).data;
     Color currentColor = textPrimary;
     if (currentIsBigger < 0) {
-      currentIcon = Ionicons.caret_down;
+      currentIcon = MyIonicons(MyIoniconsData.caret_down).data;
       currentColor = secondaryLight;
     }
     if (currentIsBigger > 0) {
-      currentIcon = Ionicons.caret_up;
+      currentIcon = MyIonicons(MyIoniconsData.caret_up).data;
       currentColor = Colors.green;
     }
 

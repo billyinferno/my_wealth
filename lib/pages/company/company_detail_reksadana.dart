@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class CompanyDetailReksadanaPage extends StatefulWidget {
   final Object? companyData;
@@ -226,7 +226,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
   }
 
   Widget _generatePage() {
-    IconData currentIcon = Ionicons.remove;
+    IconData currentIcon = MyIonicons(MyIoniconsData.remove).data;
     int companyRating;
     int companyRisk;
     Color priceColor = riskColor(
@@ -236,10 +236,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     );
     
     if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) > 0) {
-      currentIcon = Ionicons.caret_up;
+      currentIcon = MyIonicons(MyIoniconsData.caret_up).data;
     }
     else if ((_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!) < 0) {
-      currentIcon = Ionicons.caret_down;
+      currentIcon = MyIonicons(MyIoniconsData.caret_down).data;
     }
 
     if(_companyDetail.companyYearlyRating == null) {
@@ -277,14 +277,14 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
             visible: _isOwned,
             child: Container(
               padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-              child: const Icon(
-                Ionicons.checkmark,
+              child: Icon(
+                MyIonicons(MyIoniconsData.checkmark).data,
                 color: Colors.green,
               ),
             ),
           ),
           Icon(
-            (_companyData.companyFavourite ? Ionicons.star : Ionicons.star_outline),
+            (_companyData.companyFavourite ? MyIonicons(MyIoniconsData.star).data : MyIonicons(MyIoniconsData.star_outline).data),
             color: accentColor,
           ),
           const SizedBox(width: 10,),
@@ -320,7 +320,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 child: Container(
                                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                                   child: Icon(
-                                    Ionicons.lock_closed,
+                                    MyIonicons(MyIoniconsData.lock_closed).data,
                                     size: 14,
                                     color: secondaryColor,
                                   ),
@@ -368,8 +368,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                 child: Text(formatCurrency(_companyDetail.companyNetAssetValue! - _companyDetail.companyPrevPrice!)),
                               ),
                               Expanded(child: Container(),),
-                              const Icon(
-                                Ionicons.time_outline,
+                              Icon(
+                                MyIonicons(MyIoniconsData.time_outline).data,
                                 color: primaryLight,
                               ),
                               const SizedBox(width: 10,),
@@ -465,7 +465,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Info",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.speedometer_outline,
+                  icon: MyIonicons(MyIoniconsData.speedometer_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.summary;
@@ -479,7 +479,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Table",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.list_outline,
+                  icon: MyIonicons(MyIoniconsData.list_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.table;
@@ -493,7 +493,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Map",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.calendar_clear_outline,
+                  icon: MyIonicons(MyIoniconsData.calendar_clear_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.map;
@@ -507,7 +507,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Graph",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.stats_chart_outline,
+                  icon: MyIonicons(MyIoniconsData.stats_chart_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.graph;
@@ -521,7 +521,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Calc",
                   color: primaryDark,
                   borderColor: primaryLight,
-                  icon: Ionicons.calculator_outline,
+                  icon: MyIonicons(MyIoniconsData.calculator_outline).data,
                   onTap: (() {
                     setState(() {
                       _bodyPage = BodyPage.calc;
@@ -545,16 +545,16 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     List<Widget> ret = [];
     if (companyRisk > 0) {
       ret = List<Widget>.generate(companyRisk, (index) {
-        return const Icon(
-          Ionicons.alert,
+        return Icon(
+          MyIonicons(MyIoniconsData.alert).data,
           color: secondaryLight,
           size: 15,
         );
       });
     }
     else {
-      ret.add(const Icon(
-        Ionicons.help,
+      ret.add(Icon(
+        MyIonicons(MyIoniconsData.help).data,
         color: Colors.blue,
         size: 15,
       ));
@@ -567,16 +567,16 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     List<Widget> ret = [];
     if (companyRating > 0) {
       ret = List<Widget>.generate(companyRating, (index) {
-        return const Icon(
-          Ionicons.star,
+        return Icon(
+          MyIonicons(MyIoniconsData.star).data,
           color: accentLight,
           size: 15,
         );
       });
     }
     else {
-      ret.add(const Icon(
-        Ionicons.help,
+      ret.add(Icon(
+        MyIonicons(MyIoniconsData.help).data,
         color: Colors.blue,
         size: 15,
       ));
@@ -1262,10 +1262,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(
-                                  Ionicons.swap_vertical,
+                                  MyIonicons(MyIoniconsData.swap_vertical).data,
                                   size: 16,
                                 ),
                               ),
@@ -1323,10 +1323,10 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
                                 child: Icon(
-                                  Ionicons.pulse_outline,
+                                  MyIonicons(MyIoniconsData.pulse_outline).data,
                                   size: 16,
                                 ),
                               ),
@@ -1375,8 +1375,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
     return Icon(
       (
         _sortType == SortType.ascending ?
-        Ionicons.arrow_up :
-        Ionicons.arrow_down
+        MyIonicons(MyIoniconsData.arrow_up).data :
+        MyIonicons(MyIoniconsData.arrow_down).data
       ),
       size: 10,
       color: textPrimary,
@@ -1517,7 +1517,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                     Text("Select Year"),
                                     IconButton(
                                     icon: Icon(
-                                      Ionicons.close,
+                                      MyIonicons(MyIoniconsData.close).data,
                                     ),
                                     onPressed: () {
                                       // remove the dialog
@@ -1658,7 +1658,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                                   Text("Select Year"),
                                   IconButton(
                                   icon: Icon(
-                                    Ionicons.close,
+                                    MyIonicons(MyIoniconsData.close).data,
                                   ),
                                   onPressed: () {
                                     // remove the dialog
@@ -1944,8 +1944,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                         height: 15,
                         width: 15,
                         color: secondaryDark,
-                        child: const Icon(
-                          Ionicons.close,
+                        child: Icon(
+                          MyIonicons(MyIoniconsData.close).data,
                           size: 12,
                           color: textPrimary,
                         ),
@@ -1988,8 +1988,8 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                       borderRadius: BorderRadius.circular(2),
                       color: extendedColor,
                     ),
-                    child: const Icon(
-                      Ionicons.git_compare_outline,
+                    child: Icon(
+                      MyIonicons(MyIoniconsData.git_compare_outline).data,
                       color: textPrimary,
                       size: 15,
                     ),
@@ -2176,7 +2176,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                   text: "Calculate",
                   color: secondaryDark,
                   borderColor: secondaryLight,
-                  icon: Ionicons.calculator,
+                  icon: MyIonicons(MyIoniconsData.calculator).data,
                   onTap: (() {
                     _simulateReksadana();
                   })

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class InsightStockSubPage extends StatefulWidget {
   final Object? args;
@@ -75,8 +75,8 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           ),
           onPressed: (() {
             Navigator.pop(context);
@@ -325,7 +325,7 @@ class _InsightStockSubPageState extends State<InsightStockSubPage> with SingleTi
       );
       Color borderColor = (sectorAverage >= 0 ? const Color.fromARGB(255, 15, 88, 17) : secondaryDark);
       IconData? icon = (type == 'subsector' ? Globals.subSectorIcon[sectorList[index].sectorName] : Globals.industryIcon[sectorList[index].sectorName]);
-      icon ??= Ionicons.help;
+      icon ??= MyIonicons(MyIoniconsData.help).data;
 
       return InkWell(
         onTap: (() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class ProductListItem extends StatelessWidget {
   final Color bgColor;
@@ -149,8 +149,8 @@ class ProductListItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
-                                const Icon(
-                                  Ionicons.ellipse,
+                                Icon(
+                                  MyIonicons(MyIoniconsData.ellipse).data,
                                   size: 5,
                                 ),
                                 const SizedBox(width: 5,),
@@ -276,11 +276,11 @@ class ProductListItem extends StatelessWidget {
               ),
               Visibility(
                 visible: (onTap != null),
-                child: const SizedBox(
+                child: SizedBox(
                   width: 20,
                   child: Center(
                     child: Icon(
-                      Ionicons.chevron_forward,
+                      MyIonicons(MyIoniconsData.chevron_forward).data,
                       color: primaryLight,
                     ),
                   ),
@@ -298,15 +298,15 @@ class ProductListItem extends StatelessWidget {
     // if both netAssetValue and oneDay not null then return the widget otherwise
     // just return a SizedBox
     if (netAssetValue != null || oneDay != null) {
-      IconData priceIcon = Ionicons.remove;
+      IconData priceIcon = MyIonicons(MyIoniconsData.remove).data;
       Color priceColor = textPrimary;
 
       if (oneDay! < 0) {
-        priceIcon = Ionicons.caret_down;
+        priceIcon = MyIonicons(MyIoniconsData.caret_down).data;
         priceColor = secondaryColor;
       }
       else {
-        priceIcon = Ionicons.caret_up;
+        priceIcon = MyIonicons(MyIoniconsData.caret_up).data;
         priceColor = Colors.green;
       }
 

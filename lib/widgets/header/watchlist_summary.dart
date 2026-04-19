@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistSummary extends StatelessWidget {
   final BuildContext context;
@@ -35,7 +35,7 @@ class WatchlistSummary extends StatelessWidget {
           extentRatio: 0.43,
           children: <Widget>[
             SlideButton(
-              icon: Ionicons.pulse_outline,
+              icon: MyIonicons(MyIoniconsData.pulse_outline).data,
               iconColor: Colors.purple,
               bgColor: primaryDark,
               onTap: () {
@@ -44,7 +44,7 @@ class WatchlistSummary extends StatelessWidget {
               },
             ),
             SlideButton(
-              icon: Ionicons.calendar_outline,
+              icon: MyIonicons(MyIoniconsData.calendar_outline).data,
               iconColor: Colors.pink[300]!,
               bgColor: primaryDark,
               onTap: () {
@@ -149,8 +149,8 @@ class WatchlistSummary extends StatelessWidget {
                       onPressed: (() {
                         onVisibilityPress();
                       }),
-                      icon: const Icon(
-                        Ionicons.eye_off_outline,
+                      icon: Icon(
+                        MyIonicons(MyIoniconsData.eye_off_outline).data,
                         size: 15,
                         color: primaryLight,
                       )

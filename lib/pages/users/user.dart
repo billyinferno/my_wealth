@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -48,8 +48,8 @@ class _UserPageState extends State<UserPage> {
           )
         ),
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data
           ),
           onPressed: (() {
             Navigator.pop(context);
@@ -92,21 +92,21 @@ class _UserPageState extends State<UserPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           UserButton(
-                            icon: Ionicons.lock_open_outline,
+                            icon: MyIonicons(MyIoniconsData.lock_open_outline).data,
                             text: "Change Password",
                             onTap: (() {
                               Navigator.pushNamed(context, '/user/password');
                             }),
                           ),
                           UserButton(
-                            icon: Ionicons.warning_outline,
+                            icon: MyIonicons(MyIoniconsData.warning_outline).data,
                             text: "Risk Factor (Current: ${_userInfo!.risk}%)",
                             onTap: (() {
                               Navigator.pushNamed(context, '/user/risk');
                             }),
                           ),
                           UserButton(
-                            icon: Ionicons.eye_outline,
+                            icon: MyIonicons(MyIoniconsData.eye_outline).data,
                             text: "Visibility",
                             trailing: CupertinoSwitch(
                               value: _isVisible,
@@ -123,7 +123,7 @@ class _UserPageState extends State<UserPage> {
                             ),
                           ),
                           UserButton(
-                            icon: Ionicons.list_outline,
+                            icon: MyIonicons(MyIoniconsData.list_outline).data,
                             text: "Show Lots",
                             trailing: CupertinoSwitch(
                               value: _showLots,
@@ -140,7 +140,7 @@ class _UserPageState extends State<UserPage> {
                             ),
                           ),
                           UserButton(
-                            icon: Ionicons.list_outline,
+                            icon: MyIonicons(MyIoniconsData.list_outline).data,
                             text: "Show Empty Watchlist",
                             trailing: CupertinoSwitch(
                               value: _showEmptyWatchlist,
@@ -157,17 +157,17 @@ class _UserPageState extends State<UserPage> {
                             ),
                           ),
                           UserButton(
-                            icon: Ionicons.information_outline,
+                            icon: MyIonicons(MyIoniconsData.information_outline).data,
                             text: "Application Version",
                             subText: Globals.appVersion,
                           ),
                           UserButton(
-                            icon: Ionicons.rocket_outline,
+                            icon: MyIonicons(MyIoniconsData.rocket_outline).data,
                             text: "Run As",
                             subText: _type,
                           ),
                           UserButton(
-                            icon: Ionicons.information_outline,
+                            icon: MyIonicons(MyIoniconsData.information_outline).data,
                             text: "Flutter Version",
                             subText: Globals.flutterVersion,
                           ),
@@ -211,7 +211,7 @@ class _UserPageState extends State<UserPage> {
                           //   ),
                           // ),
                           UserButton(
-                            icon: Ionicons.log_out_outline,
+                            icon: MyIonicons(MyIoniconsData.log_out_outline).data,
                             text: "Logout",
                             onTap: (() {
                               Future<bool?> result = ShowMyDialog(

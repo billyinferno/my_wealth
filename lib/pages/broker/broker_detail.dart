@@ -2,9 +2,9 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class BrokerDetailPage extends StatefulWidget {
   final Object? args;
@@ -279,7 +279,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                     Text("Select Year"),
                                     IconButton(
                                     icon: Icon(
-                                      Ionicons.close,
+                                      MyIonicons(MyIoniconsData.close).data,
                                     ),
                                     onPressed: () {
                                       // remove the dialog
@@ -377,8 +377,8 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                             child: Text(Globals.dfyyyyMMdd.formatLocal(_transactionList.brokerSummaryToDate))
                           ),
                           const SizedBox(width: 10,),
-                          const Icon(
-                            Ionicons.search,
+                          Icon(
+                            MyIonicons(MyIoniconsData.search).data,
                             color: secondaryLight,
                             size: 15,
                           )
@@ -473,7 +473,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                         extentRatio: 0.2,
                         children: <Widget>[
                           SlideButton(
-                            icon: Ionicons.open_outline,
+                            icon: MyIonicons(MyIoniconsData.open_outline).data,
                             iconColor: Colors.green,
                             border: const Border(
                               bottom: BorderSide(
@@ -502,7 +502,7 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                               tilePadding: EdgeInsets.zero,
                               childrenPadding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                               trailing: (
-                                _isExpanded[index] ? const Icon(Ionicons.chevron_up, color: accentColor,) : const Icon(Ionicons.chevron_down, color: Colors.white)
+                                _isExpanded[index] ? Icon(MyIonicons(MyIoniconsData.chevron_up).data, color: accentColor,) : Icon(MyIonicons(MyIoniconsData.chevron_down).data, color: Colors.white)
                               ),
                               title: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -511,8 +511,8 @@ class _BrokerDetailPageState extends State<BrokerDetailPage> {
                                   const SizedBox(width: 10,),
                                   Visibility(
                                     visible: _transactionList.brokerSummaryCodeList[index].brokerSummaryFCA,
-                                    child: const Icon(
-                                      Ionicons.warning,
+                                    child: Icon(
+                                      MyIonicons(MyIoniconsData.warning).data,
                                       color: secondaryColor,
                                       size: 15,
                                     )

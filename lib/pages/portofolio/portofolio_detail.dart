@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class PortofolioDetailPage extends StatefulWidget {
   final Object? args;
@@ -26,7 +26,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
   Color _totalGainColor = Colors.white;
   Color _totalDayGainColor = Colors.white;
 
-  IconData _trendIcon = Ionicons.remove;
+  IconData _trendIcon = MyIonicons(MyIoniconsData.remove).data;
   double _portofolioTotalValue = 0;
   double _totalGain = 0;
   double _totalDayGain = 0;
@@ -60,11 +60,11 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
     // check unrealised and realised to determine the trend color and icon
     if((_args.unrealised ?? 0) > 0) {
       _trendColor = Colors.green;
-      _trendIcon = Ionicons.trending_up;
+      _trendIcon = MyIonicons(MyIoniconsData.trending_up).data;
     }
     else if((_args.unrealised ?? 0) < 0) {
       _trendColor = secondaryColor;
-      _trendIcon = Ionicons.trending_down;
+      _trendIcon = MyIonicons(MyIoniconsData.trending_down).data;
     }
 
     if((_args.realised ?? 0) > 0) {
@@ -118,8 +118,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
             // return back to the previous page
             Navigator.pop(context);
           })),
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           )
         ),
         title: Center(
@@ -147,8 +147,8 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                 })
               ).show();
             }),
-            icon: const Icon(
-              Ionicons.filter_circle_outline,
+            icon: Icon(
+              MyIonicons(MyIoniconsData.filter_circle_outline).data,
               color: textPrimary,
             ),
           ),
@@ -258,7 +258,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(
-                              Ionicons.wallet_outline,
+                              MyIonicons(MyIoniconsData.wallet_outline).data,
                               size: 13,
                               color: _realisedColor,
                             ),
@@ -315,7 +315,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Icon(
-                              Ionicons.stats_chart,
+                              MyIonicons(MyIoniconsData.stats_chart).data,
                               size: 13,
                               color: _totalGainColor,
                             ),
@@ -346,7 +346,7 @@ class _PortofolioDetailPageState extends State<PortofolioDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Icon(
-                              Ionicons.today,
+                              MyIonicons(MyIoniconsData.today).data,
                               size: 13,
                               color: _totalDayGainColor,
                             ),

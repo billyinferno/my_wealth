@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class InsightBandarBrokerCollectPage extends StatefulWidget {
   const InsightBandarBrokerCollectPage({super.key});
@@ -107,8 +107,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           ),
           onPressed: (() {
             Navigator.pop(context);
@@ -331,7 +331,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       TransparentButton(
-                        icon: Ionicons.search,
+                        icon: MyIonicons(MyIoniconsData.search).data,
                         onTap: () async {
                           // check that broker and code already filled
                           if (_brokerCode.isEmpty) {
@@ -367,8 +367,8 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   createSnackBar(
                                     message: "Error when trying to get the broker summary data",
-                                    icon: const Icon(
-                                      Ionicons.warning,
+                                    icon: Icon(
+                                      MyIonicons(MyIoniconsData.warning).data,
                                       size: 12,
                                     )
                                   )
@@ -767,7 +767,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
               extentRatio: 0.15,
               children: <Widget>[
                 SlideButton(
-                  icon: Ionicons.business_outline,
+                  icon: MyIonicons(MyIoniconsData.business_outline).data,
                   iconColor: extendedLight,
                   onTap: () {
                     _getCompanyDetailAndGo(code: _filteredBrokcerCollectCompanyList[index].code);
@@ -808,7 +808,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                                 child: Container(
                                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                                   child: Icon(
-                                    Ionicons.warning,
+                                    MyIonicons(MyIoniconsData.warning).data,
                                     size: 12,
                                     color: secondaryColor,
                                   ),
@@ -1250,7 +1250,7 @@ class _InsightBandarBrokerCollectPageState extends State<InsightBandarBrokerColl
                 Text("Select Year"),
                 IconButton(
                 icon: Icon(
-                  Ionicons.close,
+                  MyIonicons(MyIoniconsData.close).data,
                 ),
                 onPressed: () {
                   // remove the dialog

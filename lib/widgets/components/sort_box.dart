@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 enum SortBoxType {
   ascending,
@@ -135,8 +135,8 @@ class _SortBoxState extends State<SortBox> {
                     const SizedBox(
                       width: 5,
                     ),
-                    const Icon(
-                      Ionicons.caret_down,
+                    Icon(
+                      MyIonicons(MyIoniconsData.caret_down).data,
                       color: accentColor,
                       size: 15,
                     ),

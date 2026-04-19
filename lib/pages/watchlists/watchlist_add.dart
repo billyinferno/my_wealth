@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -127,8 +127,8 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
               Navigator.pop(context);
             }
           })),
-          icon: const Icon(
-            Ionicons.arrow_back,
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data,
           )
         ),
         title: Center(
@@ -281,7 +281,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
             canAdd: _companyFilterResult[index].companyCanAdd,
             fca: isFca,
             warning: isWarning,
-            warningIcon: Ionicons.lock_closed,
+            warningIcon: MyIonicons(MyIoniconsData.lock_closed).data,
             onPress: (() async {
               await _addCompanyToWatchlist(index).then((_) async {
                 Log.success(

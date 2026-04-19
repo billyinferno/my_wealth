@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class SimpleCompanyInfo extends StatelessWidget {
   final ScrollController? controller;
@@ -19,7 +19,7 @@ class SimpleCompanyInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     double currentPrice = 0;
     double prevPrice = 0;
-    IconData currentIcon = Ionicons.remove;
+    IconData currentIcon = MyIonicons(MyIoniconsData.remove).data;
     Color currentRiskColor = Colors.white;
     double diffPrice = 0;
 
@@ -58,9 +58,9 @@ class SimpleCompanyInfo extends StatelessWidget {
     // get the diff price
     diffPrice = currentPrice - prevPrice;
     if (diffPrice > 0) {
-      currentIcon = Ionicons.caret_up;
+      currentIcon = MyIonicons(MyIoniconsData.caret_up).data;
     } else if (diffPrice < 0) {
-      currentIcon = Ionicons.caret_down;
+      currentIcon = MyIonicons(MyIoniconsData.caret_down).data;
     }
 
     return InkWell(
@@ -105,7 +105,7 @@ class SimpleCompanyInfo extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Icon(
-                              Ionicons.warning,
+                              MyIonicons(MyIoniconsData.warning).data,
                               size: 10,
                               color: secondaryLight,
                             ),
@@ -235,8 +235,8 @@ class SimpleCompanyInfo extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(child: SizedBox(),),
-                                const Icon(
-                                  Ionicons.time_outline,
+                                Icon(
+                                  MyIonicons(MyIoniconsData.time_outline).data,
                                   color: primaryLight,
                                   size: 11,
                                 ),
@@ -260,7 +260,7 @@ class SimpleCompanyInfo extends StatelessWidget {
               ),
               const SizedBox(width: 10,),
               Icon(
-                Ionicons.chevron_forward,
+                MyIonicons(MyIoniconsData.chevron_forward).data,
                 color: primaryLight,
                 size: 30,
               ),

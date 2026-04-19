@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 SnackBar createSnackBar({
   required String message,
-  Icon icon = const Icon(
-    Ionicons.alert_circle_outline,
-    size: 20,
-    color: secondaryDark,
-  ),
+  Icon? icon,
   int duration = 3
 }) {
+  Icon currentIcon = (icon ?? Icon(MyIonicons(MyIoniconsData.information_circle_outline).data, color: primaryLight, size: 20,));
   return SnackBar(
     duration: Duration(seconds: duration),
     backgroundColor: primaryDark,
@@ -23,7 +20,7 @@ SnackBar createSnackBar({
       color: primaryDark,
       child: Row(
         children: <Widget>[
-          icon,
+          currentIcon,
           const SizedBox(width: 10,),
           Expanded(
             child: Text(

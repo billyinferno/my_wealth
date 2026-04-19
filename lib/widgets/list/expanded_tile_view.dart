@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class ExpandedTileView extends StatelessWidget {
   final bool? showedLot;
@@ -15,7 +15,7 @@ class ExpandedTileView extends StatelessWidget {
   final bool showPriceDecimal;
   final bool fca;
   final bool warning;
-  final IconData warningIcon;
+  final IconData? warningIcon;
   final Color warningColor; 
   const ExpandedTileView({
     super.key,
@@ -31,7 +31,7 @@ class ExpandedTileView extends StatelessWidget {
     required this.showPriceDecimal,
     this.fca = false,
     this.warning = false,
-    this.warningIcon = Ionicons.warning,
+    this.warningIcon,
     this.warningColor = secondaryColor,
   });
 
@@ -42,6 +42,7 @@ class ExpandedTileView extends StatelessWidget {
       riskFactor: risk
     );
     final DateTime checkDate = (watchlist.watchlistCompanyLastUpdate ?? DateTime.now());
+    final IconData currentWarningIcon = (warningIcon ?? MyIonicons(MyIoniconsData.warning).data);
     
     // initialize the value
     bool isShowedLots = (showedLot ?? false);
@@ -111,7 +112,7 @@ class ExpandedTileView extends StatelessWidget {
           realisedGain: computeResult.totalRealisedGain,
           fca: fca,
           warning: warning,
-          warningIcon: warningIcon,
+          warningIcon: currentWarningIcon,
           warningColor: warningColor,
           showDecimal: showPriceDecimal,
           visibility: isVisible,

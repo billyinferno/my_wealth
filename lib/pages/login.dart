@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
@@ -138,7 +138,7 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Icon(
-                  Ionicons.rocket_outline,
+                  MyIonicons(MyIoniconsData.rocket_outline).data,
                   size: 10,
                   color: color,
                 ),
@@ -243,7 +243,7 @@ class LoginPageState extends State<LoginPage> {
                             color: textPrimary.withValues(alpha: 0.3),
                           ),
                           prefixIcon: Icon(
-                            Ionicons.person,
+                            MyIonicons(MyIoniconsData.person_outline).data,
                             color: (_usernameFocus.hasFocus ? secondaryColor : textPrimary),
                           ),
                           enabledBorder: const UnderlineInputBorder(
@@ -295,7 +295,7 @@ class LoginPageState extends State<LoginPage> {
                             color: textPrimary.withValues(alpha: 0.3),
                           ),
                           prefixIcon: Icon(
-                            Ionicons.key,
+                            MyIonicons(MyIoniconsData.key_outline).data,
                             color: (_passwordFocus.hasFocus ? secondaryColor : textPrimary),
                           ),
                           enabledBorder: const UnderlineInputBorder(
@@ -317,7 +317,7 @@ class LoginPageState extends State<LoginPage> {
                               });
                             }),
                             child: Icon(
-                              (_isObscure ? Ionicons.eye : Ionicons.eye_off),
+                              (_isObscure ? MyIonicons(MyIoniconsData.eye).data : MyIonicons(MyIoniconsData.eye_off).data),
                               size: 20,
                               color: textPrimary,
                             ),
@@ -330,7 +330,7 @@ class LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           TransparentButton(
-                            icon: Ionicons.key,
+                            icon: MyIonicons(MyIoniconsData.key_outline).data,
                             text: "LOGIN",
                             textSize: 15,
                             color: secondaryDark,

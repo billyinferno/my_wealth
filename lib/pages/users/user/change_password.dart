@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({ super.key });
@@ -36,8 +36,8 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
           )
         ),
         leading: IconButton(
-          icon: const Icon(
-            Ionicons.arrow_back
+          icon: Icon(
+            MyIonicons(MyIoniconsData.arrow_back).data
           ),
           onPressed: (() {
             Navigator.pop(context);
@@ -76,7 +76,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                     text: "Cancel",
                     color: primaryDark,
                     borderColor: primaryLight,
-                    icon: Ionicons.close,
+                    icon: MyIonicons(MyIoniconsData.close).data,
                     onTap: (() {
                       // return back to the previous screen
                       Navigator.pop(context);
@@ -87,7 +87,7 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                     text: "Change",
                     color: secondaryDark,
                     borderColor: secondaryLight,
-                    icon: Ionicons.lock_open,
+                    icon: MyIonicons(MyIoniconsData.lock_open).data,
                     onTap: (() async {
                       if(_validateForm()) {
                         await _changePassword().then((resp) {
@@ -98,8 +98,8 @@ class ChangePasswordPageState extends State<ChangePasswordPage> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 createSnackBar(
                                   message: "Password Change Successfully",
-                                  icon: const Icon(
-                                    Ionicons.checkmark,
+                                  icon: Icon(
+                                    MyIonicons(MyIoniconsData.checkmark).data,
                                     color: Colors.green,
                                   ),
                                   duration: 3,

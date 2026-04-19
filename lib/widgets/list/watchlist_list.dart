@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
 class WatchlistList extends StatelessWidget {
   final String name;
@@ -10,7 +10,7 @@ class WatchlistList extends StatelessWidget {
   final bool canAdd;
   final bool fca;
   final bool warning;
-  final IconData warningIcon;
+  final IconData? warningIcon;
   final Color warningColor;
   final VoidCallback onPress;
   const WatchlistList({
@@ -22,13 +22,15 @@ class WatchlistList extends StatelessWidget {
     required this.canAdd,
     required this.fca,
     this.warning = false,
-    this.warningIcon = Ionicons.warning,
+    this.warningIcon,
     this.warningColor = secondaryColor,
     required this.onPress
   });
 
   @override
   Widget build(BuildContext context) {
+    final IconData currentWarningIcon = (warningIcon ?? MyIonicons(MyIoniconsData.warning).data);
+
     return IntrinsicHeight(
       child: Container(
         decoration: const BoxDecoration(
@@ -69,7 +71,7 @@ class WatchlistList extends StatelessWidget {
                                 child: Container(
                                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                                   child: Icon(
-                                    warningIcon,
+                                    currentWarningIcon,
                                     color: warningColor,
                                     size: 15,
                                   ),
@@ -79,8 +81,8 @@ class WatchlistList extends StatelessWidget {
                                 visible: fca,
                                 child: Container(
                                   padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                  child: const Icon(
-                                    Ionicons.warning,
+                                  child: Icon(
+                                    MyIonicons(MyIoniconsData.warning).data,
                                     color: secondaryColor,
                                     size: 15,
                                   ),
@@ -102,8 +104,8 @@ class WatchlistList extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              const Icon(
-                                Ionicons.logo_usd,
+                              Icon(
+                                MyIonicons(MyIoniconsData.logo_usd).data,
                                 size: 12,
                                 color: primaryLight,
                               ),
@@ -117,8 +119,8 @@ class WatchlistList extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 10,),
-                              const Icon(
-                                Ionicons.time,
+                              Icon(
+                                MyIonicons(MyIoniconsData.time).data,
                                 size: 12,
                                 color: primaryLight,
                               ),
@@ -155,8 +157,8 @@ class WatchlistList extends StatelessWidget {
       child: Container(
         color: primaryColor,
         width: 25,
-        child: const Icon(
-          Ionicons.add_circle,
+        child: Icon(
+          MyIonicons(MyIoniconsData.add_circle).data,
           color: accentColor,
         ),
       ),
@@ -167,8 +169,8 @@ class WatchlistList extends StatelessWidget {
     return Container(
       color: primaryColor,
       width: 25,
-      child: const Icon(
-        Ionicons.checkmark,
+      child: Icon(
+        MyIonicons(MyIoniconsData.checkmark).data,
         color: Colors.green,
       ),
     );

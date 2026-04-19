@@ -11,6 +11,7 @@ class PortofolioPage extends StatefulWidget {
 }
 
 class _PortofolioPageState extends State<PortofolioPage> {
+  final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final ScrollController _scrollController = ScrollController();
 
   late UserLoginInfoModel? _userInfo;
@@ -98,93 +99,111 @@ class _PortofolioPageState extends State<PortofolioPage> {
             ),
             const SizedBox(height: 20,),
             Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    ProductListItem(
-                      bgColor: Colors.green,
-                      title: "Reksadana",
-                      value: _watchlistAll.totalValueReksadana,
-                      cost: _watchlistAll.totalCostReksadana,
-                      total: _watchlistAll.totalValue,
-                      realised: _watchlistAll.totalRealisedReksadana,
-                      dayGain: _watchlistAll.totalDayGainReksadana,
-                      onTap: (() {
-                        PortofolioListArgs args = PortofolioListArgs(
-                          title: "Reksadana",
-                          value: _watchlistAll.totalValueReksadana,
-                          cost: _watchlistAll.totalCostReksadana,
-                          realised: _watchlistAll.totalRealisedReksadana,
-                          unrealised: (_watchlistAll.totalValueReksadana - _watchlistAll.totalCostReksadana),
-                          type: "reksadana",
-                          showSort: true,
-                        );
-                        Navigator.pushNamed(context, '/portofolio/list', arguments: args);
-                      })
-                    ),
-                    ProductListItem(
-                      bgColor: Colors.pink,
-                      title: "Stock",
-                      value: _watchlistAll.totalValueSaham,
-                      cost: _watchlistAll.totalCostSaham,
-                      total: _watchlistAll.totalValue,
-                      realised: _watchlistAll.totalRealisedSaham,
-                      dayGain: _watchlistAll.totalDayGainSaham,
-                      onTap: (() {
-                        PortofolioListArgs args = PortofolioListArgs(
-                          title: "Stock",
-                          value: _watchlistAll.totalValueSaham,
-                          cost: _watchlistAll.totalCostSaham,
-                          realised: _watchlistAll.totalRealisedSaham,
-                          unrealised: (_watchlistAll.totalValueSaham - _watchlistAll.totalCostSaham),
-                          type: "saham"
-                        );
-                        Navigator.pushNamed(context, '/portofolio/list', arguments: args);
-                      })
-                    ),
-                    ProductListItem(
-                      bgColor: Colors.purple,
-                      title: "Crypto",
-                      value: _watchlistAll.totalValueCrypto,
-                      cost: _watchlistAll.totalCostCrypto,
-                      total: _watchlistAll.totalValue,
-                      realised: _watchlistAll.totalRealisedCrypto,
-                      dayGain: _watchlistAll.totalDayGainCrypto,
-                      onTap: (() {
-                        // check whether we can navigate to detail page, or just do nothing
-                        if (_watchlistCrypto.isNotEmpty) {
-                          // got product means we can display the details here 
+              child: RefreshIndicator(
+                onRefresh: (() async {
+                  await _refreshWatchlist().onError((error, stackTrace) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        createSnackBar(
+                          message: error.toString(),
+                        ),
+                      );
+                    }
+                  },).whenComplete(() {            
+                    // once finished rebuild widget
+                    setState(() {
+                      // just rebuild
+                    });
+                  },);
+                }),
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      ProductListItem(
+                        bgColor: Colors.green,
+                        title: "Reksadana",
+                        value: _watchlistAll.totalValueReksadana,
+                        cost: _watchlistAll.totalCostReksadana,
+                        total: _watchlistAll.totalValue,
+                        realised: _watchlistAll.totalRealisedReksadana,
+                        dayGain: _watchlistAll.totalDayGainReksadana,
+                        onTap: (() {
                           PortofolioListArgs args = PortofolioListArgs(
-                            title: 'Crypto',
-                            value: _watchlistAll.totalValueCrypto,
-                            cost: _watchlistAll.totalCostCrypto,
-                            realised: _watchlistAll.totalRealisedCrypto,
-                            unrealised: (_watchlistAll.totalValueCrypto - _watchlistAll.totalCostCrypto),
-                            type: 'crypto',
-                            subType: '-1'
+                            title: "Reksadana",
+                            value: _watchlistAll.totalValueReksadana,
+                            cost: _watchlistAll.totalCostReksadana,
+                            realised: _watchlistAll.totalRealisedReksadana,
+                            unrealised: (_watchlistAll.totalValueReksadana - _watchlistAll.totalCostReksadana),
+                            type: "reksadana",
+                            showSort: true,
                           );
-        
-                          Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
-                        }
-                      })
-                    ),
-                    ProductListItem(
-                      bgColor: Colors.amber,
-                      title: "Gold",
-                      value: _watchlistAll.totalValueGold,
-                      cost: _watchlistAll.totalCostGold,
-                      total: _watchlistAll.totalValue,
-                      realised: _watchlistAll.totalRealisedGold,
-                      dayGain: _watchlistAll.totalDayGainGold,
-                      onTap: (() {
-                        // do nothing, we just want to showed the chevron icon here
-                      })
-                    ),
-                  ],
+                          Navigator.pushNamed(context, '/portofolio/list', arguments: args);
+                        })
+                      ),
+                      ProductListItem(
+                        bgColor: Colors.pink,
+                        title: "Stock",
+                        value: _watchlistAll.totalValueSaham,
+                        cost: _watchlistAll.totalCostSaham,
+                        total: _watchlistAll.totalValue,
+                        realised: _watchlistAll.totalRealisedSaham,
+                        dayGain: _watchlistAll.totalDayGainSaham,
+                        onTap: (() {
+                          PortofolioListArgs args = PortofolioListArgs(
+                            title: "Stock",
+                            value: _watchlistAll.totalValueSaham,
+                            cost: _watchlistAll.totalCostSaham,
+                            realised: _watchlistAll.totalRealisedSaham,
+                            unrealised: (_watchlistAll.totalValueSaham - _watchlistAll.totalCostSaham),
+                            type: "saham"
+                          );
+                          Navigator.pushNamed(context, '/portofolio/list', arguments: args);
+                        })
+                      ),
+                      ProductListItem(
+                        bgColor: Colors.purple,
+                        title: "Crypto",
+                        value: _watchlistAll.totalValueCrypto,
+                        cost: _watchlistAll.totalCostCrypto,
+                        total: _watchlistAll.totalValue,
+                        realised: _watchlistAll.totalRealisedCrypto,
+                        dayGain: _watchlistAll.totalDayGainCrypto,
+                        onTap: (() {
+                          // check whether we can navigate to detail page, or just do nothing
+                          if (_watchlistCrypto.isNotEmpty) {
+                            // got product means we can display the details here 
+                            PortofolioListArgs args = PortofolioListArgs(
+                              title: 'Crypto',
+                              value: _watchlistAll.totalValueCrypto,
+                              cost: _watchlistAll.totalCostCrypto,
+                              realised: _watchlistAll.totalRealisedCrypto,
+                              unrealised: (_watchlistAll.totalValueCrypto - _watchlistAll.totalCostCrypto),
+                              type: 'crypto',
+                              subType: '-1'
+                            );
+                          
+                            Navigator.pushNamed(context, '/portofolio/list/detail', arguments: args);
+                          }
+                        })
+                      ),
+                      ProductListItem(
+                        bgColor: Colors.amber,
+                        title: "Gold",
+                        value: _watchlistAll.totalValueGold,
+                        cost: _watchlistAll.totalCostGold,
+                        total: _watchlistAll.totalValue,
+                        realised: _watchlistAll.totalRealisedGold,
+                        dayGain: _watchlistAll.totalDayGainGold,
+                        onTap: (() {
+                          // do nothing, we just want to showed the chevron icon here
+                        })
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -483,5 +502,82 @@ class _PortofolioPageState extends State<PortofolioPage> {
       ),
       overflow: overflow,
     );
+  }
+
+  Future<void> _refreshWatchlist() async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the watchlist data
+    await Future.wait([
+      _watchlistAPI.getWatchlist(type: "reksadana").then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "reksadana",
+          watchlistData: resp
+        );
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "reksadana",
+          watchlistData: resp
+        );
+        Log.success(message: "🔃 Refresh watchlist reksadana");
+      }),
+
+      _watchlistAPI.getWatchlist(type: "saham").then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "saham",
+          watchlistData: resp
+        );
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "saham",
+          watchlistData: resp
+        );
+        Log.success(message: "🔃 Refresh watchlist saham");
+      }),
+
+       _watchlistAPI.getWatchlist(type: "crypto").then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "crypto",
+          watchlistData: resp
+        );
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "crypto",
+          watchlistData: resp
+        );
+        Log.success(message: "🔃 Refresh watchlist crypto");
+      }),
+
+      _watchlistAPI.getWatchlist(type: "gold").then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlist(
+          type: "gold",
+          watchlistData: resp
+        );
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+          type: "gold",
+          watchlistData: resp
+        );
+        Log.success(message: "🔃 Refresh watchlist gold");
+      }),
+
+      _watchlistAPI.getWatchlistHistory().then((resp) async {
+        // update the provider and shared preferences
+        await WatchlistSharedPreferences.setWatchlistHistory(watchlistData: resp);
+        if (!mounted) return;
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(watchlistData: resp);
+        Log.success(message: "🔃 Refresh watchlist history");
+      }),
+    ]).onError((error, stackTrace) {
+      throw Exception("Error when refresh watchlist");
+    });
+
+    // remove loading screen
+    LoadingScreen.instance().hide();
   }
 }

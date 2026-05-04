@@ -224,7 +224,7 @@ class WatchlistDetailBuyPageState extends State<WatchlistDetailBuyPage> {
         if (mounted) {
           Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
             type: _type,
-            watchlistData: newWatchList
+            data: newWatchList
           );
         }
       }).whenComplete(() {

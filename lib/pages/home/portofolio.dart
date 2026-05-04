@@ -62,10 +62,10 @@ class _PortofolioPageState extends State<PortofolioPage> {
           return _invisiblePage();
         }
 
-        _watchlistReksadana = (watchlistProvider.watchlistReksadana ?? []);
-        _watchlistSaham = (watchlistProvider.watchlistSaham ?? []);
-        _watchlistCrypto = (watchlistProvider.watchlistCrypto ?? []);
-        _watchlistGold = (watchlistProvider.watchlistGold ?? []);
+        _watchlistReksadana = (watchlistProvider.watchlistData!['reksadana'] ?? []);
+        _watchlistSaham = (watchlistProvider.watchlistData!['saham'] ?? []);
+        _watchlistCrypto = (watchlistProvider.watchlistData!['crypto'] ?? []);
+        _watchlistGold = (watchlistProvider.watchlistData!['gold'] ?? []);
 
         // compute all the watchlist first
         _watchlistAll = computeWatchlistAll(
@@ -517,7 +517,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "reksadana",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist reksadana");
       }),
@@ -531,7 +531,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "saham",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist saham");
       }),
@@ -545,7 +545,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "crypto",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist crypto");
       }),
@@ -559,7 +559,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "gold",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist gold");
       }),
@@ -568,7 +568,7 @@ class _PortofolioPageState extends State<PortofolioPage> {
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlistHistory(watchlistData: resp);
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(watchlistData: resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(data: resp);
         Log.success(message: "🔃 Refresh watchlist history");
       }),
     ]).onError((error, stackTrace) {

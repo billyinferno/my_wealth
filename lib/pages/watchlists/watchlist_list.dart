@@ -4,6 +4,26 @@ import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
+class WatchlistListData {
+  final int id;
+  final double share;
+  late double shareLeft;
+  late double price;
+  final DateTime date;
+  late bool status;
+  late double pl;
+  late double plPercentage;
+
+  WatchlistListData({
+      required this.id,
+      required this.share,
+      required this.shareLeft,
+      required this.price,
+      required this.date,
+      required this.status,
+  });
+}
+
 class WatchlistListPage extends StatefulWidget {
   final Object? watchlistArgs;
   const WatchlistListPage({ super.key, required this.watchlistArgs });
@@ -19,6 +39,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   late WatchlistListArgs _watchlistArgs;
   late String _type;
   late WatchlistListModel _watchlist;
+  late List<WatchlistListData> _watchlistDetailData;
   late UserLoginInfoModel? _userInfo;
   late CompanyDetailArgs? args;
 
@@ -42,6 +63,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     _watchlistArgs = widget.watchlistArgs as WatchlistListArgs;
     _type = _watchlistArgs.type;
     _watchlist = _watchlistArgs.watchlist;
+    
+    // generate the watchlist detail data
+    _watchlistDetailData = [];
+    _generateWatchlistData();
+
     _userInfo = UserSharedPreferences.getUserInfo();
   }
 
@@ -68,9 +94,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
           actions: <Widget>[
             IconButton(
               onPressed: (() {
-                if (args != null) {
-                  Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
-                }
+                Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
               }),
               icon: Icon(
                 MyIonicons(MyIoniconsData.business_outline).data
@@ -99,62 +123,18 @@ class WatchlistListPageState extends State<WatchlistListPage> {
             builder: ((context, watchlistProvider, child) {
               // get the actual data of this watchlist from provider.
               // so when we refresh the provider, the watchlist will be updated also.
-              if (_type == "reksadana") {
-                for(WatchlistListModel watch in watchlistProvider.watchlistReksadana!) {
-                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                    _watchlist = watch;
-                    args = CompanyDetailArgs(
-                      companyId: _watchlist.watchlistCompanyId,
-                      companyName: _watchlist.watchlistCompanyName,
-                      companyCode: _watchlist.watchlistCompanySymbol!,
-                      companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
-                      favouritesId: _watchlist.watchlistFavouriteId,
-                      type: _type
-                    );
-                    break;
-                  }
-                }
-              }
-              else if (_type == "saham") {
-                for(WatchlistListModel watch in watchlistProvider.watchlistSaham!) {
-                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                    _watchlist = watch;
-                    args = CompanyDetailArgs(
-                      companyId: _watchlist.watchlistCompanyId,
-                      companyName: _watchlist.watchlistCompanyName,
-                      companyCode: _watchlist.watchlistCompanySymbol!,
-                      companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
-                      favouritesId: _watchlist.watchlistFavouriteId,
-                      type: _type
-                    );
-                    break;
-                  }
-                }
-              }
-              else if (_type == "crypto") {
-                for(WatchlistListModel watch in watchlistProvider.watchlistCrypto!) {
-                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                    _watchlist = watch;
-                    args = CompanyDetailArgs(
-                      companyId: _watchlist.watchlistCompanyId,
-                      companyName: _watchlist.watchlistCompanyName,
-                      companyCode: _watchlist.watchlistCompanySymbol!,
-                      companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
-                      favouritesId: _watchlist.watchlistFavouriteId,
-                      type: _type
-                    );
-                    break;
-                  }
-                }
-              }
-              else if (_type == "gold") {
-                for(WatchlistListModel watch in watchlistProvider.watchlistGold!) {
-                  if(watch.watchlistCompanyId == _watchlist.watchlistCompanyId) {
-                    _watchlist = watch;
-                    break;
-                  }
-                }
-              }
+              _watchlist = watchlistProvider.watchlistData![_type]!.firstWhere((element) => element.watchlistCompanyId == _watchlist.watchlistCompanyId);
+              _generateWatchlistData();
+
+              // create the argument to get company detail
+              args = CompanyDetailArgs(
+                companyId: _watchlist.watchlistCompanyId,
+                companyName: _watchlist.watchlistCompanyName,
+                companyCode: _watchlist.watchlistCompanySymbol!,
+                companyFavourite: (_watchlist.watchlistFavouriteId > 0 ? true : false),
+                favouritesId: _watchlist.watchlistFavouriteId,
+                type: _type
+              );
               
               // compute all the necessary info for summary
               _compute();
@@ -514,52 +494,50 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                     child: ListView.builder(
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: _watchlist.watchlistDetail.length,
+                      itemCount: _watchlistDetailData.length,
                       itemBuilder: (context, index) {
+                        bool partiallyRealized = ((_watchlistDetailData[index].shareLeft > 0) && (_watchlistDetailData[index].share != _watchlistDetailData[index].shareLeft));
+
                         Color rColor = riskColor(
-                          value: (_watchlist.watchlistDetail[index].watchlistDetailShare * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlist.watchlistDetail[index].watchlistDetailShare)),
-                          cost: (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice),
+                          value: (_watchlistDetailData[index].share * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlistDetailData[index].share)),
+                          cost: (_watchlistDetailData[index].share * _watchlistDetailData[index].price),
                           riskFactor: _userInfo!.risk
                         );
-
-                        double? currentPL;
-                        double? currentPLPercentage;
                         Color currentPLColor = Colors.white;
+                        Color currentTextColor = textPrimary;
+
+                        double currentTotalBuySell = _watchlistDetailData[index].shareLeft.abs() * _watchlistDetailData[index].price;
+
+                        double currentShare = _watchlistDetailData[index].share;
           
                         // check if the watchlist item date is more than company last update
                         // if so, then just make it black instead of calculate the risk color
                         // since we don't have the information for the date.
-                        if (!_watchlist.watchlistDetail[index].watchlistDetailDate.toLocal().isSameOrBefore(
+                        if (!_watchlistDetailData[index].date.toLocal().isSameOrBefore(
                           date: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
                         )) {
                           rColor = Colors.black;
                         }
+                        else if (_watchlistDetailData[index].share > 0 && _watchlistDetailData[index].status == false) {
+                          // This item has been realized, so we don't calculate risk
+                          rColor = primaryLight;
+                          currentPLColor = primaryLight.lighten(amount: 0.2);
+                          currentTextColor = primaryLight.lighten(amount: 0.2);
+                        }
                         else {
-                          currentPL = (_watchlist.watchlistCompanyNetAssetValue ?? 0) - _watchlist.watchlistDetail[index].watchlistDetailPrice;
-                          currentPL = currentPL * _watchlist.watchlistDetail[index].watchlistDetailShare;
-
-                          // check whether this is buy or what?
-                          if (_watchlist.watchlistDetail[index].watchlistDetailShare < 0) {
-                            // this is selling
-                            currentPLColor = extendedLight;
-
-                            // so get the sell value instead as this is realized profit already
-                            currentPL = (_watchlist.watchlistDetail[index].watchlistDetailShare * _watchlist.watchlistDetail[index].watchlistDetailPrice).makePositive();
+                          // check if currentPL is + or -
+                          if (_watchlistDetailData[index].pl > 0) {
+                            currentPLColor = green50;
                           }
-                          else {
-                            if ((_watchlist.watchlistCompanyNetAssetValue ?? 0) > 0) {
-                              currentPLPercentage = (_watchlist.watchlistCompanyNetAssetValue ?? 0) - _watchlist.watchlistDetail[index].watchlistDetailPrice;
-                              currentPLPercentage = currentPLPercentage / (_watchlist.watchlistCompanyNetAssetValue ?? 0);
-                            }
-
-                            // check if currentPL is + or -
-                            if (currentPL > 0) {
-                              currentPLColor = green50;
-                            }
-                            else if (currentPL < 0) {
-                              currentPLColor = red40;
-                            }
+                          else if (_watchlistDetailData[index].pl < 0) {
+                            currentPLColor = red40;
                           }
+                        }
+
+                        // check if this is partialy realized
+                        if (partiallyRealized) {
+                          currentTextColor = accentColor;
+                          currentShare = _watchlistDetailData[index].shareLeft;
                         }
 
                         WatchlistDetailEditArgs editArg = WatchlistDetailEditArgs(
@@ -587,17 +565,17 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                 onTap: () async {
                                   await ShowMyDialog(
                                     title: "Delete Detail",
-                                    text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.formatLocal(_watchlist.watchlistDetail[index].watchlistDetailDate)}\nShares: ${formatDecimal(_watchlist.watchlistDetail[index].watchlistDetailShare)}\nPrice: ${formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice)}",
+                                    text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.formatLocal(_watchlistDetailData[index].date)}\nShares: ${formatDecimal(currentShare)}\nPrice: ${formatCurrency(_watchlistDetailData[index].price)}",
                                     confirmLabel: "Delete",
                                     cancelLabel: "Cancel"
                                   ).show(context).then((resp) async {
                                     if(resp!) {
-                                      await _deleteDetail(_watchlist.watchlistDetail[index].watchlistDetailId).then((resp) {
+                                      await _deleteDetail(_watchlistDetailData[index].id).then((resp) {
                                         if(resp) {
-                                          Log.success(message: "🧹 Delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
+                                          Log.success(message: "🧹 Delete ${_watchlistDetailData[index].id}");
                                         }
                                         else {
-                                          Log.error(message: "🧹 Unable to delete ${_watchlist.watchlistDetail[index].watchlistDetailId}");
+                                          Log.error(message: "🧹 Unable to delete ${_watchlistDetailData[index].id}");
                                         }
                                       }).onError((error, stackTrace) {
                                         Log.error(
@@ -622,7 +600,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             child: IntrinsicHeight(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: _listColor(_watchlist.watchlistDetail[index].watchlistDetailShare),
+                                  color: _listColor(_watchlistDetailData[index].share),
                                   border: const Border(
                                     bottom: BorderSide(
                                       color: primaryLight,
@@ -636,7 +614,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
-                                      color: (_watchlist.watchlistDetail[index].watchlistDetailShare > 0 ? rColor : extendedDark),
+                                      color: (_watchlistDetailData[index].share > 0 ? rColor : extendedDark),
                                       width: 5,
                                     ),
                                     Expanded(
@@ -648,9 +626,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                           children: <Widget>[
                                             Expanded(
                                               child: Text(
-                                                Globals.dfddMMyyyy.formatLocal(_watchlist.watchlistDetail[index].watchlistDetailDate),
-                                                style: const TextStyle(
+                                                Globals.dfddMMyyyy.formatLocal(_watchlistDetailData[index].date),
+                                                style: TextStyle(
                                                   fontSize: 12,
+                                                  color: currentTextColor,
                                                 ),
                                               )
                                             ),
@@ -663,16 +642,17 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                                   Text(
                                                     formatCurrency(
                                                       _watchlistArgs.isLot ?
-                                                      _watchlist.watchlistDetail[index].watchlistDetailShare / 100 :
-                                                      _watchlist.watchlistDetail[index].watchlistDetailShare
+                                                      currentShare / 100 :
+                                                      currentShare
                                                     ),
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontSize: 11,
+                                                      color: currentTextColor,
                                                     ),
                                                     overflow: TextOverflow.ellipsis,
                                                   ),
                                                   Text(
-                                                    "${formatCurrencyWithNull(currentPL, checkThousand: true)} (${formatDecimalWithNull(currentPLPercentage, times: 100, decimal: 2)}%)",
+                                                    "${formatCurrencyWithNull(_watchlistDetailData[index].pl, checkThousand: true)} (${formatDecimalWithNull(_watchlistDetailData[index].plPercentage, times: 100, decimal: 2)}%)",
                                                     style: TextStyle(
                                                       fontSize: 10,
                                                       color: currentPLColor,
@@ -684,13 +664,28 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                                             ),
                                             const SizedBox(width: 10,),
                                             Expanded(
-                                              child: Text(
-                                                formatCurrency(_watchlist.watchlistDetail[index].watchlistDetailPrice),
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.right,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Text(
+                                                    formatCurrency(_watchlistDetailData[index].price),
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: currentTextColor,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.right,
+                                                  ),
+                                                  Text(
+                                                    formatCurrencyWithNull(currentTotalBuySell, checkThousand: true),
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: currentTextColor,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ],
                                               )
                                             ),
                                           ],
@@ -777,7 +772,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         if (mounted) {
           Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
             type: _type,
-            watchlistData: newWatchlist
+            data: newWatchlist
           );
         }
       }
@@ -824,7 +819,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
           // update provider so the other page will refresh
           Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
             type: _type,
-            watchlistData: newWatchlist
+            data: newWatchlist
           );
           
           // navigate to the previous page
@@ -861,5 +856,102 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     _priceDiff = computeResult.priceDiff;
     _riskColor = computeResult.riskColor;
     _totalValue = computeResult.totalValue;
+  }
+
+  void _generateWatchlistData() {
+    // clear the watchlist detail data
+    _watchlistDetailData.clear();
+
+    // loop thru the watchlist detail and put into watchlist detail data
+    _watchlistDetailData = _watchlist.watchlistDetail.map((detail) {
+      return WatchlistListData(
+        id: detail.watchlistDetailId,
+        share: detail.watchlistDetailShare,
+        shareLeft: detail.watchlistDetailShare,
+        price: detail.watchlistDetailPrice,
+        date: detail.watchlistDetailDate,
+        status: (detail.watchlistDetailShare > 0 ? true : false),
+      );
+    }).toList();
+
+    // sort the watchlist detail data by date in ascending
+    _watchlistDetailData.sort((a, b) => a.date.compareTo(b.date));
+
+    // calculate the PL for each watchlist detail data by loop and calculate
+    double totalBuy = 0;
+    double totalShares = 0;
+    double currentPrice;
+    double buyPrice;
+    double avgPrice;
+    double sellShareLeft;
+    double currentShareLeftPrice;
+    double buyShareLeftPrice;
+
+    // loop the watchlist detail data
+    for (int i = 0; i < _watchlistDetailData.length; i++) {
+      // check if this is buy or sell
+      // this is indicated by the share whether the < 0 (sell), or > 0 (buy)
+      if (_watchlistDetailData[i].share > 0) {
+        // the current and buy price for this item
+        currentPrice = (_watchlist.watchlistCompanyNetAssetValue ?? 0) * _watchlistDetailData[i].share;
+        buyPrice = _watchlistDetailData[i].price * _watchlistDetailData[i].share; 
+
+        // add the total buy
+        totalBuy += buyPrice;
+      }
+      else {
+        // this is sell, for this we need to tell the realized gain loss for this sell.
+        // we can get the average price by divide the total shares and total buy
+        avgPrice = totalBuy / totalShares;
+
+        // then calculate the total sell
+        buyPrice = _watchlistDetailData[i].share.abs() * avgPrice;
+        currentPrice = _watchlistDetailData[i].share.abs() * _watchlistDetailData[i].price;
+
+        // since we have sell, we need to remove the status of the previous buy to false
+        // so we don't need to calculate or showed the PL on the watchlist again
+        // as this will reflect poortly on the way it represent the unrealized gain
+        sellShareLeft = _watchlistDetailData[i].share.abs();
+        for (int j = 0; j < i && sellShareLeft > 0; j++) {
+          if (_watchlistDetailData[j].share > 0 && _watchlistDetailData[j].status) {
+            // check if current share is less than sellShareLeft
+            if (sellShareLeft >= _watchlistDetailData[j].shareLeft) {
+              // this means we can remove all the share left for this buy
+              sellShareLeft -= _watchlistDetailData[j].shareLeft;
+              _watchlistDetailData[j].shareLeft = 0;
+              _watchlistDetailData[j].status = false;
+
+              // recalculate PL based on the average price instead or current price
+              _watchlistDetailData[j].pl = 0;
+              _watchlistDetailData[j].plPercentage = 0;
+            }
+            else {
+              // this means we can only remove part of the share left for this buy
+              _watchlistDetailData[j].shareLeft -= sellShareLeft;
+              sellShareLeft = 0;
+
+              // recalculate the PL based on the remaining share left
+              currentShareLeftPrice = _watchlistDetailData[j].shareLeft * (_watchlist.watchlistCompanyNetAssetValue ?? 0);
+              buyShareLeftPrice = _watchlistDetailData[j].shareLeft * _watchlistDetailData[j].price;
+              _watchlistDetailData[j].pl = currentShareLeftPrice - buyShareLeftPrice;
+              _watchlistDetailData[j].plPercentage = (currentShareLeftPrice - buyShareLeftPrice) / buyShareLeftPrice;
+
+              // change the price to average price
+              _watchlistDetailData[j].price = avgPrice;
+            }
+          }
+        }
+      }
+
+      // calculate the PL for this item
+      _watchlistDetailData[i].pl = currentPrice - buyPrice;
+      _watchlistDetailData[i].plPercentage = (currentPrice - buyPrice) / buyPrice;
+
+      // add the total shares
+      totalShares += _watchlistDetailData[i].share;
+    }
+
+    // reverse the watchlist detail data so the latest will be on top
+    _watchlistDetailData = _watchlistDetailData.reversed.toList();
   }
 }

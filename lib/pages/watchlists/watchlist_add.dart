@@ -110,7 +110,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
                 if (!mounted) return;
                 Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
                   type: _args.type,
-                  watchlistData: resp
+                  data: resp
                 );
                 
                 Log.success(message: "🔃 Refresh watchlist ${_args.type} after add");

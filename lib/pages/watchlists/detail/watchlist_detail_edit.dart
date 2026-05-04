@@ -301,7 +301,7 @@ class WatchlistDetailEditPageState extends State<WatchlistDetailEditPage> {
           if (mounted) {
             Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
               type: _type,
-              watchlistData: newWatchlist
+              data: newWatchlist
             );
           }
         }

@@ -253,7 +253,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
           if (!mounted) return;
           Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
             type: _type,
-            watchlistData: newWatchList
+            data: newWatchList
           );
         }).whenComplete(() {
           // remove loading screen

@@ -126,11 +126,11 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         }
 
         // get all the watchlist information
-        _watchlistReksadana = watchlistProvider.watchlistReksadana;
-        _watchlistSaham = watchlistProvider.watchlistSaham;
-        _watchlistCrypto = watchlistProvider.watchlistCrypto;
-        _watchlistGold = watchlistProvider.watchlistGold;
-        _watchlistHistory = watchlistProvider.watchlistHistory;
+        _watchlistReksadana = (watchlistProvider.watchlistData!['reksadana'] ?? []);
+        _watchlistSaham = (watchlistProvider.watchlistData!['saham'] ?? []);
+        _watchlistCrypto = (watchlistProvider.watchlistData!['crypto'] ?? []);
+        _watchlistGold = (watchlistProvider.watchlistData!['gold'] ?? []);
+        _watchlistHistory = (watchlistProvider.watchlistHistory ?? []);
 
         // sort the watchlist
         _watchlistReksadana = _sortWatchlist(_watchlistReksadana!);
@@ -739,7 +739,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "reksadana",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist reksadana");
       }),
@@ -753,7 +753,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "saham",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist saham");
       }),
@@ -767,7 +767,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "crypto",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist crypto");
       }),
@@ -781,7 +781,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "gold",
-          watchlistData: resp
+          data: resp
         );
         Log.success(message: "🔃 Refresh watchlist gold");
       }),
@@ -790,7 +790,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         // update the provider and shared preferences
         await WatchlistSharedPreferences.setWatchlistHistory(watchlistData: resp);
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(watchlistData: resp);
+        Provider.of<WatchlistProvider>(context, listen: false).setWatchlistHistory(data: resp);
         Log.success(message: "🔃 Refresh watchlist history");
       }),
     ]).onError((error, stackTrace) {
@@ -894,7 +894,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: type,
-          watchlistData: newWatchlist
+          data: newWatchlist
         );
       }
     }).onError((error, stackTrace) {

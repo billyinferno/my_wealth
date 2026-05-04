@@ -2,33 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:my_wealth/_index.g.dart';
 
 class WatchlistProvider extends ChangeNotifier {
-  List<WatchlistListModel>? watchlistReksadana;
-  List<WatchlistListModel>? watchlistSaham;
-  List<WatchlistListModel>? watchlistCrypto;
-  List<WatchlistListModel>? watchlistGold;
+  Map<String, List<WatchlistListModel>>? watchlistData;
   List<WatchlistHistoryModel>? watchlistHistory;
 
   void setWatchlist({
     required String type,
-    required List<WatchlistListModel> watchlistData
+    required List<WatchlistListModel> data
   }) {
-    if(type == "reksadana") {
-      watchlistReksadana = watchlistData;
-    }
-    else if(type == "saham") {
-      watchlistSaham = watchlistData;
-    }
-    else if(type == "crypto") {
-      watchlistCrypto = watchlistData;
-    }
-    else if(type == "gold") {
-      watchlistGold = watchlistData;
-    }
+    // check if watchlist data is null
+    watchlistData ??= {};
+
+    // set the type of watchlist data with data
+    watchlistData![type] = data;
+
     notifyListeners();
   }
 
-  void setWatchlistHistory({required List<WatchlistHistoryModel> watchlistData}) {
-    watchlistHistory = watchlistData;
+  void setWatchlistHistory({required List<WatchlistHistoryModel> data}) {
+    watchlistHistory = data;
     notifyListeners();
   }
 }

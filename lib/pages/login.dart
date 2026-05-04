@@ -622,7 +622,7 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "reksadana",
-          watchlistData: resp
+          data: resp
         );
         
         Log.success(message: "7️⃣ Get user watchlist reksadana");
@@ -636,7 +636,7 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "saham",
-          watchlistData: resp
+          data: resp
         );
         
         Log.success(message: "8️⃣ Get user watchlist saham");
@@ -650,7 +650,7 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "crypto",
-          watchlistData: resp
+          data: resp
         );
         
         Log.success(message: "9️⃣ Get user watchlist crypto");
@@ -664,7 +664,7 @@ class LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
           type: "gold",
-          watchlistData: resp
+          data: resp
         );
         
         Log.success(message: "1️⃣0️⃣ Get user watchlist gold");
@@ -953,7 +953,7 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<WatchlistProvider>(
           context,
           listen: false
-        ).setWatchlistHistory(watchlistData: resp);
+        ).setWatchlistHistory(data: resp);
         
         Log.success(message: "🔟🔟🔟1️⃣ Get user watchlist history");
       }),

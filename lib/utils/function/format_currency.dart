@@ -103,6 +103,9 @@ String formatDecimalWithNull(
   if (value == null) {
     return "-";
   }
+  else if (value == double.infinity) {
+    return "∞";
+  }
   return formatDecimal(
     value,
     times: times,

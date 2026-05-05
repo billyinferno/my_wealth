@@ -12,7 +12,9 @@ class WatchlistListData {
   final DateTime date;
   late bool status;
   late double pl;
-  late double plPercentage;
+  late double? plPercentage;
+  late Color rColor;
+  late WatchlistDetailEditArgs editArgs;
 
   WatchlistListData({
       required this.id,
@@ -42,20 +44,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   late List<WatchlistListData> _watchlistDetailData;
   late UserLoginInfoModel? _userInfo;
   late CompanyDetailArgs? args;
-
-  int _totalBuy = 0;
-  int _totalSell = 0;
-  double _priceDiff = 0;
-  double _totalCost = 0;
-  double _totalUnrealisedGain = 0;
-  double _totalRealisedGain = 0;
-  double _totalValue = 0;
-  double _totalCurrentShares = 0;
-  double _totalSharesBuy = 0;
-  double _totalSharesSell = 0;
-  double _totalBuyAmount = 0;
-  double _totalSellAmount = 0;
-  Color _riskColor = Colors.green;
+  late WatchlistComputationResult _computeResult;
 
   @override
   void initState() {
@@ -64,11 +53,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     _type = _watchlistArgs.type;
     _watchlist = _watchlistArgs.watchlist;
     
+    _userInfo = UserSharedPreferences.getUserInfo();
+    
     // generate the watchlist detail data
     _watchlistDetailData = [];
     _generateWatchlistData();
-
-    _userInfo = UserSharedPreferences.getUserInfo();
   }
 
   @override
@@ -82,42 +71,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              MyIonicons(MyIoniconsData.arrow_back).data
-            ),
-            onPressed: (() {
-              Navigator.pop(context);
-            }),
-          ),
-          actions: <Widget>[
-            IconButton(
-              onPressed: (() {
-                Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
-              }),
-              icon: Icon(
-                MyIonicons(MyIoniconsData.business_outline).data
-              ),
-            ),
-            IconButton(
-              onPressed: (() {
-                Navigator.pushNamed(context, '/watchlist/performance', arguments: _watchlistArgs);
-              }),
-              icon: Icon(
-                MyIonicons(MyIoniconsData.pulse_outline).data
-              ),
-            ),
-          ],
-          title: const Center(
-            child: Text(
-              "Watchlist List",
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            ),
-          ),
-        ),
+        appBar: _buildAppBar(),
         body: MySafeArea(
           child: Consumer<WatchlistProvider>(
             builder: ((context, watchlistProvider, child) {
@@ -158,7 +112,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                             color: secondaryLight,
                             size: 10,
                           ),
-                          SizedBox(width: 5,),
+                          const SizedBox(width: 5,),
                           Text(
                             "This company is flagged with Full Call Auction",
                             style: TextStyle(
@@ -169,538 +123,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                       ),
                     ),
                   ),
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          color: _riskColor,
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              color: primaryDark,
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: primaryLight,
-                                  width: 1.0,
-                                  style: BorderStyle.solid,
-                                )
-                              )
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  _watchlist.watchlistCompanyName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            formatCurrency(_watchlist.watchlistCompanyNetAssetValue!),
-                                            style: const TextStyle(
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 5,),
-                                          Icon(
-                                            (_priceDiff > 0 ? MyIonicons(MyIoniconsData.caret_up).data : MyIonicons(MyIoniconsData.caret_down).data),
-                                            color: riskColor(
-                                              value: _watchlist.watchlistCompanyNetAssetValue!,
-                                              cost: _watchlist.watchlistCompanyPrevPrice!,
-                                              riskFactor: _userInfo!.risk
-                                            ),
-                                          ),
-                                          const SizedBox(width: 5,),
-                                          Container(
-                                            padding: const EdgeInsets.all(5),
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: riskColor(
-                                                    value: _watchlist.watchlistCompanyNetAssetValue!,
-                                                    cost: _watchlist.watchlistCompanyPrevPrice!,
-                                                    riskFactor: _userInfo!.risk
-                                                  ),
-                                                  width: 2.0,
-                                                  style: BorderStyle.solid,
-                                                ),
-                                              )
-                                            ),
-                                            child: Text(
-                                              formatCurrency(_priceDiff),
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2,),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          MyIonicons(MyIoniconsData.time_outline).data,
-                                          color: primaryLight,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 10,),
-                                        Text(
-                                          Globals.dfddMMyyyy.formatDateWithNull(
-                                            _watchlist.watchlistCompanyLastUpdate
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 5,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    WatchlistDetailSummaryBox(
-                                      title: "AVG PRICE",
-                                      text: (_totalCurrentShares > 0 ? formatCurrency(_totalCost / _totalCurrentShares) : "-"),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "COST",
-                                      text: formatCurrency(_totalCost)
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "VALUE",
-                                      text: formatCurrency(_totalValue)
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    WatchlistDetailSummaryBox(
-                                      title: "BUY TIMES",
-                                      text: "$_totalBuy"
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "BUY ${_watchlistArgs.shareName.toUpperCase()}",
-                                      text: formatDecimal(
-                                        (
-                                          _watchlistArgs.isLot ?
-                                          _totalSharesBuy / 100 :
-                                          _totalSharesBuy
-                                        ),
-                                        decimal: 2
-                                      )
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "BUY AMOUNT",
-                                      text: formatCurrency(_totalBuyAmount)
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    WatchlistDetailSummaryBox(
-                                      title: "SELL TIMES",
-                                      text: "$_totalSell"
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "SELL ${_watchlistArgs.shareName.toUpperCase()}",
-                                      text: formatDecimal(
-                                        (
-                                          _watchlistArgs.isLot ?
-                                          _totalSharesSell / 100 :
-                                          _totalSharesSell
-                                        ),
-                                        decimal: 2
-                                      )
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "SELL AMOUNT",
-                                      text: formatCurrency(_totalSellAmount)
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5,),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    WatchlistDetailSummaryBox(
-                                      title: "CURRENT",
-                                      text: formatDecimal(
-                                        _totalCurrentShares,
-                                        decimal: 2
-                                      )
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "UNREALISED",
-                                      text: formatCurrency(_totalUnrealisedGain)
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    WatchlistDetailSummaryBox(
-                                      title: "REALISED",
-                                      text: formatCurrency(_totalRealisedGain)
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        TransparentButton(
-                          text: "Buy",
-                          color: primaryDark,
-                          borderColor: primaryLight,
-                          icon: MyIonicons(MyIoniconsData.add).data,
-                          onTap: (() {
-                            Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: _watchlistArgs);
-                          })
-                        ),
-                        const SizedBox(width: 10,),
-                        TransparentButton(
-                          text: "Sell",
-                          color: primaryDark,
-                          borderColor: primaryLight,
-                          icon: MyIonicons(MyIoniconsData.remove).data,
-                          enabled: (_totalCurrentShares > 0),
-                          onTap: (() {
-                            WatchlistListArgs args = WatchlistListArgs(
-                              type: _type,
-                              watchlist: _watchlist,
-                              currentShare: _totalCurrentShares,
-                              shareName: _watchlistArgs.shareName,
-                              isLot: _watchlistArgs.isLot,
-                            );
-                            Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
-                          })
-                        ),
-                        const SizedBox(width: 10,),
-                        TransparentButton(
-                          text: "Delete",
-                          color: primaryDark,
-                          borderColor: primaryLight,
-                          icon: MyIonicons(MyIoniconsData.trash).data,
-                          onTap: (() async {
-                            await ShowMyDialog(
-                              title: "Delete Watchlist",
-                              text: "Are you sure to delete ${_watchlist.watchlistCompanyName}?",
-                              confirmLabel: "Delete",
-                              cancelLabel: "Cancel"
-                            ).show(context).then((resp) async {
-                              if(resp!) {
-                                // delete the watchlist, all the success and error
-                                // handling is moved to the function to ensure
-                                // the context is mounted when we perform the
-                                // delete on the watchlist.
-                                await _deleteWatchlist();
-                              }
-                            },);
-                          })
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: primaryDark,
-                      border: Border(
-                        bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Expanded(
-                          child: Text(
-                            "Date",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          child: Text(
-                            _watchlistArgs.shareName.toCapitalized(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                          )
-                        ),
-                        const SizedBox(width: 10,),
-                        const Expanded(
-                          child: Text(
-                            "Price",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                          )
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: _watchlistDetailData.length,
-                      itemBuilder: (context, index) {
-                        bool partiallyRealized = ((_watchlistDetailData[index].shareLeft > 0) && (_watchlistDetailData[index].share != _watchlistDetailData[index].shareLeft));
-
-                        Color rColor = riskColor(
-                          value: (_watchlistDetailData[index].share * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlistDetailData[index].share)),
-                          cost: (_watchlistDetailData[index].share * _watchlistDetailData[index].price),
-                          riskFactor: _userInfo!.risk
-                        );
-                        Color currentPLColor = Colors.white;
-                        Color currentTextColor = textPrimary;
-
-                        double currentTotalBuySell = _watchlistDetailData[index].shareLeft.abs() * _watchlistDetailData[index].price;
-
-                        double currentShare = _watchlistDetailData[index].share;
-          
-                        // check if the watchlist item date is more than company last update
-                        // if so, then just make it black instead of calculate the risk color
-                        // since we don't have the information for the date.
-                        if (!_watchlistDetailData[index].date.toLocal().isSameOrBefore(
-                          date: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
-                        )) {
-                          rColor = Colors.black;
-                        }
-                        else if (_watchlistDetailData[index].share > 0 && _watchlistDetailData[index].status == false) {
-                          // This item has been realized, so we don't calculate risk
-                          rColor = primaryLight;
-                          currentPLColor = primaryLight.lighten(amount: 0.2);
-                          currentTextColor = primaryLight.lighten(amount: 0.2);
-                        }
-                        else {
-                          // check if currentPL is + or -
-                          if (_watchlistDetailData[index].pl > 0) {
-                            currentPLColor = green50;
-                          }
-                          else if (_watchlistDetailData[index].pl < 0) {
-                            currentPLColor = red40;
-                          }
-                        }
-
-                        // check if this is partialy realized
-                        if (partiallyRealized) {
-                          currentTextColor = accentColor;
-                          currentShare = _watchlistDetailData[index].shareLeft;
-                        }
-
-                        WatchlistDetailEditArgs editArg = WatchlistDetailEditArgs(
-                          type: _type,
-                          watchlist: _watchlist,
-                          index: index,
-                          isLot: _watchlistArgs.isLot,
-                          shareName: _watchlistArgs.shareName,
-                        ); 
-              
-                        return Slidable(
-                          endActionPane: ActionPane(
-                            motion: const ScrollMotion(),
-                            children: <Widget>[
-                              SlideButton(
-                                icon: MyIonicons(MyIoniconsData.pencil).data,
-                                iconColor: accentColor,
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: editArg);
-                                },
-                              ),
-                              SlideButton(
-                                icon: MyIonicons(MyIoniconsData.trash).data,
-                                iconColor: secondaryColor,
-                                onTap: () async {
-                                  await ShowMyDialog(
-                                    title: "Delete Detail",
-                                    text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.formatLocal(_watchlistDetailData[index].date)}\nShares: ${formatDecimal(currentShare)}\nPrice: ${formatCurrency(_watchlistDetailData[index].price)}",
-                                    confirmLabel: "Delete",
-                                    cancelLabel: "Cancel"
-                                  ).show(context).then((resp) async {
-                                    if(resp!) {
-                                      await _deleteDetail(_watchlistDetailData[index].id).then((resp) {
-                                        if(resp) {
-                                          Log.success(message: "🧹 Delete ${_watchlistDetailData[index].id}");
-                                        }
-                                        else {
-                                          Log.error(message: "🧹 Unable to delete ${_watchlistDetailData[index].id}");
-                                        }
-                                      }).onError((error, stackTrace) {
-                                        Log.error(
-                                          message: 'Error deleting watchlist detail',
-                                          error: error,
-                                          stackTrace: stackTrace,
-                                        );
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
-                                        }
-                                      });
-                                    }
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          child: InkWell(
-                            onDoubleTap: (() {
-                              Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
-                            }),
-                            child: IntrinsicHeight(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _listColor(_watchlistDetailData[index].share),
-                                  border: const Border(
-                                    bottom: BorderSide(
-                                      color: primaryLight,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    )
-                                  ),
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Container(
-                                      color: (_watchlistDetailData[index].share > 0 ? rColor : extendedDark),
-                                      width: 5,
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: Text(
-                                                Globals.dfddMMyyyy.formatLocal(_watchlistDetailData[index].date),
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: currentTextColor,
-                                                ),
-                                              )
-                                            ),
-                                            const SizedBox(width: 10,),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.end,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Text(
-                                                    formatCurrency(
-                                                      _watchlistArgs.isLot ?
-                                                      currentShare / 100 :
-                                                      currentShare
-                                                    ),
-                                                    style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: currentTextColor,
-                                                    ),
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                  Text(
-                                                    "${formatCurrencyWithNull(_watchlistDetailData[index].pl, checkThousand: true)} (${formatDecimalWithNull(_watchlistDetailData[index].plPercentage, times: 100, decimal: 2)}%)",
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: currentPLColor,
-                                                    ),
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              )
-                                            ),
-                                            const SizedBox(width: 10,),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.end,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Text(
-                                                    formatCurrency(_watchlistDetailData[index].price),
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: currentTextColor,
-                                                    ),
-                                                    overflow: TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.right,
-                                                  ),
-                                                  Text(
-                                                    formatCurrencyWithNull(currentTotalBuySell, checkThousand: true),
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: currentTextColor,
-                                                    ),
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  _buildSummaryHeader(),
+                  _buildActionButton(),
+                  _buildListHeader(),
+                  _buildTransactionList(),
                 ],
               );
             }),
@@ -840,22 +266,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   }
 
   void _compute() {
-    WatchlistComputationResult computeResult = detailWatchlistComputation(watchlist: _watchlist, riskFactor: _userInfo!.risk);
-    
     // compute all necessary data for the summary, such as cost, gain
-    _totalCost = computeResult.totalCost;
-    _totalUnrealisedGain = computeResult.totalUnrealisedGain;
-    _totalRealisedGain = computeResult.totalRealisedGain;
-    _totalCurrentShares = computeResult.totalCurrentShares;
-    _totalSharesBuy = computeResult.totalSharesBuy;
-    _totalSharesSell = computeResult.totalSharesSell;
-    _totalBuy = computeResult.totalBuy;
-    _totalSell = computeResult.totalSell;
-    _totalBuyAmount = computeResult.totalBuyAmount;
-    _totalSellAmount = computeResult.totalSellAmount;
-    _priceDiff = computeResult.priceDiff;
-    _riskColor = computeResult.riskColor;
-    _totalValue = computeResult.totalValue;
+    _computeResult = detailWatchlistComputation(watchlist: _watchlist, riskFactor: _userInfo!.risk);
   }
 
   void _generateWatchlistData() {
@@ -889,6 +301,33 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
     // loop the watchlist detail data
     for (int i = 0; i < _watchlistDetailData.length; i++) {
+      // calculate the risk color for this item
+      Color rColor = riskColor(
+        value: (_watchlistDetailData[i].share * (_watchlist.watchlistCompanyNetAssetValue ?? _watchlistDetailData[i].share)),
+        cost: (_watchlistDetailData[i].share * _watchlistDetailData[i].price),
+        riskFactor: _userInfo!.risk
+      );
+      if (!_watchlistDetailData[i].date.toLocal().isSameOrBefore(
+        date: (_watchlist.watchlistCompanyLastUpdate ?? DateTime.now()).toLocal(),
+      )) {
+        rColor = Colors.black;
+      }
+      else if (_watchlistDetailData[i].share > 0 && _watchlistDetailData[i].status == false) {
+        // This item has been realized, so we don't calculate risk
+        rColor = primaryLight;
+      }
+      _watchlistDetailData[i].rColor = rColor;
+
+
+      // create the edit arguments for this item
+      _watchlistDetailData[i].editArgs = WatchlistDetailEditArgs(
+        type: _type,
+        watchlist: _watchlist,
+        index: i,
+        isLot: _watchlistArgs.isLot,
+        shareName: _watchlistArgs.shareName,
+      );
+
       // check if this is buy or sell
       // this is indicated by the share whether the < 0 (sell), or > 0 (buy)
       if (_watchlistDetailData[i].share > 0) {
@@ -934,6 +373,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
               currentShareLeftPrice = _watchlistDetailData[j].shareLeft * (_watchlist.watchlistCompanyNetAssetValue ?? 0);
               buyShareLeftPrice = _watchlistDetailData[j].shareLeft * _watchlistDetailData[j].price;
               _watchlistDetailData[j].pl = currentShareLeftPrice - buyShareLeftPrice;
+              
+              // perform calculation on the PL percentage only if the buyShareLeftPrice is more than 0 to avoid divide by zero
               _watchlistDetailData[j].plPercentage = (currentShareLeftPrice - buyShareLeftPrice) / buyShareLeftPrice;
 
               // change the price to average price
@@ -945,6 +386,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
       // calculate the PL for this item
       _watchlistDetailData[i].pl = currentPrice - buyPrice;
+
+      // perform calculation on the PL percentage only if the buyPrice is more than 0 to avoid divide by zero
       _watchlistDetailData[i].plPercentage = (currentPrice - buyPrice) / buyPrice;
 
       // add the total shares
@@ -953,5 +396,570 @@ class WatchlistListPageState extends State<WatchlistListPage> {
 
     // reverse the watchlist detail data so the latest will be on top
     _watchlistDetailData = _watchlistDetailData.reversed.toList();
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      leading: IconButton(
+        icon: Icon(
+          MyIonicons(MyIoniconsData.arrow_back).data
+        ),
+        onPressed: (() {
+          Navigator.pop(context);
+        }),
+      ),
+      actions: <Widget>[
+        IconButton(
+          onPressed: (() {
+            Navigator.pushNamed(context, '/company/detail/$_type', arguments: args);
+          }),
+          icon: Icon(
+            MyIonicons(MyIoniconsData.business_outline).data
+          ),
+        ),
+        IconButton(
+          onPressed: (() {
+            Navigator.pushNamed(context, '/watchlist/performance', arguments: _watchlistArgs);
+          }),
+          icon: Icon(
+            MyIonicons(MyIoniconsData.pulse_outline).data
+          ),
+        ),
+      ],
+      title: const Center(
+        child: Text(
+          "Watchlist List",
+          style: TextStyle(
+            color: secondaryColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryHeader() {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            color: _computeResult.riskColor,
+            width: 10,
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                  bottom: BorderSide(
+                    color: primaryLight,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  )
+                )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _watchlist.watchlistCompanyName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              formatCurrency(_watchlist.watchlistCompanyNetAssetValue!),
+                              style: const TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 5,),
+                            Icon(
+                              (_computeResult.priceDiff > 0 ? MyIonicons(MyIoniconsData.caret_up).data : MyIonicons(MyIoniconsData.caret_down).data),
+                              color: riskColor(
+                                value: _watchlist.watchlistCompanyNetAssetValue!,
+                                cost: _watchlist.watchlistCompanyPrevPrice!,
+                                riskFactor: _userInfo!.risk
+                              ),
+                            ),
+                            const SizedBox(width: 5,),
+                            Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: riskColor(
+                                      value: _watchlist.watchlistCompanyNetAssetValue!,
+                                      cost: _watchlist.watchlistCompanyPrevPrice!,
+                                      riskFactor: _userInfo!.risk
+                                    ),
+                                    width: 2.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                )
+                              ),
+                              child: Text(
+                                formatCurrency(_computeResult.priceDiff),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 2,),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Icon(
+                            MyIonicons(MyIoniconsData.time_outline).data,
+                            color: primaryLight,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10,),
+                          Text(
+                            Globals.dfddMMyyyy.formatDateWithNull(
+                              _watchlist.watchlistCompanyLastUpdate
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      WatchlistDetailSummaryBox(
+                        title: "AVG PRICE",
+                        text: (_computeResult.totalCurrentShares > 0 ? formatCurrency(_computeResult.totalCost / _computeResult.totalCurrentShares) : "-"),
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "COST",
+                        text: formatCurrency(_computeResult.totalCost)
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "VALUE",
+                        text: formatCurrency(_computeResult.totalValue)
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      WatchlistDetailSummaryBox(
+                        title: "BUY TIMES",
+                        text: "${_computeResult.totalBuy}"
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "BUY ${_watchlistArgs.shareName.toUpperCase()}",
+                        text: formatDecimal(
+                          (
+                            _watchlistArgs.isLot ?
+                            _computeResult.totalSharesBuy / 100 :
+                            _computeResult.totalSharesBuy
+                          ),
+                          decimal: 2
+                        )
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "BUY AMOUNT",
+                        text: formatCurrency(_computeResult.totalBuyAmount)
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      WatchlistDetailSummaryBox(
+                        title: "SELL TIMES",
+                        text: "${_computeResult.totalSell}"
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "SELL ${_watchlistArgs.shareName.toUpperCase()}",
+                        text: formatDecimal(
+                          (
+                            _watchlistArgs.isLot ?
+                            _computeResult.totalSharesSell / 100 :
+                            _computeResult.totalSharesSell
+                          ),
+                          decimal: 2
+                        )
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "SELL AMOUNT",
+                        text: formatCurrency(_computeResult.totalSellAmount)
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      WatchlistDetailSummaryBox(
+                        title: "CURRENT",
+                        text: formatDecimal(
+                          _computeResult.totalCurrentShares,
+                          decimal: 2
+                        )
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "UNREALISED",
+                        text: formatCurrency(_computeResult.totalUnrealisedGain)
+                      ),
+                      const SizedBox(width: 10,),
+                      WatchlistDetailSummaryBox(
+                        title: "REALISED",
+                        text: formatCurrency(_computeResult.totalRealisedGain)
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          TransparentButton(
+            text: "Buy",
+            color: primaryDark,
+            borderColor: primaryLight,
+            icon: MyIonicons(MyIoniconsData.add).data,
+            onTap: (() {
+              Navigator.pushNamed(context, '/watchlist/detail/buy', arguments: _watchlistArgs);
+            })
+          ),
+          const SizedBox(width: 10,),
+          TransparentButton(
+            text: "Sell",
+            color: primaryDark,
+            borderColor: primaryLight,
+            icon: MyIonicons(MyIoniconsData.remove).data,
+            enabled: (_computeResult.totalCurrentShares > 0),
+            onTap: (() {
+              WatchlistListArgs args = WatchlistListArgs(
+                type: _type,
+                watchlist: _watchlist,
+                currentShare: _computeResult.totalCurrentShares,
+                shareName: _watchlistArgs.shareName,
+                isLot: _watchlistArgs.isLot,
+              );
+              Navigator.pushNamed(context, '/watchlist/detail/sell', arguments: args);
+            })
+          ),
+          const SizedBox(width: 10,),
+          TransparentButton(
+            text: "Delete",
+            color: primaryDark,
+            borderColor: primaryLight,
+            icon: MyIonicons(MyIoniconsData.trash).data,
+            onTap: (() async {
+              await ShowMyDialog(
+                title: "Delete Watchlist",
+                text: "Are you sure to delete ${_watchlist.watchlistCompanyName}?",
+                confirmLabel: "Delete",
+                cancelLabel: "Cancel"
+              ).show(context).then((resp) async {
+                if(resp!) {
+                  // delete the watchlist, all the success and error
+                  // handling is moved to the function to ensure
+                  // the context is mounted when we perform the
+                  // delete on the watchlist.
+                  await _deleteWatchlist();
+                }
+              },);
+            })
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListHeader() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: const BoxDecoration(
+        color: primaryDark,
+        border: Border(
+          bottom: BorderSide(
+            color: primaryLight,
+            width: 1.0,
+            style: BorderStyle.solid,
+          )
+        )
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const Expanded(
+            child: Text(
+              "Date",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          ),
+          const SizedBox(width: 10,),
+          Expanded(
+            child: Text(
+              _watchlistArgs.shareName.toCapitalized(),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+            )
+          ),
+          const SizedBox(width: 10,),
+          const Expanded(
+            child: Text(
+              "Price",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+            )
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionList() {
+    return Expanded(
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: _watchlistDetailData.length,
+        itemBuilder: (context, index) {
+          bool partiallyRealized = ((_watchlistDetailData[index].shareLeft > 0) && (_watchlistDetailData[index].share != _watchlistDetailData[index].shareLeft));
+          Color currentPLColor = Colors.white;
+          Color currentTextColor = textPrimary;
+          double currentTotalBuySell = _watchlistDetailData[index].shareLeft.abs() * _watchlistDetailData[index].price;
+          double currentShare = _watchlistDetailData[index].share;
+
+          // check if the watchlist item date is more than company last update
+          // if so, then just make it black instead of calculate the risk color
+          // since we don't have the information for the date.
+          if (_watchlistDetailData[index].share > 0 && _watchlistDetailData[index].status == false) {
+            // This item has been realized, so we don't calculate risk
+            currentPLColor = primaryLight.lighten(amount: 0.2);
+            currentTextColor = primaryLight.lighten(amount: 0.2);
+          }
+          else {
+            // check if currentPL is + or -
+            if (_watchlistDetailData[index].pl > 0) {
+              currentPLColor = green50;
+            }
+            else if (_watchlistDetailData[index].pl < 0) {
+              currentPLColor = red40;
+            }
+          }
+
+          // check if this is partialy realized
+          if (partiallyRealized) {
+            currentTextColor = accentColor;
+            currentShare = _watchlistDetailData[index].shareLeft;
+          }
+
+          return Slidable(
+            endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              children: <Widget>[
+                SlideButton(
+                  icon: MyIonicons(MyIoniconsData.pencil).data,
+                  iconColor: accentColor,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/watchlist/detail/edit',
+                      arguments: _watchlistDetailData[index].editArgs,
+                    );
+                  },
+                ),
+                SlideButton(
+                  icon: MyIonicons(MyIoniconsData.trash).data,
+                  iconColor: secondaryColor,
+                  onTap: () async {
+                    await ShowMyDialog(
+                      title: "Delete Detail",
+                      text: "Are you sure to delete this detail?\nDate: ${Globals.dfddMMyyyy.formatLocal(_watchlistDetailData[index].date)}\nShares: ${formatDecimal(currentShare)}\nPrice: ${formatCurrency(_watchlistDetailData[index].price)}",
+                      confirmLabel: "Delete",
+                      cancelLabel: "Cancel"
+                    ).show(context).then((resp) async {
+                      if(resp!) {
+                        await _deleteDetail(_watchlistDetailData[index].id).then((resp) {
+                          if(resp) {
+                            Log.success(message: "🧹 Delete ${_watchlistDetailData[index].id}");
+                          }
+                          else {
+                            Log.error(message: "🧹 Unable to delete ${_watchlistDetailData[index].id}");
+                          }
+                        }).onError((error, stackTrace) {
+                          Log.error(
+                            message: 'Error deleting watchlist detail',
+                            error: error,
+                            stackTrace: stackTrace,
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: error.toString()));
+                          }
+                        });
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
+            child: InkWell(
+              onDoubleTap: (() {
+                Navigator.pushNamed(context, '/watchlist/detail/edit', arguments: args);
+              }),
+              child: IntrinsicHeight(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: _listColor(_watchlistDetailData[index].share),
+                    border: const Border(
+                      bottom: BorderSide(
+                        color: primaryLight,
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      )
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        color: (_watchlistDetailData[index].share > 0 ? _watchlistDetailData[index].rColor : extendedDark),
+                        width: 5,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  Globals.dfddMMyyyy.formatLocal(_watchlistDetailData[index].date),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: currentTextColor,
+                                  ),
+                                )
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      formatCurrency(
+                                        _watchlistArgs.isLot ?
+                                        currentShare / 100 :
+                                        currentShare
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: currentTextColor,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      "${formatCurrencyWithNull(_watchlistDetailData[index].pl, checkThousand: true)} (${formatDecimalWithNull(_watchlistDetailData[index].plPercentage, times: 100, decimal: 2)}%)",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: currentPLColor,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                )
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      formatCurrency(_watchlistDetailData[index].price),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: currentTextColor,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    Text(
+                                      formatCurrencyWithNull(currentTotalBuySell, checkThousand: true),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: currentTextColor,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                )
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

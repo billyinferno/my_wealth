@@ -91,55 +91,7 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
 
   Widget _body() {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: ((() async {
-            // check if we add something before
-            if (_isAdd) {
-              // show loading
-              LoadingScreen.instance().show(context: context);
-
-              // now refresh the watchlist
-              await _watchlistAPI.getWatchlist(type: _args.type).then((resp) async {
-                // update the provider and shared preferences
-                await WatchlistSharedPreferences.setWatchlist(
-                  type: _args.type,
-                  watchlistData: resp
-                );
-                
-                if (!mounted) return;
-                Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
-                  type: _args.type,
-                  data: resp
-                );
-                
-                Log.success(message: "🔃 Refresh watchlist ${_args.type} after add");
-              }).onError((error, stackTrace) {
-                throw Exception("Error when refresh watchlist ${_args.type} after add");
-              }).whenComplete(() {
-                LoadingScreen.instance().hide();
-              },);
-            }
-
-            // ensure mount so we can return back to the previous page
-            if (mounted) {
-              // return back to the previous page
-              Navigator.pop(context);
-            }
-          })),
-          icon: Icon(
-            MyIonicons(MyIoniconsData.arrow_back).data,
-          )
-        ),
-        title: Center(
-          child: Text(
-            _title,
-            style: const TextStyle(
-              color: secondaryColor,
-            ),
-          )
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: MySafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,6 +172,58 @@ class WatchlistAddPageState extends State<WatchlistAddPage> {
             _generateResult(),
           ],
         ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      leading: IconButton(
+        onPressed: ((() async {
+          // check if we add something before
+          if (_isAdd) {
+            // show loading
+            LoadingScreen.instance().show(context: context);
+
+            // now refresh the watchlist
+            await _watchlistAPI.getWatchlist(type: _args.type).then((resp) async {
+              // update the provider and shared preferences
+              await WatchlistSharedPreferences.setWatchlist(
+                type: _args.type,
+                watchlistData: resp
+              );
+              
+              if (!mounted) return;
+              Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+                type: _args.type,
+                data: resp
+              );
+              
+              Log.success(message: "🔃 Refresh watchlist ${_args.type} after add");
+            }).onError((error, stackTrace) {
+              throw Exception("Error when refresh watchlist ${_args.type} after add");
+            }).whenComplete(() {
+              LoadingScreen.instance().hide();
+            },);
+          }
+
+          // ensure mount so we can return back to the previous page
+          if (mounted) {
+            // return back to the previous page
+            Navigator.pop(context);
+          }
+        })),
+        icon: Icon(
+          MyIonicons(MyIoniconsData.arrow_back).data,
+        )
+      ),
+      title: Center(
+        child: Text(
+          _title,
+          style: const TextStyle(
+            color: secondaryColor,
+          ),
+        )
       ),
     );
   }

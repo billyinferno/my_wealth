@@ -4,6 +4,24 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/_index.g.dart';
 import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
+class WatchlistPerformanceMinMaxData {
+  late double max;
+  late double min;
+  late double maxPL;
+  late double minPL;
+  late double avg;
+  late double gainDiff;
+
+  WatchlistPerformanceMinMaxData({
+    required this.max,
+    required this.min,
+    required this.maxPL,
+    required this.minPL,
+    required this.avg,
+    required this.gainDiff
+  });
+}
+
 class WatchlistPerformancePage extends StatefulWidget {
   final Object? args;
   const WatchlistPerformancePage({super.key, required this.args});
@@ -16,6 +34,12 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   final TextStyle _smallFont = const TextStyle(fontSize: 10, color: textPrimary,);
   final WatchlistAPI _watchlistAPI = WatchlistAPI();
   final IndexAPI _indexAPI = IndexAPI();
+
+  // graph selection constant
+  static const String _kGraphSelection90D = "9";
+  static const String _kGraphSelectionDaily = "d";
+  static const String _kGraphSelectionMonthly = "m";
+  static const String _kGraphSelectionYearly = "y";
 
   late WatchlistListArgs _watchlistArgs;
   late UserLoginInfoModel _userInfo;
@@ -43,30 +67,10 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   late double _maxPL;
   late double _minPL;
 
-  late double _max90;
-  late double _min90;
-  late double _max90PL;
-  late double _min90PL;
-  late double _avg90;
-  late double _gainDiff90;
-  late double _maxDaily;
-  late double _minDaily;
-  late double _maxDailyPL;
-  late double _minDailyPL;
-  late double _avgDaily;
-  late double _gainDiffDaily;
-  late double _maxMonthly;
-  late double _minMonthly;
-  late double _maxMonthlyPL;
-  late double _minMonthlyPL;
-  late double _avgMonthly;
-  late double _gainDiffMonthly;
-  late double _maxYearly;
-  late double _minYearly;
-  late double _maxYearlyPL;
-  late double _minYearlyPL;
-  late double _avgYearly;
-  late double _gainDiffYearly;
+  late WatchlistPerformanceMinMaxData _minMax90;
+  late WatchlistPerformanceMinMaxData _minMaxDaily;
+  late WatchlistPerformanceMinMaxData _minMaxMonthly;
+  late WatchlistPerformanceMinMaxData _minMaxYearly;
 
   late String _graphSelection;
   late DateFormat _dateFormat;
@@ -103,7 +107,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     _minPL = 0;
 
     // set the graph selection as "9" (90 days)
-    _graphSelection = "9";
+    _graphSelection = _kGraphSelection90D;
     _dateFormat = Globals.dfddMM;
 
     // initialize the result watchlist performance
@@ -148,64 +152,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
 
   Widget _generatePage() {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: ((() {
-            // return back to the previous page
-            Navigator.pop(context);
-          })),
-          icon: Icon(
-            MyIonicons(MyIoniconsData.arrow_back).data,
-          )
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: (() async {
-              // go to index list page
-              await Navigator.pushNamed(context, '/index/find').then((value) async {
-                if (value != null) {
-                  // convert value to company list model
-                  _indexCompare = value as IndexModel;
-                  _indexCompareName = _indexCompare.indexName;
-    
-                  await _getIndexData().onError((error, stackTrace) {
-                    // remove the index compare name and price since we will
-                    // not be able to perform comparison
-                    _indexCompareName = "";
-                    _indexComparePrice.clear();
-    
-                    _indexData.clear();
-                    _indexData90D.clear();
-                    _indexDataDaily.clear();
-                    _indexDataMonthly.clear();
-                    _indexDataYearly.clear();
-                  });
-                }
-              });
-            }),
-            icon: Icon(
-              MyIonicons(MyIoniconsData.git_compare_outline).data,
-              color: textPrimary,
-            ),
-          ),
-          IconButton(
-            onPressed: (() {
-              Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
-            }),
-            icon: Icon(
-              MyIonicons(MyIoniconsData.business_outline).data
-            ),
-          )
-        ],
-        title: const Center(
-          child: Text(
-            "Performance",
-            style: TextStyle(
-              color: secondaryColor,
-            ),
-          )
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: MySafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,11 +163,11 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
             SizedBox(
               width: double.infinity,
               child: CupertinoSegmentedControl(
-                children: const {
-                  "9": Text("90 Days"),
-                  "d": Text("Daily"),
-                  "m": Text("Monthly"),
-                  "y": Text("Yearly"),
+                children: {
+                  _kGraphSelection90D: Text("90 Days"),
+                  _kGraphSelectionDaily: Text("Daily"),
+                  _kGraphSelectionMonthly: Text("Monthly"),
+                  _kGraphSelectionYearly: Text("Yearly"),
                 },
                 onValueChanged: ((value) {
                   String selectedValue = value.toString();
@@ -356,125 +303,7 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
                 dateFormat: _dateFormat,
               ),
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                      color: primaryDark,
-                      border: Border(
-                          bottom: BorderSide(
-                        color: primaryLight,
-                        width: 1.0,
-                        style: BorderStyle.solid,
-                      ))),
-                  width: 50,
-                  child: Text(
-                    "DATE",
-                    textAlign: TextAlign.center,
-                    style: _smallFont,
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ))),
-                    child: Text(
-                      "SHARES",
-                      textAlign: TextAlign.center,
-                      style: _smallFont,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ))),
-                    child: Text(
-                      "AVG",
-                      textAlign: TextAlign.center,
-                      style: _smallFont,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: Text(
-                      "PRICE",
-                      textAlign: TextAlign.center,
-                      style: _smallFont,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: Text(
-                      "P/L",
-                      textAlign: TextAlign.center,
-                      style: _smallFont,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                        color: primaryDark,
-                        border: Border(
-                            bottom: BorderSide(
-                          color: primaryLight,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        )
-                      )
-                    ),
-                    child: Text(
-                      "+/-",
-                      textAlign: TextAlign.center,
-                      style: _smallFont,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _buildWatchlistPerformanceHeader(),
             Expanded(
               child: WatchlistBuilder(
                 data: _watchlistPerformance,
@@ -488,6 +317,189 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
           ],
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      leading: IconButton(
+        onPressed: ((() {
+          // return back to the previous page
+          Navigator.pop(context);
+        })),
+        icon: Icon(
+          MyIonicons(MyIoniconsData.arrow_back).data,
+        )
+      ),
+      actions: <Widget>[
+        IconButton(
+          onPressed: (() async {
+            // go to index list page
+            await Navigator.pushNamed(context, '/index/find').then((value) async {
+              if (value != null) {
+                // convert value to company list model
+                _indexCompare = value as IndexModel;
+                _indexCompareName = _indexCompare.indexName;
+
+                await _getIndexData().onError((error, stackTrace) {
+                  // remove the index compare name and price since we will
+                  // not be able to perform comparison
+                  _indexCompareName = "";
+                  _indexComparePrice.clear();
+
+                  _indexData.clear();
+                  _indexData90D.clear();
+                  _indexDataDaily.clear();
+                  _indexDataMonthly.clear();
+                  _indexDataYearly.clear();
+                });
+              }
+            });
+          }),
+          icon: Icon(
+            MyIonicons(MyIoniconsData.git_compare_outline).data,
+            color: textPrimary,
+          ),
+        ),
+        IconButton(
+          onPressed: (() {
+            Navigator.pushNamed(context, '/company/detail/${_watchlistArgs.type}', arguments: _companyArgs);
+          }),
+          icon: Icon(
+            MyIonicons(MyIoniconsData.business_outline).data
+          ),
+        )
+      ],
+      title: const Center(
+        child: Text(
+          "Performance",
+          style: TextStyle(
+            color: secondaryColor,
+          ),
+        )
+      ),
+    );
+  }
+
+  Widget _buildWatchlistPerformanceHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(5),
+          decoration: const BoxDecoration(
+              color: primaryDark,
+              border: Border(
+                  bottom: BorderSide(
+                color: primaryLight,
+                width: 1.0,
+                style: BorderStyle.solid,
+              ))),
+          width: 50,
+          child: Text(
+            "DATE",
+            textAlign: TextAlign.center,
+            style: _smallFont,
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                    bottom: BorderSide(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ))),
+            child: Text(
+              "SHARES",
+              textAlign: TextAlign.center,
+              style: _smallFont,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                    bottom: BorderSide(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ))),
+            child: Text(
+              "AVG",
+              textAlign: TextAlign.center,
+              style: _smallFont,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                    bottom: BorderSide(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                )
+              )
+            ),
+            child: Text(
+              "PRICE",
+              textAlign: TextAlign.center,
+              style: _smallFont,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                    bottom: BorderSide(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                )
+              )
+            ),
+            child: Text(
+              "P/L",
+              textAlign: TextAlign.center,
+              style: _smallFont,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+                color: primaryDark,
+                border: Border(
+                    bottom: BorderSide(
+                  color: primaryLight,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                )
+              )
+            ),
+            child: Text(
+              "+/-",
+              textAlign: TextAlign.center,
+              style: _smallFont,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -674,86 +686,81 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
   }
 
   Future<bool> _getInitData() async {
-    try {
-      // perform the get company detail information here
-      await _watchlistAPI.getWatchlistPerformance(
-        type: _watchlistArgs.type,
-        id: _watchlistArgs.watchlist.watchlistId
-      ).then((resp) {
-        // generate all the watchlist performance, 90 day, daily, monthly, yearly
-        _watchlistPerformance90Day.clear();
-        _watchlistPerformanceDaily.clear();
-        _watchlistPerformanceMonth.clear();
-        _watchlistPerformanceYear.clear();
+    // perform the get company detail information here
+    await _watchlistAPI.getWatchlistPerformance(
+      type: _watchlistArgs.type,
+      id: _watchlistArgs.watchlist.watchlistId
+    ).then((resp) {
+      // generate all the watchlist performance, 90 day, daily, monthly, yearly
+      _watchlistPerformance90Day.clear();
+      _watchlistPerformanceDaily.clear();
+      _watchlistPerformanceMonth.clear();
+      _watchlistPerformanceYear.clear();
 
-        // loop thru all the response
-        // for monthly and year, we will need help from MAP, so let's create
-        // helper variable here
-        Map<DateTime, WatchlistPerformanceModel> monthly = {};
-        Map<DateTime, WatchlistPerformanceModel> yearly = {};
-        
-        DateTime dtMonth;
-        DateTime dtYear;
+      // loop thru all the response
+      // for monthly and year, we will need help from MAP, so let's create
+      // helper variable here
+      Map<DateTime, WatchlistPerformanceModel> monthly = {};
+      Map<DateTime, WatchlistPerformanceModel> yearly = {};
+      
+      DateTime dtMonth;
+      DateTime dtYear;
 
-        for(int i=0; i< resp.length; i++) {
-          // first let's calculate the date
-          dtMonth = DateTime(resp[i].buyDate.year, resp[i].buyDate.month, 1);
-          dtYear = DateTime(resp[i].buyDate.year, 12, 31);
+      for(int i=0; i< resp.length; i++) {
+        // first let's calculate the date
+        dtMonth = DateTime(resp[i].buyDate.year, resp[i].buyDate.month, 1);
+        dtYear = DateTime(resp[i].buyDate.year, 12, 31);
 
-          monthly[dtMonth] = resp[i];
-          yearly[dtYear] = resp[i];
+        monthly[dtMonth] = resp[i];
+        yearly[dtYear] = resp[i];
 
-          // check if this is lesser than 90 day or not?
-          if (i >= (resp.length - 90)) {
-            // add this to the 90 day list
-            _watchlistPerformance90Day.add(resp[i]);
-          }
-
-          // for daily it seems that seeing 5 years should be enough
-          // otherwise it will be showed too many?
-          // 260 days is working day for a year
-          if (i > (resp.length - (260 * 5))) {
-            _watchlistPerformanceDaily.add(resp[i]);
-          }
+        // check if this is lesser than 90 day or not?
+        // subtract the current date with the buy date
+        // if the difference is lesser than 90 day, then we will add this to the 90 day list
+        if (DateTime.now().toLocal().difference(resp[i].buyDate.toLocal()).inDays <= 90) {
+          // add this to the 90 day list
+          _watchlistPerformance90Day.add(resp[i]);
         }
 
-        if (_watchlistPerformance90Day.isEmpty) {
-          _watchlistPerformance90Day = [];
+        // for daily it seems that seeing 5 years should be enough
+        // otherwise it will be showed too many?
+        // 260 days is working day for a year
+        if (i > (resp.length - (260 * 5))) {
+          _watchlistPerformanceDaily.add(resp[i]);
         }
+      }
 
-        // once got the monthly and yearly, convert this map to list
-        if (monthly.isNotEmpty) {
-          _watchlistPerformanceMonth = monthly.values.toList();
-        }
-        else {
-          _watchlistPerformanceMonth = [];
-        }
+      // once got the monthly and yearly, convert this map to list
+      if (monthly.isNotEmpty) {
+        _watchlistPerformanceMonth = monthly.values.toList();
+      }
+      else {
+        _watchlistPerformanceMonth = [];
+      }
 
-        if (yearly.isNotEmpty) {
-          _watchlistPerformanceYear = yearly.values.toList();
-        }
-        else {
-          _watchlistPerformanceYear = [];
-        }
+      if (yearly.isNotEmpty) {
+        _watchlistPerformanceYear = yearly.values.toList();
+      }
+      else {
+        _watchlistPerformanceYear = [];
+      }
 
-        // now check which one is being selected by user
-        _watchlistPerformance = [];
+      // now check which one is being selected by user
+      _watchlistPerformance = [];
 
-        // get the maximum and minimum
-        _calculateMinMax();
+      // get the maximum and minimum
+      _calculateMinMax();
 
-        // change the graph selection
-        _changeGraphSelection();
-      });
-    }
-    catch(error, stackTrace) {
+      // change the graph selection
+      _changeGraphSelection();
+    }).onError((error, stackTrace) {
       Log.error(
         message: 'Error getting data from server',
         error: error,
         stackTrace: stackTrace,
       );
       throw Exception('Error when try to get the data from server');
-    }
+    });
 
     return true;
   }
@@ -899,22 +906,23 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     // now check which graph now is being showed, so we can set the correct
     // index data
     switch(_graphSelection) {
-      case "9":
-        _indexData = _indexData90D.toList();
+      case _kGraphSelection90D:
+        _indexData = _indexData90D;
         break;
-      case "m":
-        _indexData = _indexDataMonthly.toList();
+      case _kGraphSelectionMonthly:
+        _indexData = _indexDataMonthly;
         break;
-      case "y":
-        _indexData = _indexDataYearly.toList();
+      case _kGraphSelectionYearly:
+        _indexData = _indexDataYearly;
         break;
+      case _kGraphSelectionDaily:
       default:
-        _indexData = _indexDataDaily.toList();
+        _indexData = _indexDataDaily;
         break;
     }
   }
 
-  (double, double, double, double, double, double) _calculateMinMaxData({
+  WatchlistPerformanceMinMaxData _calculateMinMaxData({
     required List<WatchlistPerformanceModel> watchlistData
   }) {
     double min = double.infinity;
@@ -929,6 +937,20 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
     double currVal = 0;
     double currentPL;
 
+    // check if the watchlist data is empty or not?
+    // if empty just return 0 for all min, max, and average
+    if (watchlistData.isEmpty) {
+      return WatchlistPerformanceMinMaxData(
+        min: 0,
+        max: 0,
+        minPL: 0,
+        maxPL: 0,
+        avg: 0,
+        gainDiff: 0
+      );
+    }
+
+    // loop thru all the watchlist performance data, and calculate the min, max PL.
     for(int i=0; i < watchlistData.length; i++) {
       currVal = (
         watchlistData[i].currentPrice *
@@ -996,90 +1018,69 @@ class _WatchlistPerformancePageState extends State<WatchlistPerformancePage> {
       avg = gainDifference;
     }
 
-    return (min, max, minPL, maxPL, avg, gainDifference);
+    return WatchlistPerformanceMinMaxData(
+      min: min,
+      max: max,
+      minPL: minPL,
+      maxPL: maxPL,
+      avg: avg,
+      gainDiff: gainDifference
+    );
   }
 
   void _calculateMinMax() {
-    double min, max, minPL, maxPL, avg, gainDiff;
-
-    // initialize all the max and min PL
-    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformance90Day);
-    _min90 = min;
-    _max90 = max;
-    _min90PL = minPL;
-    _max90PL = maxPL;
-    _avg90 = avg;
-    _gainDiff90 = gainDiff;
-
-    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformanceDaily);
-    _minDaily = min;
-    _maxDaily = max;
-    _minDailyPL = minPL;
-    _maxDailyPL = maxPL;
-    _avgDaily = avg;
-    _gainDiffDaily = gainDiff;
-
-    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformanceMonth);
-    _minMonthly = min;
-    _maxMonthly = max;
-    _minMonthlyPL = minPL;
-    _maxMonthlyPL = maxPL;
-    _avgMonthly = avg;
-    _gainDiffMonthly = gainDiff;
-
-    (min, max, minPL, maxPL, avg, gainDiff) = _calculateMinMaxData(watchlistData: _watchlistPerformanceYear);
-    _minYearly = min;
-    _maxYearly = max;
-    _minYearlyPL = minPL;
-    _maxYearlyPL = maxPL;
-    _avgYearly = avg;
-    _gainDiffYearly = gainDiff;
+    // calculate all the max and min PL
+    _minMax90 = _calculateMinMaxData(watchlistData: _watchlistPerformance90Day);
+    _minMaxDaily = _calculateMinMaxData(watchlistData: _watchlistPerformanceDaily);
+    _minMaxMonthly = _calculateMinMaxData(watchlistData: _watchlistPerformanceMonth);
+    _minMaxYearly = _calculateMinMaxData(watchlistData: _watchlistPerformanceYear);
   }
 
   void _changeGraphSelection() {
     switch(_graphSelection) {
-      case "9":
-        _max = _max90;
-        _min = _min90;
-        _avg = _avg90;
-        _maxPL = _max90PL;
-        _minPL = _min90PL;
-        _gainDifference = _gainDiff90;
-        _watchlistPerformance = _watchlistPerformance90Day.toList();
-        _indexData = _indexData90D.toList();
+      case _kGraphSelection90D:
+        _max = _minMax90.max;
+        _min = _minMax90.min;
+        _avg = _minMax90.avg;
+        _maxPL = _minMax90.maxPL;
+        _minPL = _minMax90.minPL;
+        _gainDifference = _minMax90.gainDiff;
+        _watchlistPerformance = _watchlistPerformance90Day;
+        _indexData = _indexData90D;
         _dateFormat = Globals.dfddMM;
         break;
-      case "m":
-        _max = _maxMonthly;
-        _min = _minMonthly;
-        _avg = _avgMonthly;
-        _maxPL = _maxMonthlyPL;
-        _minPL = _minMonthlyPL;
-        _gainDifference = _gainDiffMonthly;
-        _watchlistPerformance = _watchlistPerformanceMonth.toList();
-        _indexData = _indexDataMonthly.toList();
+      case _kGraphSelectionMonthly:
+        _max = _minMaxMonthly.max;
+        _min = _minMaxMonthly.min;
+        _avg = _minMaxMonthly.avg;
+        _maxPL = _minMaxMonthly.maxPL;
+        _minPL = _minMaxMonthly.minPL;
+        _gainDifference = _minMaxMonthly.gainDiff;
+        _watchlistPerformance = _watchlistPerformanceMonth;
+        _indexData = _indexDataMonthly;
         _dateFormat = Globals.dfMMyy;
         break;
-      case "y":
-        _max = _maxYearly;
-        _min = _minYearly;
-        _avg = _avgYearly;
-        _maxPL = _maxYearlyPL;
-        _minPL = _minYearlyPL;
-        _gainDifference = _gainDiffYearly;
-        _watchlistPerformance = _watchlistPerformanceYear.toList();
-        _indexData = _indexDataYearly.toList();
+      case _kGraphSelectionYearly:
+        _max = _minMaxYearly.max;
+        _min = _minMaxYearly.min;
+        _avg = _minMaxYearly.avg;
+        _maxPL = _minMaxYearly.maxPL;
+        _minPL = _minMaxYearly.minPL;
+        _gainDifference = _minMaxYearly.gainDiff;
+        _watchlistPerformance = _watchlistPerformanceYear;
+        _indexData = _indexDataYearly;
         _dateFormat = Globals.dfMMyy;
         break;
+      case _kGraphSelectionDaily:
       default:
-        _max = _maxDaily;
-        _min = _minDaily;
-        _avg = _avgDaily;
-        _maxPL = _maxDailyPL;
-        _minPL = _minDailyPL;
-        _gainDifference = _gainDiffDaily;
-        _watchlistPerformance = _watchlistPerformanceDaily.toList();
-        _indexData = _indexDataDaily.toList();
+        _max = _minMaxDaily.max;
+        _min = _minMaxDaily.min;
+        _avg = _minMaxDaily.avg;
+        _maxPL = _minMaxDaily.maxPL;
+        _minPL = _minMaxDaily.minPL;
+        _gainDifference = _minMaxDaily.gainDiff;
+        _watchlistPerformance = _watchlistPerformanceDaily;
+        _indexData = _indexDataDaily;
         _dateFormat = Globals.dfddMM;
         break;
     }

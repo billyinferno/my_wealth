@@ -6588,7 +6588,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       );
 
       lowDiff = _infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedLowPrice;
-      highDiff = (_infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedHighPrice) * -1;
+      highDiff = (_infoSahamPrice[index].lastPrice - _infoSahamPrice[index].adjustedHighPrice).abs();
 
       if ((index + 1) < _infoSahamPrice.length) {
         currPrice = _infoSahamPrice[index].lastPrice.toDouble();

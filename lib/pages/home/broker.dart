@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +13,6 @@ class BrokerPage extends StatefulWidget {
 class _BrokerPageState extends State<BrokerPage> {
   final ScrollController _scrollController = ScrollController();
   final BrokerAPI _brokerAPI = BrokerAPI();
-  final TextEditingController _searchController = TextEditingController();
   final Map<String, String> _filterList = {};
 
   late List<BrokerModel> _brokerList;
@@ -45,7 +43,6 @@ class _BrokerPageState extends State<BrokerPage> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -59,29 +56,20 @@ class _BrokerPageState extends State<BrokerPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Container(
-              color: primaryDark,
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-              child: CupertinoSearchTextField(
-                controller: _searchController,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: '--apple-system',
-                ),
-                onChanged: ((search) {
-                  // we will filter the broker list and set the result to the filter list
-                  _filterBroker(search);
-                }),
-              ),
-            ),
             SortBox(
               filterList: _filterList,
               initialFilter: _filterMode,
               filterSort: _filterSort,
+              enabledTextFilter: true,
+              textFilterMode: TextFilterMode.alwaysShow,
               onChanged: (filter, sort) {
                 _filterMode = filter;
                 _filterSort = sort;
                 _sortedBrokerList();
+              },
+              onTextFilterChanged: (filter) {
+                // let's filter the current broker list
+                _filterBroker(filter);
               },
             ),
             Expanded(

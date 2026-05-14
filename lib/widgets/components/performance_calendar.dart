@@ -19,12 +19,14 @@ class PerformanceCalendar extends StatelessWidget {
   final int month;
   final int year;
   final List<CalendarDatePL> data;
+  final double plTimes;
   final PerformanceCalendarType type;
   const PerformanceCalendar({
     super.key,
     required this.month,
     required this.year,
     required this.data,
+    this.plTimes = 1,
     required this.type
   });
 
@@ -257,6 +259,7 @@ class PerformanceCalendar extends StatelessWidget {
             pl: dateList[start+index].pl,
             plColor: plColor,
             plRatio: dateList[start+index].plRatio,
+            plTimes: plTimes,
             plRatioColor: plRatioColor,
           );
         }),
@@ -269,6 +272,7 @@ class PerformanceCalendar extends StatelessWidget {
     required double? pl,
     Color? plColor,
     required double? plRatio,
+    double plTimes = 1,
     Color? plRatioColor,
   }) {
     // ensure we have text, if not then just return expanded with sized box only
@@ -299,6 +303,7 @@ class PerformanceCalendar extends StatelessWidget {
             "${formatDecimalWithNull(
               plRatio,
               decimal: 2,
+              times: plTimes,
             )}${plRatio != null ? "%" : ""}",
             style: TextStyle(
               fontSize: 10,

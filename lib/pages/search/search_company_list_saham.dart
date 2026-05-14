@@ -18,6 +18,7 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
 
   late String _filterMode;
   late SortBoxType _filterSort;
+  late bool _showAdditionalFilter;
   final Map<String, String> _filterList = {};
 
   late CompanyLastUpdateModel _lastUpdate;
@@ -54,6 +55,9 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
     // default filter mode to Code and ASC
     _filterMode = "nm";
     _filterSort = SortBoxType.ascending;
+
+    // default show additional filter to false
+    _showAdditionalFilter = false;
 
     // default the is show decom and fca to true
     _isShowDecomm = true;
@@ -132,78 +136,107 @@ class _SearchCompanyListSahamPageState extends State<SearchCompanyListSahamPage>
                 });
               },
             ),
-            const SizedBox(height: 10,),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: CupertinoSearchTextField(
-                controller: _textController,
-                onChanged: ((value) {
-                  if (value.length >= 3) {
-                    setState(() {
-                      _searchList(value);
-                    });
-                  }
-                  else {
-                    // if less than 3, then we will return the value of filter list
-                    // with all the fave list.
-                    _setFilterList(_faveList);
-                  }
-                }),
-                suffixMode: OverlayVisibilityMode.editing,
-                style: const TextStyle(
-                  color: textPrimary,
-                  fontFamily: '--apple-system'
-                ),
-                decoration: BoxDecoration(
-                  color: primaryLight,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10,),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              color: primaryDark,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      CupertinoSwitch(
-                        value: _isShowDecomm,
-                        onChanged: ((val) {
-                          setState(() {  
-                            _isShowDecomm = val;
-                            _filterData();
+                  Expanded(
+                    child: CupertinoSearchTextField(
+                      controller: _textController,
+                      onChanged: ((value) {
+                        if (value.length >= 3) {
+                          setState(() {
+                            _searchList(value);
                           });
-                        }),
-                        activeTrackColor: accentDark,
+                        }
+                        else {
+                          // if less than 3, then we will return the value of filter list
+                          // with all the fave list.
+                          _setFilterList(_faveList);
+                        }
+                      }),
+                      suffixMode: OverlayVisibilityMode.editing,
+                      style: const TextStyle(
+                        color: textPrimary,
+                        fontFamily: '--apple-system'
                       ),
-                      const SizedBox(width: 5,),
-                      const Text("Show Decomm"),
-                    ],
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      CupertinoSwitch(
-                        value: _isShowFCA,
-                        onChanged: ((val) {
-                          setState(() {  
-                            _isShowFCA = val;
-                            _filterData();
-                          });
-                        }),
-                        activeTrackColor: accentDark,
-                      ),
-                      const SizedBox(width: 5,),
-                      const Text("Show FCA"),
-                    ],
+                  const SizedBox(width: 10,),
+                  IconButton(
+                    onPressed: (() {
+                      setState(() {
+                        _showAdditionalFilter = !_showAdditionalFilter;
+                      });
+                    }),
+                    icon: Icon(
+                      MyIonicons(MyIoniconsData.filter).data,
+                      color: (_showAdditionalFilter ? accentDark : textPrimary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: _showAdditionalFilter,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 10,),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            CupertinoSwitch(
+                              value: _isShowDecomm,
+                              onChanged: ((val) {
+                                setState(() {  
+                                  _isShowDecomm = val;
+                                  _filterData();
+                                });
+                              }),
+                              activeTrackColor: accentDark,
+                            ),
+                            const SizedBox(width: 5,),
+                            const Text("Show Decomm"),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            CupertinoSwitch(
+                              value: _isShowFCA,
+                              onChanged: ((val) {
+                                setState(() {  
+                                  _isShowFCA = val;
+                                  _filterData();
+                                });
+                              }),
+                              activeTrackColor: accentDark,
+                            ),
+                            const SizedBox(width: 5,),
+                            const Text("Show FCA"),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

@@ -16,7 +16,21 @@ class ProductListItem extends StatelessWidget {
   final double? oneDay;
   final VoidCallback? onTap;
 
-  const ProductListItem({super.key, required this.bgColor, required this.title, this.subTitle, required this.value, required this.cost, required this.total, this.realised, this.unrealised, this.dayGain, this.netAssetValue, this.oneDay, this.onTap});
+  const ProductListItem({
+    super.key,
+    required this.bgColor,
+    required this.title,
+    this.subTitle,
+    required this.value,
+    required this.cost,
+    required this.total,
+    this.realised,
+    this.unrealised,
+    this.dayGain,
+    this.netAssetValue,
+    this.oneDay,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +220,7 @@ class ProductListItem extends StatelessWidget {
                                     Text(
                                       "(${
                                         formatDecimalWithNull(
-                                          (gainPercentage < 0 ? gainPercentage * -1 : gainPercentage),
+                                          gainPercentage.abs(),
                                           times: 100,
                                           decimal: 0,
                                         )

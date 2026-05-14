@@ -34,15 +34,8 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
   late List<CalendarDatePL> _monthYearCalendarPL;
   late List<CalendarDatePL> _yearCalendarPL;
 
-  late double _plTotal;
-  late Color _plTotalColor;
-  late double _plRatio;
-  late Color _plRatioColor;
-
-  late double _plTotalYear;
-  late Color _plTotalYearColor;
-  late double _plRatioYear;
-  late Color _plRatioYearColor;
+  late WatchlistCalendarPLData _plDataMonth;
+  late WatchlistCalendarPLData _plDataYear;
 
   @override
   void initState() {
@@ -82,16 +75,18 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     );
 
     // initialize pl month and year
-    _plTotal = 0;
-    _plRatio = 0;
-    _plTotalColor = primaryLight;
-    _plRatioColor = primaryLight;
-
-    // initialize pl year
-    _plTotalYear = 0;
-    _plRatioYear = 0;
-    _plTotalYearColor = primaryLight;
-    _plRatioYearColor = primaryLight;
+    _plDataMonth = WatchlistCalendarPLData(
+      total: 0,
+      totalColor: primaryLight,
+      ratio: 0,
+      ratioColor: primaryLight,
+    );
+    _plDataYear = WatchlistCalendarPLData(
+      total: 0,
+      totalColor: primaryLight,
+      ratio: 0,
+      ratioColor: primaryLight,
+    );
 
     // default to empty calendar PL map
     _monthYearCalendarPLMap = {};
@@ -104,8 +99,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
     // get the data from API
     _getData = _getInitData(
       currentDate: _currentDate,
-      newDate: null,
-      showLoader: true
     );
   }
 
@@ -540,12 +533,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                   ),
                   Text(
                     formatCurrency(
-                      _plTotal,
+                      _plDataMonth.total,
                       shorten: false,
                       decimalNum: 2
                     ),
                     style: TextStyle(
-                      color: _plTotalColor,
+                      color: _plDataMonth.totalColor,
                     ),
                   ),
                 ],
@@ -563,11 +556,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                   ),
                   Text(
                     "${formatDecimal(
-                      _plRatio,
-                      decimal: 2
+                      _plDataMonth.ratio,
+                      decimal: 2,
+                      times: 100,
                     )}%",
                     style: TextStyle(
-                      color: _plRatioColor,
+                      color: _plDataMonth.ratioColor,
                     ),
                   ),
                 ],
@@ -580,6 +574,7 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
           month: _currentDate.month,
           year: _currentDate.year,
           data: _monthYearCalendarPL,
+          plTimes: 100,
           type: PerformanceCalendarType.monthYear,
         ),
       ],
@@ -616,12 +611,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                   ),
                   Text(
                     formatCurrency(
-                      _plTotalYear,
+                      _plDataYear.total,
                       shorten: false,
                       decimalNum: 2
                     ),
                     style: TextStyle(
-                      color: _plTotalYearColor,
+                      color: _plDataYear.totalColor,
                     ),
                   ),
                 ],
@@ -639,11 +634,12 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
                   ),
                   Text(
                     "${formatDecimal(
-                      _plRatioYear,
-                      decimal: 2
+                      _plDataYear.ratio,
+                      decimal: 2,
+                      times: 100,
                     )}%",
                     style: TextStyle(
-                      color: _plRatioYearColor,
+                      color: _plDataYear.ratioColor,
                     ),
                   ),
                 ],
@@ -664,68 +660,65 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
 
   void _calculateMonthYearPLTotal() {
     // initialize pl total and pl ratio
-    _plTotal = 0;
-    _plRatio = 0;
-    _plTotalColor = primaryLight;
-    _plRatioColor = primaryLight;
+    _plDataMonth = WatchlistCalendarPLData(
+      total: 0,
+      totalColor: primaryLight,
+      ratio: 0,
+      ratioColor: primaryLight,
+    );
 
     // loop thru current month data
     for(int i=0; i<_monthYearCalendarPL.length; i++) {
-      _plTotal += (_monthYearCalendarPL[i].pl ?? 0);
-      _plRatio += (_monthYearCalendarPL[i].plRatio ?? 0);
+      _plDataMonth.total += (_monthYearCalendarPL[i].pl ?? 0);
+      _plDataMonth.ratio += (_monthYearCalendarPL[i].plRatio ?? 0);
     }
 
     // get the correct pl color
-    if (_plTotal > 0) {
-      _plTotalColor = Colors.green;
-    } else if (_plTotal < 0) {
-      _plTotalColor = secondaryColor;
+    if (_plDataMonth.total > 0) {
+      _plDataMonth.totalColor = Colors.green;
+    } else if (_plDataMonth.total < 0) {
+      _plDataMonth.totalColor = secondaryColor;
     }
 
-    if (_plRatio > 0) {
-      _plRatioColor = Colors.green;
-    } else if (_plRatio < 0) {
-      _plRatioColor = secondaryColor;
+    if (_plDataMonth.ratio > 0) {
+      _plDataMonth.ratioColor = Colors.green;
+    } else if (_plDataMonth.ratio < 0) {
+      _plDataMonth.ratioColor = secondaryColor;
     }
   }
 
   void _calculateYearPLTotal() {
     // initialize pl total and pl ratio
-    _plTotalYear = 0;
-    _plRatioYear = 0;
-    _plTotalYearColor = primaryLight;
-    _plRatioYearColor = primaryLight;
+    _plDataYear = WatchlistCalendarPLData(
+      total: 0,
+      totalColor: primaryLight,
+      ratio: 0,
+      ratioColor: primaryLight,
+    );
 
     // loop thru current year data
     for(int i=0; i<_yearCalendarPL.length; i++) {
-      _plTotalYear += (_yearCalendarPL[i].pl ?? 0);
-      _plRatioYear += (_yearCalendarPL[i].plRatio ?? 0);
+      _plDataYear.total += (_yearCalendarPL[i].pl ?? 0);
+      _plDataYear.ratio += (_yearCalendarPL[i].plRatio ?? 0);
     }
 
     // get the correct pl color
-      if (_plTotalYear > 0) {
-        _plTotalYearColor = Colors.green;
-      } else if (_plTotalYear < 0) {
-        _plTotalYearColor = secondaryColor;
+      if (_plDataYear.total > 0) {
+        _plDataYear.totalColor = Colors.green;
+      } else if (_plDataYear.total < 0) {
+        _plDataYear.totalColor = secondaryColor;
       }
 
-      if (_plRatioYear > 0) {
-        _plRatioYearColor = Colors.green;
-      } else if (_plRatioYear < 0) {
-        _plRatioYearColor = secondaryColor;
+      if (_plDataYear.ratio > 0) {
+        _plDataYear.ratioColor = Colors.green;
+      } else if (_plDataYear.ratio < 0) {
+        _plDataYear.ratioColor = secondaryColor;
       }
   }
 
   Future<bool> _getInitData({
     required DateTime currentDate,
-    DateTime? newDate,
-    bool? showLoader,
   }) async {
-    // if this is not a first run then show the loader dialog
-    if ((showLoader ?? false) == false) {
-      LoadingScreen.instance().show(context: context);
-    }
-
     // get the same data as watchlist performance, as we will generate
     // the calendar data based on that result, since we still haven't found
     // how to calculate the realized, unrealized PL correctly using SQL
@@ -893,12 +886,6 @@ class _WatchlistCalendarPageState extends State<WatchlistCalendarPage> {
         error: error,
         stackTrace: stackTrace,
       );
-    }).whenComplete(() {
-      // if this is not the  first run, it means that the loader dialog is being
-      // called on top, close the loader dialog.
-      if ((showLoader ?? false) == false) {
-        LoadingScreen.instance().hide();
-      }
     });
 
     return true;

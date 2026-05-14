@@ -53,11 +53,19 @@ class IndexPageState extends State<IndexPage> {
           initialFilter: _filterMode,
           filterList: _filterList,
           filterSort: _filterSort,
+          enabledTextFilter: true,
+          textFilterMode: TextFilterMode.alwaysShow,
           onChanged: (filter, sort) {
             _filterMode = filter;
             _filterSort = sort;
             setState(() {            
               _sortedIndexList();
+            });
+          },
+          onTextFilterChanged: (filter) {
+            // let's filter the current index list
+            setState(() {
+              _sortedIndexList(textFilter: filter);
             });
           },
         ),
@@ -136,7 +144,7 @@ class IndexPageState extends State<IndexPage> {
     },);
   }
 
-  void _sortedIndexList() {
+  void _sortedIndexList({String textFilter = ""}) {
     // if the filter mode is "AB" which is code, then just copy from the _companyList
     if (_filterMode == "AB") {
       // check the sort methode?
@@ -149,10 +157,6 @@ class IndexPageState extends State<IndexPage> {
     }
     else {
       List<IndexModel> tempFilter = List<IndexModel>.from(IndexSharedPreferences.getIndexList());
-    //       _filterList["AB"] = "Code";
-    // _filterList["PR"] = "Price";
-    // _filterList["CP"] = "Change (%)";
-    // _filterList["CH"] = "Change (\$)";
       switch(_filterMode) {
         case "PR":
           tempFilter.sort(((a, b) => (a.indexNetAssetValue).compareTo((b.indexNetAssetValue))));
@@ -175,6 +179,12 @@ class IndexPageState extends State<IndexPage> {
       else {
         _indexList = List<IndexModel>.from(tempFilter.reversed);
       }
+    }
+
+    // once we got the index list check text filter.
+    // if text filter is not empty, then we need to filter the index list again
+    if (textFilter.isNotEmpty) {
+      _indexList = _indexList.where((index) => "${index.indexName} ${Globals.indexName[index.indexName]}".trim().toLowerCase().contains(textFilter.trim().toLowerCase())).toList();
     }
   }
 }

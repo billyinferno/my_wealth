@@ -118,10 +118,17 @@ class FavouritesPageState extends State<FavouritesPage>
                       _filterMode = filter;
                       _filterSort = sort;
                       setState(() {
-                        _sortData(_favouriteListReksadana, "reksadana");
-                        _sortData(_favouriteListSaham, "saham");
-                        _sortData(_favouriteListCrypto, "crypto");
-                        
+                        _sortData(data: _favouriteListReksadana, type: "reksadana");
+                        _sortData(data: _favouriteListSaham, type: "saham");
+                        _sortData(data: _favouriteListCrypto, type: "crypto");
+                      });
+                    },
+                    onTextFilterChanged: (filter) {
+                      // let's filter the current index list
+                      setState(() {
+                        _sortData(data: _favouriteListReksadana, type: "reksadana", textFilter: filter);
+                        _sortData(data: _favouriteListSaham, type: "saham", textFilter: filter);
+                        _sortData(data: _favouriteListCrypto, type: "crypto", textFilter: filter);
                       });
                     },
                   ),
@@ -156,7 +163,11 @@ class FavouritesPageState extends State<FavouritesPage>
     );
   }
 
-  Future<void> _sortData(List<FavouritesModel> data, String type) async {
+  Future<void> _sortData({
+    required List<FavouritesModel> data,
+    required String type,
+    String textFilter = '',
+  }) async {
     List<FavouritesModel> sortedData = List.from(data);
 
     // sort the data based on the filter mode and sort type
@@ -175,20 +186,30 @@ class FavouritesPageState extends State<FavouritesPage>
       sortedData = sortedData.reversed.toList();
     }
 
-    // stored the sorted data to the provider and shared preferences
-    if (mounted) {
-      Provider.of<FavouritesProvider>(
-        context,
-        listen: false
-      ).setFavouriteList(
-        type: type,
-        favouriteListData: sortedData
-      );
+    // check if text filter is not empty, then we need to filter the sorted data based on the text filter
+    if (textFilter.isNotEmpty) {
+      sortedData = sortedData.where(
+        (fave) {
+          return fave.favouritesCompanyName.toLowerCase().contains(textFilter.toLowerCase()) ||
+                 fave.favouritesSymbol.toLowerCase().contains(textFilter.toLowerCase());
+        }
+      ).toList();
     }
-    await FavouritesSharedPreferences.setFavouritesList(
-      type: type,
-      favouriteList: sortedData,
-    );
+
+    // // stored the sorted data to the provider and shared preferences
+    // if (mounted) {
+    //   Provider.of<FavouritesProvider>(
+    //     context,
+    //     listen: false
+    //   ).setFavouriteList(
+    //     type: type,
+    //     favouriteListData: sortedData
+    //   );
+    // }
+    // await FavouritesSharedPreferences.setFavouritesList(
+    //   type: type,
+    //   favouriteList: sortedData,
+    // );
   }
 
   Widget _createTabPage({

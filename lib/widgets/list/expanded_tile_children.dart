@@ -65,7 +65,7 @@ class ExpandedTileChildren extends StatelessWidget {
                   Expanded(
                     child: Text(
                       formatDecimal(
-                        (shares > 0 ? (isInLot ? shares / 100 : shares) : ((isInLot ? shares / 100 : shares) * -1)),
+                        (isInLot ? shares / 100 : shares).abs(),
                         decimal: 2,
                       ),
                       style: const TextStyle(
@@ -102,7 +102,7 @@ class ExpandedTileChildren extends StatelessWidget {
                           )
                         ),
                         child: Text(
-                          (calculateLoss ? (shares > 0 ? formatCurrency((currentPrice - price) * shares) : formatCurrency(averagePrice * (shares * -1))) : "-"),
+                          (calculateLoss ? formatCurrency(((currentPrice - price) * shares).abs()) : "-"),
                           style: const TextStyle(
                             fontSize: 10,
                           ),

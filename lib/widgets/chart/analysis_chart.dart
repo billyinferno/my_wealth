@@ -57,16 +57,18 @@ class AnalysisChart extends StatelessWidget {
 
     // only calculate left bar flex if current is less than pesimistic
     if (current < pesimistic) {
-      leftBarFlex = (((pesimistic - current) / range) * 100).toInt();
+      leftBarFlex = (((pesimistic - current) / range) * 100).toInt().clamp(0, 100);
     }
 
     // only calculateright bar flex if current is more than optimistic
     if (current > optimistic) {
-      rightBarFlex = (((current - optimistic) / range) * 100).toInt();
+      rightBarFlex = (((current - optimistic) / range) * 100).toInt().clamp(0, 100);
     }
 
+    final middleBarFlex = (100 - (leftBarFlex + rightBarFlex)).clamp(0, 100);
+
     // calculate the flex needed for the pointer
-    int pointerFlex = (((current  - minData) / range) * 100).toInt();
+    int pointerFlex = (((current  - minData) / range) * 100).toInt().clamp(0, 100);
     
     // check what color should we put for the pointer
     int pointerColorIndex = ((((current - minData) / range) * 100).toInt() ~/ 10) - 1;    
@@ -121,7 +123,7 @@ class AnalysisChart extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  flex: (100 - (leftBarFlex + rightBarFlex)),
+                  flex: middleBarFlex,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -142,33 +144,41 @@ class AnalysisChart extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      //TODO: in case the flex is too much like GOTO it causing render flex due to the text is passed the render page
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(
-                            "Pesimistic\n${formatCurrency(pesimistic)}${(potentialPesimistic != null ? " (${formatDecimalWithNull(potentialPesimistic, times: 100, decimal: 2)}%)" : '')}",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: secondaryColor,
+                          Flexible(
+                            child: Text(
+                              "Pesimistic\n${formatCurrency(pesimistic)}${(potentialPesimistic != null ? " (${formatDecimalWithNull(potentialPesimistic, times: 100, decimal: 2)}%)" : '')}",
+                              textAlign: TextAlign.left,
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: secondaryColor,
+                              ),
                             ),
                           ),
-                          Text(
-                            "Neutral\n${formatCurrency(neutral)}${(potentialNeutral != null ? " (${formatDecimalWithNull(potentialNeutral, times: 100, decimal: 2)}%)" : '')}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey,
+                          Flexible(
+                            child: Text(
+                              "Neutral\n${formatCurrency(neutral)}${(potentialNeutral != null ? " (${formatDecimalWithNull(potentialNeutral, times: 100, decimal: 2)}%)" : '')}",
+                              textAlign: TextAlign.center,
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
-                          Text(
-                            "Optimistic\n${formatCurrency(optimistic)}${(potentialOptimistic != null ? " (${formatDecimalWithNull(potentialOptimistic, times: 100, decimal: 2)}%)" : '')}",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.green,
+                          Flexible(
+                            child: Text(
+                              "Optimistic\n${formatCurrency(optimistic)}${(potentialOptimistic != null ? " (${formatDecimalWithNull(potentialOptimistic, times: 100, decimal: 2)}%)" : '')}",
+                              textAlign: TextAlign.right,
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.green,
+                              ),
                             ),
                           ),
                         ],

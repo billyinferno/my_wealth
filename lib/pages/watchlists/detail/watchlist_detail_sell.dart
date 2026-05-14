@@ -195,7 +195,7 @@ class _WatchlistDetailSellPageState extends State<WatchlistDetailSellPage> {
 
   Future<void> _addDetail() async {
     // since it sell we need to make it a negative
-    double shares = (double.tryParse(_sharesController.text) ?? 0) * -1;
+    double shares = (double.tryParse(_sharesController.text) ?? 0).abs();
     // check if shares is in lot or not?
     if (_watchlistArgs.isLot) {
       shares = shares * 100;

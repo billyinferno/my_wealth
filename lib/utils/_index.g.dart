@@ -5,5 +5,6 @@ export './enum/_index.g.dart';
 export './extensions/_index.g.dart';
 export './function/_index.g.dart';
 export './globals.dart';
+export './helper/_index.g.dart';
 export './log.dart';
 export './net/_index.g.dart';

@@ -18,6 +18,7 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
   final StepperSelectorController _stepperControllerRating = StepperSelectorController();
   final StepperSelectorController _stepperControllerRisk = StepperSelectorController();
 
+  late bool _showAdditionalFilter;
   late String _filterMode;
   late SortBoxType _filterSort;
   final Map<String, String> _filterList = {};
@@ -56,6 +57,9 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
     // default filter mode to Code and ASC
     _filterMode = "nm";
     _filterSort = SortBoxType.ascending;
+
+    // default show additional filter to false
+    _showAdditionalFilter = false;
 
     // get the company last update
     _lastUpdate = CompanySharedPreferences.getCompanyLastUpdateModel(
@@ -144,223 +148,252 @@ class SearchCompanyListReksadanaPageState extends State<SearchCompanyListReksada
                 });
               },
             ),
-            const SizedBox(height: 10,),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: CupertinoSearchTextField(
-                controller: _textController,
-                onChanged: ((value) {
-                  _filterData();
-                }),
-                style: const TextStyle(
-                  color: textPrimary,
-                  fontFamily: '--apple-system'
-                ),
-                decoration: BoxDecoration(
-                  color: primaryLight,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10,),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              height: 175,
-              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              color: primaryDark,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Expanded(
-                    child: SizedBox(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "Type",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: textPrimary,
-                                ),
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1,
-                                    child: CupertinoSwitch(
-                                      value: _isCampuran,
-                                      onChanged: ((val) {
-                                        _isCampuran = val;
-                                        _filterData();
-                                      }),
-                                      activeTrackColor: accentDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  const Text("Campuran"),
-                                ],
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1,
-                                    child: CupertinoSwitch(
-                                      value: _isSaham,
-                                      onChanged: ((val) {
-                                        _isSaham = val;
-                                        _filterData();
-                                      }),
-                                      activeTrackColor: accentDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  const Text("Saham"),
-                                ],
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1,
-                                    child: CupertinoSwitch(
-                                      value: _isPasarUang,
-                                      onChanged: ((val) {
-                                        _isPasarUang = val;
-                                        _filterData();
-                                      }),
-                                      activeTrackColor: accentDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  const Text("Pasar Uang"),
-                                ],
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1,
-                                    child: CupertinoSwitch(
-                                      value: _isPendapatanTetap,
-                                      onChanged: ((val) {
-                                        _isPendapatanTetap = val;
-                                        _filterData();
-                                      }),
-                                      activeTrackColor: accentDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  const Text("Pend. Tetap"),
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
+                    child: CupertinoSearchTextField(
+                      controller: _textController,
+                      onChanged: ((value) {
+                        _filterData();
+                      }),
+                      style: const TextStyle(
+                        color: textPrimary,
+                        fontFamily: '--apple-system'
                       ),
-                    )
-                  ),
-                  const SizedBox(width: 20,),
-                  Expanded(
-                    child: SizedBox(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "Rating",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: textPrimary,
-                                ),
-                              ),
-                              StepperSelector(
-                                controller: _stepperControllerRating,
-                                icon: MyIonicons(MyIoniconsData.star).data,
-                                iconColor: accentColor,
-                                defaultValue: _currentRatingNum,
-                                onChanged: ((val) {
-                                  _currentRatingNum = val;
-                                  _filterData();
-                                }),
-                              ),
-                              const SizedBox(height: 10,),
-                              const Text(
-                                "Risk",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: textPrimary,
-                                ),
-                              ),
-                              StepperSelector(
-                                controller: _stepperControllerRisk,
-                                icon: MyIonicons(MyIoniconsData.alert).data,
-                                iconColor: secondaryColor,
-                                defaultValue: _currentRiskNum,
-                                onChanged: ((val) {
-                                  _currentRiskNum = val;
-                                  _filterData();
-                                }),
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1,
-                                    child: CupertinoSwitch(
-                                      value: _isIncludeFave,
-                                      onChanged: ((val) {
-                                        _isIncludeFave = val;
-                                        _filterData();
-                                      }),
-                                      activeTrackColor: accentDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  const Text("Include Faves"),
-                                ],
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1,
-                                    child: CupertinoSwitch(
-                                      value: _isShowDecomm,
-                                      onChanged: ((val) {
-                                        _isShowDecomm = val;
-                                        _filterData();
-                                      }),
-                                      activeTrackColor: accentDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5,),
-                                  const Text("Show Decomm"),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 5,),
+                  const SizedBox(width: 10,),
+                  IconButton(
+                    onPressed: (() {
+                      setState(() {
+                        _showAdditionalFilter = !_showAdditionalFilter;
+                      });
+                    }),
+                    icon: Icon(
+                      MyIonicons(MyIoniconsData.filter).data,
+                      color: (_showAdditionalFilter ? accentDark : textPrimary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: _showAdditionalFilter,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 10,),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    height: 175,
+                    width: double.infinity,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    const Text(
+                                      "Type",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Transform.scale(
+                                          scale: 1,
+                                          child: CupertinoSwitch(
+                                            value: _isCampuran,
+                                            onChanged: ((val) {
+                                              _isCampuran = val;
+                                              _filterData();
+                                            }),
+                                            activeTrackColor: accentDark,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        const Text("Campuran"),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Transform.scale(
+                                          scale: 1,
+                                          child: CupertinoSwitch(
+                                            value: _isSaham,
+                                            onChanged: ((val) {
+                                              _isSaham = val;
+                                              _filterData();
+                                            }),
+                                            activeTrackColor: accentDark,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        const Text("Saham"),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Transform.scale(
+                                          scale: 1,
+                                          child: CupertinoSwitch(
+                                            value: _isPasarUang,
+                                            onChanged: ((val) {
+                                              _isPasarUang = val;
+                                              _filterData();
+                                            }),
+                                            activeTrackColor: accentDark,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        const Text("Pasar Uang"),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Transform.scale(
+                                          scale: 1,
+                                          child: CupertinoSwitch(
+                                            value: _isPendapatanTetap,
+                                            onChanged: ((val) {
+                                              _isPendapatanTetap = val;
+                                              _filterData();
+                                            }),
+                                            activeTrackColor: accentDark,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        const Text("Pend. Tetap"),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
+                        ),
+                        const SizedBox(width: 20,),
+                        Expanded(
+                          child: SizedBox(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    const Text(
+                                      "Rating",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                    StepperSelector(
+                                      controller: _stepperControllerRating,
+                                      icon: MyIonicons(MyIoniconsData.star).data,
+                                      iconColor: accentColor,
+                                      defaultValue: _currentRatingNum,
+                                      onChanged: ((val) {
+                                        _currentRatingNum = val;
+                                        _filterData();
+                                      }),
+                                    ),
+                                    const SizedBox(height: 10,),
+                                    const Text(
+                                      "Risk",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: textPrimary,
+                                      ),
+                                    ),
+                                    StepperSelector(
+                                      controller: _stepperControllerRisk,
+                                      icon: MyIonicons(MyIoniconsData.alert).data,
+                                      iconColor: secondaryColor,
+                                      defaultValue: _currentRiskNum,
+                                      onChanged: ((val) {
+                                        _currentRiskNum = val;
+                                        _filterData();
+                                      }),
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Transform.scale(
+                                          scale: 1,
+                                          child: CupertinoSwitch(
+                                            value: _isIncludeFave,
+                                            onChanged: ((val) {
+                                              _isIncludeFave = val;
+                                              _filterData();
+                                            }),
+                                            activeTrackColor: accentDark,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        const Text("Include Faves"),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Transform.scale(
+                                          scale: 1,
+                                          child: CupertinoSwitch(
+                                            value: _isShowDecomm,
+                                            onChanged: ((val) {
+                                              _isShowDecomm = val;
+                                              _filterData();
+                                            }),
+                                            activeTrackColor: accentDark,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        const Text("Show Decomm"),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5,),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

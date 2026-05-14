@@ -4,24 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:my_wealth/_index.g.dart';
 import 'package:my_wealth/utils/icon/my_ionicons.dart';
 
-class WatchlistPerformanceMinMaxData {
-  late double max;
-  late double min;
-  late double maxPL;
-  late double minPL;
-  late double avg;
-  late double gainDiff;
-
-  WatchlistPerformanceMinMaxData({
-    required this.max,
-    required this.min,
-    required this.maxPL,
-    required this.minPL,
-    required this.avg,
-    required this.gainDiff
-  });
-}
-
 class WatchlistPerformancePage extends StatefulWidget {
   final Object? args;
   const WatchlistPerformancePage({super.key, required this.args});

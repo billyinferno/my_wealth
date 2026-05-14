@@ -81,7 +81,7 @@ class MultiLineChartPainter extends CustomPainter {
 
     // draw the 0 line if min is less than 0
     if (min < 0) {
-      double yD = ((min * -1) / (max - min)) * graphRect.height;
+      double yD = ((min.abs()) / (max - min)) * graphRect.height;
 
       _drawDashedLine(
         canvas: canvas,

@@ -545,10 +545,8 @@ class _InsightBrokerSpecificQueryPageState extends State<InsightBrokerSpecificQu
     double sharePL = (companySahamCodePrice - shareAvg) * shareLeft;
     Color sharePLColor = (sharePL == companySahamCodePrice ? textPrimary : (sharePL < companySahamCodePrice ? Colors.green : secondaryColor));
     
-    // in case sharePL is minus, make it plus
-    if (sharePL < 0) {
-      sharePL = sharePL * -1;
-    }
+    // make share PL absolute as we don't want negative number for share PL
+    sharePL = sharePL.abs();
 
     return Expanded(
       child: Container(

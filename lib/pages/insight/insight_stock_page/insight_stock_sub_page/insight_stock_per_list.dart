@@ -105,11 +105,18 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
               initialFilter: _filterMode,
               filterList: _filterList,
               filterSort: _filterSort,
+              enabledTextFilter: true,
+              textFilterMode: TextFilterMode.alwaysShow,
               onChanged: (filter, sort) {
                 setState(() {
                   _filterMode = filter;
                   _filterSort = sort;
                   _sortedCompanyList();
+                });
+              },
+              onTextFilterChanged: (filter) {
+                setState(() {
+                  _sortedCompanyList(textFilter: filter);
                 });
               },
             ),
@@ -431,7 +438,7 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
     );
   }
 
-  void _sortedCompanyList() {
+  void _sortedCompanyList({String textFilter = '' }) {
     // clear the current code list as we will rebuild t his
     _codeList.clear();
 
@@ -468,7 +475,16 @@ class _InsightStockPERListPageState extends State<InsightStockPERListPage> {
       }
       else {
         _codeList = List<CodeList>.from(tempFilter.reversed);
-      }
+      } 
+    }
+
+    // check text filter
+    // if the text filter is not empty then we need to filter the code list based on the text filter
+    if (textFilter.isNotEmpty) {
+      _codeList = _codeList.where((code) {
+        return code.name.toLowerCase().contains(textFilter.toLowerCase()) ||
+                code.code.toLowerCase().contains(textFilter.toLowerCase());
+      }).toList();
     }
   }
 

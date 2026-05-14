@@ -30,10 +30,10 @@ String formatCurrency(
   String result = "";
   double currentAmount = amount;
   if(currentAmount < 0) {
-    // make it a positive
-    currentAmount = currentAmount * (-1);
     prefix = "-";
   }
+  // we will format the absolute value of the amount, and add the negative sign later
+  currentAmount = currentAmount.abs();
 
   // check if this is more than trillion?
   if(currentAmount >= 1000000000000 && shorten) {

@@ -10,6 +10,7 @@ export './selectable_list.dart';
 export './slide_button.dart';
 export './small_box.dart';
 export './sort_box.dart';
+export './sort_icon.dart';
 export './stepper_selector.dart';
 export './stepper_selector_controller.dart';
 export './transparent_button.dart';

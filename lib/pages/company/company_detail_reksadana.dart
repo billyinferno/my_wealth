@@ -1153,7 +1153,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               ),
                               Visibility(
                                 visible: (_columnType == ColumnType.date),
-                                child: _sortIcon()
+                                child: SortIcon(sortType: _sortType),
                               ),
                             ],
                           ),
@@ -1214,7 +1214,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               ),
                               Visibility(
                                 visible: (_columnType == ColumnType.price),
-                                child: _sortIcon()
+                                child: SortIcon(sortType: _sortType),
                               ),
                             ],
                           ),
@@ -1275,7 +1275,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               ),
                               Visibility(
                                 visible: (_columnType == ColumnType.diff),
-                                child: _sortIcon()
+                                child: SortIcon(sortType: _sortType),
                               ),
                             ],
                           ),
@@ -1336,7 +1336,7 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
                               ),
                               Visibility(
                                 visible: (_columnType == ColumnType.gainloss),
-                                child: _sortIcon()
+                                child: SortIcon(sortType: _sortType),
                               ),
                             ],
                           ),
@@ -1368,18 +1368,6 @@ class CompanyDetailReksadanaPageState extends State<CompanyDetailReksadanaPage> 
           ),
         )
       ],
-    );
-  }
-
-  Widget _sortIcon() {
-    return Icon(
-      (
-        _sortType == SortType.ascending ?
-        MyIonicons(MyIoniconsData.arrow_up).data :
-        MyIonicons(MyIoniconsData.arrow_down).data
-      ),
-      size: 10,
-      color: textPrimary,
     );
   }
 

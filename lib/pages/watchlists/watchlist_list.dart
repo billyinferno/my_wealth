@@ -4,6 +4,12 @@ import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
 
+enum WatchlistSortFields {
+  date,
+  share,
+  price,
+}
+
 class WatchlistListData {
   final int id;
   final double share;
@@ -14,7 +20,6 @@ class WatchlistListData {
   late double pl;
   late double? plPercentage;
   late Color rColor;
-  late WatchlistDetailEditArgs editArgs;
 
   WatchlistListData({
       required this.id,
@@ -46,6 +51,10 @@ class WatchlistListPageState extends State<WatchlistListPage> {
   late CompanyDetailArgs? args;
   late WatchlistComputationResult _computeResult;
 
+  // sort state for watchlist list
+  late WatchlistSortFields _currentSortField;
+  late SortType _currentSortType;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +62,11 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     _type = _watchlistArgs.type;
     _watchlist = _watchlistArgs.watchlist;
     
+    // default the sort to date and descending
+    _currentSortField = WatchlistSortFields.date;
+    _currentSortType = SortType.descending;
+
+    // get the user information
     _userInfo = UserSharedPreferences.getUserInfo();
     
     // generate the watchlist detail data
@@ -318,16 +332,6 @@ class WatchlistListPageState extends State<WatchlistListPage> {
       }
       _watchlistDetailData[i].rColor = rColor;
 
-
-      // create the edit arguments for this item
-      _watchlistDetailData[i].editArgs = WatchlistDetailEditArgs(
-        type: _type,
-        watchlist: _watchlist,
-        index: i,
-        isLot: _watchlistArgs.isLot,
-        shareName: _watchlistArgs.shareName,
-      );
-
       // check if this is buy or sell
       // this is indicated by the share whether the < 0 (sell), or > 0 (buy)
       if (_watchlistDetailData[i].share > 0) {
@@ -394,8 +398,8 @@ class WatchlistListPageState extends State<WatchlistListPage> {
       totalShares += _watchlistDetailData[i].share;
     }
 
-    // reverse the watchlist detail data so the latest will be on top
-    _watchlistDetailData = _watchlistDetailData.reversed.toList();
+    // sort the watchlist detail data based on the current sort field and sort type
+    _sortWatchlist();
   }
 
   PreferredSizeWidget _buildAppBar() {
@@ -715,9 +719,40 @@ class WatchlistListPageState extends State<WatchlistListPage> {
     );
   }
 
+  void _setSortField({required WatchlistSortFields field}) {
+    setState(() {
+      if (_currentSortField == field) {
+        // if the current sort field is the same as the new sort field, then we just need to toggle the sort type
+        _currentSortType = (_currentSortType == SortType.ascending ? SortType.descending : SortType.ascending);
+      }
+      else {
+        // if the current sort field is different from the new sort field, then we need to set the new sort field
+        _currentSortField = field;
+      }
+    });
+  }
+
+  void _sortWatchlist() {
+    // perform sorting based on the new sort field and sort type
+    _watchlistDetailData.sort((a, b) {
+      int compareResult = 0;
+      switch (_currentSortField) {
+        case WatchlistSortFields.date:
+          compareResult = a.date.compareTo(b.date);
+          break;
+        case WatchlistSortFields.share:
+          compareResult = a.share.compareTo(b.share);
+          break;
+        case WatchlistSortFields.price:
+          compareResult = a.price.compareTo(b.price);
+          break;
+      }
+      return (_currentSortType == SortType.ascending ? compareResult : -compareResult);
+    });
+  }
+
   Widget _buildListHeader() {
     return Container(
-      padding: const EdgeInsets.all(10),
       decoration: const BoxDecoration(
         color: primaryDark,
         border: Border(
@@ -732,34 +767,94 @@ class WatchlistListPageState extends State<WatchlistListPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          const Expanded(
-            child: Text(
-              "Date",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                _setSortField(field: WatchlistSortFields.date);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                color: Colors.transparent,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Date",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Visibility(
+                      visible: _currentSortField == WatchlistSortFields.date,
+                      child: SortIcon(sortType: _currentSortType),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10,),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                _setSortField(field: WatchlistSortFields.share);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                color: Colors.transparent,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        _watchlistArgs.shareName.toCapitalized(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Visibility(
+                      visible: _currentSortField == WatchlistSortFields.share,
+                      child: SortIcon(sortType: _currentSortType),
+                    ),
+                  ],
+                ),
               ),
             )
           ),
           const SizedBox(width: 10,),
           Expanded(
-            child: Text(
-              _watchlistArgs.shareName.toCapitalized(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+            child: GestureDetector(
+              onTap: () {
+                _setSortField(field: WatchlistSortFields.price);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                color: Colors.transparent,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Price",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                    const SizedBox(width: 10,),
+                    Visibility(
+                      visible: _currentSortField == WatchlistSortFields.price,
+                      child: SortIcon(sortType: _currentSortType),
+                    ),
+                  ],
+                ),
               ),
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
-            )
-          ),
-          const SizedBox(width: 10,),
-          const Expanded(
-            child: Text(
-              "Price",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
             )
           ),
         ],
@@ -804,6 +899,14 @@ class WatchlistListPageState extends State<WatchlistListPage> {
             currentShare = _watchlistDetailData[index].shareLeft;
           }
 
+          WatchlistDetailEditArgs args = WatchlistDetailEditArgs(
+            type: _type,
+            watchlist: _watchlist,
+            index: index,
+            isLot: _watchlistArgs.isLot,
+            shareName: _watchlistArgs.shareName,
+          );
+
           return Slidable(
             endActionPane: ActionPane(
               motion: const ScrollMotion(),
@@ -815,7 +918,7 @@ class WatchlistListPageState extends State<WatchlistListPage> {
                     Navigator.pushNamed(
                       context,
                       '/watchlist/detail/edit',
-                      arguments: _watchlistDetailData[index].editArgs,
+                      arguments: args,
                     );
                   },
                 ),

@@ -1,3 +1,4 @@
+export './price_diff_saham_model.dart';
 export './price_gold_model.dart';
 export './price_model.dart';
 export './price_saham_ma_model.dart';

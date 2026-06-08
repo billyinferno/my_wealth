@@ -39,12 +39,16 @@ class CompanyDetailSahamPage extends StatefulWidget {
 }
 
 class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final ScrollController _infoController = ScrollController();
   final ScrollController _brokerController = ScrollController();
   final ScrollController _priceController = ScrollController();
   final ScrollController _calendarScrollController = ScrollController();
-  final ScrollController _graphScrollController = ScrollController();
+  final ScrollController _statDailyScrollController = ScrollController();
+  final ScrollController _statCandleScrollController = ScrollController();
+  final ScrollController _statDiffScrollController = ScrollController();
+  final ScrollController _statMonthlyScrollController = ScrollController();
+  final ScrollController _statBrokerScrollController = ScrollController();
   final ScrollController _chipController = ScrollController();
   final ScrollController _fundamentalController = ScrollController();
   final ScrollController _fundamentalItemController = ScrollController();
@@ -53,6 +57,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   final ScrollController _splitController = ScrollController();
   final ScrollController _analysisController = ScrollController();
   late TabController _tabController;
+  late TabController _tabControllerStat;
 
   late CompanyDetailArgs _companyData;
   late CompanyDetailModel _companyDetail;
@@ -74,6 +79,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   late ColumnType _columnType;
   late SortType _sortType;
   late List<SahamPriceList> _infoSahamPriceSort;
+  late List<PriceDiffSahamModel> _infoSahamPriceDiff;
+  final Map<int, List<Map<String, double>>> _infoSahamPriceDiffData = {};
   final Map<int, List<InfoSahamPriceModel>> _infoSahamPriceData = {};
   late int _currentInfoSahamPrice;
   late String _brokerSummarySelected;
@@ -157,7 +164,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   BodyPage _bodyPage = BodyPage.summary;
   int _quarterSelection = 5;
   String _quarterSelectionText = "Every Quarter";
-  String _graphSelection = "s";
   String _mapSelection = "p";
 
   double? _minPrice;
@@ -180,6 +186,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // initialize the tab controller for summary page
     _tabController = TabController(length: 7, vsync: this);
+    _tabControllerStat = TabController(length: 5, vsync: this);
 
     // convert company arguments
     _companyData = widget.companyData as CompanyDetailArgs;
@@ -236,6 +243,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _sortType = SortType.descending;
 
     _infoSahamPriceData.clear();
+    _infoSahamPriceDiffData.clear();
 
     // initialize all the info
     _infoSahamPriceData[30] = [];
@@ -252,6 +260,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
     // initialize dividend date, assume no dividend has been given
     _dividendDate = [];
+
+    // initialize info saham price diff data
+    _infoSahamPriceDiff = [];
 
     // default saham price to 90
     _currentInfoSahamPrice = 90;
@@ -291,7 +302,11 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   void dispose() {
     _priceController.dispose();
     _calendarScrollController.dispose();
-    _graphScrollController.dispose();
+    _statDailyScrollController.dispose();
+    _statCandleScrollController.dispose();
+    _statDiffScrollController.dispose();
+    _statMonthlyScrollController.dispose();
+    _statBrokerScrollController.dispose();
     _chipController.dispose();
     _infoController.dispose();
     _brokerController.dispose();
@@ -301,7 +316,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     _dividendController.dispose();
     _splitController.dispose();
     _analysisController.dispose();
-    
+    _tabController.dispose();
+    _tabControllerStat.dispose();
+
     super.dispose();
   }
 
@@ -1872,7 +1889,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   ),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.only(left: 5, right: 5),
                       color: primaryDark,
                       child: SingleChildScrollView(
                         controller: _fundamentalItemController,
@@ -1883,7 +1899,17 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: List<Widget>.generate(_infoFundamental.length,
                             ((index) {
-                              return SizedBox(
+                              return Container(
+                                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: BorderSide(
+                                      color: primaryLight,
+                                      width: 1,
+                                      style: BorderStyle.solid,
+                                    )
+                                  )
+                                ),
                                 width: 120,
                                 child: _fundamentalItem(
                                   fundamental: _infoFundamental[index],
@@ -2863,18 +2889,18 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           text: formatCurrencyWithNull(fundamental.debtEquity),
           addSubRow: addSubRow,
           subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.debtEquity, previousFundamental.debtEquity)) : ''),
-          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.debtEquity, previousFundamental.debtEquity) : primaryLight),
+          subColor: (previousFundamental != null ? colorDiffDoubleWithNull(previousFundamental.debtEquity, fundamental.debtEquity) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.debtTotalcap),
           addSubRow: addSubRow,
-          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.debtTotalcap, previousFundamental.debtTotalcap)) : ''),
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(previousFundamental.debtTotalcap, fundamental.debtTotalcap)) : ''),
           subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.debtTotalcap, previousFundamental.debtTotalcap) : primaryLight),
         ),
         _text(
           text: formatCurrencyWithNull(fundamental.debtEbitda),
           addSubRow: addSubRow,
-          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(fundamental.debtEbitda, previousFundamental.debtEbitda)) : ''),
+          subText: (previousFundamental != null ? formatCurrencyWithNull(diffDoubleWithNull(previousFundamental.debtEbitda, fundamental.debtEbitda)) : ''),
           subColor: (previousFundamental != null ? colorDiffDoubleWithNull(fundamental.debtEbitda, previousFundamental.debtEbitda) : primaryLight),
         ),
         _text(
@@ -4673,348 +4699,426 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
     }
   }
 
-  Widget _selectedGraph() {
-    switch (_graphSelection) {
-      case "b":
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Center(
-              child: Text("Broker Buy Sell"),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  width: 20,
-                ),
-                const SizedBox(
-                  width: 50,
-                  child: Text(
-                    "Period",
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+  Widget _statBroker() {
+    return SingleChildScrollView(
+      controller: _statBrokerScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const Center(
+            child: Text("Broker Buy Sell"),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(
+                width: 20,
+              ),
+              const SizedBox(
+                width: 50,
+                child: Text(
+                  "Period",
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                Expanded(
-                  child: CupertinoSegmentedControl(
-                    children: const {
-                      "d": Text("Daily"),
-                      "m": Text("Monthly"),
-                    },
-                    onValueChanged: ((value) {
-                      String selectedValue = value.toString();
-
-                      setState(() {
-                        _brokerSummaryDailyMonthlyDataSelected = selectedValue;
-                        _setBrokerSummaryDailyMonthlyData();
-                      });
-                    }),
-                    groupValue: _brokerSummaryDailyMonthlyDataSelected,
-                    selectedColor: Colors.purple,
-                    borderColor: Colors.purple[900]!,
-                    pressedColor: Colors.purple[900]!,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  width: 20,
-                ),
-                const SizedBox(
-                  width: 50,
-                  child: Text(
-                    "Type",
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: CupertinoSegmentedControl(
-                    children: const {
-                      "a": Text("All"),
-                      "d": Text("Domestic"),
-                      "f": Text("Foreign"),
-                    },
-                    onValueChanged: ((value) {
-                      String selectedValue = value.toString();
-
-                      setState(() {
-                        _brokerSummaryDailyMonthlyTypeSelected = selectedValue;
-                        _setBrokerSummaryDailyMonthlyData();
-                      });
-                    }),
-                    groupValue: _brokerSummaryDailyMonthlyTypeSelected,
-                    selectedColor: const Color(0xff40826d),
-                    borderColor: const Color.fromARGB(255, 24, 49, 41),
-                    pressedColor: const Color.fromARGB(255, 24, 49, 41),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  width: 20,
-                ),
-                const SizedBox(
-                  width: 50,
-                  child: Text(
-                    "Data",
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: CupertinoSegmentedControl(
-                    children: const {
-                      "l": Text("Lot"),
-                      "v": Text("Value"),
-                    },
-                    onValueChanged: ((value) {
-                      String selectedValue = value.toString();
-
-                      setState(() {
-                        _brokerSummaryDailyMonthlyValueSelected = selectedValue;
-                        _setBrokerSummaryDailyMonthlyData();
-                      });
-                    }),
-                    groupValue: _brokerSummaryDailyMonthlyValueSelected,
-                    selectedColor: const Color(0xff007ba7),
-                    borderColor: const Color.fromARGB(255, 0, 56, 77),
-                    pressedColor: const Color.fromARGB(255, 0, 56, 77),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            MultiLineChart(
-              height: 250,
-              data: _brokerSummaryDailyData,
-              color: const [Colors.green, secondaryDark],
-              legend: const ["Buy", "Sell"],
-              dateOffset: (_brokerSummaryDailyMonthlyDataSelected == 'd' ? 20 : 4),
-            ),
-          ],
-        );
-      case "m":
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Center(
-              child: Text(
-                  "Monthly Price Movement (${_priceMovement.prices.length} month${_priceMovement.prices.length > 1 ? "s" : ""})"),
-            ),
-            MultiLineChart(
-              height: 250,
-              data: _priceMovementData,
-              color: const [Colors.orange, Colors.red, Colors.green],
-              legend: const ["Average", "Minimum", "Maximum"],
-            ),
-          ],
-        );
-      case "c":
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Center(
-              child: Text("Candlestick and Trade Volume"),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            _dayStatSelection(),
-            const SizedBox(
-              height: 10,
-            ),
-            StockChart(
-              data: _infoSahamPrice,
-              high: _maxHigh!,
-              low: _minLow!,
-              maxVol: _maxVolume!,
-              dateOffset: (_infoSahamPrice.length ~/ 10),
-            ),
-          ],
-        );
-      case "s":
-      default:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            InkWell(
-              onDoubleTap: (() {
-                // check if we want to remove the comparison
-                if (_indexCompareName.isNotEmpty) {
-                  showCupertinoDialog(
-                      context: context,
-                      builder: ((BuildContext context) {
-                        return CupertinoAlertDialog(
-                          title: const Text("Clear Compare"),
-                          content: Text(
-                            "Do you want to clear comparison with $_indexCompareName?"
-                          ),
-                          actions: <CupertinoDialogAction>[
-                            CupertinoDialogAction(
-                              onPressed: (() {
-                                setState(() {
-                                  // clear the index compare data
-                                  _indexCompareName = "";
-                                  _indexComparePrice.clear();
-                                  _indexPriceMap.clear();
-                                  _indexData.clear();
-                                });
-
-                                // remove the dialog
-                                Navigator.pop(context);
-                              }),
-                              child: const Text(
-                                "Yes",
-                                style: TextStyle(
-                                  color: textPrimary,
-                                ),
-                              ),
-                            ),
-                            CupertinoDialogAction(
-                              onPressed: (() {
-                                // remove the dialog
-                                Navigator.pop(context);
-                              }),
-                              child: const Text("No")
-                            ),
-                          ],
-                        );
-                      }));
-                }
-              }),
-              child: Container(
-                color: Colors.transparent,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                        "Stock Price${(_indexCompareName.isNotEmpty ? " (Compare with $_indexCompareName)" : "")}"),
-                    Visibility(
-                        visible: _indexCompareName.isNotEmpty,
-                        child: const SizedBox(
-                          width: 5,
-                        )),
-                    Visibility(
-                      visible: _indexCompareName.isNotEmpty,
-                      child: Container(
-                        height: 15,
-                        width: 15,
-                        color: secondaryDark,
-                        child: Icon(
-                          MyIonicons(MyIoniconsData.close).data,
-                          size: 12,
-                          color: textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(child: _dayStatSelection()),
-                InkWell(
-                  onTap: (() async {
-                    // go to index list page
-                    await Navigator.pushNamed(
-                      context,
-                      '/index/find'
-                    ).then((value) async {
-                      if (value != null) {
-                        // convert value to company list model
-                        _indexCompare = value as IndexModel;
-                        _indexCompareName = _indexCompare.indexName;
-
-                        await _getIndexData().onError((error, stackTrace) {
-                          // remove the index compare name and price since we will
-                          // not be able to perform comparison
-                          _indexCompareName = "";
-                          _indexComparePrice.clear();
-                          _indexPriceMap.clear();
-                          _indexData.clear();
-                        });
-                      }
+              Expanded(
+                child: CupertinoSegmentedControl(
+                  children: const {
+                    "d": Text("Daily"),
+                    "m": Text("Monthly"),
+                  },
+                  onValueChanged: ((value) {
+                    String selectedValue = value.toString();
+      
+                    setState(() {
+                      _brokerSummaryDailyMonthlyDataSelected = selectedValue;
+                      _setBrokerSummaryDailyMonthlyData();
                     });
                   }),
-                  child: Container(
-                    height: 28,
-                    width: 28,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      color: extendedColor,
-                    ),
-                    child: Icon(
-                      MyIonicons(MyIoniconsData.git_compare_outline).data,
-                      color: textPrimary,
-                      size: 15,
-                    ),
+                  groupValue: _brokerSummaryDailyMonthlyDataSelected,
+                  selectedColor: Colors.purple,
+                  borderColor: Colors.purple[900]!,
+                  pressedColor: Colors.purple[900]!,
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(
+                width: 20,
+              ),
+              const SizedBox(
+                width: 50,
+                child: Text(
+                  "Type",
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(
-                  width: 15,
+              ),
+              Expanded(
+                child: CupertinoSegmentedControl(
+                  children: const {
+                    "a": Text("All"),
+                    "d": Text("Domestic"),
+                    "f": Text("Foreign"),
+                  },
+                  onValueChanged: ((value) {
+                    String selectedValue = value.toString();
+      
+                    setState(() {
+                      _brokerSummaryDailyMonthlyTypeSelected = selectedValue;
+                      _setBrokerSummaryDailyMonthlyData();
+                    });
+                  }),
+                  groupValue: _brokerSummaryDailyMonthlyTypeSelected,
+                  selectedColor: const Color(0xff40826d),
+                  borderColor: const Color.fromARGB(255, 24, 49, 41),
+                  pressedColor: const Color.fromARGB(255, 24, 49, 41),
                 ),
-              ],
-            ),
-            LineChart(
-              data: _graphData,
-              compare: _indexData,
-              dividend: _dividendDate,
-              height: 250,
-              watchlist: _watchlistDetail,
-              dateOffset: (_graphData.length > 10 ? null : 1),
-              fillDate: true,
-            ),
-          ],
-        );
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(
+                width: 20,
+              ),
+              const SizedBox(
+                width: 50,
+                child: Text(
+                  "Data",
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: CupertinoSegmentedControl(
+                  children: const {
+                    "l": Text("Lot"),
+                    "v": Text("Value"),
+                  },
+                  onValueChanged: ((value) {
+                    String selectedValue = value.toString();
+      
+                    setState(() {
+                      _brokerSummaryDailyMonthlyValueSelected = selectedValue;
+                      _setBrokerSummaryDailyMonthlyData();
+                    });
+                  }),
+                  groupValue: _brokerSummaryDailyMonthlyValueSelected,
+                  selectedColor: const Color(0xff007ba7),
+                  borderColor: const Color.fromARGB(255, 0, 56, 77),
+                  pressedColor: const Color.fromARGB(255, 0, 56, 77),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          MultiLineChart(
+            height: 250,
+            data: _brokerSummaryDailyData,
+            color: const [Colors.green, secondaryDark],
+            legend: const ["Buy", "Sell"],
+            dateOffset: (_brokerSummaryDailyMonthlyDataSelected == 'd' ? 20 : 4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statMonthly() {
+    return SingleChildScrollView(
+      controller: _statMonthlyScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: Text(
+                "Monthly Price Movement (${_priceMovement.prices.length} month${_priceMovement.prices.length > 1 ? "s" : ""})"),
+          ),
+          MultiLineChart(
+            height: 250,
+            data: _priceMovementData,
+            color: const [Colors.orange, Colors.red, Colors.green],
+            legend: const ["Average", "Minimum", "Maximum"],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statDiff() {
+    int dateOffset;
+    switch(_currentInfoSahamPrice) {
+      case 30:
+        dateOffset = 5;
+        break;
+      case 60:
+        dateOffset = 10;
+        break;
+      case 90:
+        dateOffset = 15;
+        break;
+      case 180:
+        dateOffset = 25;
+        break;
+      default:
+        dateOffset = 30;
+        break;
     }
+
+    return SingleChildScrollView(
+      controller: _statDiffScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const Center(
+            child: Text("Price Difference"),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              child: Text(
+                "Total average price in a year from that date, combine with the adjusted open and close price. The min and max showed the lowest/highest changes occured in 1 year interval from the data.",
+                style: TextStyle(
+                  fontSize: 11,
+                ),
+              )
+            ),
+          ),
+          _dayStatSelection(),
+          const SizedBox(
+            height: 10,
+          ),
+          MultiLineChart(
+            height: 250,
+            data: (_infoSahamPriceDiffData[_currentInfoSahamPrice] ?? []),
+            color: [Globals.colorList[9], Globals.colorList[7], Globals.colorList[10]],
+            legend: const ["Avg", "Min", "Max"],
+            dateOffset: dateOffset,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCandle() {
+    return SingleChildScrollView(
+      controller: _statCandleScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          const Center(
+            child: Text("Candlestick and Trade Volume"),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          _dayStatSelection(),
+          const SizedBox(
+            height: 10,
+          ),
+          StockChart(
+            data: _infoSahamPrice,
+            high: _maxHigh!,
+            low: _minLow!,
+            maxVol: _maxVolume!,
+            dateOffset: (_infoSahamPrice.length ~/ 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statDaily() {
+    return SingleChildScrollView(
+      controller: _statDailyScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          InkWell(
+            onDoubleTap: (() {
+              // check if we want to remove the comparison
+              if (_indexCompareName.isNotEmpty) {
+                showCupertinoDialog(
+                    context: context,
+                    builder: ((BuildContext context) {
+                      return CupertinoAlertDialog(
+                        title: const Text("Clear Compare"),
+                        content: Text(
+                          "Do you want to clear comparison with $_indexCompareName?"
+                        ),
+                        actions: <CupertinoDialogAction>[
+                          CupertinoDialogAction(
+                            onPressed: (() {
+                              setState(() {
+                                // clear the index compare data
+                                _indexCompareName = "";
+                                _indexComparePrice.clear();
+                                _indexPriceMap.clear();
+                                _indexData.clear();
+                              });
+      
+                              // remove the dialog
+                              Navigator.pop(context);
+                            }),
+                            child: const Text(
+                              "Yes",
+                              style: TextStyle(
+                                color: textPrimary,
+                              ),
+                            ),
+                          ),
+                          CupertinoDialogAction(
+                            onPressed: (() {
+                              // remove the dialog
+                              Navigator.pop(context);
+                            }),
+                            child: const Text("No")
+                          ),
+                        ],
+                      );
+                    }));
+              }
+            }),
+            child: Container(
+              color: Colors.transparent,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                      "Stock Price${(_indexCompareName.isNotEmpty ? " (Compare with $_indexCompareName)" : "")}"),
+                  Visibility(
+                      visible: _indexCompareName.isNotEmpty,
+                      child: const SizedBox(
+                        width: 5,
+                      )),
+                  Visibility(
+                    visible: _indexCompareName.isNotEmpty,
+                    child: Container(
+                      height: 15,
+                      width: 15,
+                      color: secondaryDark,
+                      child: Icon(
+                        MyIonicons(MyIoniconsData.close).data,
+                        size: 12,
+                        color: textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(child: _dayStatSelection()),
+              InkWell(
+                onTap: (() async {
+                  // go to index list page
+                  await Navigator.pushNamed(
+                    context,
+                    '/index/find'
+                  ).then((value) async {
+                    if (value != null) {
+                      // convert value to company list model
+                      _indexCompare = value as IndexModel;
+                      _indexCompareName = _indexCompare.indexName;
+      
+                      await _getIndexData().onError((error, stackTrace) {
+                        // remove the index compare name and price since we will
+                        // not be able to perform comparison
+                        _indexCompareName = "";
+                        _indexComparePrice.clear();
+                        _indexPriceMap.clear();
+                        _indexData.clear();
+                      });
+                    }
+                  });
+                }),
+                child: Container(
+                  height: 28,
+                  width: 28,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    color: extendedColor,
+                  ),
+                  child: Icon(
+                    MyIonicons(MyIoniconsData.git_compare_outline).data,
+                    color: textPrimary,
+                    size: 15,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+            ],
+          ),
+          LineChart(
+            data: _graphData,
+            compare: _indexData,
+            dividend: _dividendDate,
+            height: 250,
+            watchlist: _watchlistDetail,
+            dateOffset: (_graphData.length > 10 ? null : 1),
+            fillDate: true,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _dayStatSelection() {
@@ -5052,37 +5156,67 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(height: 10,),
-        SizedBox(
-          width: double.infinity,
-          child: CupertinoSegmentedControl<String>(
-            children: const {
-              "s": Text("Daily"),
-              "c": Text("Candle"),
-              "m": Text("Monthly"),
-              "b": Text("Broker"),
-            },
-            onValueChanged: ((value) {
-              String selectedValue = value.toString();
-
-              setState(() {
-                _graphSelection = selectedValue;
-              });
-            }),
-            groupValue: _graphSelection,
-            selectedColor: secondaryColor,
-            borderColor: secondaryDark,
-            pressedColor: primaryDark,
-          ),
+        TabBar(
+          controller: _tabControllerStat,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorColor: accentColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelColor: textPrimary,
+          unselectedLabelColor: textPrimary,
+          dividerHeight: 0,
+          tabs: const <Widget>[
+            Tab(text: 'DAILY',),
+            Tab(text: 'CANDLE',),
+            Tab(text: 'DIFF',),
+            Tab(text: 'MONTHLY',),
+            Tab(text: 'BROKER'),
+          ],
         ),
         const SizedBox(height: 10,),
         Expanded(
-          child: SingleChildScrollView(
-            controller: _graphScrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: _selectedGraph(),
+          child: TabBarView(
+            controller: _tabControllerStat,
+            children: <Widget>[
+              _statDaily(),
+              _statCandle(),
+              _statDiff(),
+              _statMonthly(),
+              _statBroker(),
+            ],
           ),
         ),
+        // const SizedBox(height: 10,),
+        // SizedBox(
+        //   width: double.infinity,
+        //   child: CupertinoSegmentedControl<String>(
+        //     children: const {
+        //       "s": Text("Daily"),
+        //       "c": Text("Candle"),
+        //       "m": Text("Monthly"),
+        //       "b": Text("Broker"),
+        //     },
+        //     onValueChanged: ((value) {
+        //       String selectedValue = value.toString();
+
+        //       setState(() {
+        //         _graphSelection = selectedValue;
+        //       });
+        //     }),
+        //     groupValue: _graphSelection,
+        //     selectedColor: secondaryColor,
+        //     borderColor: secondaryDark,
+        //     pressedColor: primaryDark,
+        //   ),
+        // ),
+        // const SizedBox(height: 10,),
+        // Expanded(
+        //   child: SingleChildScrollView(
+        //     controller: _graphScrollController,
+        //     physics: const AlwaysScrollableScrollPhysics(),
+        //     child: _selectedGraph(),
+        //   ),
+        // ),
       ],
     );
   }
@@ -6340,6 +6474,99 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           code: _companyData.companyCode,
         ).then((resp) {
           _pricePerformance = resp;
+        }),
+
+        // get the info sahams price diff
+        _infoSahamsAPI.getInfoSahamPriceDiff(
+          code: _companyData.companyCode,
+        ).then((resp) {
+          _infoSahamPriceDiff = resp;
+
+          // initialize the price map
+          Map<int, Map<String, double>> avgPrice = {};
+          Map<int, Map<String, double>> minPrice = {};
+          Map<int, Map<String, double>> maxPrice = {};
+
+          avgPrice[30] = {};
+          avgPrice[60] = {};
+          avgPrice[90] = {};
+          avgPrice[180] = {};
+          avgPrice[365] = {};
+
+          minPrice[30] = {};
+          minPrice[60] = {};
+          minPrice[90] = {};
+          minPrice[180] = {};
+          minPrice[365] = {};
+
+          maxPrice[30] = {};
+          maxPrice[60] = {};
+          maxPrice[90] = {};
+          maxPrice[180] = {};
+          maxPrice[365] = {};
+
+          // loop thru the info saham price diff price
+          for (int i = 0; i < _infoSahamPriceDiff.length; i++) {
+            // add for 1M
+            if (i < 30) {
+              avgPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              minPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
+              maxPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
+            }
+
+            // add for 2M
+            if (i < 60) {
+              avgPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              minPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
+              maxPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
+            }
+
+            // add for 3M
+            if (i < 90) {
+              avgPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              minPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
+              maxPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
+            }
+
+            // add for 6M
+            if (i < 180) {
+              avgPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              minPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
+              maxPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
+            }
+
+            // add for 1Y
+            avgPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+            minPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
+            maxPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
+          }
+
+          // add the price diff data that we generate above
+          _infoSahamPriceDiffData[30] = [];
+          _infoSahamPriceDiffData[60] = [];
+          _infoSahamPriceDiffData[90] = [];
+          _infoSahamPriceDiffData[180] = [];
+          _infoSahamPriceDiffData[365] = [];
+
+          _infoSahamPriceDiffData[30]?.add(avgPrice[30] ?? {});
+          _infoSahamPriceDiffData[30]?.add(minPrice[30] ?? {});
+          _infoSahamPriceDiffData[30]?.add(maxPrice[30] ?? {});
+
+          _infoSahamPriceDiffData[60]?.add(avgPrice[60] ?? {});
+          _infoSahamPriceDiffData[60]?.add(minPrice[60] ?? {});
+          _infoSahamPriceDiffData[60]?.add(maxPrice[60] ?? {});
+
+          _infoSahamPriceDiffData[90]?.add(avgPrice[90] ?? {});
+          _infoSahamPriceDiffData[90]?.add(minPrice[90] ?? {});
+          _infoSahamPriceDiffData[90]?.add(maxPrice[90] ?? {});
+
+          _infoSahamPriceDiffData[180]?.add(avgPrice[180] ?? {});
+          _infoSahamPriceDiffData[180]?.add(minPrice[180] ?? {});
+          _infoSahamPriceDiffData[180]?.add(maxPrice[180] ?? {});
+
+          _infoSahamPriceDiffData[365]?.add(avgPrice[365] ?? {});
+          _infoSahamPriceDiffData[365]?.add(minPrice[365] ?? {});
+          _infoSahamPriceDiffData[365]?.add(maxPrice[365] ?? {});
         }),
 
         // check if user owned this stock or not?

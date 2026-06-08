@@ -55,4 +55,29 @@ class InfoSahamsAPI {
     }
     return listInfoSahamPrice;
   }
+
+  Future<List<PriceDiffSahamModel>> getInfoSahamPriceDiff({
+    required String code,
+  }) async {
+    // get saham information using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInfoSaham}/diff/code/$code'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getInfoSahamPriceDiff',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse saham information list data
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<PriceDiffSahamModel> listPriceDiffSaham = [];
+    for (var data in commonModel.data) {
+      PriceDiffSahamModel priceDiffSaham = PriceDiffSahamModel.fromJson(data['attributes']);
+      listPriceDiffSaham.add(priceDiffSaham);
+    }
+    return listPriceDiffSaham;
+  }
 }

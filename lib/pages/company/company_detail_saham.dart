@@ -6508,28 +6508,28 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           // loop thru the info saham price diff price
           for (int i = 0; i < _infoSahamPriceDiff.length; i++) {
             // add for 1M
-            if (i < 30) {
+            if ((_infoSahamPriceDiff.length - i) < 30) {
               avgPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
               minPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
 
             // add for 2M
-            if (i < 60) {
+            if ((_infoSahamPriceDiff.length - i) < 60) {
               avgPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
               minPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
 
             // add for 3M
-            if (i < 90) {
+            if ((_infoSahamPriceDiff.length - i) < 90) {
               avgPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
               minPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
 
             // add for 6M
-            if (i < 180) {
+            if ((_infoSahamPriceDiff.length - i) < 180) {
               avgPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
               minPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;

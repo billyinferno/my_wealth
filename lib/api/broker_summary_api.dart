@@ -278,4 +278,72 @@ class BrokerSummaryAPI {
     BrokerSummaryDailyStatModel brokerSummary = BrokerSummaryDailyStatModel.fromJson(commonModel.data['attributes']);
     return brokerSummary;
   }
+
+  Future<List<BrokerSummarySectorFlowModel>> getBrokerSummarySectorFlow() async {
+    // get the broker data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/sector/flow'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getBrokerSummarySectorFlow',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the body we got
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    
+    // get all the list broker summary sector flow
+    List<BrokerSummarySectorFlowModel> listBrokerSummarySectorFlow = [];
+    for (var data in commonModel.data) {
+      BrokerSummarySectorFlowModel brokerSummarySectorFlow = BrokerSummarySectorFlowModel.fromJson(data['attributes']);
+      listBrokerSummarySectorFlow.add(brokerSummarySectorFlow);
+    }
+
+    // return the list broker summary sector flow that we got
+    return listBrokerSummarySectorFlow;
+  }
+
+  Future<BrokerSummaryFlowModel?> getBrokerSummaryFlow() async {
+    // check the last update date for broker summary flow
+    DateTime? lastUpdateDate = BrokerSharedPreferences.getBrokerSummaryFlowLastUpdate();
+
+    // check if last update date is not null
+    if (lastUpdateDate != null) {
+      // check if last update date and current date time difference is more than 6 hours
+      // if more than 6 hours, we will update the data, if not we will get the data from local storage
+      DateTime currentDateTime = DateTime.now().toLocal();
+      Duration difference = currentDateTime.difference(lastUpdateDate);
+      if (difference.inHours < 6) {
+        // get the data from local storage
+        BrokerSummaryFlowModel? brokerSummaryFlow = BrokerSharedPreferences.getBrokerSummaryFlow();
+
+        // check if we got the data or not?
+        if (brokerSummaryFlow != null) {
+          // we got the data, return null so we will not update the broker shared preferences
+          // from the caller
+          return null;
+        }
+      }
+    }
+
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/summary/flow'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getBrokerSummaryFlow',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the broker summary monthly statistic
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummaryFlowModel brokerSummary = BrokerSummaryFlowModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
+  }
 }

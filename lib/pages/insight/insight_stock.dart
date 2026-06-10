@@ -68,36 +68,38 @@ class _InsightStockPageState extends State<InsightStockPage> {
           LoadingScreen.instance().hide();
         });
       }),
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              ScrollSegmentedControl<InsightStockPageEnum>(
-                data: const {
-                  InsightStockPageEnum.sectorSummary: "Sector Summary",
-                  InsightStockPageEnum.topGainer: "Top Gainer",
-                  InsightStockPageEnum.topLoser: "Top Loser",
-                  InsightStockPageEnum.perPerSector: "PER Per-Sector",
-                  InsightStockPageEnum.stockNewlyListed: "Stock Newly Listed",
-                  InsightStockPageEnum.stockLatestDividend: "Stock Latest Dividend",
-                  InsightStockPageEnum.latestStockSplit: "Latest Stock Split",
-                },
-                onPress: ((value) {
-                  setState(() {
-                    _selectedStockPage = value;
-                  });
-                }),
-              ),
-              const SizedBox(height: 10,),
-              _showPage(),
-              const SizedBox(height: 20,),  
-            ],
-          ),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            ScrollSegmentedControl<InsightStockPageEnum>(
+              data: const {
+                InsightStockPageEnum.sectorSummary: "Sector Summary",
+                InsightStockPageEnum.topGainer: "Top Gainer",
+                InsightStockPageEnum.topLoser: "Top Loser",
+                InsightStockPageEnum.perPerSector: "PER Per-Sector",
+                InsightStockPageEnum.stockNewlyListed: "Stock Newly Listed",
+                InsightStockPageEnum.stockLatestDividend: "Stock Latest Dividend",
+                InsightStockPageEnum.latestStockSplit: "Latest Stock Split",
+              },
+              onPress: ((value) {
+                setState(() {
+                  _selectedStockPage = value;
+                });
+              }),
+            ),
+            const SizedBox(height: 10,),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: _showPage(),
+              )
+            ),
+            const SizedBox(height: 20,),  
+          ],
         ),
       ),
     );

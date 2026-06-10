@@ -692,7 +692,7 @@ class LoginPageState extends State<LoginPage> {
         Log.success(message: '🔟2️⃣ Get Broker');
       }),
       _brokerSummaryApi.getBrokerSummaryTop().then((resp) async {
-        await BrokerSharedPreferences.setBroketTopList(topList: resp);
+        await BrokerSharedPreferences.setBrokerTopList(topList: resp);
         
         if (!mounted) return;
         Provider.of<BrokerProvider>(
@@ -1005,6 +1005,26 @@ class LoginPageState extends State<LoginPage> {
           lastUpdateModel: resp,
         );
         Log.success(message: '🔟🔟🔟6️⃣ Get Company Max Last Update');
+      }),
+      _brokerSummaryApi.getBrokerSummarySectorFlow().then((resp) async {
+        if (!mounted) return;
+        await BrokerSharedPreferences.setBrokerSummarySectorFlow(
+          sectorFlowList: resp
+        );
+        Log.success(message: '🔟🔟🔟7️⃣ Get Broker Summary Sector Flow');
+      }),
+      _brokerSummaryApi.getBrokerSummaryFlow().then((resp) async {
+        if (!mounted) return;
+
+        if (resp != null) {
+          await BrokerSharedPreferences.setBrokerSummaryFlow(
+            data: resp
+          );
+          Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
+        }
+        else {
+          Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow from Cache');
+        }
       }),
     ]).then((_) {
       Log.success(message: "💯 Finished get additional information");

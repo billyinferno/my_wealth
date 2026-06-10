@@ -4921,7 +4921,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             child: Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
               child: Text(
-                "Total average price in a year from that date, combine with the adjusted open and close price. The min and max showed the lowest/highest changes occured in 1 year interval from the data.",
+                "Total average price in a year from that date, combine with the adjusted high and low price. The min and max showed the lowest/highest changes occured in 1 year interval from the data.",
                 style: TextStyle(
                   fontSize: 11,
                 ),
@@ -4935,8 +4935,8 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           MultiLineChart(
             height: 250,
             data: (_infoSahamPriceDiffData[_currentInfoSahamPrice] ?? []),
-            color: [Globals.colorList[9], Globals.colorList[7], Globals.colorList[10]],
-            legend: const ["Avg", "Min", "Max"],
+            color: [Globals.colorList[9], Globals.colorList[8], Globals.colorList[7], Globals.colorList[10]],
+            legend: const ["Avg", "Current", "Min", "Max"],
             dateOffset: dateOffset,
           ),
         ],
@@ -6484,6 +6484,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
 
           // initialize the price map
           Map<int, Map<String, double>> avgPrice = {};
+          Map<int, Map<String, double>> curPrice = {};
           Map<int, Map<String, double>> minPrice = {};
           Map<int, Map<String, double>> maxPrice = {};
 
@@ -6492,6 +6493,12 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           avgPrice[90] = {};
           avgPrice[180] = {};
           avgPrice[365] = {};
+
+          curPrice[30] = {};
+          curPrice[60] = {};
+          curPrice[90] = {};
+          curPrice[180] = {};
+          curPrice[365] = {};
 
           minPrice[30] = {};
           minPrice[60] = {};
@@ -6510,6 +6517,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             // add for 1M
             if ((_infoSahamPriceDiff.length - i) < 30) {
               avgPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              curPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].lastPrice;
               minPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[30]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
@@ -6517,6 +6525,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             // add for 2M
             if ((_infoSahamPriceDiff.length - i) < 60) {
               avgPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              curPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].lastPrice;
               minPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[60]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
@@ -6524,6 +6533,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             // add for 3M
             if ((_infoSahamPriceDiff.length - i) < 90) {
               avgPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              curPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].lastPrice;
               minPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[90]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
@@ -6531,12 +6541,14 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             // add for 6M
             if ((_infoSahamPriceDiff.length - i) < 180) {
               avgPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+              curPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].lastPrice;
               minPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
               maxPrice[180]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
             }
 
             // add for 1Y
             avgPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].avgPrice;
+            curPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].lastPrice;
             minPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].minPrice;
             maxPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
           }
@@ -6549,22 +6561,27 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           _infoSahamPriceDiffData[365] = [];
 
           _infoSahamPriceDiffData[30]?.add(avgPrice[30] ?? {});
+          _infoSahamPriceDiffData[30]?.add(curPrice[30] ?? {});
           _infoSahamPriceDiffData[30]?.add(minPrice[30] ?? {});
           _infoSahamPriceDiffData[30]?.add(maxPrice[30] ?? {});
 
           _infoSahamPriceDiffData[60]?.add(avgPrice[60] ?? {});
+          _infoSahamPriceDiffData[60]?.add(curPrice[60] ?? {});
           _infoSahamPriceDiffData[60]?.add(minPrice[60] ?? {});
           _infoSahamPriceDiffData[60]?.add(maxPrice[60] ?? {});
 
           _infoSahamPriceDiffData[90]?.add(avgPrice[90] ?? {});
+          _infoSahamPriceDiffData[90]?.add(curPrice[90] ?? {});
           _infoSahamPriceDiffData[90]?.add(minPrice[90] ?? {});
           _infoSahamPriceDiffData[90]?.add(maxPrice[90] ?? {});
 
           _infoSahamPriceDiffData[180]?.add(avgPrice[180] ?? {});
+          _infoSahamPriceDiffData[180]?.add(curPrice[180] ?? {});
           _infoSahamPriceDiffData[180]?.add(minPrice[180] ?? {});
           _infoSahamPriceDiffData[180]?.add(maxPrice[180] ?? {});
 
           _infoSahamPriceDiffData[365]?.add(avgPrice[365] ?? {});
+          _infoSahamPriceDiffData[180]?.add(curPrice[180] ?? {});
           _infoSahamPriceDiffData[365]?.add(minPrice[365] ?? {});
           _infoSahamPriceDiffData[365]?.add(maxPrice[365] ?? {});
         }),

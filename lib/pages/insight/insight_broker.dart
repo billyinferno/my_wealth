@@ -21,6 +21,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   late BrokerSummaryTopModel? _brokerTopList;
   late List<BrokerSummaryBuyElement> _brokerTopListBuy;
   late List<BrokerSummaryBuyElement> _brokerTopListSell;
+  late BrokerSummaryFlowModel? _brokerSummaryFlow;
   late BrokerTopTransactionModel _brokerTopTransaction;
   late BuySell _brokerTopTransactionBuySell;
   late MarketTodayModel _marketToday;
@@ -34,6 +35,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     super.initState();
 
     _brokerTopList = BrokerSharedPreferences.getBrokerTopList();
+    _brokerSummaryFlow = BrokerSharedPreferences.getBrokerSummaryFlow();
     _brokerTopTransaction = InsightSharedPreferences.getBrokerTopTxn();
     _marketToday = InsightSharedPreferences.getBrokerMarketToday();
     _marketCap = InsightSharedPreferences.getMarketCap();
@@ -111,6 +113,37 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                         type: "Sell",
                         totalLot: _marketToday.sell.brokerSummaryTotalLot,
                         totalValue: _marketToday.sell.brokerSummaryTotalValue,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20,),
+                  const Center(
+                    child: Text(
+                      "Transaction Flow",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      //TODO: Inkwell to go to detail page broker summary flow
+                      _brokerFlowBox(
+                        type: "Domestic",
+                        buy: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].buyValue,
+                        sell: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].sellValue,
+                        net: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].netValue,
+                      ),
+                      const SizedBox(width: 10,),
+                      //TODO: Inkwell to go to detail page broker summary flow
+                      _brokerFlowBox(
+                        type: "Foreign",
+                        buy: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].buyValue,
+                        sell: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].sellValue,
+                        net: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].netValue,
                       ),
                     ],
                   ),
@@ -826,7 +859,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     await Future.wait([
       _brokerSummaryAPI.getBrokerSummaryTop().then((resp) async {
         Log.success(message: "🔃 Refresh Broker Summary Top");
-        await BrokerSharedPreferences.setBroketTopList(topList: resp);
+        await BrokerSharedPreferences.setBrokerTopList(topList: resp);
         if (mounted) {
           Provider.of<BrokerProvider>(
             context,
@@ -962,5 +995,136 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
         ),
       ),
     );
+  }
+
+  Widget _brokerFlowBox({
+    required String type,
+    required int buy,
+    required int sell,
+    required int net,
+  }) {
+    Color color = Colors.grey;
+    if (net > 0) {
+      color = Colors.green[900]!;
+    }
+    else if (net < 0) {
+      color = secondaryDark;
+    }
+
+    return Expanded(
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: 10,
+              color: color,
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                color: primaryDark,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      type,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2,),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Expanded(
+                          child: Text(
+                            "Buy",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            formatIntWithNull(
+                              buy,
+                            ),
+                            style: TextStyle(
+                              color: Colors.green,
+                            ),
+                          )
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Expanded(
+                          child: Text(
+                            "Sell",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            formatIntWithNull(
+                              sell,
+                            ),
+                            style: TextStyle(
+                              color: secondaryLight,
+                            ),
+                          )
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const Expanded(
+                          child: Text(
+                            "Net",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            formatIntWithNull(
+                              net,
+                            ),
+                            style: TextStyle(
+                              color: _getTextColor(value: net),
+                            ),
+                          )
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getTextColor({required int value}) {
+    if (value > 0) {
+      return Colors.green;
+    }
+    else if (value < 0) {
+      return secondaryLight;
+    }
+    return textPrimary;
   }
 }

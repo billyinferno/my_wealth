@@ -4698,6 +4698,10 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
   }
 
   Widget _statBroker() {
+    int dateOffset = _brokerSummaryDailyData[0].length ~/ 5;
+    if(dateOffset > 10) {
+      dateOffset = 15;
+    }
     return SingleChildScrollView(
       controller: _statBrokerScrollController,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -4852,7 +4856,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             data: _brokerSummaryDailyData,
             color: const [Colors.green, secondaryDark],
             legend: const ["Buy", "Sell"],
-            dateOffset: (_brokerSummaryDailyMonthlyDataSelected == 'd' ? 20 : 4),
+            dateOffset: dateOffset,
           ),
         ],
       ),

@@ -4636,8 +4636,6 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                     ],
                     onChanged: <MyYearPickerCalendarType>(value) {
                       setState(() {
-                        debugPrint("$value");
-                        debugPrint("$_calendarMonthlyType");
                         _calendarMonthlyType = value;
                       });
                     },
@@ -4900,7 +4898,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
         dateOffset = 25;
         break;
       default:
-        dateOffset = 30;
+        dateOffset = 60;
         break;
     }
 
@@ -6553,6 +6551,9 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
             maxPrice[365]?[Globals.dfddMMyy.formatDateWithNull(_infoSahamPriceDiff[i].date)] = _infoSahamPriceDiff[i].maxPrice;
           }
 
+          // clear the info saham price data map
+          _infoSahamPriceDiffData.clear();
+
           // add the price diff data that we generate above
           _infoSahamPriceDiffData[30] = [];
           _infoSahamPriceDiffData[60] = [];
@@ -6581,7 +6582,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
           _infoSahamPriceDiffData[180]?.add(maxPrice[180] ?? {});
 
           _infoSahamPriceDiffData[365]?.add(avgPrice[365] ?? {});
-          _infoSahamPriceDiffData[180]?.add(curPrice[180] ?? {});
+          _infoSahamPriceDiffData[365]?.add(curPrice[365] ?? {});
           _infoSahamPriceDiffData[365]?.add(minPrice[365] ?? {});
           _infoSahamPriceDiffData[365]?.add(maxPrice[365] ?? {});
         }),

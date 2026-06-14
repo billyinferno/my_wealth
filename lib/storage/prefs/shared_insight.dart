@@ -14,42 +14,42 @@ class InsightSharedPreferences {
   
   static const String _bandarInterestingKey = "insight_bandar_interesting";
   
-  static const  String _topAccumFromDateKey = "insight_top_accum_from_date";
-  static const  String _topAccumToDateKey = "insight_top_accum_to_date";
-  static const  String _topAccumRateKey = "insight_top_accum_rate";
-  static const  String _topAccumResultKey = "insight_top_accum_result";
+  static const String _topAccumFromDateKey = "insight_top_accum_from_date";
+  static const String _topAccumToDateKey = "insight_top_accum_to_date";
+  static const String _topAccumRateKey = "insight_top_accum_rate";
+  static const String _topAccumResultKey = "insight_top_accum_result";
   
-  static const  String _epsMinRateKey = "insight_eps_min_rate";
-  static const  String _epsMinDiffRateKey = "insight_eps_min_diff_rate";
-  static const  String _epsResultKey = "insight_eps_result";
+  static const String _epsMinRateKey = "insight_eps_min_rate";
+  static const String _epsMinDiffRateKey = "insight_eps_min_diff_rate";
+  static const String _epsResultKey = "insight_eps_result";
   
-  static const  String _sidewayOneDayRateKey = "insight_sideway_one_day_rate";
-  static const  String _sidewayAvgOneDayKey = "insight_sideway_avg_one_day";
-  static const  String _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
-  static const  String _sidewayResultKey = "insight_sideway_result";
+  static const String _sidewayOneDayRateKey = "insight_sideway_one_day_rate";
+  static const String _sidewayAvgOneDayKey = "insight_sideway_avg_one_day";
+  static const String _sidewayAvgOneWeekKey = "insight_sideway_avg_one_week";
+  static const String _sidewayResultKey = "insight_sideway_result";
   
-  static const  String _marketCapKey = "insight_market_cap";
-  static const  String _indexBeaterKey = "insight_index_beater";
-  static const  String _stockNewListedKey = "insight_stock_new_listed";
-  static const  String _stockDividendListKey = "insight_stock_dividend_list";
-  static const  String _stockSplitListKey = "insight_stock_split_list";
+  static const String _marketCapKey = "insight_market_cap";
+  static const String _indexBeaterKey = "insight_index_beater";
+  static const String _stockNewListedKey = "insight_stock_new_listed";
+  static const String _stockDividendListKey = "insight_stock_dividend_list";
+  static const String _stockSplitListKey = "insight_stock_split_list";
   
-  static const  String _stockCollectKey = "insight_stock_collect";
-  static const  String _stockCollectFromDateKey = "insight_stock_collect_from_date";
-  static const  String _stockCollectToDateKey = "insight_stock_collect_to_date";
-  static const  String _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
+  static const String _stockCollectKey = "insight_stock_collect";
+  static const String _stockCollectFromDateKey = "insight_stock_collect_from_date";
+  static const String _stockCollectToDateKey = "insight_stock_collect_to_date";
+  static const String _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
   
-  static const  String _brokerCollectKey = "insight_broker_collect";
-  static const  String _brokerCollectIDKey = "insight_broker_collect_id";
-  static const  String _brokerCollectFromDateKey = "insight_broker_collect_from_date";
-  static const  String _brokerCollectToDateKey = "insight_broker_collect_to_date";
-  static const  String _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
+  static const String _brokerCollectKey = "insight_broker_collect";
+  static const String _brokerCollectIDKey = "insight_broker_collect_id";
+  static const String _brokerCollectFromDateKey = "insight_broker_collect_from_date";
+  static const String _brokerCollectToDateKey = "insight_broker_collect_to_date";
+  static const String _brokerCollectAccumRateKey = "insight_broker_collect_accum_rate";
 
-  static const  String _brokerSpecificBrokerKey = "insight_broker_specific_broker_id";
-  static const  String _brokerSpecificCompanyKey = "insight_broker_specific_company";
-  static const  String _brokerSpecificFromDateKey = "insight_broker_specific_from_date";
-  static const  String _brokerSpecificToDateKey = "insight_broker_specific_to_date";
-  static const  String _brokerSpecificResultKey = "insight_broker_specific_result";
+  static const String _brokerSpecificBrokerKey = "insight_broker_specific_broker_id";
+  static const String _brokerSpecificCompanyKey = "insight_broker_specific_company";
+  static const String _brokerSpecificFromDateKey = "insight_broker_specific_from_date";
+  static const String _brokerSpecificToDateKey = "insight_broker_specific_to_date";
+  static const String _brokerSpecificResultKey = "insight_broker_specific_result";
 
   static const String _brokerCompanyStockCodeKey = "insight_broker_company_stock_code";
   static const String _brokerCompanyFromDateKey = "insight_broker_company_from_date";
@@ -59,6 +59,8 @@ class InsightSharedPreferences {
   static const String _brokerCompanySummaryDataGrossKey = "insight_broker_company_summary_gross";
   static const String _brokerCompanySummaryDataNetKey = "insight_broker_company_summary_net";
   static const String _brokerCompanyTopBrokerKey = "insight_broker_company_top_broker";
+  
+  static const String _price52WeeksLowKey = "insight_price_52_weeks_low_list";
 
   static Future<void> setSectorSummaryList({
     required List<SectorSummaryModel> sectorSummaryList
@@ -1310,6 +1312,44 @@ class InsightSharedPreferences {
     else {
       // no data
       return null;
+    }
+  }
+
+  static Future<void> setPrice52WeeksLow({
+    required List<Price52WeeksLowModel> data
+  }) async {
+    // convert the json to string so we can stored it on the local storage
+    List<String> price52WeeksList = [];
+    for (Price52WeeksLowModel sector in data) {
+      price52WeeksList.add(jsonEncode(sector.toJson()));
+    }
+    LocalBox.putStringList(
+      key: _price52WeeksLowKey,
+      value: price52WeeksList
+    );
+  }
+
+  static List<Price52WeeksLowModel> getPrice52WeeksLow() {
+    // get the data from local box
+    List<String> price52WeeksList = (
+      LocalBox.getStringList(key: _price52WeeksLowKey) ?? []
+    );
+
+    // check if the list is empty or not?
+    if (price52WeeksList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<Price52WeeksLowModel> ret = [];
+      for (String data in price52WeeksList) {
+        Price52WeeksLowModel price = Price52WeeksLowModel.fromJson(jsonDecode(data));
+        ret.add(price);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
     }
   }
 }

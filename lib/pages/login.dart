@@ -27,6 +27,7 @@ class LoginPageState extends State<LoginPage> {
   final BrokerSummaryAPI _brokerSummaryApi = BrokerSummaryAPI();
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
+  final InfoSahamsAPI _infoSahamsAPI = InfoSahamsAPI();
 
   late Future<bool> _getMe;
   late bool _isLogin;
@@ -1011,6 +1012,13 @@ class LoginPageState extends State<LoginPage> {
         await BrokerSharedPreferences.setBrokerSummarySectorFlow(
           sectorFlowList: resp
         );
+
+        if (!mounted) return;
+        Provider.of<BrokerProvider>(
+          context,
+          listen: false
+        ).setBrokerSummaryFlowModel(data: resp);
+
         Log.success(message: '🔟🔟🔟7️⃣ Get Broker Summary Sector Flow');
       }),
       _brokerSummaryApi.getBrokerSummaryFlow().then((resp) async {
@@ -1020,11 +1028,33 @@ class LoginPageState extends State<LoginPage> {
           await BrokerSharedPreferences.setBrokerSummaryFlow(
             data: resp
           );
+
+          if (!mounted) return;
+          Provider.of<BrokerProvider>(
+            context,
+            listen: false
+          ).setBrokerSummaryFlow(data: resp);
+
           Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
         }
         else {
           Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow from Cache');
         }
+      }),
+      _infoSahamsAPI.get52WeeksLowPrice().then((resp) async {
+        if (!mounted) return;
+
+        await InsightSharedPreferences.setPrice52WeeksLow(
+          data: resp
+        );
+
+        if (!mounted) return;
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setPrice52WeeksLow(data: resp);
+
+        Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
       }),
     ]).then((_) {
       Log.success(message: "💯 Finished get additional information");

@@ -80,4 +80,27 @@ class InfoSahamsAPI {
     }
     return listPriceDiffSaham;
   }
+
+  Future<List<Price52WeeksLowModel>> get52WeeksLowPrice() async {
+    // get saham information using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInfoSaham}/low/52/weeks'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on get52WeeksLowPrice',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse saham information list data
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<Price52WeeksLowModel> listPrice52WeeksLow = [];
+    for (var data in commonModel.data) {
+      Price52WeeksLowModel sahamInfo = Price52WeeksLowModel.fromJson(data['attributes']);
+      listPrice52WeeksLow.add(sahamInfo);
+    }
+    return listPrice52WeeksLow;
+  }
 }

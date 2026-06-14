@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:my_wealth/utils/icon/my_ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:my_wealth/_index.g.dart';
@@ -26,6 +27,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   late BuySell _brokerTopTransactionBuySell;
   late MarketTodayModel _marketToday;
   late List<MarketCapModel> _marketCap;
+  late List<Price52WeeksLowModel> _price52WeeksLowList;
 
   String _brokerSummarySelected = 'a';
   String _brokerTopTransactionSelected = 'a';
@@ -39,6 +41,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     _brokerTopTransaction = InsightSharedPreferences.getBrokerTopTxn();
     _marketToday = InsightSharedPreferences.getBrokerMarketToday();
     _marketCap = InsightSharedPreferences.getMarketCap();
+    _price52WeeksLowList = InsightSharedPreferences.getPrice52WeeksLow();
 
     _brokerSummarySelected = 'a';    
     _brokerTopListBuy = _brokerTopList!.brokerSummaryAll.brokerSummaryBuy;
@@ -60,9 +63,11 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     return Consumer2<BrokerProvider, InsightProvider>(
       builder: ((context, brokerProvider, insightProvider, child) {
         _brokerTopList = brokerProvider.brokerTopList;
+        _brokerSummaryFlow = brokerProvider.brokerSummaryFlow;
         _brokerTopTransaction = insightProvider.brokerTopTransactionList!;
         _marketToday = insightProvider.brokerMarketToday!;
-        _marketCap = insightProvider.marketCap!;
+        _marketCap = (insightProvider.marketCap ?? []);
+        _price52WeeksLowList = (insightProvider.price52WeeksLowList ?? []);
 
         return RefreshIndicator(
           onRefresh: (() async {
@@ -116,37 +121,8 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20,),
-                  const Center(
-                    child: Text(
-                      "Transaction Flow",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      //TODO: Inkwell to go to detail page broker summary flow
-                      _brokerFlowBox(
-                        type: "Domestic",
-                        buy: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].buyValue,
-                        sell: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].sellValue,
-                        net: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].netValue,
-                      ),
-                      const SizedBox(width: 10,),
-                      //TODO: Inkwell to go to detail page broker summary flow
-                      _brokerFlowBox(
-                        type: "Foreign",
-                        buy: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].buyValue,
-                        sell: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].sellValue,
-                        net: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].netValue,
-                      ),
-                    ],
-                  ),
+                  _transactionFlow(),
+                  _price52WeeksLow(),
                   const SizedBox(height: 20,),
                   const Center(
                     child: Text(
@@ -900,6 +876,19 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
           ).setMarketCap(data: resp);
         }
       }),
+
+      _brokerSummaryAPI.getBrokerSummaryFlow(force: true).then((resp) async {
+        Log.success(message: "🔃 Refresh Broker Market Cap");
+        if (resp != null) {
+          await BrokerSharedPreferences.setBrokerSummaryFlow(data: resp);
+          if (mounted) {
+            Provider.of<BrokerProvider>(
+              context,
+              listen: false
+            ).setBrokerSummaryFlow(data: resp);
+          }
+        }
+      }),
     ]).onError((error, stackTrace) {
       Log.error(
         message: 'Error getting broker insight information',
@@ -998,12 +987,13 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   }
 
   Widget _brokerFlowBox({
+    required IconData icon,
     required String type,
     required int buy,
     required int sell,
     required int net,
   }) {
-    Color color = Colors.grey;
+    Color color = primaryDark;
     if (net > 0) {
       color = Colors.green[900]!;
     }
@@ -1012,119 +1002,283 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
     }
 
     return Expanded(
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              width: 10,
-              color: color,
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                color: primaryDark,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      type,
+      child: InkWell(
+        onTap: (() {
+          Navigator.pushNamed(context, '/insight/broker/flow');
+        }),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: color,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    icon,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    type,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Expanded(
+                    child: Text(
+                      "Buy",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 2,),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Expanded(
-                          child: Text(
-                            "Buy",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            formatIntWithNull(
-                              buy,
-                            ),
-                            style: TextStyle(
-                              color: Colors.green,
-                            ),
-                          )
-                        ),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Expanded(
-                          child: Text(
-                            "Sell",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            formatIntWithNull(
-                              sell,
-                            ),
-                            style: TextStyle(
-                              color: secondaryLight,
-                            ),
-                          )
-                        ),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const Expanded(
-                          child: Text(
-                            "Net",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            formatIntWithNull(
-                              net,
-                            ),
-                            style: TextStyle(
-                              color: _getTextColor(value: net),
-                            ),
-                          )
-                        ),
-                      ],
+                  ),
+                  Expanded(
+                    child: Text(
+                      formatIntWithNull(
+                        buy,
+                      ),
                     )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-          ],
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Expanded(
+                    child: Text(
+                      "Sell",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      formatIntWithNull(
+                        sell,
+                      ),
+                    )
+                  ),
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Expanded(
+                    child: Text(
+                      "Net",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      formatIntWithNull(
+                        net,
+                      ),
+                    )
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Color _getTextColor({required int value}) {
-    if (value > 0) {
-      return Colors.green;
+  Widget _rowPrice52WeeksLow({
+    required String code,
+    required String price,
+    required String date,
+    TextStyle? style,
+    Color bgColor = primaryDark,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(5),
+          width: 120,
+          decoration: BoxDecoration(
+            color: bgColor,
+          ),
+          child: Text(
+            code,
+            style: style,
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            width: 120,
+            decoration: BoxDecoration(
+              color: bgColor,
+            ),
+            child: Text(
+              price,
+              style: style,
+            ),
+          )
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            width: 120,
+            decoration: BoxDecoration(
+              color: bgColor,
+            ),
+            child: Text(
+              date,
+              style: style,
+            ),
+          )
+        ),
+      ],
+    );
+  }
+
+  Widget _price52WeeksLow() {
+    // check if we got price 52 weeks today or not
+    if (_price52WeeksLowList.isEmpty) {
+      return const SizedBox.shrink();
     }
-    else if (value < 0) {
-      return secondaryLight;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 20,),
+        const Center(
+          child: Text(
+            "52 Weeks Low",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10,),
+        _rowPrice52WeeksLow(
+          code: "CODE",
+          price: "PRICE",
+          date: "DATE",
+          bgColor: extendedDark,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          )
+        ),
+        ...List<Widget>.generate(_price52WeeksLowList.length, (index) {
+          return InkWell(
+            onTap: (() async {
+              // get the stock information by code
+              await _companyAPI.getCompanyByCode(
+                companyCode: _price52WeeksLowList[index].code,
+                type: 'saham',
+              ).then((resp) {
+                CompanyDetailArgs args = CompanyDetailArgs(
+                  companyId: resp.companyId,
+                  companyName: resp.companyName,
+                  companyCode: _price52WeeksLowList[index].code,
+                  companyFavourite: (resp.companyFavourites ?? false),
+                  favouritesId: (resp.companyFavouritesId ?? -1),
+                  type: "saham",
+                );
+                
+                if (mounted) {
+                  // go to the company page
+                  Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+                }
+              }).onError((error, stackTrace) {
+                if (mounted) {
+                  // show the error message
+                  ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+                }
+              }).whenComplete(() {
+                // remove the loading screen
+                LoadingScreen.instance().hide();
+              },);
+            }),
+            child: _rowPrice52WeeksLow(
+              code: _price52WeeksLowList[index].code,
+              price: formatIntWithNull(_price52WeeksLowList[index].minPrice),
+              date: Globals.dfDDMMMyyyy.format(_price52WeeksLowList[index].date),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _transactionFlow() {
+    if (_brokerSummaryFlow == null) {
+      return const SizedBox.shrink();
     }
-    return textPrimary;
+
+    if (_brokerSummaryFlow!.domestic.isEmpty || _brokerSummaryFlow!.foreign.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 20,),
+        const Center(
+          child: Text(
+            "Transaction Flow",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Center(
+          child: Text(
+            Globals.dfDDMMMyyyy.format(_brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].date),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: secondaryLight,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10,),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            _brokerFlowBox(
+              icon: LucideIcons.flag,
+              type: "Domestic",
+              buy: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].buyValue,
+              sell: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].sellValue,
+              net: _brokerSummaryFlow!.domestic[_brokerSummaryFlow!.domestic.length - 1].netValue,
+            ),
+            const SizedBox(width: 10,),
+            _brokerFlowBox(
+              icon: LucideIcons.globe,
+              type: "Foreign",
+              buy: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].buyValue,
+              sell: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].sellValue,
+              net: _brokerSummaryFlow!.foreign[_brokerSummaryFlow!.foreign.length - 1].netValue,
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

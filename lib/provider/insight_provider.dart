@@ -18,6 +18,7 @@ class InsightProvider extends ChangeNotifier {
   List<StockDividendListModel>? stockDividendList;
   List<StockSplitListModel>? stockSplitList;
   List<InsightStockCollectModel>? stockCollectList;
+  List<Price52WeeksLowModel>? price52WeeksLowList;
 
   void setSectorSummaryList({required List<SectorSummaryModel> list}) {
     sectorSummaryList = list;
@@ -110,6 +111,11 @@ class InsightProvider extends ChangeNotifier {
 
   void setStockCollectList({required List<InsightStockCollectModel> data}) {
     stockCollectList = data;
+    notifyListeners();
+  }
+
+  void setPrice52WeeksLow({required List<Price52WeeksLowModel> data}) {
+    price52WeeksLowList = data;
     notifyListeners();
   }
 }

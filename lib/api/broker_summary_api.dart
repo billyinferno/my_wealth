@@ -306,12 +306,12 @@ class BrokerSummaryAPI {
     return listBrokerSummarySectorFlow;
   }
 
-  Future<BrokerSummaryFlowModel?> getBrokerSummaryFlow() async {
+  Future<BrokerSummaryFlowModel?> getBrokerSummaryFlow({bool force = false}) async {
     // check the last update date for broker summary flow
     DateTime? lastUpdateDate = BrokerSharedPreferences.getBrokerSummaryFlowLastUpdate();
 
     // check if last update date is not null
-    if (lastUpdateDate != null) {
+    if (lastUpdateDate != null && force == false) {
       // check if last update date and current date time difference is more than 6 hours
       // if more than 6 hours, we will update the data, if not we will get the data from local storage
       DateTime currentDateTime = DateTime.now().toLocal();
@@ -345,5 +345,47 @@ class BrokerSummaryAPI {
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
     BrokerSummaryFlowModel brokerSummary = BrokerSummaryFlowModel.fromJson(commonModel.data['attributes']);
     return brokerSummary;
+  }
+
+  Future<BrokerSummarySectorDetailModel> getBrokerSummarySectorDetail({
+    required String sectorName,
+  }) async {
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/sector/flow/sectorname/$sectorName'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getBrokerSummarySectorDetail',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the broker summary monthly statistic
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummarySectorDetailModel brokerSummary = BrokerSummarySectorDetailModel.fromJson(commonModel.data['attributes']);
+    return brokerSummary;
+  }
+
+  Future<BrokerSummarySectorTopWorseModel> getBrokerSectorTopWorse({
+    required String sectorName,
+  }) async {
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/sector/topworse/sectorname/$sectorName'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getBrokerSectorTopWorse',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the broker summary monthly statistic
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummarySectorTopWorseModel brokerTopWorse = BrokerSummarySectorTopWorseModel.fromJson(commonModel.data['attributes']);
+    return brokerTopWorse;
   }
 }

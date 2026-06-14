@@ -200,6 +200,10 @@ class RouterPageState extends State<RouterPage> {
       {
         return createAnimationRoute(const InsightBrokerSpecificCompanyPage());
       }
+      case '/insight/broker/flow':
+      {
+        return createAnimationRoute(const InsightBrokerFlowPage());
+      }
       case '/portofolio/list':
       {
         return createAnimationRoute(PortofolioListPage(args: settings.arguments,));

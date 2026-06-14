@@ -71,6 +71,9 @@ class _InsightStockSectorSummarySubPageState extends State<InsightStockSectorSum
       // get the sector summary list from the provider, so in case there are
       // any update on the data we will also refresh the page
       _sectorSummaryList = (insightProvider.sectorSummaryList ?? []);
+
+      // get the sector flow list from provider
+      _sectorFlowList = (brokerProvider.brokerSummarySectorFlowModel ?? []);
     
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -24,6 +24,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
   final ScrollController _scrollController = ScrollController();
   final InsightAPI _insightAPI = InsightAPI();
   final CompanyAPI _companyAPI = CompanyAPI();
+  final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
 
   late InsightStockPageEnum _selectedStockPage;
 
@@ -194,6 +195,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
         await InsightSharedPreferences.setStockSplitList(stockDividendList: resp);
         if (!context.mounted) return;
         Provider.of<InsightProvider>(context, listen: false).setStockSplitList(data: resp);
+      }),
+      _brokerSummaryAPI.getBrokerSummarySectorFlow().then((resp) async {
+        Log.success(message: "🔃 Refresh Broker Summary Sector Flow");
+        await BrokerSharedPreferences.setBrokerSummarySectorFlow(sectorFlowList: resp);
+        if (!context.mounted) return;
+        Provider.of<BrokerProvider>(context, listen: false).setBrokerSummaryFlowModel(data: resp);
       }),
     ]).onError((error, stackTrace) {
       Log.error(

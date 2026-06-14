@@ -24,6 +24,17 @@ class AnalysisChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ensure that all the data is align, pesimistic < neutral < optimistic
+    // otherwise just don't render a chart
+    if (!(
+      (neutral <= optimistic) &&
+      (neutral >= pesimistic) &&
+      (optimistic >= pesimistic)
+    )) {
+      // show a table instead
+      return _forecastingTable();
+    }
+
     final List<Color> pointerColorList = [
       Color(0xFFFF867C),
       Color(0xFFFFA49D),
@@ -317,6 +328,121 @@ class AnalysisChart extends StatelessWidget {
                   ],
                 ),
               ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _forecastingTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 5,),
+        Table(
+          border: TableBorder.all(
+            color: primaryLight,
+          ),
+          children: <TableRow>[
+            TableRow(
+              decoration: BoxDecoration(
+                color: primaryDark,
+              ),
+              children: <Widget>[
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      "Pesimistic",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      "Neutral",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      "Optimistic",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ]
+            ),
+            TableRow(
+              children: <Widget>[
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      formatDecimal(pesimistic, decimal: 4),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      formatDecimal(neutral, decimal: 4),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+                TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      formatDecimal(optimistic, decimal: 4),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ]
             ),
           ],
         ),

@@ -3234,11 +3234,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                   ),
                   Container(
                     decoration: BoxDecoration(
-                        border: Border.all(
-                            color: primaryLight,
-                            style: BorderStyle.solid,
-                            width: 1.0),
-                        color: primaryDark),
+                      border: Border.all(
+                        color: primaryLight,
+                        style: BorderStyle.solid,
+                        width: 1.0,
+                      ),
+                      color: primaryDark,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -3255,7 +3257,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                   value: "B.val",
                                   average: "B.avg",
                                   isBold: true,
-                                  backgroundColor: secondaryDark,
+                                  backgroundColor: Colors.green[900]!,
                                   enableTab: false,
                                 )
                               ),
@@ -3312,7 +3314,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                     showDecimal:false
                                   ),
                                   isBold: true,
-                                  backgroundColor: secondaryDark,
+                                  backgroundColor: Colors.green[900]!,
                                   enableTab: false,
                                 ),
                               ),
@@ -3325,14 +3327,16 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                  child: _tableRow(
-                                      brokerCode: "SY",
-                                      lot: "S.lot",
-                                      value: "S.val",
-                                      average: "S.avg",
-                                      isBold: true,
-                                      backgroundColor: Colors.green[900],
-                                      enableTab: false)),
+                                child: _tableRow(
+                                  brokerCode: "SY",
+                                  lot: "S.lot",
+                                  value: "S.val",
+                                  average: "S.avg",
+                                  isBold: true,
+                                  backgroundColor: secondaryDark,
+                                  enableTab: false,
+                                ),
+                              ),
                               ...List<Widget>.generate(
                                 10,
                                 (index) {
@@ -3383,7 +3387,7 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                                     showDecimal: false
                                   ),
                                   isBold: true,
-                                  backgroundColor: Colors.green[900],
+                                  backgroundColor: secondaryDark,
                                   enableTab: false,
                                 ),
                               ),

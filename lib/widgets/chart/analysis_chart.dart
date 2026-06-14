@@ -128,21 +128,70 @@ class AnalysisChart extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        height: 10,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: <Color>[
-                              Colors.red,
-                              Colors.green,
-                            ]
+                      Stack(
+                        children: <Widget>[
+                          Container(
+                            height: 10,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: <Color>[
+                                  Colors.red,
+                                  Colors.green,
+                                ]
+                              ),
+                              border: Border.all(
+                                color: primaryLight,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                          border: Border.all(
-                            color: primaryLight,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: primaryLight,
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        ],
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +199,7 @@ class AnalysisChart extends StatelessWidget {
                         children: <Widget>[
                           Flexible(
                             child: Text(
-                              "Pesimistic\n${formatCurrency(pesimistic)}${(potentialPesimistic != null ? " (${formatDecimalWithNull(potentialPesimistic, times: 100, decimal: 2)}%)" : '')}",
+                              "${formatCurrency(pesimistic)}${(potentialPesimistic != null ? " (${formatDecimalWithNull(potentialPesimistic, times: 100, decimal: 2)}%)" : '')}",
                               textAlign: TextAlign.left,
                               softWrap: true,
                               style: TextStyle(
@@ -161,7 +210,7 @@ class AnalysisChart extends StatelessWidget {
                           ),
                           Flexible(
                             child: Text(
-                              "Neutral\n${formatCurrency(neutral)}${(potentialNeutral != null ? " (${formatDecimalWithNull(potentialNeutral, times: 100, decimal: 2)}%)" : '')}",
+                              "${formatCurrency(neutral)}${(potentialNeutral != null ? " (${formatDecimalWithNull(potentialNeutral, times: 100, decimal: 2)}%)" : '')}",
                               textAlign: TextAlign.center,
                               softWrap: true,
                               style: TextStyle(
@@ -172,7 +221,7 @@ class AnalysisChart extends StatelessWidget {
                           ),
                           Flexible(
                             child: Text(
-                              "Optimistic\n${formatCurrency(optimistic)}${(potentialOptimistic != null ? " (${formatDecimalWithNull(potentialOptimistic, times: 100, decimal: 2)}%)" : '')}",
+                              "${formatCurrency(optimistic)}${(potentialOptimistic != null ? " (${formatDecimalWithNull(potentialOptimistic, times: 100, decimal: 2)}%)" : '')}",
                               textAlign: TextAlign.right,
                               softWrap: true,
                               style: TextStyle(
@@ -254,7 +303,7 @@ class AnalysisChart extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Current\n${formatCurrency(current)}",
+                      formatCurrency(current),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,

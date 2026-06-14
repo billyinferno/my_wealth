@@ -1285,21 +1285,13 @@ class _CompanyDetailSahamPageState extends State<CompanyDetailSahamPage>
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   AnalysisChart(
-                    title: "Price Analysis",
+                    title: "Price Analysis & Forecasting",
                     pesimistic: _additionalInfo.pricePesimistic,
                     potentialPesimistic: _additionalInfo.pricePotentialPesimistic,
                     neutral: _additionalInfo.priceNeutral,
                     potentialNeutral: _additionalInfo.pricePotentialNeutral,
                     optimistic: _additionalInfo.priceOptimistic,
                     potentialOptimistic: _additionalInfo.pricePotentialOptimistic,
-                    current: (_companyDetail.companyNetAssetValue ?? 0),
-                  ),
-                  const SizedBox(height: 10,),
-                  AnalysisChart(
-                    title: "Price Forecasting",
-                    pesimistic: _additionalInfo.priceForecastingPesimistic,
-                    neutral: _additionalInfo.priceForecastingNeutral,
-                    optimistic: _additionalInfo.priceForecastingOptimistic,
                     current: (_companyDetail.companyNetAssetValue ?? 0),
                   ),
                 ],

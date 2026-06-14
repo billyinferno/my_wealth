@@ -306,7 +306,7 @@ class BrokerSummaryAPI {
     return listBrokerSummarySectorFlow;
   }
 
-  Future<BrokerSummaryFlowModel?> getBrokerSummaryFlow({bool force = false}) async {
+  Future<BrokerSummaryFlowModel> getBrokerSummaryFlow({bool force = false}) async {
     // check the last update date for broker summary flow
     DateTime? lastUpdateDate = BrokerSharedPreferences.getBrokerSummaryFlowLastUpdate();
 
@@ -322,9 +322,8 @@ class BrokerSummaryAPI {
 
         // check if we got the data or not?
         if (brokerSummaryFlow != null) {
-          // we got the data, return null so we will not update the broker shared preferences
-          // from the caller
-          return null;
+          // we got the data, return the current broker summary flow
+          return brokerSummaryFlow;
         }
       }
     }
@@ -340,6 +339,9 @@ class BrokerSummaryAPI {
       );
       throw error as NetException;
     });
+
+    // set the last update for the broker summary flow
+    await BrokerSharedPreferences.setBrokerSummaryFlowLastUpdate();
 
     // parse the response to get the broker summary monthly statistic
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));

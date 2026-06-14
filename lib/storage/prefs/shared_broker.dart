@@ -147,11 +147,6 @@ class BrokerSharedPreferences {
       key: _brokerSummaryFlowKey,
       value: jsonEncode(data.toJson())
     );
-    // put the last update date for broker summary flow
-    LocalBox.putString(
-      key: _brokerSummaryFlowLastUpdateKey,
-      value: DateTime.now().toString(),
-    );
   }
 
   static BrokerSummaryFlowModel? getBrokerSummaryFlow() {
@@ -170,6 +165,14 @@ class BrokerSharedPreferences {
       // no data
       return null;
     }
+  }
+
+  static Future<void> setBrokerSummaryFlowLastUpdate() async {
+    // put the last update date for broker summary flow
+    LocalBox.putString(
+      key: _brokerSummaryFlowLastUpdateKey,
+      value: DateTime.now().toString(),
+    );
   }
 
   static DateTime? getBrokerSummaryFlowLastUpdate() {

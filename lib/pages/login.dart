@@ -1022,24 +1022,17 @@ class LoginPageState extends State<LoginPage> {
         Log.success(message: '🔟🔟🔟7️⃣ Get Broker Summary Sector Flow');
       }),
       _brokerSummaryApi.getBrokerSummaryFlow().then((resp) async {
+        await BrokerSharedPreferences.setBrokerSummaryFlow(
+          data: resp
+        );
+
         if (!mounted) return;
+        Provider.of<BrokerProvider>(
+          context,
+          listen: false
+        ).setBrokerSummaryFlow(data: resp);
 
-        if (resp != null) {
-          await BrokerSharedPreferences.setBrokerSummaryFlow(
-            data: resp
-          );
-
-          if (!mounted) return;
-          Provider.of<BrokerProvider>(
-            context,
-            listen: false
-          ).setBrokerSummaryFlow(data: resp);
-
-          Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
-        }
-        else {
-          Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow from Cache');
-        }
+        Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
       }),
       _infoSahamsAPI.get52WeeksLowPrice().then((resp) async {
         if (!mounted) return;

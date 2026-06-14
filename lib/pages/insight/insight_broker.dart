@@ -878,15 +878,13 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
       }),
 
       _brokerSummaryAPI.getBrokerSummaryFlow(force: true).then((resp) async {
-        Log.success(message: "🔃 Refresh Broker Market Cap");
-        if (resp != null) {
-          await BrokerSharedPreferences.setBrokerSummaryFlow(data: resp);
-          if (mounted) {
-            Provider.of<BrokerProvider>(
-              context,
-              listen: false
-            ).setBrokerSummaryFlow(data: resp);
-          }
+        Log.success(message: "🔃 Refresh Broker Summary Flow");
+        await BrokerSharedPreferences.setBrokerSummaryFlow(data: resp);
+        if (mounted) {
+          Provider.of<BrokerProvider>(
+            context,
+            listen: false
+          ).setBrokerSummaryFlow(data: resp);
         }
       }),
     ]).onError((error, stackTrace) {

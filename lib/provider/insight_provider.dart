@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/model/insight/insight_stock_discounted_model.dart';
 
 class InsightProvider extends ChangeNotifier {
   List<SectorSummaryModel>? sectorSummaryList;
@@ -19,6 +20,7 @@ class InsightProvider extends ChangeNotifier {
   List<StockSplitListModel>? stockSplitList;
   List<InsightStockCollectModel>? stockCollectList;
   List<Price52WeeksLowModel>? price52WeeksLowList;
+  List<InsightStockDiscountedModel>? stockDiscountedList;
 
   void setSectorSummaryList({required List<SectorSummaryModel> list}) {
     sectorSummaryList = list;
@@ -116,6 +118,11 @@ class InsightProvider extends ChangeNotifier {
 
   void setPrice52WeeksLow({required List<Price52WeeksLowModel> data}) {
     price52WeeksLowList = data;
+    notifyListeners();
+  }
+
+  void setStockDicsounted({required List<InsightStockDiscountedModel> data}) {
+    stockDiscountedList = data;
     notifyListeners();
   }
 }

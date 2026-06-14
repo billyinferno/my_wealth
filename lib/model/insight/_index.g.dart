@@ -9,6 +9,7 @@ export './insight_sector_per_detail_model.dart';
 export './insight_sector_summary_model.dart';
 export './insight_sideway_model.dart';
 export './insight_stock_collect_model.dart';
+export './insight_stock_discounted_model.dart';
 export './insight_stock_dividend_list_model.dart';
 export './insight_stock_new_listed_model.dart';
 export './insight_stock_split_list_model.dart';

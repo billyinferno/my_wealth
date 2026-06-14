@@ -5,6 +5,7 @@ import 'package:my_wealth/_index.g.dart';
 
 enum InsightStockPageEnum {
   sectorSummary,
+  stockDiscounted,
   topGainer,
   topLoser,
   perPerSector,
@@ -78,6 +79,7 @@ class _InsightStockPageState extends State<InsightStockPage> {
             ScrollSegmentedControl<InsightStockPageEnum>(
               data: const {
                 InsightStockPageEnum.sectorSummary: "Sector Summary",
+                InsightStockPageEnum.stockDiscounted: "Stock Discounted",
                 InsightStockPageEnum.topGainer: "Top Gainer",
                 InsightStockPageEnum.topLoser: "Top Loser",
                 InsightStockPageEnum.perPerSector: "PER Per-Sector",
@@ -110,6 +112,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
     switch(_selectedStockPage) {
       case InsightStockPageEnum.sectorSummary:
         return InsightStockSectorSummarySubPage();
+      case InsightStockPageEnum.stockDiscounted:
+        return InsightStockDiscountedSubPage(
+          getCompanyDetailAndGo: ({required code}) async {
+            await _getCompanyDetailAndGo(code: code);
+          },
+        );
       case InsightStockPageEnum.topGainer:
         return InsightStockTopGainerSubPage(
           getCompanyDetailAndGo: ({required code}) async {
@@ -201,6 +209,12 @@ class _InsightStockPageState extends State<InsightStockPage> {
         await BrokerSharedPreferences.setBrokerSummarySectorFlow(sectorFlowList: resp);
         if (!context.mounted) return;
         Provider.of<BrokerProvider>(context, listen: false).setBrokerSummaryFlowModel(data: resp);
+      }),
+      _insightAPI.getStockDiscounted().then((resp) async {
+        Log.success(message: "🔃 Refresh Stock Discounted");
+        await InsightSharedPreferences.setStockDiscounted(data: resp);
+        if (!context.mounted) return;
+        Provider.of<InsightProvider>(context, listen: false).setStockDicsounted(data: resp);
       }),
     ]).onError((error, stackTrace) {
       Log.error(

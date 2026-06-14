@@ -1049,6 +1049,21 @@ class LoginPageState extends State<LoginPage> {
 
         Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
       }),
+      _insightAPI.getStockDiscounted().then((resp) async {
+        if (!mounted) return;
+
+        await InsightSharedPreferences.setStockDiscounted(
+          data: resp
+        );
+
+        if (!mounted) return;
+        Provider.of<InsightProvider>(
+          context,
+          listen: false
+        ).setStockDicsounted(data: resp);
+
+        Log.success(message: '🔟🔟🔟9️⃣ Get Stock Discounted');
+      }),
     ]).then((_) {
       Log.success(message: "💯 Finished get additional information");
     });

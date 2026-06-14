@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/model/insight/insight_stock_discounted_model.dart';
 
 enum DateType {
   from, to
@@ -38,6 +39,7 @@ class InsightSharedPreferences {
   static const String _stockCollectFromDateKey = "insight_stock_collect_from_date";
   static const String _stockCollectToDateKey = "insight_stock_collect_to_date";
   static const String _stockCollectAccumRateKey = "insight_stock_collect_accum_rate";
+  static const String _stockDiscountedKey = "insight_stock_discounted";
   
   static const String _brokerCollectKey = "insight_broker_collect";
   static const String _brokerCollectIDKey = "insight_broker_collect_id";
@@ -1342,6 +1344,44 @@ class InsightSharedPreferences {
       for (String data in price52WeeksList) {
         Price52WeeksLowModel price = Price52WeeksLowModel.fromJson(jsonDecode(data));
         ret.add(price);
+      }
+
+      // return the favourites list
+      return ret;
+    }
+    else {
+      // no data
+      return [];
+    }
+  }
+
+  static Future<void> setStockDiscounted({
+    required List<InsightStockDiscountedModel> data
+  }) async {
+    // convert the json to string so we can stored it on the local storage
+    List<String> stockDiscountedList = [];
+    for (InsightStockDiscountedModel sector in data) {
+      stockDiscountedList.add(jsonEncode(sector.toJson()));
+    }
+    LocalBox.putStringList(
+      key: _stockDiscountedKey,
+      value: stockDiscountedList
+    );
+  }
+
+  static List<InsightStockDiscountedModel> getStockDiscounted() {
+    // get the data from local box
+    List<String> stockDiscountedList = (
+      LocalBox.getStringList(key: _stockDiscountedKey) ?? []
+    );
+
+    // check if the list is empty or not?
+    if (stockDiscountedList.isNotEmpty) {
+      // list is not empty, parse the string to FavouriteModel
+      List<InsightStockDiscountedModel> ret = [];
+      for (String data in stockDiscountedList) {
+        InsightStockDiscountedModel stock = InsightStockDiscountedModel.fromJson(jsonDecode(data));
+        ret.add(stock);
       }
 
       // return the favourites list

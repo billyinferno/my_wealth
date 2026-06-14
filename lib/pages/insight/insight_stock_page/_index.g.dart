@@ -1,5 +1,6 @@
 export './insight_stock_sub_page/_index.g.dart';
 
+export './insight_stock_discounted.dart';
 export './insight_stock_latest_dividend.dart';
 export './insight_stock_newly_listed.dart';
 export './insight_stock_per_per_sector.dart';

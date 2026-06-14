@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:my_wealth/_index.g.dart';
+import 'package:my_wealth/model/insight/insight_stock_discounted_model.dart';
 
 class InsightAPI {
   Future<List<SectorSummaryModel>> getSectorSummary() async {
@@ -468,5 +469,28 @@ class InsightAPI {
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
     InsightBrokerCollectModel brokerCollect = InsightBrokerCollectModel.fromJson(commonModel.data['attributes']);
     return brokerCollect;
+  }
+
+  Future<List<InsightStockDiscountedModel>> getStockDiscounted() async {
+    // get insight data using netutils
+    final String body = await NetUtils.get(
+      url: '${Globals.apiInsight}/stock/discounted'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getStockDiscounted',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the stock collection information list
+    CommonArrayModel commonModel = CommonArrayModel.fromJson(jsonDecode(body));
+    List<InsightStockDiscountedModel> stockDiscountedList = [];
+    for (var data in commonModel.data) {
+      InsightStockDiscountedModel stock = InsightStockDiscountedModel.fromJson(data['attributes']);
+      stockDiscountedList.add(stock);
+    }
+    return stockDiscountedList;
   }
 }

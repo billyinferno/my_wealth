@@ -16,6 +16,7 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
   final CompanyAPI _companyAPI = CompanyAPI();
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
   final InsightAPI _insightAPI = InsightAPI();
+  final InfoSahamsAPI _infoSahamsAPI = InfoSahamsAPI();
 
   final ScrollController _scrollController = ScrollController();
 
@@ -885,6 +886,17 @@ class _InsightBrokerPageState extends State<InsightBrokerPage> {
             context,
             listen: false
           ).setBrokerSummaryFlow(data: resp);
+        }
+      }),
+
+      _infoSahamsAPI.get52WeeksLowPrice().then((resp) async {
+        Log.success(message: "🔃 Refresh Broker Summary Flow");
+        await InsightSharedPreferences.setPrice52WeeksLow(data: resp);
+        if (mounted) {
+          Provider.of<InsightProvider>(
+            context,
+            listen: false
+          ).setPrice52WeeksLow(data: resp);
         }
       }),
     ]).onError((error, stackTrace) {

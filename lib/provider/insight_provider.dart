@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_wealth/_index.g.dart';
-import 'package:my_wealth/model/insight/insight_stock_discounted_model.dart';
 
 class InsightProvider extends ChangeNotifier {
   List<SectorSummaryModel>? sectorSummaryList;

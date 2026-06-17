@@ -21,6 +21,7 @@ class RouterPageState extends State<RouterPage> {
         ChangeNotifierProvider<BrokerProvider>(create: (context) => BrokerProvider()),
         ChangeNotifierProvider<InsightProvider>(create: (context) => InsightProvider()),
         ChangeNotifierProvider<CompanyProvider>(create: (context) => CompanyProvider()),
+        ChangeNotifierProvider<LoadingProvider>(create: (context) => LoadingProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

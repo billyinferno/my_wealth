@@ -84,7 +84,7 @@ class LoginPageState extends State<LoginPage> {
 
   Widget _splashScreen() {
     var (type, color) = Globals.runAs();
-
+    
     return Center(
       child: Container(
         color: primaryColor,
@@ -161,6 +161,19 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10,),
+            Consumer<LoadingProvider>(
+              builder: (context, value, child) {
+                return Center(
+                  child: Text(
+                    "Loading (${value.totalLoaded ?? 0}/${value.totalData}) (${formatDecimal(value.percentage ?? 0, times: 100, decimal: 0)}%)",
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -561,6 +574,10 @@ class LoginPageState extends State<LoginPage> {
       // refresh the netutils JWT token
       NetUtils.refreshJWT();
     }
+
+    // set the login provider to show the total loading of API
+    Provider.of<LoadingProvider>(context, listen: false).resetTotalLoaded();
+    Provider.of<LoadingProvider>(context, listen: false).setTotalData(36);
     
     await Future.wait([
       _faveAPI.getFavourites(type: "reksadana").then((resp) async {
@@ -577,6 +594,7 @@ class LoginPageState extends State<LoginPage> {
           type: "reksadana",
           favouriteListData: resp,
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "4️⃣ Get user favourites reksadana");
       }),
@@ -594,6 +612,7 @@ class LoginPageState extends State<LoginPage> {
           type: "saham",
           favouriteListData: resp,
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "5️⃣ Get user favourites saham");
       }),
@@ -611,6 +630,7 @@ class LoginPageState extends State<LoginPage> {
           type: "crypto",
           favouriteListData: resp,
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "6️⃣ Get user favourites crypto");
       }),
@@ -621,10 +641,14 @@ class LoginPageState extends State<LoginPage> {
         );
         
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+        Provider.of<WatchlistProvider>(
+          context,
+          listen: false,
+        ).setWatchlist(
           type: "reksadana",
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "7️⃣ Get user watchlist reksadana");
       }),
@@ -635,10 +659,14 @@ class LoginPageState extends State<LoginPage> {
         );
         
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+        Provider.of<WatchlistProvider>(
+          context,
+          listen: false,
+        ).setWatchlist(
           type: "saham",
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "8️⃣ Get user watchlist saham");
       }),
@@ -649,10 +677,14 @@ class LoginPageState extends State<LoginPage> {
         );
         
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+        Provider.of<WatchlistProvider>(
+          context,
+          listen: false,
+        ).setWatchlist(
           type: "crypto",
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "9️⃣ Get user watchlist crypto");
       }),
@@ -663,10 +695,14 @@ class LoginPageState extends State<LoginPage> {
         );
         
         if (!mounted) return;
-        Provider.of<WatchlistProvider>(context, listen: false).setWatchlist(
+        Provider.of<WatchlistProvider>(
+          context,
+          listen: false,
+        ).setWatchlist(
           type: "gold",
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "1️⃣0️⃣ Get user watchlist gold");
       }),
@@ -678,6 +714,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setIndexList(indexListData: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "🔟1️⃣ Get index");
       }),
@@ -689,6 +726,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBrokerList(brokerListData: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟2️⃣ Get Broker');
       }),
@@ -700,6 +738,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBrokerTopList(brokerTopListData: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟3️⃣ Get Broker Top List');
       }),
@@ -711,6 +750,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBrokerTopTransactionList(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟4️⃣ Get Broker Top Transaction List');
       }),
@@ -722,6 +762,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBrokerMarketToday(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟5️⃣ Get Broker Market Today');
       }),
@@ -733,6 +774,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setMarketCap(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟6️⃣ Get Broker Market Cap');
       }),
@@ -743,6 +785,8 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setSectorSummaryList(list: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
+
         Log.success(message: '🔟7️⃣ Get Sector Summary List');
       }),
       _insightAPI.getTopWorseCompany(type: 'top').then((resp) async {
@@ -757,6 +801,8 @@ class LoginPageState extends State<LoginPage> {
         ).setTopWorseCompanyList(
           type: 'top', data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
+
         Log.success(message: '🔟8️⃣ Get Top Company Summary List');
       }),
       _insightAPI.getTopWorseCompany(type: 'worse').then((resp) async {
@@ -772,6 +818,8 @@ class LoginPageState extends State<LoginPage> {
           type: 'worse',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
+
         Log.success(message: '🔟9️⃣ Get Worse Company Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
@@ -786,7 +834,12 @@ class LoginPageState extends State<LoginPage> {
         Provider.of<InsightProvider>(
           context,
           listen: false
-        ).setTopReksadanaList(type: 'saham', data: resp);
+        ).setTopReksadanaList(
+          type: 'saham',
+          data: resp,
+        );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
+
         Log.success(message: '🔟🔟1️⃣ Get Top Reksadana Saham Summary List');
       }),
       _insightAPI.getTopWorseReksadana(
@@ -806,6 +859,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'campuran',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟2️⃣ Get Top Reksadana Campuran Summary List');
       }),
@@ -826,6 +880,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'pasaruang',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟3️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
@@ -845,6 +900,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'pendapatantetap',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟4️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
@@ -864,6 +920,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'saham',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟5️⃣ Get Top Reksadana Saham Summary List');
       }),
@@ -883,6 +940,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'campuran',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟6️⃣ Get Top Reksadana Campuran Summary List');
       }),
@@ -902,6 +960,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'pasaruang',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟7️⃣ Get Top Reksadana Pasar Uang Summary List');
       }),
@@ -922,6 +981,7 @@ class LoginPageState extends State<LoginPage> {
           type: 'pendapatantetap',
           data: resp
         );
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟8️⃣ Get Top Reksadana Pendapatan Tetap Summary List');
       }),
@@ -933,6 +993,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBandarInterestingList(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟9️⃣ Get Bandar Interesting List');
       }),
@@ -944,6 +1005,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setSectorList(sectorListData: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟🔟 Get Saham Sector Name List');
       }),
@@ -955,6 +1017,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setWatchlistHistory(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: "🔟🔟🔟1️⃣ Get user watchlist history");
       }),
@@ -966,6 +1029,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setStockNewListed(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟🔟2️⃣ Get Stock New Listed');
       }),
@@ -977,6 +1041,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setStockDividendList(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟🔟3️⃣ Get Stock Dividend List');
       }),
@@ -988,27 +1053,33 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setStockSplitList(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
         
         Log.success(message: '🔟🔟🔟4️⃣ Get Stock Split List');
       }),
       _brokerSummaryApi.getBrokerSummaryDate().then((resp) async {
-        if (!mounted) return;
         await BrokerSharedPreferences.setBrokerMinMaxDate(
           minDate: resp.minDate,
           maxDate: resp.maxDate
         );
+
+        if (!mounted) return;
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
+
         Log.success(message: '🔟🔟🔟5️⃣ Get Broker Min and Max Date');
       }),
       _companyAPI.getCompanyMaxUpdate().then((resp) async {
-        if (!mounted) return;
         await CompanySharedPreferences.setCompanyLastUpdateModel(
           type: CompanyLastUpdateType.max,
           lastUpdateModel: resp,
         );
+
+        if (!mounted) return;
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
+
         Log.success(message: '🔟🔟🔟6️⃣ Get Company Max Last Update');
       }),
       _brokerSummaryApi.getBrokerSummarySectorFlow().then((resp) async {
-        if (!mounted) return;
         await BrokerSharedPreferences.setBrokerSummarySectorFlow(
           sectorFlowList: resp
         );
@@ -1018,6 +1089,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBrokerSummaryFlowModel(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟🔟7️⃣ Get Broker Summary Sector Flow');
       }),
@@ -1031,12 +1103,11 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setBrokerSummaryFlow(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
       }),
       _infoSahamsAPI.get52WeeksLowPrice().then((resp) async {
-        if (!mounted) return;
-
         await InsightSharedPreferences.setPrice52WeeksLow(
           data: resp
         );
@@ -1046,12 +1117,11 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setPrice52WeeksLow(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟🔟8️⃣ Get Broker Summary Flow');
       }),
       _insightAPI.getStockDiscounted().then((resp) async {
-        if (!mounted) return;
-
         await InsightSharedPreferences.setStockDiscounted(
           data: resp
         );
@@ -1061,6 +1131,7 @@ class LoginPageState extends State<LoginPage> {
           context,
           listen: false
         ).setStockDicsounted(data: resp);
+        Provider.of<LoadingProvider>(context, listen: false).addTotalLoaded();
 
         Log.success(message: '🔟🔟🔟9️⃣ Get Stock Discounted');
       }),

@@ -480,7 +480,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                 ),
                                 TextSpan(
                                   text: formatDecimal(
-                                    _watchlistHistory![index].watchlistDetailShare.makePositive(),
+                                    _watchlistHistory![index].watchlistDetailShare.abs(),
                                     decimal: 2,
                                   ),
                                   style: _historyStyle.copyWith(fontWeight: FontWeight.bold),
@@ -493,7 +493,7 @@ class WatchlistsPageState extends State<WatchlistsPage> with SingleTickerProvide
                                 TextSpan(
                                   text: " (${
                                     formatCurrency(
-                                      _watchlistHistory![index].watchlistDetailShare.makePositive() *
+                                      _watchlistHistory![index].watchlistDetailShare.abs() *
                                       _watchlistHistory![index].watchlistDetailPrice
                                     )
                                   })",

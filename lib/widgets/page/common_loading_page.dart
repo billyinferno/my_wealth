@@ -15,55 +15,38 @@ class CommonLoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     if ((isNeedScaffold)) {
       return Scaffold(
-        body: Container(
-          width: double.infinity,
-          color: primaryColor,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SpinKitCubeGrid(
-                color: secondaryColor,
-                size: 25,
-              ),
-              const SizedBox(height: 5,),
-              Text(
-                loadingText,
-                style: const TextStyle(
-                  color: secondaryColor,
-                  fontSize: 10,
-                ),
-              ),
-            ],
-          ),
-        )
+        body: _loadingBody(),
       );
     }
     else {
       // no need scaffold as this is probably coming from embeded page like
       // from insight that already have scaffold inside.
-      return Container(
-        width: double.infinity,
-        color: primaryColor,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const SpinKitCubeGrid(
-              color: secondaryColor,
-              size: 25,
-            ),
-            const SizedBox(height: 5,),
-            Text(
-              loadingText,
-              style: const TextStyle(
-                color: secondaryColor,
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-      );
+      return _loadingBody();
     }
+  }
+
+  Widget _loadingBody() {
+    return Container(
+      width: double.infinity,
+      color: primaryColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          const SpinKitCubeGrid(
+            color: secondaryColor,
+            size: 25,
+          ),
+          const SizedBox(height: 5,),
+          Text(
+            loadingText,
+            style: const TextStyle(
+              color: secondaryColor,
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

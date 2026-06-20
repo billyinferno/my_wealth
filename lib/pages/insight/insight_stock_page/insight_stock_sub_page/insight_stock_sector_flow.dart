@@ -301,6 +301,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
                       tabs: const <Widget>[
                         Tab(text: 'GRAPH',),
                         Tab(text: 'TABLE'),
+                        //TODO: to add the TOP 10 buy, TOP  10 sell in 1Y (need to create the API first)
                       ],
                     ),
                     const SizedBox(height: 10,),

@@ -4,20 +4,20 @@
 
 import 'dart:convert';
 
-BrokerSummarySectorDetailModel brokerSummarySectorDetailModelFromJson(String str) => BrokerSummarySectorDetailModel.fromJson(json.decode(str));
+BrokerSummarySectorFlowDetailModel brokerSummarySectorDetailModelFromJson(String str) => BrokerSummarySectorFlowDetailModel.fromJson(json.decode(str));
 
-String brokerSummarySectorDetailModelToJson(BrokerSummarySectorDetailModel data) => json.encode(data.toJson());
+String brokerSummarySectorDetailModelToJson(BrokerSummarySectorFlowDetailModel data) => json.encode(data.toJson());
 
-class BrokerSummarySectorDetailModel {
+class BrokerSummarySectorFlowDetailModel {
     final List<SectorDetail> domestic;
     final List<SectorDetail> foreign;
 
-    BrokerSummarySectorDetailModel({
+    BrokerSummarySectorFlowDetailModel({
         required this.domestic,
         required this.foreign,
     });
 
-    factory BrokerSummarySectorDetailModel.fromJson(Map<String, dynamic> json) => BrokerSummarySectorDetailModel(
+    factory BrokerSummarySectorFlowDetailModel.fromJson(Map<String, dynamic> json) => BrokerSummarySectorFlowDetailModel(
         domestic: List<SectorDetail>.from(json["domestic"].map((x) => SectorDetail.fromJson(x))),
         foreign: List<SectorDetail>.from(json["foreign"].map((x) => SectorDetail.fromJson(x))),
     );

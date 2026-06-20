@@ -354,7 +354,7 @@ class _InsightStockSectorSummarySubPageState extends State<InsightStockSectorSum
             // check the color for the sector flow, if the value is positive then it will be green, if negative then it will be red, if zero then it will be blue
             int totalNetValue = _sectorFlowList[index].totalValueForeignNet + _sectorFlowList[index].totalValueDomesticNet;
             int prevTotalNetValue = _sectorFlowList[index].prevTotalValueDomesticNet + _sectorFlowList[index].prevTotalValueForeignNet;
-            double netValueChange = prevTotalNetValue != 0 ? ((totalNetValue - prevTotalNetValue) / prevTotalNetValue).makePositive() : 0;
+            double netValueChange = prevTotalNetValue != 0 ? ((totalNetValue - prevTotalNetValue) / prevTotalNetValue).abs() : 0;
 
             Color bgColor = extendedColor;
             if (totalNetValue > 0) {
@@ -396,148 +396,154 @@ class _InsightStockSectorSummarySubPageState extends State<InsightStockSectorSum
               domesticBgColor = secondaryDark;
             }
 
-            //TODO: to add InkWell to go to next page to showed top 10 of foreign and domestic for each sector
-            return Container(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-              margin: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: bgColor,
-                border: Border.all(
-                  color: borderColor,
-                  style: BorderStyle.solid,
-                  width: 1.0,
-                )
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Globals.sectorIcon[_sectorFlowList[index].sectorName] ?? LucideIcons.circle_question_mark,
-                        size: 20,
-                        color: iconColor,
-                      ),
-                      const SizedBox(height: 5,),
-                      Text(
-                        _sectorFlowList[index].sectorName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+            IndustrySectorFlowArgs args = IndustrySectorFlowArgs(data: _sectorFlowList[index]);
+
+            return InkWell(
+              onTap: (() {
+                Navigator.pushNamed(context, '/insight/stock/sector/flow', arguments: args);
+              }),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  border: Border.all(
+                    color: borderColor,
+                    style: BorderStyle.solid,
+                    width: 1.0,
+                  )
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Globals.sectorIcon[_sectorFlowList[index].sectorName] ?? LucideIcons.circle_question_mark,
+                          size: 20,
                           color: iconColor,
                         ),
-                      ),
-                      const SizedBox(height: 5,),
-                      Text(
-                        formatIntWithNull(
-                          totalNetValue,
-                          checkThousand: true,
-                          decimalNum: 2,
-                          shorten: true,
-                          showDecimal: true,
+                        const SizedBox(height: 5,),
+                        Text(
+                          _sectorFlowList[index].sectorName,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: iconColor,
+                          ),
                         ),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: iconColor,
+                        const SizedBox(height: 5,),
+                        Text(
+                          formatIntWithNull(
+                            totalNetValue,
+                            checkThousand: true,
+                            decimalNum: 2,
+                            shorten: true,
+                            showDecimal: true,
+                          ),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: iconColor,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "${formatDecimalWithNull(
-                          netValueChange * 100,
-                          decimal: 2,
-                        )}% (${formatIntWithNull(prevTotalNetValue, checkThousand: true)})",
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                          color: iconColor,
+                        Text(
+                          "${formatDecimalWithNull(
+                            netValueChange * 100,
+                            decimal: 2,
+                          )}% (${formatIntWithNull(prevTotalNetValue, checkThousand: true)})",
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                            color: iconColor,
+                          ),
                         ),
-                      ),
-                    ]
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        decoration: BoxDecoration(
-                          color: foreignBgColor,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              LucideIcons.globe,
-                              color: textPrimary,
-                              size: 15,
-                            ),
-                            const SizedBox(width: 5,),
-                            Expanded(
-                              child: Text(
-                                formatIntWithNull(
-                                  _sectorFlowList[index].totalValueForeignNet,
-                                  checkThousand: true,
-                                  decimalNum: 2,
-                                  shorten: true,
-                                  showDecimal: true,
-                                ),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
+                      ]
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          decoration: BoxDecoration(
+                            color: foreignBgColor,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(
+                                LucideIcons.globe,
+                                color: textPrimary,
+                                size: 15,
+                              ),
+                              const SizedBox(width: 5,),
+                              Expanded(
+                                child: Text(
+                                  formatIntWithNull(
+                                    _sectorFlowList[index].totalValueForeignNet,
+                                    checkThousand: true,
+                                    decimalNum: 2,
+                                    shorten: true,
+                                    showDecimal: true,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: textPrimary,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        decoration: BoxDecoration(
-                          color: domesticBgColor,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              LucideIcons.flag,
-                              color: textPrimary,
-                              size: 15,
-                            ),
-                            const SizedBox(width: 5,),
-                            Expanded(
-                              child: Text(
-                                formatIntWithNull(
-                                  _sectorFlowList[index].totalValueDomesticNet,
-                                  checkThousand: true,
-                                  decimalNum: 2,
-                                  shorten: true,
-                                  showDecimal: true,
-                                ),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          decoration: BoxDecoration(
+                            color: domesticBgColor,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(
+                                LucideIcons.flag,
+                                color: textPrimary,
+                                size: 15,
+                              ),
+                              const SizedBox(width: 5,),
+                              Expanded(
+                                child: Text(
+                                  formatIntWithNull(
+                                    _sectorFlowList[index].totalValueDomesticNet,
+                                    checkThousand: true,
+                                    decimalNum: 2,
+                                    shorten: true,
+                                    showDecimal: true,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: textPrimary,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           }),

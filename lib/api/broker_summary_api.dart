@@ -349,12 +349,15 @@ class BrokerSummaryAPI {
     return brokerSummary;
   }
 
-  Future<BrokerSummarySectorDetailModel> getBrokerSummarySectorDetail({
+  Future<BrokerSummarySectorFlowDetailModel> getBrokerSummarySectorFlowDetail({
     required String sectorName,
   }) async {
+    // convert sector name into Base64
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
+
     // get the API response
     final String body = await NetUtils.get(
-      url: '${Globals.apiBrokerSummary}/stat/sector/flow/sectorname/$sectorName'
+      url: '${Globals.apiBrokerSummary}/stat/sector/flow/sectorname/$sectorNameBase64'
     ).onError((error, stackTrace) {
       Log.error(
         message: 'Error on getBrokerSummarySectorDetail',
@@ -366,7 +369,7 @@ class BrokerSummaryAPI {
 
     // parse the response to get the broker summary monthly statistic
     CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
-    BrokerSummarySectorDetailModel brokerSummary = BrokerSummarySectorDetailModel.fromJson(commonModel.data['attributes']);
+    BrokerSummarySectorFlowDetailModel brokerSummary = BrokerSummarySectorFlowDetailModel.fromJson(commonModel.data['attributes']);
     return brokerSummary;
   }
 

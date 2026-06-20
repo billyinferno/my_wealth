@@ -185,6 +185,10 @@ class RouterPageState extends State<RouterPage> {
       {
         return createAnimationRoute(InsightStockSubListPage(args: settings.arguments,));
       }
+      case '/insight/stock/sector/flow':
+      {
+        return createAnimationRoute(InsightSectorFlowDetailPage(args: settings.arguments,));
+      }
       case '/insight/stock/per':
       {
         return createAnimationRoute(InsightStockPERListPage(args: settings.arguments,));

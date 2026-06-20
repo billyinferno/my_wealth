@@ -5,3 +5,9 @@ class IndustrySummaryArgs {
 
   IndustrySummaryArgs({required this.sectorData});
 }
+
+class IndustrySectorFlowArgs {
+  final BrokerSummarySectorFlowModel data;
+  
+  IndustrySectorFlowArgs({required this.data});
+}

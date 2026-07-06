@@ -393,4 +393,30 @@ class BrokerSummaryAPI {
     BrokerSummarySectorTopWorseModel brokerTopWorse = BrokerSummarySectorTopWorseModel.fromJson(commonModel.data['attributes']);
     return brokerTopWorse;
   }
+
+  Future<BrokerSummarySectorTopWorseListModel> getBrokerSectorTopWorseList({
+    required String sectorName,
+    required int limit,
+    required String type
+  }) async {
+    // convert sector name into Base64
+    String sectorNameBase64 = base64.encode(utf8.encode(sectorName));
+
+    // get the API response
+    final String body = await NetUtils.get(
+      url: '${Globals.apiBrokerSummary}/stat/sector/topworselist/sectorname/$sectorNameBase64/limit/$limit/type/$type'
+    ).onError((error, stackTrace) {
+      Log.error(
+        message: 'Error on getBrokerSectorTopWorseList',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      throw error as NetException;
+    });
+
+    // parse the response to get the broker summary monthly statistic
+    CommonSingleModel commonModel = CommonSingleModel.fromJson(jsonDecode(body));
+    BrokerSummarySectorTopWorseListModel brokerTopWorseList = BrokerSummarySectorTopWorseListModel.fromJson(commonModel.data['attributes']);
+    return brokerTopWorseList;
+  }
 }

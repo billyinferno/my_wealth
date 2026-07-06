@@ -18,7 +18,11 @@ class InsightSectorFlowDetailPage extends StatefulWidget {
 
 class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPage> with SingleTickerProviderStateMixin {
   final BrokerSummaryAPI _brokerSummaryAPI = BrokerSummaryAPI();
-  final ScrollController _scrollController = ScrollController();
+  final CompanyAPI _companyAPI = CompanyAPI();
+  final ScrollController _scrollControllerTable = ScrollController();
+  final ScrollController _scrollControllerTop = ScrollController();
+  final ScrollController _scrollControllerWorse = ScrollController();
+
   late TabController _tabController;
 
   late BrokerSummarySectorFlowDetailModel _sectorFlowList;
@@ -28,6 +32,8 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
   late String _daySelection;
   late Map<String, Map<String, List<Map<String, double>>>> _graphData;
   late Map<String, Map<String, Map<String, InsightBrokerRowData>>> _rowData;
+  late Map<String, BrokerSummarySectorTopWorseListModel> _topWorseList;
+  late BrokerSummarySectorTopWorseListData? _topWorseListData;
   late int _totalNetPlus;
   late int _totalNetNegative;
   late int _totalBuy;
@@ -59,6 +65,9 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
     _graphData = {};
     _rowData = {};
 
+    // initialize the top worse list
+    _topWorseList = {};
+
     // get the sector flow detail
     _getData = _getSectorFlowDetail();
     super.initState();
@@ -67,7 +76,9 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
   @override
   void dispose() {
     _tabController.dispose();
-    _scrollController.dispose();
+    _scrollControllerTable.dispose();
+    _scrollControllerTop.dispose();
+    _scrollControllerWorse.dispose();
     super.dispose();
   }
 
@@ -253,6 +264,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
                 onValueChanged: ((value) {
                   setState(() {
                     _graphSelection = value;
+                    _setTopWorseListData();
                   });
                 }),
                 groupValue: _graphSelection,
@@ -275,6 +287,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
                 onValueChanged: ((value) {
                   setState(() {
                     _daySelection = value;
+                    _setTopWorseListData();
                   });
                 }),
                 groupValue: _daySelection,
@@ -285,7 +298,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
             ),
             Expanded(
               child: DefaultTabController(
-                length: 2,
+                length: 4,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -301,7 +314,8 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
                       tabs: const <Widget>[
                         Tab(text: 'GRAPH',),
                         Tab(text: 'TABLE'),
-                        //TODO: to add the TOP 10 buy, TOP  10 sell in 1Y (need to create the API first)
+                        Tab(text: 'TOP'),
+                        Tab(text: 'WORSE'),
                       ],
                     ),
                     const SizedBox(height: 10,),
@@ -310,6 +324,8 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
                         children: <Widget>[
                           _chart(),
                           _table(),
+                          _top(),
+                          _worse(),
                         ],
                       ),
                     ),
@@ -317,52 +333,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          width: 15,
-                          height: 15,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: Colors.lightGreenAccent,
-                          ),
-                        ),
-                        const SizedBox(width: 5,),
-                        Text("$_totalNetPlus")
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10,),
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          width: 15,
-                          height: 15,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: secondaryColor,
-                          ),
-                        ),
-                        const SizedBox(width: 5,),
-                        Text("$_totalNetNegative")
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _footer(),
           ],
         ),
       ),
@@ -375,6 +346,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
       data: (_graphData[_graphSelection]![_daySelection] ?? []),
       color: const [Colors.green, Colors.red, Colors.blue],
       legend: const ["Buy", "Sell", "Net"],
+      showLegend: false,
       dateOffset: ((_graphData[_graphSelection]![_daySelection] ?? []).length ~/ 10),
     );
   }
@@ -400,7 +372,7 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
         ),
         Expanded(
           child: SingleChildScrollView(
-            controller: _scrollController,
+            controller: _scrollControllerTable,
             physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -429,6 +401,313 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
           ),
         ),
       ],
+    );
+  }
+
+  Widget _top() {
+    // check if to worse list data is null or not?
+    if (_topWorseListData == null) {
+      // return center text stated no data
+      return Center(
+        child: Text(
+          "No top list data found",
+          style: TextStyle(
+            fontSize: 12,
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: SingleChildScrollView(
+        controller: _scrollControllerTop,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: List<Widget>.generate(_topWorseListData?.top.length ?? 0, (index) {
+            return _topWorseItem(
+              code: _topWorseListData?.top[index].code ?? "",
+              buyLot: formatIntWithNull(_topWorseListData?.top[index].totalBuyLot ?? 0),
+              buyValue: formatIntWithNull(_topWorseListData?.top[index].totalBuyValue ?? 0),
+              sellLot: formatIntWithNull(_topWorseListData?.top[index].totalSellLot ?? 0),
+              sellValue: formatIntWithNull(_topWorseListData?.top[index].totalSellValue ?? 0),
+              netLot: formatIntWithNull(_topWorseListData?.top[index].totalNetLot ?? 0),
+              netValue: formatIntWithNull(_topWorseListData?.top[index].totalNetValue ?? 0),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+  Widget _worse() {
+    // check if to worse list data is null or not?
+    if (_topWorseListData == null) {
+      // return center text stated no data
+      return Center(
+        child: Text(
+          "No top list data found",
+          style: TextStyle(
+            fontSize: 12,
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: SingleChildScrollView(
+        controller: _scrollControllerTop,
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: List<Widget>.generate(_topWorseListData?.worse.length ?? 0, (index) {
+            return _topWorseItem(
+              code: _topWorseListData?.worse[index].code ?? "",
+              buyLot: formatIntWithNull(_topWorseListData?.worse[index].totalBuyLot ?? 0),
+              buyValue: formatIntWithNull(_topWorseListData?.worse[index].totalBuyValue ?? 0),
+              sellLot: formatIntWithNull(_topWorseListData?.worse[index].totalSellLot ?? 0),
+              sellValue: formatIntWithNull(_topWorseListData?.worse[index].totalSellValue ?? 0),
+              netLot: formatIntWithNull(_topWorseListData?.worse[index].totalNetLot ?? 0),
+              netValue: formatIntWithNull(_topWorseListData?.worse[index].totalNetValue ?? 0),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+  Widget _topWorseItem({
+    required String code,
+    required String buyLot,
+    required String buyValue,
+    required String sellLot,
+    required String sellValue,
+    required String netLot,
+    required String netValue,
+  }) {
+    return InkWell(
+      onTap: (() async {
+        await _getCompanyAndGo(code: code);
+      }),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              width: 1.0,
+              color: primaryLight,
+              style: BorderStyle.solid,
+            )
+          )
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    code,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "BUY LOT",
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              buyLot,
+                            ),
+                            const SizedBox(height: 2,),
+                            Text(
+                              "BUY VALUE",
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              buyValue,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "SELL LOT",
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              sellLot,
+                            ),
+                            const SizedBox(height: 2,),
+                            Text(
+                              "SELL VALUE",
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              sellValue,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5,),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "NET LOT",
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              netLot,
+                            ),
+                            const SizedBox(height: 2,),
+                            Text(
+                              "NET VALUE",
+                              style: TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              netValue,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10,),
+            Icon(
+              LucideIcons.chevron_right,
+              size: 30,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _footer() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              color: primaryDark,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 15,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        "Total More Buy",
+                        style: TextStyle(
+                          fontSize: 10,
+                        ),
+                      ),
+                      Text(
+                        "$_totalNetPlus times",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 10,),
+          Expanded(
+            child: Container(
+              color: primaryDark,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 15,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        "Total More Sell",
+                        style: TextStyle(
+                          fontSize: 10,
+                        ),
+                      ),
+                      Text(
+                        "$_totalNetNegative times",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -717,6 +996,9 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
   }
 
   Future<bool> _getSectorFlowDetail() async {
+    // clear the top worse list first
+    _topWorseList.clear();
+
     await Future.wait([
       _brokerSummaryAPI.getBrokerSummarySectorFlowDetail(
         sectorName: _args.data.sectorName,
@@ -725,6 +1007,46 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
 
         // generate the graph and row data
         _generateGraphAndRowData();
+      }),
+
+      _brokerSummaryAPI.getBrokerSectorTopWorseList(
+        sectorName: _args.data.sectorName,
+        limit: 30,
+        type: "days",
+      ).then((resp) {
+        _topWorseList["30D"] = resp;
+      }),
+
+      _brokerSummaryAPI.getBrokerSectorTopWorseList(
+        sectorName: _args.data.sectorName,
+        limit: 90,
+        type: "days",
+      ).then((resp) {
+        _topWorseList["90D"] = resp;
+      }),
+
+      _brokerSummaryAPI.getBrokerSectorTopWorseList(
+        sectorName: _args.data.sectorName,
+        limit: 6,
+        type: "months",
+      ).then((resp) {
+        _topWorseList["6M"] = resp;
+      }),
+
+      _brokerSummaryAPI.getBrokerSectorTopWorseList(
+        sectorName: _args.data.sectorName,
+        limit: 9,
+        type: "months",
+      ).then((resp) {
+        _topWorseList["9M"] = resp;
+      }),
+
+      _brokerSummaryAPI.getBrokerSectorTopWorseList(
+        sectorName: _args.data.sectorName,
+        limit: 1,
+        type: "years",
+      ).then((resp) {
+        _topWorseList["1Y"] = resp;
       }),
     ]).onError((error, stackTrace) {
       Log.error(
@@ -735,11 +1057,34 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
 
       throw Exception('Error when get broker sector flow');
     },).whenComplete(() {
+      // set the top worse list data
+      _setTopWorseListData();
+
       // remove loading screen when finished
       LoadingScreen.instance().hide();
     },);
     // all good return true
     return true;
+  }
+
+  void _setTopWorseListData() {
+    // check if the current day is in the top worse data or not?
+    if (_topWorseList[_daySelection] != null) {
+      // check whether currently it's selected as foreign, domestic, or all
+      switch (_graphSelection) {
+        case "a":
+          _topWorseListData = _topWorseList[_daySelection]!.all;
+          break;
+        case "d":
+          _topWorseListData = _topWorseList[_daySelection]!.domestic;
+          break;
+        case "f":
+          _topWorseListData = _topWorseList[_daySelection]!.foreign;
+          break;
+        default:
+          _topWorseListData = null;
+      }
+    }
   }
 
   void _generateGraphAndRowData() {
@@ -1235,5 +1580,38 @@ class _InsightSectorFlowDetailPageState extends State<InsightSectorFlowDetailPag
     _graphData["f"]!["1Y"]!.add(foreignBuy1Y);
     _graphData["f"]!["1Y"]!.add(foreignSell1Y);
     _graphData["f"]!["1Y"]!.add(foreignNet1Y);
+  }
+
+  Future<void> _getCompanyAndGo({required String code}) async {
+    // show loading screen
+    LoadingScreen.instance().show(context: context);
+
+    // get the company detail and navigate to company page
+    await _companyAPI.getCompanyByCode(
+      companyCode: code,
+      type: 'saham',
+    ).then((resp) {
+      CompanyDetailArgs args = CompanyDetailArgs(
+        companyId: resp.companyId,
+        companyName: resp.companyName,
+        companyCode: code,
+        companyFavourite: (resp.companyFavourites ?? false),
+        favouritesId: (resp.companyFavouritesId ?? -1),
+        type: "saham",
+      );
+      
+      if (mounted) {
+        // go to the company page
+        Navigator.pushNamed(context, '/company/detail/saham', arguments: args);
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
+        // show the error message
+        ScaffoldMessenger.of(context).showSnackBar(createSnackBar(message: 'Error when try to get the company detail from server'));
+      }
+    }).whenComplete(() {
+      // remove loading screen when finished
+      LoadingScreen.instance().hide();
+    },);
   }
 }

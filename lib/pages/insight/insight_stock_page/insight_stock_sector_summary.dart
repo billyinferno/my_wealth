@@ -271,6 +271,7 @@ class _InsightStockSectorSummarySubPageState extends State<InsightStockSectorSum
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
+        //TODO: to make the sector flow date to be dynamic with selection 1D, 1W, 1M, 3M, 6M, 1Y (need API to support this)
         Center(
           child: Text(
             "Money Flow as of $sectorFlowDate",

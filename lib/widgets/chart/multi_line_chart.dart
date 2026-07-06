@@ -6,6 +6,7 @@ class MultiLineChart extends StatelessWidget {
   final List<Map<String, double>> data;
   final List<Color> color;
   final List<String> legend;
+  final bool showLegend;
   final int dateOffset;
   const MultiLineChart({
     super.key,
@@ -13,6 +14,7 @@ class MultiLineChart extends StatelessWidget {
     required this.data,
     required this.color,
     this.legend = const [],
+    this.showLegend = true,
     this.dateOffset = 3
   });
 
@@ -42,7 +44,7 @@ class MultiLineChart extends StatelessWidget {
           ),
         ),
         Visibility(
-          visible: (legend.isNotEmpty && color.isNotEmpty && legend.length == color.length),
+          visible: showLegend && (legend.isNotEmpty && color.isNotEmpty && legend.length == color.length),
           child: Container(
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: Row(

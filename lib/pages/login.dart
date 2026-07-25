@@ -421,7 +421,7 @@ class LoginPageState extends State<LoginPage> {
           }
         });
       }
-      on NetException catch (error, _) {
+      on NetException catch (error) {
         Log.error(message: "⛔ ${error.message}");
 
         // check if this is rejection from server
@@ -534,7 +534,7 @@ class LoginPageState extends State<LoginPage> {
         },);
       });
     }
-    on NetException catch (error, _) {
+    on NetException catch (error) {
       // check the error code, if -1 it means this is client exception
       // if -2 it means that it's a generic error
       if (error.code == -1) {
@@ -576,8 +576,10 @@ class LoginPageState extends State<LoginPage> {
     }
 
     // set the login provider to show the total loading of API
-    Provider.of<LoadingProvider>(context, listen: false).resetTotalLoaded();
-    Provider.of<LoadingProvider>(context, listen: false).setTotalData(36);
+    Provider.of<LoadingProvider>(context, listen: false).setTotalData(
+      36,
+      withReset: true,
+    );
     
     await Future.wait([
       _faveAPI.getFavourites(type: "reksadana").then((resp) async {

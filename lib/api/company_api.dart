@@ -466,7 +466,7 @@ class CompanyAPI {
       CompanySahamAdditionalModel stockAdditional = CompanySahamAdditionalModel.fromJson(commonModel.data['attributes']);
       return stockAdditional;
     }
-    on NetException catch (netError, _) {
+    on NetException catch (netError) {
       if (netError.code == 404) {
         return null;
       }

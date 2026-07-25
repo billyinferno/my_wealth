@@ -6,8 +6,12 @@ class LoadingProvider extends ChangeNotifier {
   double? percentage;
   String? loadText;
 
-  void setTotalData(int total) {
+  void setTotalData(int total, { bool withReset = false, }) {
     totalData = total;
+    if (withReset) {
+      totalLoaded = 0;
+      percentage = 0;
+    }
     notifyListeners();
   }
 

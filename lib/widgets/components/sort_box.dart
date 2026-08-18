@@ -266,7 +266,10 @@ class _SortBoxState extends State<SortBox> {
                     fontFamily: '--apple-system',
                   ),
                   onChanged: ((searchText) {
-                    widget.onTextFilterChanged?.call(searchText);
+                    if (widget.onTextFilterChanged != null)
+                    {
+                      widget.onTextFilterChanged!.call(searchText);
+                    }
                   }),
                 ),
               ],

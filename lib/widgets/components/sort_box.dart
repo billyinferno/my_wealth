@@ -229,8 +229,10 @@ class _SortBoxState extends State<SortBox> {
                       _textFilterShowed = !_textFilterShowed;
                       // also clear the text filter value when hide it
                       _filterTextController.clear();
-                      // also trigger the on text filter changed with empty value to reset the filter                      if (!_textFilterShowed) {
-                      widget.onTextFilterChanged?.call('');
+                      // also trigger the on text filter changed with empty value to reset the filter
+                      if (widget.onTextFilterChanged != null) {
+                        widget.onTextFilterChanged!.call('');
+                      }
                     });
                   },
                   child: Container(
